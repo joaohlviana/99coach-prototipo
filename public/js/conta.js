@@ -37,6 +37,7 @@
     };
     return go().then(function (r) { return r.status === 401 ? refresh().then(function (ok) { return ok ? go() : r; }) : r; });
   }
+  function hash(t) { var h = 0x811c9dc5; t = String(t); for (var i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 0x1000193); return (h >>> 0).toString(36); }
   function slugify(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   var SPORT = { jiujitsu: 'jiu-jitsu', beach: 'beach-tennis' };
   var REAL_SPORTS = 'musculacao funcional crossfit pilates yoga corrida lutas natacao ciclismo danca jiu-jitsu calistenia tenis futebol volei basquete escalada beach-tennis lpo'.split(' ');
@@ -129,18 +130,30 @@
     // vínculos em que esta conta é aluno ou treinador
     links: function () {
       if (!sess) return Promise.resolve([]);
-      return db('GET', 'links?select=id,status,origin,prep,created_at,student_id,trainers(slug,name,user_id)&status=in.(ativo,pausado)').then(function (r) {
+      return db('GET', 'links?select=id,status,origin,prep,answers,created_at,student_id,trainers(slug,name,user_id),workouts(template_id,title,current_version,workout_versions(version,sessions,schedule,created_at,change_note))&status=in.(ativo,pausado)').then(function (r) {
         var L = r.ok && Array.isArray(r.data) ? r.data : [];
         var ids = L.map(function (l) { return l.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; });
         return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
           var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
-          var out = L.map(function (l) { return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
+          var out = L.map(function (l) {
+            var w = (l.workouts || [])[0], v = w ? (w.workout_versions || []).filter(function (x) { return x.version === w.current_version; })[0] : null;
+            return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, answers: l.answers || {}, since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
+            workout: w && v ? { title: w.title, version: w.current_version, sessions: v.sessions || [], schedule: v.schedule || null, assignedAt: v.created_at, changeNote: v.change_note || null } : null,
             trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador' }; });
           try { LS.setItem('c99.vinculos', JSON.stringify(out)); } catch (_) {}
           return out;
         });
       });
     },
+    // ---------- preparação, treino e registro (mesmas funções do site) ----------
+    answerPrep: function (link, key, value, done) { return db('POST', 'rpc/answer_prep', { p_link: link, p_key: key, p_value: value, p_done: !!done, p_idem: 'prep:' + link + ':' + key + ':' + hash(value) + ':' + (done ? 1 : 0) }); },
+    reviewPrep: function (link) { return db('POST', 'rpc/review_prep', { p_link: link, p_idem: 'review:' + link }); },
+    assignWorkout: function (link, title, sessions, version) {
+      var body = { p_link: link, p_title: title, p_template: 'manual', p_sessions: sessions, p_schedule: null, p_idem: 'assign:' + link + ':v' + (version || 0) + ':' + hash(JSON.stringify([title, sessions])) };
+      return db('POST', 'rpc/assign_workout', body);
+    },
+    submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
+    sessions: function (link) { return db('GET', 'sessions?select=id,session_key,started_at,submitted_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name)&link_id=eq.' + encodeURIComponent(link)); },
     cachedLinks: function () { try { return JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) { return []; } },
     // conta 18+ (regra de mercado): registrada no perfil
     confirmAdult: function () { return sess ? db('PATCH', 'profiles?id=eq.' + encodeURIComponent(sess.user.id), { adult_confirmed_at: new Date().toISOString() }) : Promise.resolve({ ok: false }); },

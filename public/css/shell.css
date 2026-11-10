@@ -30,3 +30,8 @@ html:not(.demo) #app section[aria-labelledby="vf-s-t"],html:not(.demo) #app sect
 html:not(.demo) #app section[aria-labelledby="progs"],
 html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .sx-iaq{display:none!important}
 #c99-aviso{position:fixed;z-index:120;left:50%;bottom:24px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));box-shadow:var(--sh-float,0 8px 24px rgba(0,0,0,.18));font-family:"Inter",-apple-system,sans-serif}
+
+/* Tabela de evolução (papéis de tabela acessível, com os tokens do DS) */
+#app .rx-table{width:100%;font:500 14px/1.4 "Inter",-apple-system,sans-serif}
+#app .rx-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px;padding:10px 6px;border-bottom:1px solid var(--line-2,#E4E4E7)}
+#app .rx-head{font:700 11px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2,#52525B)}

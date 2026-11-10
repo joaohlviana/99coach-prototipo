@@ -43,7 +43,11 @@ O app segue as diretrizes do 99Coach novo (`AGENTS.md` e `docs/` do repositório
 - **Convite e vínculo (real):** "Convidar aluno" cria o convite no servidor (código `XXXX-XXXX`, 7 dias, uso único)
   e gera o link `/#publico-convite-CODIGO`. O aluno abre o link, entra ou cria conta, confirma ter 18 anos ou mais e
   aceita com um toque (nunca automático). O vínculo aparece no app do aluno e na lista de alunos do treinador.
-- **Aluno:** sem treinador, o app mostra como começar; conectado, mostra com quem está e que o treino está em preparação.
+- **Treino (real):** depois do vínculo, o aluno responde a preparação (4 perguntas). O treinador vê as respostas, marca
+  como revisada, monta o treino (exercícios do catálogo ou livres, séries, repetições, carga, descanso) e atribui uma
+  versão. O aluno vê o treino, executa marcando cada série com repetições e carga reais (pode concluir parcialmente) e
+  envia o registro. A evolução do aluno e os registros no painel do treinador vêm só desses registros confirmados.
+- **Aluno sem treinador:** o app mostra como começar, sem treino, conversa ou evolução de exemplo.
 - **Conta:** cadastro e login no servidor real; ao entrar, o cadastro do treinador é retomado do servidor (vale para
   outro aparelho); "Retirar da busca" volta o perfil a rascunho; "Sair da conta" encerra a sessão e apaga do aparelho
   os dados da conta.
