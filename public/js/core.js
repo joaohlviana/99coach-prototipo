@@ -56,14 +56,40 @@
   function GO(target, params) {
     params = params || {};
     if (!window.NAV) return;
+    if (target === '@sair') return SIGN_OUT();
+    // diretriz: IA só para o treinador e desligada até ser configurada e avaliada
+    if (!document.documentElement.classList.contains('demo') && /^(IA\d|H15$)/.test(target || '')) return NOTICE('A assistência de IA está desligada até ser configurada e avaliada. Todo o trabalho manual continua disponível.');
     if (target && target.charAt(0) === '@') { var pg = target.slice(1); return window.NAV.go(pg, params, null); }
     if (DIRECT[target]) return window.NAV.go(target, params, null);
     var r = byId[target];
     if (r) return window.NAV.go(r.page, Object.assign({ s: r.key }, params), null);
-    // tela ainda sem versão interativa: abre a composição do DS
+    var demo = document.documentElement.classList.contains('demo');
+    // tela ainda sem versão interativa: no produto avisa; na demonstração abre a composição do DS
+    if (!demo) return NOTICE('Esta parte ainda não está disponível nesta versão.');
     window.NAV.go('telas', { id: target }, null);
   }
   window.GO = GO;
+
+  // aviso discreto, independente da tela
+  var noticeT = 0;
+  function NOTICE(msg) {
+    var el = document.getElementById('c99-aviso');
+    if (!el) { el = document.createElement('div'); el.id = 'c99-aviso'; el.setAttribute('role', 'status'); el.className = 'alert alert--info'; document.body.appendChild(el); }
+    el.textContent = msg; el.hidden = false;
+    clearTimeout(noticeT); noticeT = setTimeout(function () { el.hidden = true; }, 5000);
+  }
+  window.NOTICE = NOTICE;
+
+  // sair: encerra a sessão no servidor e apaga deste aparelho os dados da conta (outra pessoa não herda nada)
+  function SIGN_OUT() {
+    window.__signingOut = true;
+    var done = function () {
+      try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\.(cadastro|db|contaIniciada|papeis|sessao|tela)/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
+      location.hash = ''; location.reload();
+    };
+    if (window.CONTA) window.CONTA.signOut().then(done, done); else done();
+  }
+  window.SIGN_OUT = SIGN_OUT;
 
   // ---------- arquivos gerados (CSV de relatórios, cópia de arquivo enviado) ----------
   // No visualizador de artefatos, salvar arquivo passa pela capacidade "downloads" (o visualizador confirma).
@@ -187,7 +213,9 @@
           var on = it[3] === tabKey;
           return { label: it[0], ic: 'ic ic--sm i-' + it[1], cls: 'v4-reset tabbar__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: function () { GO(it[2] === 'tmenu' ? 'TMENU' : (it[2] === 'amenu' ? 'AMENU' : it[2])); } };
         });
-        var side = (R && R.side || []).map(function (g) { return { sec: g.sec, items: g.items.map(mk) }; });
+        var demoOn = document.documentElement.classList.contains('demo');
+        var allowed = function (it) { return demoOn || it[2] !== 'H15'; };
+        var side = (R && R.side || []).map(function (g) { return { sec: g.sec, items: g.items.filter(allowed).map(mk) }; });
         var top = (R && R.top || []).map(function (it) { var on = it[2] === navKey; return { label: it[0], cls: 'v4-reset mod-top__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: function () { GO(it[1]); } }; });
         var scens = scr ? [['', scr.normal || 'Uso normal']].concat(scr.scens).map(function (sc) {
           var on = (st.scn || '') === sc[0];

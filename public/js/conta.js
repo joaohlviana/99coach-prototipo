@@ -85,6 +85,34 @@
         }).then(function (x) { return { ok: true, slug: tr.slug, offer: x }; });
       });
     },
+    // lê o perfil do treinador desta conta no servidor, no formato do cadastro (para retomar em outro aparelho)
+    loadTrainer: function () {
+      if (!sess) return Promise.resolve(null);
+      var uid = sess.user.id, out = null;
+      var BACK = {}; Object.keys(SPORT).forEach(function (k) { BACK[SPORT[k]] = k; });
+      var REG_BACK = {}; Object.keys(REGIAO).forEach(function (k) { REG_BACK[REGIAO[k]] = k; });
+      return db('GET', 'trainers?select=id,slug,name,city_id,regions,formats,languages,specialty,cref,status&user_id=eq.' + encodeURIComponent(uid)).then(function (r) {
+        var t = r.ok && r.data && r.data[0]; if (!t) return null;
+        out = { name: t.name || '', cref: t.cref || '', pres: (t.formats || []).indexOf('presencial') >= 0, onl: (t.formats || []).indexOf('online') >= 0,
+          regions: {}, langs: {}, sports: {}, published: t.status === 'publicado', dadosSaved: true, serverSlug: t.slug };
+        (t.regions || []).forEach(function (x) { out.regions[REG_BACK[x] || x] = true; });
+        (t.languages && t.languages.length ? t.languages : ['pt']).forEach(function (x) { out.langs[x] = true; });
+        return Promise.all([
+          t.city_id ? db('GET', 'cities?select=name,uf&id=eq.' + t.city_id) : Promise.resolve({ ok: false }),
+          db('GET', 'trainer_sports?select=sport_slug&trainer_id=eq.' + t.id),
+          db('GET', 'offers?select=title,includes,format,price_cents,unit,pricing_mode,flow&key=eq.principal&trainer_id=eq.' + t.id)
+        ]).then(function (x) {
+          var c = x[0].ok && x[0].data && x[0].data[0]; if (c) out.city = c.name + ', ' + c.uf;
+          ((x[1].ok && x[1].data) || []).forEach(function (s) { out.sports[BACK[s.sport_slug] || s.sport_slug] = true; });
+          var o = x[2].ok && x[2].data && x[2].data[0];
+          if (o) out.services = [{ kind: o.flow === 'consulta' ? 'consulta' : (o.pricing_mode === 'recurring' ? 'recorrente' : 'avulsa'), title: o.title, inc: o.includes || o.title,
+            fmt: o.format === 'online' ? 'online' : 'presencial', acc: o.flow === 'pedido' ? 'aceite' : 'direta', price: o.price_cents ? String(Math.round(o.price_cents / 100)) : '' }];
+          return out;
+        });
+      });
+    },
+    // retira o perfil da busca (volta a rascunho; nada é apagado)
+    unpublish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'rascunho' }) : Promise.resolve({ ok: false, nosession: true }); },
     // publica o perfil (passa a aparecer na busca do site)
     publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },

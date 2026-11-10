@@ -23,3 +23,10 @@ html,body{margin:0;background:#EFEDEA}
 html.sem-demo #app .v4-demo{display:none!important}
 /* Modo produto (padrão): sem a barra do protótipo nem as barras de situações. ?demo=1 liga a demonstração. */
 html:not(.demo) .pv-bar,html:not(.demo) #app .v4-demo{display:none!important}
+
+/* Modo produto: sem conteúdo inventado no catálogo real (serviços, programas e avaliações de exemplo) e sem IA */
+html:not(.demo) #app section[aria-labelledby="vfm-s"],html:not(.demo) #app section[aria-labelledby="vfm-p"],
+html:not(.demo) #app section[aria-labelledby="vf-s-t"],html:not(.demo) #app section[aria-labelledby="vf-p-t"],
+html:not(.demo) #app section[aria-labelledby="progs"],
+html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .sx-iaq{display:none!important}
+#c99-aviso{position:fixed;z-index:120;left:50%;bottom:24px;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));box-shadow:var(--sh-float,0 8px 24px rgba(0,0,0,.18));font-family:"Inter",-apple-system,sans-serif}

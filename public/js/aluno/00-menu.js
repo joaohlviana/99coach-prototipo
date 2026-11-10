@@ -9,7 +9,7 @@ REG.screen({
       groups: [
         { title: 'Meu acompanhamento', items: [row('Minhas contratações', U.plural(act, 'contratação', 'contratações'), 'card', 'H11'), row('Meus programas', 'Retomar de onde parou', 'book', 'ALU06'), row('Responder formulário', 'Check-in semanal pendente', 'file', 'ALU08')] },
         { title: 'Descobrir', items: [row('Encontrar treinador', 'Buscar por modalidade e cidade', 'search', '@home'), row('Favoritos', 'Treinadores e programas salvos', 'heart', 'PUB07')] },
-        { title: 'Conta', items: [row('Conta e preferências', 'Idioma, segurança, privacidade e avisos', 'settings', '@onboarding', { flow: 'convite', scn: 'contaaluno' }), row('Compartilhamentos', 'O que cada treinador vê', 'share', '@onboarding', { flow: 'convite', scn: 'compart' })] }
+        { title: 'Conta', items: [row('Conta e preferências', 'Idioma, segurança, privacidade e avisos', 'settings', '@onboarding', { flow: 'convite', scn: 'contaaluno' }), row('Compartilhamentos', 'O que cada treinador vê', 'share', '@onboarding', { flow: 'convite', scn: 'compart' }), row('Sair da conta', 'Encerra a sessão neste aparelho', 'logout', '@sair')] }
       ],
       becomeTrainer: function () { GO('@onboarding', { flow: 'treinador' }); }
     };

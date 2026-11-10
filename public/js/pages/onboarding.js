@@ -417,7 +417,14 @@ class Component extends DCLogic {
           const done = () => {
             window.CONTA.setName(st.name);
             const p = role ? window.CONTA.addRole(role) : Promise.resolve();
-            p.then(() => window.CONTA.syncRoles()).then(() => { set({ conta: true, real: true, pw: '', toast: '' }); afterAuth(); });
+            p.then(() => window.CONTA.syncRoles()).then((roles) => (login && (roles || []).indexOf('treinador') >= 0 ? window.CONTA.loadTrainer() : null)).then((srv) => {
+              if (srv && window.STORE) {
+                // cadastro de treinador guardado no servidor: retoma aqui, mesmo em outro aparelho
+                const base = this.base('treinador', '');
+                window.STORE.saveOnb(Object.assign(base, srv, { email: email, conta: true, real: true, step: 'hoje', scn: '' }));
+              }
+              set({ conta: true, real: true, pw: '', toast: '' }); afterAuth();
+            });
           };
           set({ busy: true, toast: login ? 'Entrando…' : 'Criando sua conta…' });
           const go = login ? window.CONTA.signIn(email, pw) : window.CONTA.signUp(email, pw, st.name);
@@ -685,7 +692,7 @@ class Component extends DCLogic {
       code: st.pvCode, setCode: (ev) => set({ pvCode: val(ev).replace(/\D/g, '').slice(0, 6) }),
       exportSend: () => { if ((st.pvCode || '').length !== 6) return toast('Digite os 6 números do código.'); set({ exportStep: '', reqExport: true, toast: 'Pedido de exportação recebido · protocolo #P-44.' }); },
       fixSub: studentRole ? 'Nome, e-mail e dados do seu perfil de aluno' : 'Leva ao seu cadastro de treinador', fix: studentRole ? () => toast('Fora desta versão: a edição do perfil do aluno abre aqui.') : go('cad'),
-      unpublish: () => toast(st.published ? 'Demonstração: o perfil sairia da busca. Sua conta, seus alunos e seus recebimentos continuam.' : 'Seu perfil ainda não está publicado.'),
+      unpublish: () => (window.CONTA && window.CONTA.session() && st.published && !st.scn) ? window.CONTA.unpublish().then((r) => set(r.ok ? { published: false, toast: 'Perfil retirado da busca. Sua conta, seus alunos e seus recebimentos continuam.' } : { toast: 'Não foi possível retirar agora: ' + (r.msg || r.status) })) : toast(st.published ? 'Demonstração: o perfil sairia da busca. Sua conta, seus alunos e seus recebimentos continuam.' : 'Seu perfil ainda não está publicado.'),
       delStart: () => set({ delOpen: true, delOk: false }), delOpen: !!st.delOpen, effects: EFFECTS, delOkOn: String(!!st.delOk), delOkCls: 'check' + (st.delOk ? ' is-on' : ''), delToggle: () => set({ delOk: !st.delOk }),
       delCancel: () => set({ delOpen: false }), delSend: () => { if (!st.delOk) return toast('Marque a confirmação para pedir a exclusão.'); set({ delOpen: false, reqDelete: true, toast: 'Pedido de exclusão recebido · protocolo #E-12. Efetiva em 7 dias.' }); },
       hasReqs: !!(st.reqExport || st.reqDelete),

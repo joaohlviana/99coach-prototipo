@@ -303,7 +303,7 @@
   // redesenha a tela atual (dados reais chegaram, base sincronizada)
   // grava no aparelho o que mudou: dados das áreas logadas e preferências da Home
   window.__persist = function () {
-    if (!window.STORE || !cur) return;
+    if (!window.STORE || !cur || window.__signingOut) return;
     window.STORE.saveDb();
     if (cur.name === 'home') { var s = cur.comp.state; window.STORE.savePage('home', { sport: s.sport, city: s.city, mode: s.mode, favs: s.favs }); }
   };

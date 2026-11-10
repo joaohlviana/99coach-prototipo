@@ -31,6 +31,19 @@ npm run build    # gera dist/ (site estático, abre em qualquer servidor)
 
 Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de exemplo: a base real só tem perfis importados, sem ofertas.
 
+## Diretrizes do produto
+
+O app segue as diretrizes do 99Coach novo (`AGENTS.md` e `docs/` do repositório `99coach-platform`). No modo produto:
+
+- **Catálogo sem dado inventado:** serviços, programas e avaliações de exemplo não aparecem; os treinadores são os reais.
+  A ilustração do topo da Home continua, rotulada "Exemplo do app".
+- **Desconhecido não é zero:** conta nova abre Hoje, Alunos, Recebimentos e Insights no estado de primeiro uso.
+- **IA desligada** até ser configurada e avaliada: sem item no menu e sem botão de IA na busca; o trabalho manual segue.
+- **Telas ainda não implementadas** mostram um aviso, em vez de abrir composições do design system.
+- **Conta:** cadastro e login no servidor real; ao entrar, o cadastro do treinador é retomado do servidor (vale para
+  outro aparelho); "Retirar da busca" volta o perfil a rascunho; "Sair da conta" encerra a sessão e apaga do aparelho
+  os dados da conta.
+
 ## Modo produto e modo demonstração
 
 O app abre como produto: sem a barra "Telas" e sem as barras de situações. Quem já se cadastrou vê "Minha área" no lugar de "Entrar".

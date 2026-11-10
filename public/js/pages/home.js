@@ -239,7 +239,7 @@ class Component extends DCLogic {
     const sxTrD = [['Rafael Lima', 'bdc7ef1c8dbf05558c3bf8d575fc3a04', 'Treinador de ', 'Fit e Musculação', true, 'RL'], ['Diego Moraes', '348bafe032c42fc5274e3de9d8004df2', 'Treinador de ', 'Fit e Lutas', true, 'DM'], ['Gabriel Santos', '4534df06b7d037ae994cb151849342b0', 'Treinador de ', 'Fit e LPO', true, 'GS'], ['Carolina Albuquerque Montenegro', '', 'Treinadora de ', 'Fit e Funcional', false, 'CM']].map(([n, img, pre, post, ver, ini]) => ({ name: n, hasImg: !!img, noImg: !img, img: img ? B(img) : '', ini: ini, pre: pre, mk: 'Cross', tag: 'CrossFit', post: post, verified: ver, city: 'Londrina, PR', go: window.NAV.coachId(n) ? sxDo(() => window.NAV.go('perfil', { id: window.NAV.coachId(n) }, this)) : sxDo(goto('Perfil de ' + n, 'o perfil de ' + n)) }));
     const sxCut = (txt) => { const f = (x) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); const w = f(sq).split(' ').filter(Boolean)[0] || ''; const at = w ? f(txt).indexOf(w) : -1; return at < 0 ? [txt, '', ''] : [txt.slice(0, at), txt.slice(at, at + w.length), txt.slice(at + w.length)]; };
     const sxTr = sxReal ? sxReal.map((t) => { const c = sxCut(t.spec || 'Treinador'); return { name: t.name, hasImg: !!t.photo, noImg: !t.photo, img: t.photo, ini: t.ini, pre: c[0], mk: c[1], post: c[2], tag: t.city || 'Online', verified: false, city: t.city, go: sxDo(() => window.NAV.go('perfil', { id: t.id }, this)) }; }) : sxTrD;
-    const sxPr = (sxReal && !sxIsCross ? [] : plist4.slice(0, 3)).map((p) => { const cf = p.title.indexOf('Cross') === 0; return { cover: p.cover, pre: cf ? '' : p.title, mk: cf ? 'Cross' : '', post: cf ? p.title.slice(5) : '', sub: p.coach + (cf ? '' : ' · CrossFit') + ' · ' + p.weeks, price: p.price, go: sxDo(p.open) }; });
+    const sxPr = ((sxReal && !sxIsCross) || !document.documentElement.classList.contains('demo') ? [] : plist4.slice(0, 3)).map((p) => { const cf = p.title.indexOf('Cross') === 0; return { cover: p.cover, pre: cf ? '' : p.title, mk: cf ? 'Cross' : '', post: cf ? p.title.slice(5) : '', sub: p.coach + (cf ? '' : ' · CrossFit') + ' · ' + p.weeks, price: p.price, go: sxDo(p.open) }; });
     const sxCf = chips.filter((c) => c.label === 'CrossFit')[0] || chips[0];
     const sxRecL = [];
     if (S.sxR1) sxRecL.push({ t: 'CrossFit', s: ' · Londrina · presencial', go: sxQ('crossfit'), rm: () => set({ sxR1: false }) });
@@ -251,10 +251,10 @@ class Component extends DCLogic {
     const SXR = {
       sxOpen: !!S.sx, sxExp: String(!!S.sx), sxPos: 'top: ' + S.sxY + 'px; left: ' + S.sxX + 'px; width: ' + S.sxW + 'px',
       openSx, sxClose, sxScens, sxTabs, sxTabT: S.sxTab === 'Treinadores', sxTabP: S.sxTab === 'Programas', sxTabE: S.sxTab === 'Esportes',
-      sxEmpty: sxSt === 'empty', sxTyping: sxSt === 'typing', sxCrossRows: !sxReal || sxIsCross, sxIaS: sxSt === 'ia', sxNone: sxSt === 'none',
+      sxEmpty: sxSt === 'empty', sxTyping: sxSt === 'typing', sxCrossRows: document.documentElement.classList.contains('demo') && (!sxReal || sxIsCross), sxIaS: sxSt === 'ia', sxNone: sxSt === 'none',
       sxQText: sq || 'Pesquisar treinadores, programas, esportes', sxq: sq, sxType: (e) => set({ sx: 'on', sxq: (e.target && e.target.value) || '', sxIa: false, sxTab: 'Treinadores', sheet: null }), sxInCls: 'sx-in' + (sq ? '' : ' is-ph'), sxHasQ: !!sq,
       sxClear: () => set({ sxq: '', sxIa: false, sx: S.sx ? 'on' : null }),
-      sxIaOn: String(!!S.sxIa), sxIaCls: 'sx-ia' + (S.sxIa ? ' is-on' : ''), sxIaQc: 'qchip' + (S.sxIa ? ' is-on' : ''),
+      sxIaOn: String(!!S.sxIa), sxIaCls: 'sx-ia' + (S.sxIa ? ' is-on' : ''), sxIaQc: 'qchip sx-iaq' + (S.sxIa ? ' is-on' : ''),
       sxToggleIa: () => set({ sxIa: !S.sxIa }), sxIaOpen: (e) => set(Object.assign({ sx: 'on', sxIa: !S.sxIa, sheet: null }, sxAnchor(e))),
       sxHasRec: sxRecL.length > 0, sxRec: sxRecL, sxRecClear: () => set({ sxR1: false, sxR2: false }), sxHot,
       sxMods: chips.slice(0, 6).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })),
