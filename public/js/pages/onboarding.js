@@ -1,6 +1,6 @@
 PAGES.onboarding = { Comp: (function () {
 class Component extends DCLogic {
-  constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); }
+  constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); if (!p.scn && !this.state.dadosSaved && !this.state.real && this.state.step !== 'codigo' && window.CONTA) Object.assign(this.state, { name: '', email: '', code: '' }); }
 
 
   // Cadastro preenchido de exemplo (cenários “Cadastro preenchido”, “Perfil publicado”)
@@ -403,6 +403,16 @@ class Component extends DCLogic {
       submit: () => {
         if (conta.askTerms && !st.terms) return set({ termsErr: true });
         if (!(st.email || '').trim()) return toast('Informe um e-mail ou celular.');
+        // conta real: o servidor envia o código de 6 dígitos para o e-mail
+        if (window.CONTA && !st.scn && (st.email || '').indexOf('@') < 1) return toast('Informe um e-mail válido para receber o código.');
+        if (window.CONTA && !st.scn) {
+          set({ toast: 'Enviando o código…' });
+          return window.CONTA.sendCode(st.email, st.name).then((r) => {
+            if (r.ok) { set({ step: 'codigo', code: '', codeErr: false, real: true, toast: 'Código enviado para ' + st.email + '.' }); top(); }
+            else if (r.offline) { set({ step: 'codigo', real: false, toast: 'Sem conexão com o servidor: o cadastro fica salvo só neste aparelho.' }); top(); }
+            else set({ toast: 'Não foi possível enviar o código. ' + (r.msg || '') });
+          });
+        }
         set({ step: 'codigo', toast: '' }); top();
       },
       social: () => {
@@ -416,7 +426,19 @@ class Component extends DCLogic {
     const c = {
       value: st.code, set: (e) => set({ code: val(e).replace(/\D/g, '').slice(0, 6), codeErr: false }), expired: st.codeExp, err: st.codeErr,
       change: go('conta'),
-      verify: () => { if ((st.code || '').length !== 6) return set({ codeErr: true }); set({ codeExp: false }); afterAuth(); },
+      verify: () => {
+        if ((st.code || '').length !== 6) return set({ codeErr: true });
+        // conta real: o servidor confere o código e abre a sessão
+        if (window.CONTA && st.real && !st.scn) {
+          return window.CONTA.verify(st.email, st.code).then((r) => {
+            if (!r.ok) return set(r.offline ? { toast: 'Sem conexão com o servidor. Tente de novo.' } : { codeErr: true, codeExp: /expir/i.test(r.msg || '') });
+            const role = st.flow === 'entrar' ? '' : (st.intent === 'treinador' ? 'treinador' : 'aluno');
+            if (role) window.CONTA.addRole(role);
+            set({ codeExp: false, conta: true }); afterAuth();
+          });
+        }
+        set({ codeExp: false }); afterAuth();
+      },
       hasIntent: invite || st.intent === 'treinador',
       intent: invite ? 'Depois da verificação, registramos o aceite do convite de ' + inv.first + '. Só uma vez.' : 'Depois da verificação, você escolhe modalidade e local. Nada é publicado ainda.'
     };

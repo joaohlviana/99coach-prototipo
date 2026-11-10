@@ -17,6 +17,10 @@ npm run build    # gera dist/ (site estático, abre em qualquer servidor)
 - **Gravação**: cadastros, alunos, treinos, mensagens, ofertas e salvos ficam gravados neste navegador e continuam lá ao recarregar.
   "Reiniciar dados" volta ao estado inicial.
 
+- **Conta**: "Criar conta" e "Entrar" usam o servidor real da 99Coach: o código de 6 dígitos chega no e-mail e a conta
+  recebe o papel de aluno ou treinador. Sem internet, o cadastro fica só neste navegador. O perfil do treinador
+  (modalidades, serviços, publicação) ainda não é enviado ao servidor.
+
 Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de exemplo: a base real só tem perfis importados, sem ofertas.
 
 ## Áreas (barra "Telas" no topo)
@@ -41,6 +45,7 @@ Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de e
 - `public/js/runtime.js`: runtime das telas (templates, estado, histórico)
 - `public/js/pages/`: lógica das telas públicas e do onboarding
 - `public/js/real.js`, `real-data.js`: treinadores reais e gravação local
+- `public/js/conta.js`: cadastro e login no servidor real (e-mail + código)
 - `scripts/sync-dados.mjs`: baixa a base real completa
 - `public/js/core.js`, `db.js`: núcleo e dados de exemplo das áreas logadas
 - `public/js/{treinador,aluno,publico,operacao}/`: um módulo por tela
