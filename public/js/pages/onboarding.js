@@ -434,7 +434,9 @@ class Component extends DCLogic {
             if (!r.ok) return set(r.offline ? { toast: 'Sem conexão com o servidor. Tente de novo.' } : { codeErr: true, codeExp: /expir/i.test(r.msg || '') });
             const role = st.flow === 'entrar' ? '' : (st.intent === 'treinador' ? 'treinador' : 'aluno');
             if (role) window.CONTA.addRole(role);
-            set({ codeExp: false, conta: true }); afterAuth();
+            set({ codeExp: false, conta: true });
+            if (!role) return window.CONTA.syncRoles().then(() => afterAuth());
+            afterAuth();
           });
         }
         set({ codeExp: false }); afterAuth();
@@ -752,7 +754,8 @@ class Component extends DCLogic {
     const MT = { hoje: 'Hoje', cad: 'Seu cadastro', sec: sx.title, pub: 'Publicar', publicado: 'Publicado', convidar: 'Convidar aluno', alunoHoje: 'Hoje', acct: 'Conta', cta: cx.title };
     const MB = { cad: 'hoje', sec: 'cad', pub: 'cad', publicado: 'hoje', convidar: 'hoje', cta: 'acct' };
 
-    const PR = login ? { title: 'Você entrou', sub: 'Pronto. Voltamos para onde você estava.', cta: 'Continuar', go: leave, cta2: 'Ir para a página inicial', go2: () => NAV && NAV.go('home', {}, this) }
+    const hasArea = !!(window.ACCT && window.ACCT.area());
+    const PR = login ? { title: 'Você entrou', sub: hasArea ? 'Pronto. Sua área está aberta.' : 'Pronto. Voltamos para onde você estava.', cta: hasArea ? 'Abrir minha área' : 'Continuar', go: hasArea ? () => window.ACCT.go() : leave, cta2: 'Ir para a página inicial', go2: () => NAV && NAV.go('home', {}, this) }
       : { title: 'Conta criada', sub: 'Pronto, ' + first + '. Agora você pode salvar treinadores, pedir acompanhamento e contratar. Preferências e anamnese só quando fizerem sentido.', cta: 'Buscar treinadores', go: () => NAV && NAV.go('esporte', {}, this), cta2: 'Voltar para onde eu estava', go2: leave };
 
     return {

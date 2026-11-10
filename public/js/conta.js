@@ -44,8 +44,13 @@
         return call('PATCH', q, { roles: roles.concat([role]) }, true);
       });
     },
+    // papéis da conta no servidor, guardados no aparelho (para saber qual área abrir)
+    roles: function () { try { return JSON.parse(LS.getItem('c99.papeis') || '[]'); } catch (_) { return []; } },
+    syncRoles: function () {
+      return CONTA.me().then(function (r) { var roles = r.ok && r.data && r.data[0] && r.data[0].roles || null; if (roles) { try { LS.setItem('c99.papeis', JSON.stringify(roles)); } catch (_) {} } return roles || CONTA.roles(); });
+    },
     me: function () { return sess ? call('GET', '/rest/v1/profiles?id=eq.' + encodeURIComponent(sess.user.id) + '&select=*', null, true) : Promise.resolve({ ok: false }); },
-    signOut: function () { var p = sess ? call('POST', '/auth/v1/logout', null, true) : Promise.resolve(); keep(null); return p; }
+    signOut: function () { var p = sess ? call('POST', '/auth/v1/logout', null, true) : Promise.resolve(); keep(null); try { LS.removeItem('c99.papeis'); } catch (_) {} return p; }
   };
   window.CONTA = CONTA;
 })();

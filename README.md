@@ -28,7 +28,15 @@ npm run build    # gera dist/ (site estático, abre em qualquer servidor)
 
 Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de exemplo: a base real só tem perfis importados, sem ofertas.
 
-## Áreas (barra "Telas" no topo)
+## Modo produto e modo demonstração
+
+O app abre como produto: sem a barra "Telas" e sem as barras de situações. Quem já se cadastrou vê "Minha área" no lugar de "Entrar".
+
+- Demonstração (barra "Telas" + situações de cada tela): abra com `?demo=1` ou `#demo`. Fica gravado.
+- Voltar ao produto: `?demo=0` ou `#produto`.
+- Operação e Telas do DS, no modo produto, abrem pelo endereço: `#operacao` e `#telas`.
+
+## Áreas
 
 | Área | Endereço | O que tem |
 | --- | --- | --- |

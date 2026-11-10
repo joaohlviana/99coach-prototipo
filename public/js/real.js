@@ -115,8 +115,31 @@
       if (v !== o) n.nodeValue = v;
     }
   }
+  // qual área abrir para quem já tem conta neste aparelho (ou entrou com conta real)
+  var ACCT = {
+    area: function () {
+      var t = STORE.loadOnb('treinador'), a = STORE.loadOnb('aluno'), roles = window.CONTA ? window.CONTA.roles() : [];
+      if ((t && t.name && (t.conta || t.dadosSaved)) || roles.indexOf('treinador') >= 0) return 'treinador';
+      if ((a && a.name && (a.conta || a.step === 'pronto' || a.step === 'alunoHoje')) || roles.indexOf('aluno') >= 0) return 'aluno';
+      return null;
+    },
+    go: function () { var a = ACCT.area(); if (a && window.NAV) window.NAV.go(a, {}, null); }
+  };
+  window.ACCT = ACCT;
+  var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('#app button[data-minha-area]') : null;
+    if (!b) return;
+    e.stopPropagation(); e.preventDefault(); ACCT.go();
+  }, true);
+
   window.__afterRender = function (page, root) {
-    if (!window.STORE || window.__demoIdent) return;
+    if (!window.STORE) return;
+    if (PUBLIC[page] && ACCT.area()) {
+      var bs = root.querySelectorAll('button.btn--primary.btn--sm');
+      for (var i = 0; i < bs.length; i++) if (/^(Entrar|Minha área)$/.test(bs[i].textContent.trim())) { bs[i].textContent = 'Minha área'; bs[i].setAttribute('data-minha-area', '1'); }
+    }
+    if (window.__demoIdent) return;
     var c;
     if (page === 'treinador' && (c = STORE.loadOnb('treinador')) && c.name && (c.conta || c.dadosSaved)) swap(root, [['Rafael Lima', c.name], ['Rafael', c.name.split(' ')[0]]]);
     if (page === 'aluno' && (c = STORE.loadOnb('aluno')) && c.name && (c.conta || c.step === 'pronto' || c.step === 'alunoHoje')) swap(root, [['Ana Carolina Souza', c.name], ['Ana Carolina', c.name], ['Ana', c.name.split(' ')[0]]]);

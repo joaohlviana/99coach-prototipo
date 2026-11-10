@@ -21,3 +21,5 @@ html,body{margin:0;background:#EFEDEA}
 .pv-bar__demo{appearance:none;border:1px solid #3A3A42;background:transparent;color:#fff;font:600 13px/1 "Inter",-apple-system,sans-serif;padding:0 14px;min-height:36px;border-radius:999px;cursor:pointer;margin-left:auto}
 .pv-bar__demo:focus-visible{outline:2px solid #fff;outline-offset:2px}
 html.sem-demo #app .v4-demo{display:none!important}
+/* Modo produto (padrão): sem a barra do protótipo nem as barras de situações. ?demo=1 liga a demonstração. */
+html:not(.demo) .pv-bar,html:not(.demo) #app .v4-demo{display:none!important}
