@@ -50,6 +50,10 @@ O app segue as diretrizes do 99Coach novo (`AGENTS.md` e `docs/` do repositório
 - **Pedido de acompanhamento (real):** treinadores cadastrados no app aparecem na busca ao vivo; no perfil, o aluno
   pede acompanhamento (com conta e 18+), vê o pedido em Minha área, e o treinador aceita ou recusa na fila de pedidos.
   Aceitar cria o vínculo no servidor; pedido não é vínculo e nada é cobrado no pedido.
+- **Agenda (real):** o treinador define a disponibilidade semanal (fuso de Brasília) e vê os horários marcados; o aluno
+  com vínculo ativo vê os horários livres dos próximos 14 dias, marca e cancela. Horário livre não é vaga para aluno novo.
+- **Vínculo:** o treinador pausa (com motivo), retoma ou encerra; encerrar é definitivo e nada é apagado.
+- **Favoritos** continuam neste aparelho: o servidor ainda não tem onde guardá-los por conta.
 - **Mensagens (real):** aluno e treinador conversam pelo vínculo; a mensagem só aparece como enviada depois que o
   servidor confirma, falha mantém o texto no campo, e a leitura é marcada ao abrir a conversa.
 - **Aluno sem treinador:** o app mostra como começar, sem treino, conversa ou evolução de exemplo.

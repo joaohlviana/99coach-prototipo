@@ -47,6 +47,14 @@ REG.screen({
     var canBuild = L.prep === 'ready_to_assign' || L.prep === 'assigned' || !!L.workout;
     return {
       chat: window.CHAT ? window.CHAT(ctx, lid, 'treinador', String(L.studentName).split(' ')[0]) : {},
+      linkTxt: L.status === 'pausado' ? 'Pausado: o vínculo continua ocupando a vaga; sessões novas não começam e o que já foi feito fica.' : 'Ativo. Pausar mantém a vaga e o histórico; encerrar é definitivo e nada é apagado.',
+      isActive: L.status === 'ativo', isPaused: L.status === 'pausado',
+      chOpen: !!ui.ch, chClosed: !ui.ch,
+      reasons: (ui.ch === 'encerrar' ? [['objetivo_concluido', 'Objetivo concluído'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['mudanca', 'Mudança'], ['insatisfacao', 'Insatisfação'], ['outro', 'Outro']] : [['ferias', 'Férias'], ['lesao', 'Lesão'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['outro', 'Outro']]).map(function (r) { var on = ui.reason === r[0]; return { label: r[1], cls: 'seg__it' + (on ? ' is-on' : ''), on: String(on), pick: function () { ctx.setUi({ reason: r[0] }); } }; }),
+      openPause: function () { ctx.setUi({ ch: 'pausar', reason: 'ferias' }); }, openEnd: function () { ctx.setUi({ ch: 'encerrar', reason: 'objetivo_concluido' }); }, chCancel: function () { ctx.setUi({ ch: '' }); },
+      chLabel: ui.busy ? 'Salvando…' : (ui.ch === 'encerrar' ? 'Encerrar vínculo' : 'Pausar vínculo'),
+      chConfirm: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, ui.ch, ui.reason).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } var end = ui.ch === 'encerrar'; ctx.setUi({ ch: '' }); refresh(end ? 'Vínculo encerrado. O histórico continua disponível para os dois.' : 'Vínculo pausado.').then(function () { if (end) { DB.alunos = DB.alunos.filter(function (a) { return a.id !== 'lk_' + lid; }); ctx.go('H04'); } }); }); },
+      resume: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, 'retomar', 'outro').then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } refresh('Vínculo retomado.'); }); },
       missing: false, has: true, name: L.studentName, ini: U.ini(L.studentName), since: L.since ? 'Vínculo desde ' + new Date(L.since).toLocaleDateString('pt-BR') : '', origin: L.origin === 'convite' ? 'por convite' : 'por pedido',
       prepTxt: PREP[L.prep] || 'Preparação', hasAnswers: answers.length > 0, answers: answers, needReview: L.prep === 'awaiting_review', review: review,
       waitingClient: L.prep === 'awaiting_client' && !L.workout, canBuild: canBuild,

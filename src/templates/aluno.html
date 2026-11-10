@@ -64,6 +64,13 @@
               </section></sc-for>
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.finish}}">{{v.finishLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancel}}">Sair sem registrar</button></div>
             </sc-if>
+            <section class="card onb-sec" aria-label="Agenda"><h2 class="onb-h2">Horários com {{v.tfName}}</h2>
+              <sc-if value="{{v.hasAppts}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.appts}}" as="a" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}}</b><span>{{a.by}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.cancel}}">Cancelar</button></div></li></sc-for></ol></sc-if>
+              <sc-if value="{{v.hasSlotsErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.slotsErr}}</p></sc-if>
+              <sc-if value="{{v.noSlots}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum horário livre nos próximos 14 dias.</p></sc-if>
+              <sc-if value="{{v.hasSlots}}" hint-placeholder-val="{{ false }}"><div class="seg" style="flex-wrap: wrap"><sc-for list="{{v.slots}}" as="s" hint-placeholder-count="4"><button type="button" class="chip" onClick="{{s.book}}">{{s.when}}</button></sc-for></div><p class="mod-small mod-muted">Fuso de Brasília. Toque em um horário para marcar.</p></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.loadSlots}}">{{v.slotsLabel}}</button></div>
+            </section>
           </sc-if>
           <sc-if value="{{v.showMsg}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="al-chat"><h2 class="onb-h2" id="al-chat">Conversa</h2>
             <sc-if value="{{v.chat.noMsgs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma mensagem ainda. Mensagem não altera o acompanhamento nem o treino.</p></sc-if>

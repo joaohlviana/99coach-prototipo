@@ -60,6 +60,7 @@
     if (!window.NAV) return;
     if (target === '@sair') return SIGN_OUT();
     if (target === 'H05' && /^lk_/.test(String(params.id || ''))) return window.NAV.go('treinador', { s: 'alunoreal', id: params.id }, null);
+    if (target === 'TRE20' && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area() === 'treinador' && window.CONTA && window.CONTA.session()) return window.NAV.go('treinador', { s: 'agendareal' }, null);
     // diretriz: IA só para o treinador e desligada até ser configurada e avaliada
     if (!document.documentElement.classList.contains('demo') && /^(IA\d|H15$)/.test(target || '')) return NOTICE('A assistência de IA está desligada até ser configurada e avaliada. Todo o trabalho manual continua disponível.');
     if (target && target.charAt(0) === '@') { var pg = target.slice(1); return window.NAV.go(pg, params, null); }

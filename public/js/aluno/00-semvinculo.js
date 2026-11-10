@@ -80,9 +80,25 @@ REG.screen({
       ready: [w ? w.title : '', w ? 'Versão ' + w.version + ' · atribuído por ' + tf + (w.assignedAt ? ' em ' + new Date(w.assignedAt).toLocaleDateString('pt-BR') : '') : ''],
       exec: [w ? w.title : '', 'Marque cada série feita. Ajuste repetições e carga ao que você fez de verdade.']
     };
+    // ---------- agenda: horários livres do treinador (só com vínculo ativo) ----------
+    var TZ = 'America/Sao_Paulo', fmtSlot = function (iso) { return new Date(iso).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: TZ }); };
+    if (C && !ui.apAsked) { ctx.setUi({ apAsked: true }); C.appointments([link.id]).then(function (r) { ctx.setUi({ appts: (r.ok && r.data) || [] }); }); }
+    var loadSlots = function () { ctx.setUi({ slotsLoading: true, slotsErr: '' }); C.freeSlots(link.id, 14).then(function (r) { ctx.setUi({ slotsLoading: false, slots: r.ok ? (r.data || []) : [], slotsErr: r.ok ? '' : (r.offline ? 'Sem conexão.' : (r.msg || 'Não deu para carregar.')), slotsOpen: true }); }); };
+    var OUTB = { conflito: 'Esse horário acabou de ser ocupado. Escolha outro.', fora_da_disponibilidade: 'Fora da disponibilidade do treinador.', horario_passado: 'Esse horário já passou.', vinculo_pausado: 'O acompanhamento está pausado.', vinculo_encerrado: 'O acompanhamento foi encerrado.', conta_bloqueada: 'Conta bloqueada.' };
+    var book = function (s) { return function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.bookSlot(link.id, s.starts_at).then(function (r) {
+      var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null, out = d && (d.outcome || d.status);
+      ctx.setUi({ busy: false });
+      if (!r.ok || (out && OUTB[out])) return ctx.toast(OUTB[out] || ('Não foi possível marcar: ' + (r.msg || r.status)));
+      ctx.setUi({ slotsOpen: false, apAsked: false }); ctx.toast('Horário marcado: ' + fmtSlot(s.starts_at) + '. ' + tf + ' vê na agenda.');
+    }); }; };
+    var appts = (ui.appts || []).map(function (a) { return { when: fmtSlot(a.starts_at), by: a.booked_by === 'aluno' ? 'marcado por você' : 'marcado por ' + tf,
+      cancel: function () { C.cancelAppointment(a.id, 'aluno').then(function (r) { if (!r.ok) return ctx.toast('Não foi possível cancelar: ' + (r.msg || r.status)); ctx.setUi({ apAsked: false }); ctx.toast('Horário cancelado.'); }); } }; });
+    var slots = (ui.slots || []).slice(0, 12).map(function (s) { return { when: fmtSlot(s.starts_at), book: book(s) }; });
     var showEvo = from === 'evolucao', showMsg = from === 'mensagens';
     var t = showEvo ? ['Evolução', hist.length ? 'Registros confirmados com ' + tf + ' · ' + period : 'Sua evolução começa no primeiro treino registrado.'] : (showMsg ? ['Conversa com ' + tf, 'Fale sobre o treino, dúvidas ou mudanças de rotina. ' + tf + ' responde por aqui.'] : TT[state]);
     return Object.assign(base, {
+      appts: appts, hasAppts: appts.length > 0, slots: slots, hasSlots: slots.length > 0, slotsOpen: !!ui.slotsOpen, noSlots: !!ui.slotsOpen && !slots.length && !ui.slotsLoading && !ui.slotsErr,
+      slotsErr: ui.slotsErr || '', hasSlotsErr: !!ui.slotsErr, loadSlots: loadSlots, slotsLabel: ui.slotsLoading ? 'Carregando…' : 'Ver horários livres', tfName: tf,
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',
       qs: QS.map(function (q) { return { id: 'pq-' + q[0], q: q[1], ph: q[2], v: P[q[0]] || '', set: function (e) { var o = Object.assign({}, P); o[q[0]] = U.val(e); ctx.setUi({ prep: o, err: '' }); } }; }),

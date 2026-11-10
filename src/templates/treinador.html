@@ -239,6 +239,26 @@
       </sc-if>
 
       <!-- REL01 · Criar convite individual -->
+      <!-- TRE20R · Agenda real -->
+      <sc-if value="{{is.agendareal}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Agenda</h1><p class="pghead__sub">{{v.tz}}. Horário livre não é vaga para aluno novo: só quem já tem vínculo com você pode marcar.</p></div></div>
+        <section class="card onb-sec" aria-labelledby="av-h"><h2 class="onb-h2" id="av-h">Horários marcados</h2>
+          <sc-if value="{{v.noAppts}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhum horário marcado.</p></sc-if>
+          <sc-if value="{{v.hasAppts}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.appts}}" as="a" hint-placeholder-count="2"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}} · {{a.who}}</b><span>{{a.by}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.cancel}}">Cancelar</button></div></li></sc-for></ol></sc-if>
+        </section>
+        <section class="card onb-sec" aria-labelledby="av-d"><h2 class="onb-h2" id="av-d">Disponibilidade semanal</h2>
+          <sc-if value="{{v.loadErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a disponibilidade salva.</p></sc-if>
+          <ol class="onb-secs"><sc-for list="{{v.days}}" as="d" hint-placeholder-count="7"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px; align-items: flex-end">
+            <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{d.onTxt}}" onClick="{{d.toggle}}" style="min-width: 130px"><span class="{{d.cls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{d.name}}</span></button>
+            <div class="field" style="flex: 0 1 100px"><label class="field__label" for="{{d.idF}}">Início</label><div class="input"><input id="{{d.idF}}" type="text" inputmode="numeric" value="{{d.from}}" onInput="{{d.setFrom}}"></div></div>
+            <div class="field" style="flex: 0 1 100px"><label class="field__label" for="{{d.idT}}">Fim</label><div class="input"><input id="{{d.idT}}" type="text" inputmode="numeric" value="{{d.to}}" onInput="{{d.setTo}}"></div></div>
+            <div class="field" style="flex: 0 1 110px"><label class="field__label" for="{{d.idS}}">Duração (min)</label><div class="input"><input id="{{d.idS}}" type="text" inputmode="numeric" value="{{d.slot}}" onInput="{{d.setSlot}}"></div></div>
+          </div></li></sc-for></ol>
+          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não salvo</b>{{v.err}}</div></div></sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.save}}">{{v.saveLabel}}</button></div>
+        </section>
+      </sc-if>
+
       <!-- REL10 · Aluno real (vínculo no servidor) -->
       <sc-if value="{{is.alunoreal}}" hint-placeholder-val="{{ false }}">
         <sc-if value="{{v.missing}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Vínculo não encontrado</b>Volte à lista de alunos e abra de novo.</div></div></sc-if>
@@ -280,6 +300,12 @@
             <sc-if value="{{v.noLogs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma sessão registrada ainda. Aparecem aqui só registros confirmados pelo servidor.</p></sc-if>
             <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar os registros agora.</p></sc-if>
             <sc-if value="{{v.hasLogs}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.logsCount}}</p><div class="kv"><sc-for list="{{v.logs}}" as="l" hint-placeholder-count="3"><div class="kv__r"><span>{{l.when}} · {{l.sets}}</span><b>{{l.vol}}</b></div></sc-for></div></sc-if>
+          </section>
+          <section class="card onb-sec" aria-labelledby="rx-vin"><h2 class="onb-h2" id="rx-vin">Vínculo</h2>
+            <p class="mod-small mod-muted">{{v.linkTxt}}</p>
+            <sc-if value="{{v.chOpen}}" hint-placeholder-val="{{ false }}"><div class="seg" role="radiogroup" aria-label="Motivo" style="flex-wrap: wrap"><sc-for list="{{v.reasons}}" as="r" hint-placeholder-count="5"><button type="button" class="{{r.cls}}" role="radio" aria-checked="{{r.on}}" onClick="{{r.pick}}">{{r.label}}</button></sc-for></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chConfirm}}">{{v.chLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chCancel}}">Voltar</button></div></sc-if>
+            <sc-if value="{{v.chClosed}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><sc-if value="{{v.isActive}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--md" onClick="{{v.openPause}}">Pausar</button></sc-if><sc-if value="{{v.isPaused}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--md" onClick="{{v.resume}}">Retomar</button></sc-if><button type="button" class="btn btn--ghost btn--md" onClick="{{v.openEnd}}">Encerrar vínculo</button></div></sc-if>
           </section>
           <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Voltar aos alunos</button></div>
         </sc-if>

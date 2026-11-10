@@ -180,6 +180,25 @@
       });
     },
     decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }); },
+    // ---------- vínculo: pausar, retomar, encerrar (com motivo; nada é apagado) ----------
+    changeLink: function (link, action, reason, note) {
+      var go = function (a) { return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: 'link:' + link + ':' + Date.now().toString(36) + ':' + a }); };
+      var ALT = { pausar: 'pausado', retomar: 'retomado', encerrar: 'encerrado' };
+      return go(action).then(function (r) { return (!r.ok && !r.offline && ALT[action] && /action|ação|acao|invalid|inválid/i.test(r.msg || '')) ? go(ALT[action]) : r; });
+    },
+    // ---------- agenda (horário livre só existe para quem tem vínculo ativo) ----------
+    myAvailability: function () {
+      if (!sess) return Promise.resolve({ ok: false });
+      return db('GET', 'trainers?select=id&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) {
+        var t = r.ok && r.data && r.data[0]; if (!t) return { ok: true, data: [] };
+        return db('GET', 'availability_rules?select=weekday,start_min,end_min,slot_min,tz&trainer_id=eq.' + t.id + '&order=weekday.asc,start_min.asc');
+      });
+    },
+    setAvailability: function (rules, tz) { return db('POST', 'rpc/set_availability', { p_rules: rules, p_tz: tz }); },
+    freeSlots: function (link, days) { return db('POST', 'rpc/free_slots', { p_link: link, p_days: days || 14 }); },
+    bookSlot: function (link, startsAt) { return db('POST', 'rpc/book_slot', { p_link: link, p_starts_at: startsAt, p_idem: 'book:' + link + ':' + startsAt + ':' + Date.now().toString(36) }); },
+    cancelAppointment: function (id, reason) { return db('POST', 'rpc/cancel_appointment', { p_id: id, p_reason: reason || null }); },
+    appointments: function (linkIds) { return linkIds.length ? db('GET', 'appointments?select=id,link_id,starts_at,ends_at,tz,status,booked_by&link_id=in.(' + linkIds.join(',') + ')&status=eq.marcado&ends_at=gte.' + encodeURIComponent(new Date(Date.now() - 36e5).toISOString()) + '&order=starts_at.asc') : Promise.resolve({ ok: true, data: [] }); },
     // ---------- mensagens do vínculo ----------
     messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.asc&limit=500'); },
     sendMessage: function (link, body) { var cid = 'cli_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: cid, p_session: null }); },
