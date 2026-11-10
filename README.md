@@ -21,6 +21,11 @@ npm run build    # gera dist/ (site estático, abre em qualquer servidor)
   recebe o papel de aluno ou treinador. Sem internet, o cadastro fica só neste navegador. O perfil do treinador
   (modalidades, serviços, publicação) ainda não é enviado ao servidor.
 
+- **Busca**: o campo da Home aceita digitação e procura nos treinadores reais (nome, especialidade, modalidade, cidade).
+- **Seu perfil**: o treinador que publica o perfil no cadastro entra no topo da vitrine, e quem se cadastrou vê o próprio
+  nome nas áreas de treinador e de aluno.
+- **Barras de demonstração**: o botão no topo oculta ou mostra as barras de situações; a escolha fica gravada.
+
 Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de exemplo: a base real só tem perfis importados, sem ofertas.
 
 ## Áreas (barra "Telas" no topo)
