@@ -111,6 +111,39 @@
         });
       });
     },
+    // ---------- convites e vínculos (mesmas tabelas e funções do site) ----------
+    // código XXXX-XXXX; vale 7 dias; o aceite é único e feito pelo aluno autenticado
+    newCode: function () { var A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = ''; var r = new Uint32Array(8); (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(r) : r.forEach(function (_, i) { r[i] = Math.random() * 1e9; }); for (var i = 0; i < 8; i++) s += A[r[i] % A.length]; return s.slice(0, 4) + '-' + s.slice(4); },
+    createInvite: function (o) {
+      if (!sess) return Promise.resolve({ ok: false, nosession: true });
+      var code = CONTA.newCode();
+      return db('GET', 'trainers?select=id&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) {
+        var t = r.ok && r.data && r.data[0];
+        if (!t) return { ok: false, msg: 'Publique ou salve seu perfil de treinador antes de convidar.' };
+        return db('POST', 'invites', { code: code, trainer_id: t.id, kind: 'individual', recipient_name: o.name || null, recipient_email: o.email || null, service: o.service || null, message: o.message || null }).then(function (x) { x.code = code; return x; });
+      });
+    },
+    revokeInvite: function (code) { return db('POST', 'rpc/revoke_invite', { p_code: code }); },
+    invitePreview: function (code) { return db('POST', 'rpc/invite_preview', { p_code: code }); },
+    acceptInvite: function (code) { return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: 'accept:' + String(code).toUpperCase() }); },
+    // vínculos em que esta conta é aluno ou treinador
+    links: function () {
+      if (!sess) return Promise.resolve([]);
+      return db('GET', 'links?select=id,status,origin,prep,created_at,student_id,trainers(slug,name,user_id)&status=in.(ativo,pausado)').then(function (r) {
+        var L = r.ok && Array.isArray(r.data) ? r.data : [];
+        var ids = L.map(function (l) { return l.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; });
+        return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
+          var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
+          var out = L.map(function (l) { return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
+            trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador' }; });
+          try { LS.setItem('c99.vinculos', JSON.stringify(out)); } catch (_) {}
+          return out;
+        });
+      });
+    },
+    cachedLinks: function () { try { return JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) { return []; } },
+    // conta 18+ (regra de mercado): registrada no perfil
+    confirmAdult: function () { return sess ? db('PATCH', 'profiles?id=eq.' + encodeURIComponent(sess.user.id), { adult_confirmed_at: new Date().toISOString() }) : Promise.resolve({ ok: false }); },
     // retira o perfil da busca (volta a rascunho; nada é apagado)
     unpublish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'rascunho' }) : Promise.resolve({ ok: false, nosession: true }); },
     // publica o perfil (passa a aparecer na busca do site)

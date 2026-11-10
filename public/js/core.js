@@ -47,7 +47,9 @@
     plural: function (n, one, many) { return n + ' ' + (n === 1 ? one : many); },
     img: function (k) { return (window.__IMG && window.__IMG[k]) || ''; },
     norm: function (t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); },
-    cls: function () { return Array.prototype.filter.call(arguments, Boolean).join(' '); }
+    cls: function () { return Array.prototype.filter.call(arguments, Boolean).join(' '); },
+    // data curta daqui a n dias (dd/mm)
+    dateShort: function (n) { var d = new Date(Date.now() + (n || 0) * 864e5); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); }
   };
   window.U = U;
 
@@ -179,7 +181,7 @@
         var props = c.props, st = c.state;
         var scr = REG.get(page, props.s) || REG.first(page);
         // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
-        if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area() && !(window.ACCT.hasLink && window.ACCT.hasLink())
+        if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && (window.ACCT.area() || (window.ACCT.hasLink && window.ACCT.hasLink()))
           && scr && ['hoje', 'sessao', 'execucao', 'encerrar', 'evolucao', 'mensagens', 'programas', 'treinador', 'agenda', 'conteudo', 'formulario'].indexOf(scr.key) >= 0) {
           var navFrom = typeof scr.nav === 'function' ? 'hoje' : (scr.nav || 'hoje');
           scr = REG.get('aluno', 'semvinculo'); props = Object.assign({}, props, { navFrom: navFrom });

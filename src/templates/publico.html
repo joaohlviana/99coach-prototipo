@@ -423,6 +423,33 @@
       </sc-if>
 
       <!-- PUB07 · Favoritos -->
+      <!-- REL03 · Convite pelo link -->
+      <sc-if value="{{is.convite}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Convite</span><h1 class="pghead__title">Convite para treinar</h1><p class="pghead__sub">Aceitar cria o vínculo com o treinador. Nada é cobrado aqui.</p></div></div>
+        <sc-if value="{{v.noCode}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Link incompleto</b>Abra o link exatamente como o treinador enviou.</div></div></sc-if>
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Conferindo o convite…</b>Só um instante.</div></div></sc-if>
+        <sc-if value="{{v.offline}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Sem conexão</b>Não deu para conferir o convite agora. Verifique a internet e abra o link de novo.</div></div></sc-if>
+        <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não foi possível conferir</b>{{v.err}}</div></div></sc-if>
+        <sc-if value="{{v.closed}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>{{v.closedT}}</b>{{v.closedX}}</div></div>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.home}}">Encontrar treinador</button></div></sc-if>
+        <sc-if value="{{v.valid}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec onb-me-card" aria-label="Quem convidou"><span class="av onb-photo__av"><sc-if value="{{v.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.tPhoto}}" alt=""></sc-if><sc-if value="{{v.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.tIni}}</sc-if></span><div class="onb-me-card__t"><b>{{v.tName}}</b><span>{{v.tMeta}}</span><span class="badge badge--plain">{{v.svc}}</span></div></section>
+          <p class="mod-small mod-muted">{{v.expires}} · uso único, por você.</p>
+          <sc-if value="{{v.anon}}" hint-placeholder-val="{{ true }}">
+            <p class="pghead__sub">Para aceitar, entre na sua conta ou crie uma. Depois você volta para este convite.</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.signup}}">Criar conta</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.login}}">Já tenho conta</button></div>
+          </sc-if>
+          <sc-if value="{{v.logged}}" hint-placeholder-val="{{ false }}">
+            <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.adultOn}}" onClick="{{v.toggleAdult}}"><span class="{{v.adultCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais.</span></button>
+            <sc-if value="{{v.adultErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">A 99Coach atende só maiores de 18 anos.</span></sc-if>
+            <sc-if value="{{v.hasOut}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Convite não aceito</b>{{v.outMsg}}</div></div></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.accept}}">{{v.acceptLabel}}</button></div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>{{v.doneMsg}}</b>Seu treinador prepara o treino; você acompanha tudo no app.</div></div>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openApp}}">Abrir meu acompanhamento</button></div></sc-if>
+      </sc-if>
+
       <sc-if value="{{is.salvos}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Favoritos</h1><p class="pghead__sub">Só você vê esta lista.</p></div></div>
 

@@ -5,16 +5,27 @@ REG.screen({
   nav: function (ctx) { return ctx.props.navFrom || 'hoje'; },
   vals: function (ctx) {
     var from = ctx.props.navFrom || 'hoje';
-    var T = {
+    var T = ({
       hoje: ['Ainda sem treinador', 'Seu treino do dia aparece aqui quando um treinador aceitar seu pedido de acompanhamento ou quando você aceitar o convite de um treinador.'],
       treinos: ['Nenhum treino ainda', 'Os treinos são montados pelo seu treinador depois do vínculo. Conta criada não é vínculo, e pedido enviado ainda não é treino.'],
       evolucao: ['Sua evolução começa no primeiro treino', 'Evolução vem só de treinos registrados por você, com origem e período. Sem treino registrado, não há o que mostrar.'],
       mensagens: ['Nenhuma conversa ainda', 'A conversa com o treinador abre quando o acompanhamento começa.']
-    }[from] || ['Ainda sem treinador', 'Esta parte aparece depois que você tiver um treinador.'];
+    })[from] || ['Ainda sem treinador', 'Esta parte aparece depois que você tiver um treinador.'];
     var first = (window.STORE && (window.STORE.loadOnb('aluno') || {}).name || '').split(' ')[0];
+    var link = window.ACCT && window.ACCT.myTrainer ? window.ACCT.myTrainer() : null;
+    if (link) {
+      var tf = String(link.trainerName || 'seu treinador').split(' ')[0];
+      T = {
+        hoje: ['Você e ' + tf + ' estão conectados', tf + ' está preparando seu treino. Quando ele for atribuído, aparece aqui, com o dia e o que fazer.'],
+        treinos: ['Treino em preparação', 'O treino é montado por ' + tf + ' e aparece aqui assim que for atribuído a você.'],
+        evolucao: ['Sua evolução começa no primeiro treino', 'Evolução vem só de treinos registrados por você, com origem e período.'],
+        mensagens: ['Conversa com ' + tf, 'As mensagens com ' + tf + ' ficam aqui. Esta parte chega na próxima etapa.']
+      }[from] || ['Você e ' + tf + ' estão conectados', 'Esta parte aparece quando o treino for atribuído.'];
+    }
     return {
       eyebrow: first ? 'Olá, ' + first : 'Sua conta',
       title: T[0], text: T[1],
+      linked: !!link, notLinked: !link,
       steps: [
         { n: '1', t: 'Encontre um treinador', x: 'Compare modalidade, formato, preço com unidade e credencial.' },
         { n: '2', t: 'Peça acompanhamento ou aceite um convite', x: 'O treinador aceita o pedido. Convite chega por link e é aceito uma vez, por você.' },

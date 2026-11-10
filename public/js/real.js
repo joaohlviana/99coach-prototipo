@@ -125,7 +125,8 @@
     },
     go: function () { var a = ACCT.area(); if (a && window.NAV) window.NAV.go(a, {}, null); },
     // vínculo confirmado no servidor (ainda não ligado nesta versão: convites e vínculos são o próximo passo)
-    hasLink: function () { return false; }
+    hasLink: function () { return !!ACCT.myTrainer(); },
+    myTrainer: function () { var L = window.CONTA ? window.CONTA.cachedLinks() : []; for (var i = 0; i < L.length; i++) if (L[i].mine === 'aluno') return L[i]; return null; }
   };
   window.ACCT = ACCT;
   var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
@@ -157,6 +158,24 @@
     STORE.saveDb();
   }
   window.__startAccount = startAccount;
+
+  // vínculos reais: o treinador vê os alunos conectados na lista (sem dados inventados)
+  function mergeLinks(L) {
+    if (!window.DB || !Array.isArray(window.DB.alunos)) return;
+    (L || []).filter(function (l) { return l.mine === 'treinador'; }).forEach(function (l) {
+      var id = 'lk_' + l.id; if (window.DB.alunos.some(function (a) { return a.id === id; })) return;
+      var since = l.since ? new Date(l.since) : null;
+      window.DB.alunos.push({ id: id, server: true, name: l.studentName, first: String(l.studentName).split(' ')[0], status: l.status === 'pausado' ? 'pausado' : 'ativo',
+        svc: 'Acompanhamento · ' + (l.origin === 'convite' ? 'por convite' : 'por pedido'), since: since ? ('0' + (since.getMonth() + 1)).slice(-2) + '/' + since.getFullYear() : '',
+        goal: '', city: '', age: null, program: '', week: null, adherence: null, lastCheckin: '', next: 'Preparação pendente', flag: null, tags: [], prepDone: false, payment: '', photo: '' });
+    });
+  }
+  function refreshLinks() {
+    if (!window.CONTA || !window.CONTA.session()) return;
+    window.CONTA.links().then(function (L) { mergeLinks(L); rerender(); });
+  }
+  window.__refreshLinks = refreshLinks;
+  setTimeout(function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); }, 0);
   window.__applyMe = function () { applyMe(); };
   // quem aparece no rodapé do menu: a conta cadastrada, sem a foto de exemplo
   function applyMe() {

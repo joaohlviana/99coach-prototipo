@@ -423,7 +423,10 @@ class Component extends DCLogic {
                 const base = this.base('treinador', '');
                 window.STORE.saveOnb(Object.assign(base, srv, { email: email, conta: true, real: true, step: 'hoje', scn: '' }));
               }
-              set({ conta: true, real: true, pw: '', toast: '' }); afterAuth();
+              set({ conta: true, real: true, pw: '', toast: '' });
+              let pend = ''; try { pend = localStorage.getItem('c99.conviteCode') || ''; } catch (_) {}
+              if (pend && window.NAV) return window.NAV.go('publico', { s: 'convite', id: pend }, this);
+              afterAuth();
             });
           };
           set({ busy: true, toast: login ? 'Entrando…' : 'Criando sua conta…' });

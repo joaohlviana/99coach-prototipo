@@ -40,6 +40,10 @@ O app segue as diretrizes do 99Coach novo (`AGENTS.md` e `docs/` do repositório
 - **Desconhecido não é zero:** conta nova abre Hoje, Alunos, Recebimentos e Insights no estado de primeiro uso.
 - **IA desligada** até ser configurada e avaliada: sem item no menu e sem botão de IA na busca; o trabalho manual segue.
 - **Telas ainda não implementadas** mostram um aviso, em vez de abrir composições do design system.
+- **Convite e vínculo (real):** "Convidar aluno" cria o convite no servidor (código `XXXX-XXXX`, 7 dias, uso único)
+  e gera o link `/#publico-convite-CODIGO`. O aluno abre o link, entra ou cria conta, confirma ter 18 anos ou mais e
+  aceita com um toque (nunca automático). O vínculo aparece no app do aluno e na lista de alunos do treinador.
+- **Aluno:** sem treinador, o app mostra como começar; conectado, mostra com quem está e que o treino está em preparação.
 - **Conta:** cadastro e login no servidor real; ao entrar, o cadastro do treinador é retomado do servidor (vale para
   outro aparelho); "Retirar da busca" volta o perfil a rascunho; "Sair da conta" encerra a sessão e apaga do aparelho
   os dados da conta.

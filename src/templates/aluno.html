@@ -32,10 +32,10 @@
       <!-- ALU00 · Conta real ainda sem treinador -->
       <sc-if value="{{is.semvinculo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.text}}</p></div></div>
-        <section class="card onb-sec" aria-label="Como começar"><h2 class="onb-h2">Como começar</h2>
+        <sc-if value="{{v.notLinked}}" hint-placeholder-val="{{ true }}"><section class="card onb-sec" aria-label="Como começar"><h2 class="onb-h2">Como começar</h2>
           <ol class="onb-secs"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true">{{s.n}}</span><span class="onb-secs__t"><b>{{s.t}}</b><span>{{s.x}}</span></span></div></li></sc-for></ol>
-        </section>
-        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.find}}">Encontrar treinador</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.account}}">Minha conta</button></div>
+        </section></sc-if>
+        <div class="onb-actions onb-actions--row"><sc-if value="{{v.notLinked}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.find}}">Encontrar treinador</button></sc-if><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.account}}">Minha conta</button></div>
       </sc-if>
 
       <sc-if value="{{is.menu}}" hint-placeholder-val="{{ false }}">
