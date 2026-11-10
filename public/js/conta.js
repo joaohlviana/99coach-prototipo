@@ -89,6 +89,31 @@
     publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },
     user: function () { return sess && sess.user || null; },
+    // cria a conta com e-mail e senha; o servidor confirma na hora e já devolve a sessão
+    signUp: function (email, password, name) {
+      return call('POST', '/auth/v1/signup', { email: String(email || '').trim().toLowerCase(), password: password, data: { name: name || '' } }).then(function (r) {
+        var d = r.data || {};
+        if (r.ok && d.access_token) keep({ access_token: d.access_token, refresh_token: d.refresh_token, user: { id: d.user && d.user.id, email: d.user && d.user.email } });
+        r.session = !!(r.ok && d.access_token);
+        r.exists = /already registered|already exists/i.test(r.msg || '') || (r.ok && !d.access_token && d.identities && d.identities.length === 0);
+        return r;
+      });
+    },
+    // entra com e-mail e senha
+    signIn: function (email, password) {
+      return call('POST', '/auth/v1/token?grant_type=password', { email: String(email || '').trim().toLowerCase(), password: password }).then(function (r) {
+        var d = r.data || {};
+        if (r.ok && d.access_token) keep({ access_token: d.access_token, refresh_token: d.refresh_token, user: { id: d.user && d.user.id, email: d.user && d.user.email } });
+        r.session = !!(r.ok && d.access_token);
+        r.wrong = /invalid login credentials/i.test(r.msg || '');
+        r.unconfirmed = /not confirmed/i.test(r.msg || '');
+        return r;
+      });
+    },
+    // envia o e-mail para criar uma senha nova
+    recover: function (email) { return call('POST', '/auth/v1/recover', { email: String(email || '').trim().toLowerCase() }); },
+    // nome de exibição da conta
+    setName: function (name) { return sess && name ? call('PATCH', '/rest/v1/profiles?id=eq.' + encodeURIComponent(sess.user.id), { display_name: name }, true) : Promise.resolve({ ok: false }); },
     // envia o código de 6 dígitos para o e-mail (cria a conta se ainda não existir)
     sendCode: function (email, name) {
       return call('POST', '/auth/v1/otp', { email: String(email || '').trim().toLowerCase(), create_user: true, data: { name: name || '' } });

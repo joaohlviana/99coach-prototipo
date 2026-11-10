@@ -17,11 +17,12 @@ npm run build    # gera dist/ (site estático, abre em qualquer servidor)
 - **Gravação**: cadastros, alunos, treinos, mensagens, ofertas e salvos ficam gravados neste navegador e continuam lá ao recarregar.
   "Reiniciar dados" volta ao estado inicial.
 
-- **Conta e cadastro**: "Criar conta" e "Entrar" usam o servidor real da 99Coach: o código de 6 dígitos chega no e-mail e a conta
-  recebe o papel de aluno ou treinador. O cadastro do treinador (nome, cidade, regiões, formatos, idiomas, modalidades, CREF e a
-  oferta principal) é gravado nas tabelas `trainers`, `trainer_sports` e `offers`, e "Publicar perfil" publica no servidor.
-  Se o servidor recusar, a mensagem dele aparece na tela. Sem internet, o cadastro fica só neste navegador.
-  Precisa rodar fora do visualizador de artefatos (por exemplo `npm run dev`), que bloqueia o acesso ao servidor.
+- **Conta e cadastro (real)**: "Criar conta" cria a conta no servidor da 99Coach com e-mail e senha; o servidor confirma
+  na hora, então a pessoa já entra. A conta recebe o papel de aluno ou treinador, e o cadastro do treinador (nome, cidade,
+  regiões, formatos, idiomas, modalidades, CREF e a oferta principal) vai para as tabelas `trainers`, `trainer_sports` e
+  `offers`. "Publicar perfil" publica no servidor. "Entrar" usa e-mail e senha; "Esqueci a senha" envia o link de troca.
+  Testado em 10/11/2026 no endereço hospedado: conta criada, papel gravado e perfil de treinador criado no servidor real.
+  A senha nunca fica gravada no navegador. Precisa rodar fora do visualizador de artefatos, que bloqueia o servidor.
 
 - **Busca**: o campo da Home aceita digitação e procura nos treinadores reais (nome, especialidade, modalidade, cidade).
 - **Seu perfil**: o treinador que publica o perfil no cadastro entra no topo da vitrine, e quem se cadastrou vê o próprio

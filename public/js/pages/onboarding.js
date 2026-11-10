@@ -387,7 +387,7 @@ class Component extends DCLogic {
     const invite = st.flow === 'convite';
     const conta = invite ? { eyebrow: 'Convite', title: 'Só falta entrar', sub: 'Use e-mail ou celular. Depois de entrar, o convite é aceito com a decisão que você já tomou.', cta: 'Receber código', askName: false, askTerms: false, hasInvite: true, fine: 'Já tem conta? Entre com ela; o convite continua aqui. Não precisa instalar o app.', hasSwitch: false }
       : st.session ? { eyebrow: 'Entrar', title: 'Sua sessão expirou', sub: 'Por segurança, entre de novo.', cta: 'Entrar e continuar', askName: false, askTerms: false, hasSession: true, fine: 'Você volta para a mesma seção do perfil.', hasSwitch: false }
-      : login ? { eyebrow: 'Entrar', title: 'Entrar', sub: 'Use o e-mail ou celular da sua conta. Enviamos um código; senha não é necessária.', cta: 'Receber código', askName: false, askTerms: false, fine: 'Funciona para quem treina e para quem é treinador. Um papel não apaga o outro.', hasSwitch: true, switchQ: 'Ainda não tem conta?', switchLabel: 'Criar conta', switchGo: () => { set(this.base('aluno', '')); top(); } }
+      : login ? { eyebrow: 'Entrar', title: 'Entrar', sub: window.CONTA ? 'Use o e-mail e a senha da sua conta 99Coach.' : 'Use o e-mail ou celular da sua conta. Enviamos um código; senha não é necessária.', cta: window.CONTA ? 'Entrar' : 'Receber código', askName: false, askTerms: false, fine: 'Funciona para quem treina e para quem é treinador. Um papel não apaga o outro.', hasSwitch: true, switchQ: 'Ainda não tem conta?', switchLabel: 'Criar conta', switchGo: () => { set(this.base('aluno', '')); top(); } }
       : st.intent === 'treinador' ? { eyebrow: 'Sou treinador · passo 1 de 3', title: 'Crie sua conta de treinador', sub: 'Grátis e sem cartão. Você completa o perfil depois, no seu ritmo.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'O Essencial é grátis, até 3 alunos ativos. O teste do Pro é opcional e só começa se você ativar.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } }
       : { eyebrow: 'Quero treinar · passo 1 de 2', title: 'Crie sua conta', sub: 'Só o necessário para salvar treinadores, pedir acompanhamento e contratar.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Buscar e ver perfis não pede conta.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } };
     const afterAuth = () => {
@@ -399,20 +399,37 @@ class Component extends DCLogic {
     };
     const f = {
       name: st.name, email: st.email, setName: (e) => set({ name: val(e) }), setEmail: (e) => set({ email: val(e), emailExists: false }),
+        askPw: !!window.CONTA && !st.scn, pw: st.pw || '', setPw: (e) => set({ pw: val(e), pwErr: false }), pwCls: 'input' + (st.pwErr ? ' is-err' : ''),
+        pwAuto: login ? 'current-password' : 'new-password', pwHelp: login ? 'A senha da sua conta 99Coach.' : 'Pelo menos 8 caracteres.', canForgot: login,
+        forgot: () => { const em = (st.email || '').trim(); if (em.indexOf('@') < 1) return toast('Informe o e-mail da conta primeiro.'); window.CONTA.recover(em).then((r) => toast(r.ok ? 'Se houver uma conta com ' + em + ', enviamos um link para criar uma senha nova.' : (r.offline ? 'Sem conexão com o servidor.' : 'Não foi possível enviar: ' + (r.msg || r.status)))); },
       emailCls: 'input' + (st.emailExists ? ' is-err' : ''), emailExists: st.emailExists, noExists: !st.emailExists,
-      loginExisting: () => { set({ flow: 'entrar', scn: '', emailExists: false, step: 'codigo', toast: '' }); top(); },
+      loginExisting: () => { set(window.CONTA ? { flow: 'entrar', scn: '', emailExists: false, step: 'conta', pw: '', toast: 'Digite a senha da sua conta.' } : { flow: 'entrar', scn: '', emailExists: false, step: 'codigo', toast: '' }); top(); },
       termsOn: String(!!st.terms), termsCls: 'check' + (st.terms ? ' is-on' : ''), termsErr: st.termsErr, toggleTerms: () => set({ terms: !st.terms, termsErr: false }),
       submit: () => {
         if (conta.askTerms && !st.terms) return set({ termsErr: true });
         if (!(st.email || '').trim()) return toast('Informe um e-mail ou celular.');
-        // conta real: o servidor envia o código de 6 dígitos para o e-mail
-        if (window.CONTA && !st.scn && (st.email || '').indexOf('@') < 1) return toast('Informe um e-mail válido para receber o código.');
+        // conta real: e-mail e senha no servidor da 99Coach (a conta é confirmada na hora)
         if (window.CONTA && !st.scn) {
-          set({ toast: 'Enviando o código…' });
-          return window.CONTA.sendCode(st.email, st.name).then((r) => {
-            if (r.ok) { set({ step: 'codigo', code: '', codeErr: false, real: true, toast: 'Código enviado para ' + st.email + '.' }); top(); }
-            else if (r.offline) { set({ step: 'codigo', real: false, toast: 'Sem conexão com o servidor: o cadastro fica salvo só neste aparelho.' }); top(); }
-            else set({ toast: 'Não foi possível enviar o código. ' + (r.msg || '') });
+          const email = (st.email || '').trim(), pw = st.pw || '';
+          if (email.indexOf('@') < 1) return toast('Informe um e-mail válido.');
+          if (pw.length < 8) return set({ pwErr: true, toast: 'A senha precisa ter pelo menos 8 caracteres.' });
+          const role = login ? '' : (st.intent === 'treinador' || st.flow === 'treinador' ? 'treinador' : 'aluno');
+          const done = () => {
+            window.CONTA.setName(st.name);
+            const p = role ? window.CONTA.addRole(role) : Promise.resolve();
+            p.then(() => window.CONTA.syncRoles()).then(() => { set({ conta: true, real: true, pw: '', toast: '' }); afterAuth(); });
+          };
+          set({ busy: true, toast: login ? 'Entrando…' : 'Criando sua conta…' });
+          const go = login ? window.CONTA.signIn(email, pw) : window.CONTA.signUp(email, pw, st.name);
+          return go.then((r) => {
+            set({ busy: false });
+            if (r.session) return done();
+            if (r.offline) return set({ toast: 'Sem conexão com o servidor da 99Coach. Verifique a internet e tente de novo.' });
+            if (!login && r.exists) return set({ emailExists: true, toast: '' });
+            if (login && r.wrong) return set({ pwErr: true, toast: 'E-mail ou senha não conferem.' });
+            if (login && r.unconfirmed) return window.CONTA.sendCode(email, st.name).then(() => { set({ step: 'codigo', code: '', real: true, toast: 'Enviamos um código para ' + email + ' para confirmar a conta.' }); top(); });
+            if (!login && r.ok) return window.CONTA.sendCode(email, st.name).then(() => { set({ step: 'codigo', code: '', real: true, toast: 'Enviamos um código para ' + email + '.' }); top(); });
+            set({ toast: 'O servidor não aceitou: ' + (r.msg || ('erro ' + r.status)) });
           });
         }
         set({ step: 'codigo', toast: '' }); top();

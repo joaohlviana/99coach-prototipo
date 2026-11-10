@@ -204,7 +204,8 @@
     loadDb: function () { var d = load('c99.db', null); if (!d || !window.DB) return; Object.keys(d).forEach(function (k) { window.DB[k] = d[k]; }); },
     clearDb: function () { try { if (LS) LS.removeItem('c99.db'); } catch (_) {} STORE._last = ''; },
     // cadastro (onboarding): conta, perfil do treinador e andamento
-    saveOnb: function (st) { if (st) save('c99.cadastro.' + (st.flow || 'x'), st); },
+    // a senha nunca fica gravada no aparelho
+    saveOnb: function (st) { if (st) { var c = Object.assign({}, st); delete c.pw; save('c99.cadastro.' + (st.flow || 'x'), c); } },
     loadOnb: function (flow) { return load('c99.cadastro.' + flow, null); },
     // preferências das telas públicas (salvos, cidade, modalidade)
     savePage: function (name, st) { save('c99.tela.' + name, st); },
