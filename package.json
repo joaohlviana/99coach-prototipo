@@ -8,7 +8,8 @@
     "dev": "npm run index && vite",
     "build": "npm run index && vite build",
     "preview": "vite preview",
-    "sync": "node scripts/sync-dados.mjs"
+    "sync": "node scripts/sync-dados.mjs",
+    "single": "npm run index && node scripts/build-single.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.11"
