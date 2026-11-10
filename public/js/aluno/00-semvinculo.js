@@ -20,7 +20,10 @@ REG.screen({
         treinos: ['Nenhum treino ainda', 'Os treinos são montados pelo seu treinador depois do vínculo. Conta criada não é vínculo, e pedido enviado ainda não é treino.'],
         evolucao: ['Sua evolução começa no primeiro treino', 'Evolução vem só de treinos registrados por você, com origem e período. Sem treino registrado, não há o que mostrar.'],
         mensagens: ['Nenhuma conversa ainda', 'A conversa com o treinador abre quando o acompanhamento começa.'] })[from] || ['Ainda sem treinador', 'Esta parte aparece depois que você tiver um treinador.'];
-      return Object.assign(base, { title: T0[0], text: T0[1] });
+      var reqs = (window.__myRequests || []).filter(function (r) { return r.mine === 'aluno'; });
+      var RS = { pendente: 'Aguardando resposta', recusado: 'Recusado', expirado: 'Expirou sem resposta', cancelado: 'Cancelado', aceito: 'Aceito' };
+      return Object.assign(base, { title: T0[0], text: T0[1], hasReqs: reqs.length > 0,
+        reqs: reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.offer ? ' · ' + r.offer : '') }; }) });
     }
 
     var tf = String(link.trainerName || 'seu treinador').split(' ')[0];

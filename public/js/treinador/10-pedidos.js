@@ -20,8 +20,18 @@ REG.screen({
       outro: ['Outro motivo', 'Oi {n}! Obrigado pelo interesse. Agora não consigo assumir o seu acompanhamento.']
     };
 
+    var decideServer = function (real, decision, fst, okMsg) {
+      ctx.setUi({ busy: real.id });
+      window.CONTA.decideRequest(real.server, decision).then(function (r) {
+        if (!r.ok) { ctx.setUi({ busy: '', acceptFail: real.id }); ctx.toast(r.offline ? 'Sem conexão: nada mudou. Tente de novo.' : 'O servidor não registrou: ' + (r.msg || r.status)); return; }
+        real.status = decision; real.result = (decision === 'aceito' ? 'Aceito hoje às ' : 'Recusado hoje às ') + U.now();
+        ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(okMsg);
+        if (window.__refreshLinks) window.__refreshLinks();
+      });
+    };
     var doAccept = function (p) {
       var real = DB.find('t1_pedidos', p.id);
+      if (real.server) return decideServer(real, 'aceito', p.name.split(' ')[0], p.name.split(' ')[0] + ' entrou na sua carteira. A preparação abre para ' + p.name.split(' ')[0] + ' responder.');
       if (real.status === 'aceito') { ctx.toast('Este pedido já foi resolvido.'); return; }
       var o = T.offer(real.offer) || T.offer('o1');
       var a = real.aluno ? DB.find('alunos', real.aluno) : null;
@@ -44,7 +54,7 @@ REG.screen({
       var infoDef = 'Oi ' + fst + '! Antes de aceitar, me conta: você tem alguma lesão ou restrição? Quais dias e horários prefere?';
       var info = ui.info !== undefined && ui.infoFor === p.id ? ui.info : infoDef;
       return {
-        name: p.name, origin: p.origin + (o ? ' · ' + o.name + ' · ' + U.money(o.price) + '/' + o.unit : ' · sem serviço escolhido'), msg: '“' + p.msg + '”', at: p.at, due: p.due,
+        name: p.name, origin: p.origin + (p.offerTxt ? ' · ' + p.offerTxt : (o ? ' · ' + o.name + ' · ' + U.money(o.price) + '/' + o.unit : ' · sem serviço escolhido')), msg: '“' + p.msg + '”', at: p.at, due: p.due,
         st: p.status === 'info' ? 'Aguardando resposta de ' + fst : 'Aguardando você', stCls: p.status === 'info' ? 'badge badge--plain' : 'badge badge--info',
         isPend: p.status === 'pendente', isInfo: p.status === 'info',
         canAccept: !blockAccept, noAccept: blockAccept,
@@ -72,6 +82,7 @@ REG.screen({
         reasons: Object.keys(REASONS).map(function (k) { var on = reason === k; return { label: REASONS[k][0], cls: 'chip' + (on ? ' is-on' : ''), on: String(on), pick: function () { ctx.setUi({ reason: k }); } }; }),
         rmsg: msg, setRmsg: function (e) { ctx.setUi({ msg: U.val(e), msgFor: p.id + reason }); },
         refuse: function () {
+          if (real.server) return decideServer(real, 'recusado', fst, 'Pedido de ' + fst + ' recusado.');
           real.status = 'recusado'; real.result = 'Recusado hoje: ' + REASONS[reason][0].toLowerCase();
           var a = real.aluno ? DB.find('alunos', real.aluno) : null;
           if (a && a.status === 'pedido') { a.status = 'encerrado'; a.flag = null; a.svc = 'Pedido recusado em 26/10'; a.next = 'Sem vínculo'; }

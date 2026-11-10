@@ -154,6 +154,32 @@
     },
     submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
     sessions: function (link) { return db('GET', 'sessions?select=id,session_key,started_at,submitted_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name)&link_id=eq.' + encodeURIComponent(link)); },
+    // ---------- pedidos de acompanhamento (pedido não é vínculo; o treinador decide) ----------
+    createRequest: function (slug, message, search) {
+      if (!sess) return Promise.resolve({ ok: false, nosession: true });
+      return db('GET', 'trainers?select=id,offers(id,key)&slug=eq.' + encodeURIComponent(slug)).then(function (r) {
+        var t = r.ok && r.data && r.data[0]; if (!t) return { ok: false, msg: 'Perfil não encontrado.' };
+        var of = (t.offers || []).filter(function (o) { return o.key === 'principal'; })[0];
+        return db('POST', 'requests', { trainer_id: t.id, student_id: sess.user.id, offer_id: of ? of.id : null, message: message || null, search_sport: (search && search.esporte) || null, search_city: (search && search.cidade) || null }).then(function (x) {
+          if (!x.ok && /requests_one_pending|duplicate/i.test(x.msg || '')) { x.ok = true; x.already = true; }
+          return x;
+        });
+      });
+    },
+    requests: function () {
+      if (!sess) return Promise.resolve([]);
+      return db('GET', 'requests?select=id,status,message,created_at,expires_at,student_id,trainers(slug,name,user_id),offers(key,title,price_cents,unit)&order=created_at.desc&limit=100').then(function (r) {
+        var L = r.ok && Array.isArray(r.data) ? r.data : [];
+        var ids = L.map(function (x) { return x.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i && v !== sess.user.id; });
+        return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
+          var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
+          return L.map(function (x) { return { id: x.id, status: x.status, message: x.message || '', at: x.created_at, due: x.expires_at, mine: x.student_id === sess.user.id ? 'aluno' : 'treinador',
+            studentName: N[x.student_id] || 'Aluno', trainerName: x.trainers && x.trainers.name, trainerSlug: x.trainers && x.trainers.slug,
+            offer: x.offers ? x.offers.title + ' · ' + (x.offers.price_cents != null && x.offers.unit ? 'R$ ' + (x.offers.price_cents / 100).toLocaleString('pt-BR') + ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[x.offers.unit] || x.offers.unit) : 'Sob consulta') : '' }; });
+        });
+      });
+    },
+    decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }); },
     // ---------- mensagens do vínculo ----------
     messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.asc&limit=500'); },
     sendMessage: function (link, body) { var cid = 'cli_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: cid, p_session: null }); },

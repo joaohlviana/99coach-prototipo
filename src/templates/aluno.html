@@ -33,6 +33,9 @@
       <sc-if value="{{is.semvinculo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.text}}</p></div></div>
         <sc-if value="{{v.notLinked}}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{v.hasReqs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Seus pedidos"><h2 class="onb-h2">Seus pedidos</h2>
+            <ol class="onb-secs"><sc-for list="{{v.reqs}}" as="r" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-clock"></i></span><span class="onb-secs__t"><b>{{r.t}}</b><span>{{r.x}}</span></span></div></li></sc-for></ol>
+          </section></sc-if>
           <section class="card onb-sec" aria-label="Como começar"><h2 class="onb-h2">Como começar</h2>
             <ol class="onb-secs"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true">{{s.n}}</span><span class="onb-secs__t"><b>{{s.t}}</b><span>{{s.x}}</span></span></div></li></sc-for></ol>
           </section>

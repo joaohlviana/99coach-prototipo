@@ -423,6 +423,23 @@
       </sc-if>
 
       <!-- PUB07 · Favoritos -->
+      <!-- PUB17 · Pedir acompanhamento -->
+      <sc-if value="{{is.pedir}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Pedido</span><h1 class="pghead__title">Pedir acompanhamento</h1><p class="pghead__sub">Pedido não é vínculo: {{v.first}} responde e, se aceitar, o acompanhamento começa. Nada é cobrado no pedido.</p></div></div>
+        <section class="card onb-sec onb-me-card" aria-label="Treinador"><span class="av onb-photo__av"><sc-if value="{{v.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.photo}}" alt=""></sc-if><sc-if value="{{v.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.ini}}</sc-if></span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.meta}}</span></div></section>
+        <sc-if value="{{v.anon}}" hint-placeholder-val="{{ true }}"><p class="pghead__sub">Para pedir, entre na sua conta ou crie uma.</p>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.signup}}">Criar conta</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.login}}">Já tenho conta</button></div></sc-if>
+        <sc-if value="{{v.form}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Seu pedido">
+          <div class="field"><label class="field__label" for="pd-msg">Mensagem para {{v.first}} (opcional)</label><div class="input"><input id="pd-msg" type="text" maxlength="600" placeholder="Seu objetivo, dias e horários que prefere" value="{{v.msg}}" onInput="{{v.setMsg}}"></div><span class="field__help">Não envie dados de saúde sensíveis aqui; a preparação vem depois do aceite.</span></div>
+          <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.adultOn}}" onClick="{{v.toggleAdult}}"><span class="{{v.adultCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais.</span></button>
+          <sc-if value="{{v.adultErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">A 99Coach atende só maiores de 18 anos.</span></sc-if>
+          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Pedido não enviado</b>{{v.err}}</div></div></sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">{{v.sendLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Voltar ao perfil</button></div>
+        </section></sc-if>
+        <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>{{v.doneT}}</b>Você acompanha a resposta em Minha área. Se {{v.first}} aceitar, a preparação abre por lá.</div></div>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openApp}}">Minha área</button></div></sc-if>
+      </sc-if>
+
       <!-- REL03 · Convite pelo link -->
       <sc-if value="{{is.convite}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Convite</span><h1 class="pghead__title">Convite para treinar</h1><p class="pghead__sub">Aceitar cria o vínculo com o treinador. Nada é cobrado aqui.</p></div></div>

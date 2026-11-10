@@ -85,6 +85,14 @@
       if (!where.length) { if (t.pres && t.city) where.push(['Presencial', t.city]); if (t.onl || !t.city) where.push(['Online', 'Todo o Brasil']); where.push(['Idioma', 'Português']); }
       if (d.externalHandle) where.push(['Contato público', 'Instagram ' + d.externalHandle + ' (abre fora da 99Coach)']);
       if (!details[id]) fetchDetail(id);
+      if (live[id] || d.imported === false) {
+        var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
+        var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
+        return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || 'Atende online', formats: fm, lang: 'Atende em português',
+          avail: 'desconhecida', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.credentials && d.credentials.length ? 'inf' : 'nao', avg: '', n: 0, ext: d.externalHandle || '',
+          offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
+          pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };
+      }
       return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Profissional de atividade física') + ' · dados públicos importados', city: t.city || 'Atende online', formats: fm + ' (informação pública)', lang: 'Atende em português',
         avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: d.externalHandle || '',
         pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '',
@@ -149,7 +157,8 @@
     if (ACCT.area() !== 'treinador') return;
     var done = false; try { done = LS.getItem('c99.contaIniciada') === '1'; } catch (_) {}
     if (done) return;
-    OWN.forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
+    // mantém o que veio do servidor (vínculos e pedidos reais); tira só o conteúdo de exemplo
+    OWN.forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = window.DB[k].filter(function (x) { return x && x.server; }); });
     var c = STORE.loadOnb('treinador');
     if (c && window.DB.trainer) { window.DB.trainer.name = c.name || window.DB.trainer.name; window.DB.trainer.first = (c.name || '').split(' ')[0] || window.DB.trainer.first; if (c.city) window.DB.trainer.city = c.city; }
     if (window.DB.insights) Object.assign(window.DB.insights, { visits: 0, visitsPrev: 0, contacts: 0, contactsPrev: 0, sales: 0, salesPrev: 0, revenue: 0, offers: [] });
@@ -170,12 +179,26 @@
         goal: '', city: '', age: null, program: '', week: null, adherence: null, lastCheckin: '', next: 'Preparação pendente', flag: null, tags: [], prepDone: false, payment: '', photo: '' });
     });
   }
+  // pedidos reais: entram na fila de pedidos do treinador
+  function mergeRequests(R) {
+    if (!window.DB || !Array.isArray(window.DB.t1_pedidos)) return;
+    (R || []).filter(function (x) { return x.mine === 'treinador'; }).forEach(function (x) {
+      var id = 'rq_' + x.id, cur = window.DB.t1_pedidos.filter(function (p) { return p.id === id; })[0];
+      var st = x.status === 'pendente' ? 'pendente' : (x.status === 'aceito' ? 'aceito' : 'recusado');
+      if (cur) { cur.status = st; return; }
+      var d = new Date(x.at), due = x.due ? new Date(x.due) : null;
+      window.DB.t1_pedidos.unshift({ id: id, server: x.id, aluno: '', name: x.studentName, origin: 'Perfil', offer: '', offerTxt: x.offer, msg: x.message || '(sem mensagem)',
+        at: d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }), due: due ? 'responder até ' + due.toLocaleDateString('pt-BR') : '', goal: '', city: '', status: st, result: st === 'aceito' ? 'Aceito' : (st === 'recusado' ? 'Recusado' : '') });
+    });
+  }
   function refreshLinks() {
     if (!window.CONTA || !window.CONTA.session()) return;
-    window.CONTA.links().then(function (L) { mergeLinks(L); rerender(); });
+    Promise.all([window.CONTA.links(), window.CONTA.requests()]).then(function (x) { mergeLinks(x[0]); mergeRequests(x[1]); window.__myRequests = x[1]; rerender(); });
   }
   window.__refreshLinks = refreshLinks;
-  setTimeout(function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); }, 0);
+  // só depois que todos os módulos carregaram (a fila de pedidos e a lista de alunos já existem)
+  var bootSync = function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); };
+  if (document.readyState === 'complete') setTimeout(bootSync, 0); else window.addEventListener('load', bootSync);
   window.__applyMe = function () { applyMe(); };
   // quem aparece no rodapé do menu: a conta cadastrada, sem a foto de exemplo
   function applyMe() {
@@ -212,7 +235,7 @@
     if (asked[id] || !window.fetch) return; asked[id] = 1;
     fetch('api/v1/trainers/' + encodeURIComponent(id)).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.slug) return;
-      details[id] = { role: d.role, pitch: d.pitch, bio: d.bio, serviceArea: d.serviceArea, externalHandle: d.externalHandle };
+      details[id] = { role: d.role, pitch: d.pitch, bio: d.bio, serviceArea: d.serviceArea, externalHandle: d.externalHandle, imported: d.imported, receivesRequests: d.receivesRequests, offers: d.offers, credentials: d.credentials };
       save('c99.perfis', details); rerender();
     }).catch(function () {});
   }
@@ -226,9 +249,33 @@
     if (hit) { cache = {}; rerender(); }
   }, true);
 
+  // catálogo ao vivo: perfis cadastrados no app (não importados) entram no topo, com dados publicados reais
+  var live = {};
+  function fetchLive() {
+    if (!window.fetch) return;
+    var got = [], cursor = null, page = 0;
+    var next = function () {
+      var u = 'api/v1/search?pageSize=40' + (cursor ? '&cursor=' + encodeURIComponent(cursor) : '');
+      return fetch(u).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d) return;
+        (d.items || []).forEach(function (t) { if (t.imported === false) got.push(t); });
+        cursor = d.nextCursor; page++;
+        if (cursor && page < 4) return next();
+      });
+    };
+    next().then(function () {
+      if (!got.length) return;
+      got.forEach(function (t) { live[t.slug] = t; });
+      var rows = got.concat(items.filter(function (x) { return !live[x.id]; }).map(function (x) { return [x.id, x.name, x.ini, x.photo, x.spec, x.raw, x.city, (x.pres ? 'p' : '') + (x.onl ? 'o' : ''), x.pub]; }));
+      setItems(rows); rerender();
+    }).catch(function () {});
+  }
+  REAL.isLive = function (id) { return !!live[id]; };
+  setTimeout(fetchLive, 0);
+
   // base completa gerada por `npm run sync`
   if (window.fetch) fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-    if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; setItems(d.items); rerender(); }
+    if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); rerender(); }
   }).catch(function () {});
 
   // ---------- gravação local ----------
