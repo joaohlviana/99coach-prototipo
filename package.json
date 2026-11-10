@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "sync": "node scripts/sync-dados.mjs",
     "single": "npm run index && node scripts/build-single.mjs",
-    "vercel-build": "(node scripts/sync-dados.mjs || echo \"sync falhou: segue com a amostra\") && npm run build"
+    "vercel-build": "(test \"$SYNC\" = \"1\" && node scripts/sync-dados.mjs || true) && npm run build"
   },
   "devDependencies": {
     "vite": "^5.4.11"
