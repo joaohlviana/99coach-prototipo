@@ -156,7 +156,14 @@
           scenario: function (id) { c.setState({ scn: id }); }
         };
         var v = {}, err = '';
-        if (scr) { try { v = scr.vals(ctx) || {}; } catch (e) { console.error(e); err = String(e && e.message || e); } }
+        if (scr) { try { v = scr.vals(ctx) || {}; } catch (e) {
+          // tela de detalhe sem o dado que ela precisa (conta nova, item removido): volta para o início da área
+          var hub = REG.first(page);
+          if (scr !== hub && !document.documentElement.classList.contains('demo')) {
+            scr = hub; props = Object.assign({}, props, { s: hub.key, id: '' });
+            try { v = scr.vals(Object.assign(ctx, { props: props, p: props, id: '' })) || {}; if (!st.toast) st.toast = 'Ainda não há dados para abrir essa tela.'; } catch (e2) { console.error(e2); err = String(e2 && e2.message || e2); }
+          } else { console.error(e); err = String(e && e.message || e); }
+        } }
         var is = {}; REG.list(page).forEach(function (s) { is[s.key] = !!scr && s.key === scr.key; });
         var navKey = scr && (typeof scr.nav === 'function' ? scr.nav(ctx) : scr.nav) || '';
         var mk = function (it) {

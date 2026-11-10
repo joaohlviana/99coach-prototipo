@@ -133,8 +133,35 @@
     e.stopPropagation(); e.preventDefault(); ACCT.go();
   }, true);
 
+  // conta nova começa vazia: sem os alunos, mensagens, vendas e conteúdos de exemplo
+  var OWN = 'alunos respostas avaliacoes arquivos notas participantes agenda conversas notificacoes t4_propostas t6_envios t6_repasses t6_casos t6_relatorios t7_jobs t7_insights t2_envios t2_respostas t2_notasHist t2_arquivos t1_convites t1_pedidos t1_encerrados t1_resolvidas t1_recibos t8_contatos t8_denuncias t8_bloqueios programas ofertas cupons rotinas'.split(' ');
+  function startAccount() {
+    if (ACCT.area() !== 'treinador' || !window.DB) return;
+    var done = false; try { done = LS.getItem('c99.contaIniciada') === '1'; } catch (_) {}
+    if (done) return;
+    OWN.forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
+    var c = STORE.loadOnb('treinador');
+    if (c && window.DB.trainer) { window.DB.trainer.name = c.name || window.DB.trainer.name; window.DB.trainer.first = (c.name || '').split(' ')[0] || window.DB.trainer.first; if (c.city) window.DB.trainer.city = c.city; }
+    if (window.DB.insights) Object.assign(window.DB.insights, { visits: 0, visitsPrev: 0, contacts: 0, contactsPrev: 0, sales: 0, salesPrev: 0, revenue: 0, offers: [] });
+    if (window.DB.t6_extrato && window.DB.t6_extrato.opening) Object.assign(window.DB.t6_extrato.opening, { rec: 0, lib: 0, ret: 0 });
+    try { LS.setItem('c99.contaIniciada', '1'); } catch (_) {}
+    STORE.saveDb();
+  }
+  window.__startAccount = startAccount;
+  window.__applyMe = function () { applyMe(); };
+  // quem aparece no rodapé do menu: a conta cadastrada, sem a foto de exemplo
+  function applyMe() {
+    var c = STORE.loadOnb('treinador');
+    if (ACCT.area() === 'treinador' && c && c.name && window.ROLES && window.ROLES.treinador.me) {
+      window.ROLES.treinador.me = { name: c.name, role: 'Treinador · ' + ((c.city || '').split(',')[0] || 'sem cidade'), photo: c.photoOk && c.photoUrl ? c.photoUrl : '' };
+      if (c.photoOk && c.photoUrl) (window.__IMG = window.__IMG || {})[c.photoUrl] = c.photoUrl;
+    }
+  }
+
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
+    applyMe();
+    if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {
       var bs = root.querySelectorAll('button.btn--primary.btn--sm');
       for (var i = 0; i < bs.length; i++) if (/^(Entrar|Minha área)$/.test(bs[i].textContent.trim())) { bs[i].textContent = 'Minha área'; bs[i].setAttribute('data-minha-area', '1'); }
