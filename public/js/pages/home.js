@@ -43,13 +43,13 @@ class Component extends DCLogic {
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: B(ic), cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
     const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: pickSport(id) }));
 
-    const CIT = [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
+    const CIT = (window.REAL && window.REAL.cities(S.city)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
     const cities = CIT.map(([c, n]) => ({ label: c, note: n, cls: 'opt' + (S.city === c ? ' is-on' : ''), pick: () => set({ city: c, hidden: {}, sheet: null, loc: 0 }), pick2: () => set({ city: c, hidden: {} }) }));
     const cityLabel = S.city || 'Escolher cidade';
     const modeLabel = { presencial: 'Presencial', online: 'Online', qualquer: 'Qualquer formato' }[S.mode];
     const setMode = (m) => () => set({ mode: m, hidden: {}, toast: null });
 
-    const T = [
+    const TD = [
       { id: 'rafael', name: 'Rafael Lima', spec: 'CrossFit e Musculação', city: 'Londrina, PR', pres: true, onl: true, sports: ['crossfit', 'musculacao'], photo: B('bdc7ef1c8dbf05558c3bf8d575fc3a04'), rating: '4,9', n: 23, ver: true, cref: 'CREF 012345-G/PR verificado · válido até 12/2027', av: 'yes', avLong: 'Aceita novos alunos (informado em 20/10)', offP: ['Sessão presencial', 'R$ 80', '/ sessão'], offO: ['Acompanhamento online', 'R$ 200', '/ mês'], more: 3 },
       { id: 'diego', name: 'Diego Moraes', spec: 'CrossFit e Lutas', city: 'Londrina, PR', pres: true, onl: false, sports: ['crossfit', 'lutas', 'funcional'], photo: B('348bafe032c42fc5274e3de9d8004df2'), rating: '4,8', n: 56, ver: true, cref: 'CREF verificado', av: 'yes', avLong: 'Aceita novos alunos (informado em 18/10)', offP: ['Sessão presencial', 'R$ 90', '/ sessão'], more: 2 },
       { id: 'gabriel', name: 'Gabriel Santos', spec: 'CrossFit e LPO', city: 'Londrina, PR', pres: true, onl: false, sports: ['crossfit', 'musculacao'], photo: B('4534df06b7d037ae994cb151849342b0'), rating: '4,8', n: 29, ver: true, cref: 'CREF verificado', av: 'no', avLong: 'Sem vagas no momento (informado em 22/10)', offP: ['Treino presencial 2x por semana', 'R$ 480', '/ mês'], more: 1 },
@@ -65,7 +65,9 @@ class Component extends DCLogic {
       { id: 'marcos', name: 'Marcos Almeida', spec: 'Musculação e Força', city: 'Ribeirão Preto, SP', pres: false, onl: true, sports: ['musculacao'], photo: B('848c200425592389106d38549e36440a'), rating: '4,9', n: 112, ver: true, cref: 'CREF verificado', av: 'yes', avLong: 'Aceita novos alunos (informado em 20/10)', offO: ['Consultoria de força', 'R$ 189', '/ mês'], more: 2 },
       { id: 'renata', name: 'Renata Lopes', spec: 'Corrida', city: 'São Paulo, SP', pres: false, onl: true, sports: ['corrida'], photo: B('cdd8dbf615cdeed2e5c5bd489c64e674'), rating: '4,9', n: 44, ver: false, cref: 'CREF informado pela treinadora, ainda não verificado', av: 'yes', avLong: 'Aceita novos alunos (informado em 24/10)', offO: ['Planilha de corrida com ajustes', 'R$ 99', '/ mês'], more: 1 }
     ];
-    const byId = (id) => T.find((t) => t.id === id);
+    // treinadores reais (base importada); os de exemplo ficam só para as situações de demonstração
+    const T = (window.REAL && window.REAL.home()) || TD;
+    const byId = (id) => T.find((t) => t.id === id) || TD.find((t) => t.id === id);
     const inCity = (t) => !!S.city && t.city === S.city;
     const sportOk = (t) => t.sports.indexOf(S.sport) >= 0;
     const visitor = ['vinculo', 'dois', 'pendente'].indexOf(S.scen) < 0, logged = !visitor;
@@ -74,7 +76,7 @@ class Component extends DCLogic {
 
     const card = (t, ctx) => {
       const off = t.imp ? null : offerFor(t, ctx), on = !!S.favs[t.id];
-      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : 'Atende online · ' + t.city);
+      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.city ? 'Atende online · ' + t.city : 'Atende online'));
       const reason = t.imp ? 'Perfil importado: ainda não confirmado pelo profissional' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + S.city + ' · presencial';
       return {
         name: t.name, spec: t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,

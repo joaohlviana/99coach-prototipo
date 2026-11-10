@@ -3,7 +3,7 @@ PAGES.perfil = { Comp: (function () {
 class Component extends DCLogic {
   static img(id) { return window.__IMG[id] || ''; }
 
-  constructor(props) { super(props); const p = props || {}; this.state = this.base(p.scn || 'comparando'); if (p.offer) this.state.offer = p.offer; }
+  constructor(props) { super(props); const p = props || {}; this.state = this.base(p.scn || 'comparando'); if (p.offer) this.state.offer = p.offer; if (p.rid) this.state.rid = p.rid; }
 
   base(scn) {
     const S = { novo: {}, comparando: { offer: 'online' }, oferta: { offer: 'sessao' }, aceite: { offer: 'online' }, pedido: { offer: 'online', req: 'enviado', user: 'voce' }, vinculo: { user: 'ana' }, horarios: { offer: 'sessao' }, importado: {}, semvaga: {}, desconhecida: {}, semoferta: {}, proprio: { user: 'rafael' }, retirado: {} };
@@ -60,7 +60,7 @@ class Component extends DCLogic {
     const SCN_OF = { rafael: 'comparando', gabriel: 'semvaga', carolina: 'desconhecida', bruna: 'semoferta', studio: 'importado' };
     const USERS = { ana: { name: 'Ana Ribeiro', dest: 'Meu acompanhamento', photo: '', ini: 'AR' }, rafael: { name: 'Rafael Lima', dest: 'Meu painel', photo: B('bdc7ef1c8dbf05558c3bf8d575fc3a04'), ini: '' }, voce: { name: 'Sua conta', dest: 'Sua conta', photo: '', ini: 'VC' } };
 
-    const x = TR[WHO[st.scn]];
+    const x = (st.rid && window.REAL && window.REAL.perfil(st.rid)) || TR[WHO[st.scn]];
     const removed = st.scn === 'retirado';
     const own = st.user === 'rafael';
     const preview = own && st.preview;
@@ -120,7 +120,7 @@ class Component extends DCLogic {
     // ---------- ação principal por situação ----------
     let A = null;
     if (removed) A = null;
-    else if (x.imported) A = { title: 'Perfil importado', line: 'Sem contratação pela 99Coach', sub: 'Criado a partir de dados públicos e ainda não reivindicado. Não há contratação, mensagens nem agenda pela 99Coach.', label: 'Voltar para a busca', go: () => window.NAV.toSearch(this), label2: 'É meu perfil', go2: open('claim', { claim: 'inicio' }), noBar: true, fine: 'Contato público informado: Instagram @studionorte.treino, uma saída externa.' };
+    else if (x.imported) A = { title: 'Perfil importado', line: 'Sem contratação pela 99Coach', sub: 'Criado a partir de dados públicos e ainda não reivindicado. Não há contratação, mensagens nem agenda pela 99Coach.', label: 'Voltar para a busca', go: () => window.NAV.toSearch(this), label2: 'É meu perfil', go2: open('claim', { claim: 'inicio' }), noBar: true, fine: x.ext ? 'Contato público informado: Instagram ' + x.ext + ', uma saída externa.' : 'Sem contato público informado.' };
     else if (own && !preview) A = { title: 'Seu perfil público', line: 'É assim que visitantes veem', sub: 'Alterações ficam em rascunho até você publicar.', label: 'Editar perfil', go: open('editar'), label2: 'Ver como visitante', go2: () => set({ preview: true }) };
     else if (st.user === 'ana' && (!o || o.id === 'online')) A = { title: 'Acompanhamento online', line: 'Ativo desde 02/09/2026', sub: 'Próxima cobrança em 02/11/2026 · R$ 200,00. Outras compras ficam separadas do acompanhamento.', label: 'Abrir acompanhamento', go: open('vinc') };
     else if (x.avail === 'nao') A = { title: 'Não aceita novos alunos', line: 'Informado em ' + x.availDate, sub: 'O Gabriel não está recebendo pedidos agora. Os serviços aparecem só como referência.', label: 'Ver treinadores com vaga', short: 'Ver com vaga', go: () => window.NAV.go('esporte', { avail: true }, this, { vaga: true }), label2: st.fav ? 'Salvo' : 'Salvar perfil', go2: toggleFav };

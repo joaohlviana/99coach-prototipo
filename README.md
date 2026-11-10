@@ -9,7 +9,15 @@ npm run dev      # http://localhost:5173
 npm run build    # gera dist/ (site estático, abre em qualquer servidor)
 ```
 
-Sem GitHub, Vercel, Supabase ou internet: fontes, imagens e dados ficam no projeto.
+## Dados reais
+
+- **Treinadores**: Home, Esporte e Perfil usam a base real da 99Coach. O projeto traz uma amostra de 21 perfis;
+  `npm run sync` baixa a base inteira (cerca de 11,9 mil) para `public/data/treinadores.json`. Precisa de internet só nessa hora.
+- **Perfil**: com internet, o `npm run dev` busca os detalhes de cada perfil na API real e guarda no aparelho. As fotos vêm do servidor da 99Coach.
+- **Gravação**: cadastros, alunos, treinos, mensagens, ofertas e salvos ficam gravados neste navegador e continuam lá ao recarregar.
+  "Reiniciar dados" volta ao estado inicial.
+
+Serviços, programas, avaliações e as áreas logadas ainda usam conteúdo de exemplo: a base real só tem perfis importados, sem ofertas.
 
 ## Áreas (barra "Telas" no topo)
 
@@ -32,6 +40,8 @@ Sem GitHub, Vercel, Supabase ou internet: fontes, imagens e dados ficam no proje
 - `public/css/`: uma folha por área (cada uma inclui o DS) + `fonts.css`, `shell.css`, `adapt.css`
 - `public/js/runtime.js`: runtime das telas (templates, estado, histórico)
 - `public/js/pages/`: lógica das telas públicas e do onboarding
+- `public/js/real.js`, `real-data.js`: treinadores reais e gravação local
+- `scripts/sync-dados.mjs`: baixa a base real completa
 - `public/js/core.js`, `db.js`: núcleo e dados de exemplo das áreas logadas
 - `public/js/{treinador,aluno,publico,operacao}/`: um módulo por tela
 - `public/js/ds-data.js`, `ds-telas.js`: composições do DS

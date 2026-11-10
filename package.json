@@ -7,7 +7,8 @@
     "index": "node scripts/build-index.mjs",
     "dev": "npm run index && vite",
     "build": "npm run index && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync": "node scripts/sync-dados.mjs"
   },
   "devDependencies": {
     "vite": "^5.4.11"

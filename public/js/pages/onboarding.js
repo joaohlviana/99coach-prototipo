@@ -1,6 +1,6 @@
 PAGES.onboarding = { Comp: (function () {
 class Component extends DCLogic {
-  constructor(props) { super(props); const p = props || {}; this.state = this.base(p.flow || 'treinador', p.scn || ''); }
+  constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); }
 
 
   // Cadastro preenchido de exemplo (cenários “Cadastro preenchido”, “Perfil publicado”)
@@ -365,7 +365,7 @@ class Component extends DCLogic {
       ]
     };
     const priceLine = st.services.length ? svcPrice(st.services[0]) : 'sem preço publicado';
-    window.__onbState = st;
+    window.__onbState = st; if (window.STORE && !st.scn) window.STORE.saveOnb(st);
 
     const INV = {
       rafael: { name: 'Rafael Lima', first: 'Rafael', photo: IMG['bdc7ef1c8dbf05558c3bf8d575fc3a04'] || '', ini: 'RL', role: 'Treinador de CrossFit e Musculação · Londrina, PR', svc: 'Acompanhamento online',

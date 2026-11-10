@@ -23,8 +23,7 @@
 <body>
 <nav class="pv-bar" aria-label="Telas do protótipo"><div class="pv-bar__in"><span class="pv-bar__k">Telas</span><div class="pv-bar__seg"><button type="button" data-pv="home">Home</button><button type="button" data-pv="esporte">Esporte</button><button type="button" data-pv="perfil">Perfil</button><button type="button" data-pv="servico">Serviço</button><button type="button" data-pv="onboarding">Onboarding</button><button type="button" data-pv="treinador">Treinador</button><button type="button" data-pv="aluno">Aluno</button><button type="button" data-pv="publico">Público</button><button type="button" data-pv="operacao">Operação</button><button type="button" data-pv="telas">Telas do DS</button></div></div></nav>
 <div id="app" lang="pt-BR"></div>
-<template id="tpl-home">
-<div class="{{rootCls}}">
+<template id="tpl-home"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
   <!-- Barra de cenário (fora do produto) · Componentes: Escolhas/Chip, Ações/Botão -->
   <div class="v4-demo" role="region" aria-label="Cenários de demonstração">
@@ -548,10 +547,8 @@
       </div>
     </div>
   </sc-if>
-</div>
-</template>
-<template id="tpl-esporte">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-esporte"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
 
   <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
@@ -845,10 +842,8 @@
 
   <!-- Aviso rápido com desfazer (G15 · toast) · camada 70 -->
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast v4-toast" role="status" aria-live="polite" style="top: {{toastTop}}"><span>{{toastTxt}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{toastUndo}}">Desfazer</button><sc-if value="{{toastSaved}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--glass btn--sm" onClick="{{openSaved}}">Ver salvos</button></sc-if><button type="button" class="icon-btn" onClick="{{toastClose}}" aria-label="Fechar aviso"><i class="ic ic--sm i-x"></i></button></div></sc-if>
-</div>
-</template>
-<template id="tpl-perfil">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-perfil"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
 
   <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
@@ -1184,10 +1179,8 @@
       </div>
     </div>
   </sc-if>
-</div>
-</template>
-<template id="tpl-servico">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-servico"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
 
   <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
@@ -1432,10 +1425,8 @@
       </div>
     </div>
   </sc-if>
-</div>
-</template>
-<template id="tpl-onboarding">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-onboarding"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
 
   <!-- Barra de cenário · fora do produto -->
@@ -2141,13 +2132,9 @@
   </sc-if>
 
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
-</div>
-</template>
-<template id="tpl-telas">
-<div class="w v4 dsv-root"><div id="dsv"></div></div>
-</template>
-<template id="tpl-treinador">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-telas"><div class="w v4 dsv-root"><div id="dsv"></div></div></template>
+<template id="tpl-treinador"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
   <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
   <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
@@ -5807,10 +5794,8 @@
     </div>
   </sc-if>
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
-</div>
-</template>
-<template id="tpl-aluno">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-aluno"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
   <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
   <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
@@ -6786,10 +6771,8 @@
     </div>
   </sc-if>
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
-</div>
-</template>
-<template id="tpl-publico">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-publico"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
   <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
   <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
@@ -7697,10 +7680,8 @@
     </div>
   </sc-if>
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
-</div>
-</template>
-<template id="tpl-operacao">
-<div class="{{rootCls}}">
+</div></template>
+<template id="tpl-operacao"><div class="{{rootCls}}">
   <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
   <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
   <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
@@ -11014,9 +10995,10 @@
     </div>
   </sc-if>
   <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
-</div>
-</template>
+</div></template>
 <script src="js/img.js"></script>
+<script src="js/real-data.js"></script>
+<script src="js/real.js"></script>
 <script src="js/ds-data.js"></script>
 <script src="js/ds-telas.js"></script>
 <script src="js/core.js"></script>
@@ -11136,6 +11118,7 @@
 <script src="js/operacao/60-40-acoes.js"></script>
 <script src="js/operacao/60-50-fechamento.js"></script>
 <script src="js/runtime.js"></script>
+<script src="js/store-boot.js"></script>
 <script src="js/pages/00-init.js"></script>
 <script src="js/pages/home.js"></script>
 <script src="js/pages/esporte.js"></script>

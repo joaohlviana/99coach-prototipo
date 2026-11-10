@@ -110,6 +110,7 @@
     var patchObj = typeof p === 'function' ? p(this.state, this.props) : p;
     this.state = Object.assign({}, this.state, patchObj || {});
     request(this);
+    if (window.__persist) window.__persist();
   };
   DCLogic.prototype.forceUpdate = function () { request(this); };
   window.DCLogic = DCLogic;
@@ -191,7 +192,7 @@
   }
   function propsFor(name, p) {
     if (name === 'home') {
-      var init = ctx.set ? { sport: idOf(ctx.mod), city: ctx.city || null, mode: (ctx.fmt || 'Presencial').toLowerCase() } : {};
+      var init = ctx.set ? { sport: idOf(ctx.mod), city: ctx.city || null, mode: (ctx.fmt || 'Presencial').toLowerCase() } : ((window.STORE && window.STORE.loadPage('home')) || {});
       return { scen: ctx.homeScen || 'primeira', init: init };
     }
     if (name === 'esporte') {
@@ -208,6 +209,7 @@
     if (name === 'telas') return { id: p.id || '', st: p.st || 0 };
     if (MODP[name]) return Object.assign({ s: '', id: '', scn: '' }, p);
     if (name === 'servico') return { offer: p.offer || 'online', scn: p.scn || (ctx.homeScen === 'vinculo' || ctx.homeScen === 'dois' ? 'aluna' : (ctx.homeScen === 'pendente' ? 'pedido' : 'comparando')) };
+    if (!PROFILE[p.id] && window.REAL && window.REAL.has(p.id)) return { id: p.id, scn: 'importado', rid: p.id, offer: null };
     var id = PROFILE[p.id] ? p.id : 'rafael';
     var scn = p.scn || PROFILE[id];
     if (id === 'rafael' && !p.scn) {
@@ -243,7 +245,7 @@
   }
 
   var NAV = {
-    has: function (id) { return !!PROFILE[id]; },
+    has: function (id) { return !!PROFILE[id] || !!(window.REAL && window.REAL.has(id)); },
     // perfil do treinador montado no cadastro (onboarding); sem cadastro aberto, usa o exemplo preenchido
     draft: function () {
       var C = PAGES && PAGES.onboarding && PAGES.onboarding.Comp;
@@ -297,6 +299,14 @@
     }
   };
   window.NAV = NAV;
+  // redesenha a tela atual (dados reais chegaram, base sincronizada)
+  // grava no aparelho o que mudou: dados das áreas logadas e preferências da Home
+  window.__persist = function () {
+    if (!window.STORE || !cur) return;
+    window.STORE.saveDb();
+    if (cur.name === 'home') { var s = cur.comp.state; window.STORE.savePage('home', { sport: s.sport, city: s.city, mode: s.mode, favs: s.favs }); }
+  };
+  window.__rerender = function () { if (cur && cur.comp) cur.comp.setState({}); };
 
   function navVals(page) {
     var mk = function (n, params) { return function () { NAV.go(n, params || {}, cur && cur.comp); }; };
@@ -325,7 +335,7 @@
     else if (hsh.indexOf('onboarding') === 0) { name = 'onboarding'; params = { flow: hsh.split('-')[1] || 'treinador', scn: hsh.split('-')[2] || '' }; }
     else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' }; }
     else if (hsh.indexOf('telas') === 0) { name = 'telas'; params = { id: hsh.split('-')[1] || '' }; }
-    else if (hsh.indexOf('perfil') === 0) { name = 'perfil'; params = { id: hsh.split('-')[1] || 'rafael' }; }
+    else if (hsh.indexOf('perfil') === 0) { name = 'perfil'; params = { id: hsh.slice(7) || 'rafael' }; }
     var props = propsFor(name, params);
     var key = ++seq;
     order = [key]; pos = 0;
