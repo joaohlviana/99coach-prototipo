@@ -10,7 +10,7 @@
     profile: '@rafaellima.treino', claimedAt: '03/10', state: 'aberto', proto: '', sentAt: '', reason: '', kind: '', file: '', deadline: ''
   });
 
-  function copyText(t) { try { if (typeof navigator !== 'undefined' && navigator.clipboard) navigator.clipboard.writeText(t); } catch (_) {} }
+  function copyText(t) { try { if (typeof navigator !== 'undefined' && navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {}); } catch (_) {} }
 
   // ---------- ACC08 · Reivindicar perfil pelo Instagram ----------
   REG.screen({

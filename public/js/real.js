@@ -14,6 +14,7 @@
   var ALIAS = { 'jiu-jitsu': ['jiujitsu', 'lutas'], boxe: ['lutas'], 'muay-thai': ['lutas'], judo: ['lutas'], karate: ['lutas'], taekwondo: ['lutas'], mma: ['lutas'], 'krav-maga': ['lutas'], capoeira: ['lutas'], ballet: ['danca'], triatlo: ['corrida', 'natacao', 'ciclismo'], hidroginastica: ['natacao'] };
   var UF = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
   var items = [], byId = {}, cache = {};
+  function fold(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
   function ui(sports) { var o = {}; (sports || []).forEach(function (s) { if (LABEL[s]) o[s] = 1; (ALIAS[s] || []).forEach(function (a) { o[a] = 1; }); }); return Object.keys(o); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
@@ -33,10 +34,14 @@
     // Home: mesmo formato da lista da vitrine
     home: function () {
       if (!items.length) return null;
-      return cache.home || (cache.home = items.map(function (t) {
+      var mine = myTrainer();
+      var key = mine ? mine.name + '|' + mine.city : '';
+      if (cache.home && cache.homeKey === key) return cache.home;
+      cache.homeKey = key;
+      return (cache.home = (mine ? [mine] : []).concat(items.map(function (t) {
         return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl || !t.city, sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
           cref: 'Perfil importado: credencial não confirmada', av: 'unknown', avLong: 'Não informada', more: 0 };
-      }));
+      })));
     },
     // Esporte: mesmo formato da lista de resultados
     esporte: function () {
@@ -46,6 +51,20 @@
         return { id: t.id, name: t.name, ph: t.photo, ini: t.ini, spec: t.spec, mods: t.sports.map(function (s) { return LABEL[s]; }), city: t.city, area: '', fmts: f, langs: ['português'], avail: '', ad: '', imported: true, rating: '', reviews: 0,
           pub: t.pub, rank: i + 1, pos: [12 + (i * 37) % 76, 14 + (i * 53) % 70], trust: [['Perfil importado · não confirmado pelo profissional', 'imp']] };
       }));
+    },
+    // busca por nome, especialidade, modalidade ou cidade (sem acento, qualquer ordem de palavras)
+    search: function (q, max) {
+      var words = fold(q).split(' ').filter(Boolean); if (!words.length) return [];
+      var out = [];
+      for (var i = 0; i < items.length && out.length < (max || 6); i++) {
+        var t = items[i], hay = t._h || (t._h = fold(t.name + ' ' + t.spec + ' ' + t.city + ' ' + t.sports.join(' ')));
+        if (words.every(function (w) { return hay.indexOf(w) >= 0; })) out.push(t);
+      }
+      return out;
+    },
+    total: function (q) {
+      var words = fold(q).split(' ').filter(Boolean); if (!words.length) return 0;
+      return items.filter(function (t) { var hay = t._h || (t._h = fold(t.name + ' ' + t.spec + ' ' + t.city + ' ' + t.sports.join(' '))); return words.every(function (w) { return hay.indexOf(w) >= 0; }); }).length;
     },
     // cidades com treinadores, da mais numerosa para a menos
     cities: function (keep) {
@@ -73,6 +92,35 @@
     }
   };
   window.REAL = REAL;
+
+  // perfil publicado no cadastro deste aparelho, no formato da vitrine da Home (abre o perfil 'thiago' do cadastro)
+  function myTrainer() {
+    var st = window.__onbState;
+    if (!st || st.flow !== 'treinador' || st.scn || !st.published || !st.name) return null;
+    var sports = Object.keys(st.sports || {}).filter(function (k) { return st.sports[k]; });
+    var s0 = (st.services || [])[0];
+    return { id: 'thiago', name: st.name, spec: st.title || 'Treinador', city: st.city || '', pres: !!st.pres, onl: !!st.onl, sports: sports, photo: st.photoOk ? st.photoUrl : null,
+      ini: st.name.split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase(), rating: null, n: 0, ver: false,
+      cref: st.cref ? 'CREF informado, ainda não verificado' : 'CREF não informado', av: st.avail === 'sim' ? 'yes' : (st.avail === 'nao' ? 'no' : 'unknown'), avLong: st.avail === 'sim' ? 'Aceita novos alunos' : 'Não informada',
+      offP: s0 && s0.fmt !== 'online' ? [s0.title, 'R$ ' + s0.price, s0.kind === 'recorrente' ? '/ mês' : '/ sessão'] : undefined,
+      offO: s0 && s0.fmt === 'online' ? [s0.title, 'R$ ' + s0.price, s0.kind === 'recorrente' ? '/ mês' : '/ sessão'] : undefined, more: Math.max(0, (st.services || []).length - 1) };
+  }
+
+  // ---------- identidade: quem se cadastrou aparece nas áreas logadas ----------
+  function swap(root, pairs) {
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) {
+      var v = n.nodeValue, o = v;
+      for (var i = 0; i < pairs.length; i++) if (v.indexOf(pairs[i][0]) >= 0) v = v.split(pairs[i][0]).join(pairs[i][1]);
+      if (v !== o) n.nodeValue = v;
+    }
+  }
+  window.__afterRender = function (page, root) {
+    if (!window.STORE || window.__demoIdent) return;
+    var c;
+    if (page === 'treinador' && (c = STORE.loadOnb('treinador')) && c.name && (c.conta || c.dadosSaved)) swap(root, [['Rafael Lima', c.name], ['Rafael', c.name.split(' ')[0]]]);
+    if (page === 'aluno' && (c = STORE.loadOnb('aluno')) && c.name && (c.conta || c.step === 'pronto' || c.step === 'alunoHoje')) swap(root, [['Ana Carolina Souza', c.name], ['Ana Carolina', c.name], ['Ana', c.name.split(' ')[0]]]);
+  };
 
   // detalhes do perfil (API real), guardados no aparelho
   var details = load('c99.perfis', {}), asked = {};

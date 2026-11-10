@@ -265,7 +265,7 @@
         steps: steps, stLabel: stLabel,
         canConsult: anyUnknown, canRetry: anyFail, canClose: canClose, closeCls: 'btn btn--primary btn--sm' + (canClose ? '' : ' o1-off'), closeDis: String(!canClose),
         consult: consult, retry: retry, closeCase: closeCase, task: task, hasTask: anyUnknown || anyFail,
-        copy: function () { try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText(r.id); } catch (e) {} ctx.toast('Referência ' + r.id + ' copiada'); },
+        copy: function () { try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText(r.id).catch(function () {}); } catch (e) {} ctx.toast('Referência ' + r.id + ' copiada'); },
         hist: c ? O1.histView(c, ctx.go).slice(0, 6) : [], hasHist: !!c
       };
     }

@@ -7,3 +7,7 @@ body:has(#app .has-sheet){overflow:hidden}
 #app .sx-scrim{position:fixed}
 @media (max-width:599px){#app .sx-layer{position:fixed!important;inset:0!important;width:auto!important;min-height:0;height:100vh;height:100dvh;overflow:auto;overscroll-behavior:contain;z-index:92;padding-top:calc(12px + env(safe-area-inset-top,0px))}}
 body:has(#app .sx-on){overflow:hidden}
+
+/* Campo de busca de verdade (no canvas era um botão com o texto) */
+#app input.sx-field{font:inherit;font-size:14px;outline:0;border-radius:0;appearance:none;-webkit-appearance:none}
+#app input.sx-field::placeholder{color:var(--text-3);opacity:1}

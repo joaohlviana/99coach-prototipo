@@ -61,7 +61,7 @@
       if (scn === 'removida') alerts.push(O3.alert('info', 'Removida', 'Responde 410 desde 24/10 pela retirada R-39. Saiu do sitemap e da busca interna.', 'Ver propagação', function () { GO('OPS11.C', { id: 'R-41' }); }));
       if (scn === 'indisp' && !ui.cq) alerts.push(O3.alert('warn', 'Verificação indisponível', 'O verificador não respondeu desde 09:00. Os dados abaixo são da última verificação confirmada.', 'Consultar de novo', function () { ctx.setUi({ cq: U.now() }); ctx.toast('Verificado às ' + U.now() + ' · sem mudança'); }));
       var copy = function () {
-        try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText(u.url); } catch (_) {}
+        try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText(u.url).catch(function () {}); } catch (_) {}
         ctx.toast('URL copiada: ' + u.url);
       };
       return {

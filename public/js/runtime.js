@@ -130,6 +130,7 @@
     buildKids(P.frag, vals, out);
     if (fresh) { app.textContent = ''; for (var i = 0; i < out.length; i++) app.appendChild(out[i]); }
     else morph(app, out);
+    if (window.__afterRender) window.__afterRender(cur.name, app);
   }
 
   // ---------- eventos (delegados, com bolha como no React) ----------

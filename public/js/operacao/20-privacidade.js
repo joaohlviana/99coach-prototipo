@@ -209,7 +209,7 @@
         blocks: [
           S.steps('Etapas', steps.map(function (s) { return [s[0], s[1], s[2], s[2] === 'Confirmado' && !revoked && scn !== 'expirado' ? function () { ctx.toast('Download revalidado · ' + s[0] + ' · só neste navegador (protótipo).'); } : null, 'Baixar']; })),
           S.kv('Referência', [['Protocolo', '#' + p.id + ' · ref 7c2e-41'], ['Enviado ao titular', 'a mesma lista, sem dados de terceiros']]),
-          S.btns([S.act('Copiar referência', function () { try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText('#' + p.id + ' · ref 7c2e-41'); } catch (e) { /* sem área de transferência */ } ctx.toast('Referência copiada: #' + p.id + ' · ref 7c2e-41'); })])
+          S.btns([S.act('Copiar referência', function () { try { if (window.navigator && navigator.clipboard) navigator.clipboard.writeText('#' + p.id + ' · ref 7c2e-41').catch(function () {}); } catch (e) { /* sem área de transferência */ } ctx.toast('Referência copiada: #' + p.id + ' · ref 7c2e-41'); })])
         ]
       };
     }
