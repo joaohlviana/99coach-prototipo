@@ -132,6 +132,18 @@
   window.NAVCOUNT = function (k, fn) { COUNTS[k] = fn; };
 
   // ---------- fábrica de página ----------
+  // conta real ainda sem histórico: telas que têm a situação "Primeiro uso" abrem nela, sem números inventados
+  function firstUse(scr) {
+    if (!scr || document.documentElement.classList.contains('demo') || !window.ACCT || !window.ACCT.area()) return '';
+    // só enquanto a conta não tem o dado daquela tela; depois a tela mostra o que a pessoa criou
+    var noPeople = function () { return !(DB.alunos || []).length && !(DB.t1_convites || []).length && !(DB.t1_pedidos || []).length; };
+    var empty = { alunos: noPeople, hoje: noPeople,
+      recebimentos: function () { return !(DB.t6_envios || []).length && !((DB.t6_extrato || {}).extra || []).length; }, insights: function () { return true; } };
+    if (scr.page === 'treinador' && !(empty[scr.key] || function () { return false; })()) return '';
+    if (scr.page !== 'treinador') return '';
+    var keys = (scr.scens || []).map(function (x) { return x[0]; });
+    return keys.indexOf('novo') >= 0 ? 'novo' : (keys.indexOf('primeiro') >= 0 ? 'primeiro' : '');
+  }
   window.MODPAGE = function (page, role) {
     return {
       init: function (c) { c.state = { scn: c.props.scn || '', sheet: null, toast: '', v: 0, ui: {} }; },
@@ -142,7 +154,7 @@
         var set = function (o) { c.setState(o); };
         var ui = st.ui || {};
         var ctx = {
-          page: page, props: props, p: props, id: props.id || '', scn: st.scn || '', st: st, ui: ui, db: DB, U: U,
+          page: page, props: props, p: props, id: props.id || '', scn: st.scn || firstUse(scr), st: st, ui: ui, db: DB, U: U,
           set: set,
           // estado de interface da tela (rascunhos, abas, filtros): ctx.setUi({ aba: 'x' })
           setUi: function (o) { c.setState({ ui: Object.assign({}, c.state.ui, o) }); },

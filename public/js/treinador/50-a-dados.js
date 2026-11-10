@@ -203,7 +203,11 @@
     DB.t6_casos.forEach(function (k) { if (k.kind === 'disputa' && k.state === 'aguardando evidência') out.push({ t: 'Disputa ' + k.id + ' · enviar evidência', s: 'Prazo ' + k.deadline + ' · pedido ' + (T6.sale(k.sale) || {}).order, to: 'FT10', p: { id: k.id } }); });
     return out;
   };
-  window.NAVCOUNT('recebimentos', function () { return T6.pend().length; });
+  window.NAVCOUNT('recebimentos', function () {
+    // conta real sem recebimentos: nenhuma pendência de exemplo no menu
+    if (window.ACCT && window.ACCT.area() && !document.documentElement.classList.contains('demo') && !(DB.t6_envios || []).length) return 0;
+    return T6.pend().length;
+  });
 
   // retorno simulado do provedor
   T6.backFromProvider = function () {
