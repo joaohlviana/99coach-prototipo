@@ -123,7 +123,9 @@
       if ((a && a.name && (a.conta || a.step === 'pronto' || a.step === 'alunoHoje')) || roles.indexOf('aluno') >= 0) return 'aluno';
       return null;
     },
-    go: function () { var a = ACCT.area(); if (a && window.NAV) window.NAV.go(a, {}, null); }
+    go: function () { var a = ACCT.area(); if (a && window.NAV) window.NAV.go(a, {}, null); },
+    // vínculo confirmado no servidor (ainda não ligado nesta versão: convites e vínculos são o próximo passo)
+    hasLink: function () { return false; }
   };
   window.ACCT = ACCT;
   var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
@@ -136,7 +138,14 @@
   // conta nova começa vazia: sem os alunos, mensagens, vendas e conteúdos de exemplo
   var OWN = 'alunos respostas avaliacoes arquivos notas participantes agenda conversas notificacoes t4_propostas t6_envios t6_repasses t6_casos t6_relatorios t7_jobs t7_insights t2_envios t2_respostas t2_notasHist t2_arquivos t1_convites t1_pedidos t1_encerrados t1_resolvidas t1_recibos t8_contatos t8_denuncias t8_bloqueios programas ofertas cupons rotinas'.split(' ');
   function startAccount() {
-    if (ACCT.area() !== 'treinador' || !window.DB) return;
+    if (!ACCT.area() || !window.DB) return;
+    var doneA = false; try { doneA = LS.getItem('c99.contaAlunoIniciada') === '1'; } catch (_) {}
+    if (!doneA) {
+      ['contratacoes', 'meusTreinos', 'a2_pedidos', 'a2_pedidosAcomp', 'a2_reembolsos'].forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
+      try { LS.setItem('c99.contaAlunoIniciada', '1'); } catch (_) {}
+      STORE.saveDb();
+    }
+    if (ACCT.area() !== 'treinador') return;
     var done = false; try { done = LS.getItem('c99.contaIniciada') === '1'; } catch (_) {}
     if (done) return;
     OWN.forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
@@ -151,6 +160,11 @@
   window.__applyMe = function () { applyMe(); };
   // quem aparece no rodapé do menu: a conta cadastrada, sem a foto de exemplo
   function applyMe() {
+    var a = STORE.loadOnb('aluno'), area = ACCT.area();
+    if (area && window.ROLES && window.ROLES.aluno && !document.documentElement.classList.contains('demo')) {
+      var nm = (a && a.name) || ((STORE.loadOnb('treinador') || {}).name) || 'Sua conta';
+      window.ROLES.aluno.me = { name: nm, role: ACCT.hasLink() ? 'Com acompanhamento' : 'Sem acompanhamento ainda', photo: '' };
+    }
     var c = STORE.loadOnb('treinador');
     if (ACCT.area() === 'treinador' && c && c.name && window.ROLES && window.ROLES.treinador.me) {
       window.ROLES.treinador.me = { name: c.name, role: 'Treinador · ' + ((c.city || '').split(',')[0] || 'sem cidade'), photo: c.photoOk && c.photoUrl ? c.photoUrl : '' };
@@ -161,6 +175,7 @@
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
     applyMe();
+    if (page === 'aluno') startAccount();
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {
       var bs = root.querySelectorAll('button.btn--primary.btn--sm');

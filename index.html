@@ -5827,9 +5827,18 @@
       <main class="onb-page mod-page" id="conteudo">
         <sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Esta tela falhou ao montar</b>{{err}}</div></div></sc-if>
       <!-- AMENU · Conta da aluna -->
+      <!-- ALU00 · Conta real ainda sem treinador -->
+      <sc-if value="{{is.semvinculo}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.text}}</p></div></div>
+        <section class="card onb-sec" aria-label="Como começar"><h2 class="onb-h2">Como começar</h2>
+          <ol class="onb-secs"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true">{{s.n}}</span><span class="onb-secs__t"><b>{{s.t}}</b><span>{{s.x}}</span></span></div></li></sc-for></ol>
+        </section>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.find}}">Encontrar treinador</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.account}}">Minha conta</button></div>
+      </sc-if>
+
       <sc-if value="{{is.menu}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Conta</h1></div></div>
-        <section class="card onb-sec onb-me-card" aria-label="Sua conta"><span class="av onb-photo__av">{{v.ini}}</span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.role}}</span><span class="badge badge--plain">Aluna</span></div></section>
+        <section class="card onb-sec onb-me-card" aria-label="Sua conta"><span class="av onb-photo__av">{{v.ini}}</span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.role}}</span><span class="badge badge--plain">{{v.badge}}</span></div></section>
         <sc-for list="{{v.groups}}" as="gp" hint-placeholder-count="3">
           <section class="card onb-sec" aria-label="{{gp.title}}"><h2 class="onb-h2">{{gp.title}}</h2>
             <ol class="onb-secs"><sc-for list="{{gp.items}}" as="s" hint-placeholder-count="3"><li><button type="button" class="onb-secs__r" onClick="{{s.go}}"><span class="onb-secs__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-secs__t"><b>{{s.title}}</b><span>{{s.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol>
@@ -11054,6 +11063,7 @@
 <script src="js/treinador/70-perfil.js"></script>
 <script src="js/treinador/70-titularidade.js"></script>
 <script src="js/aluno/00-menu.js"></script>
+<script src="js/aluno/00-semvinculo.js"></script>
 <script src="js/aluno/10-0base.js"></script>
 <script src="js/aluno/10-agenda.js"></script>
 <script src="js/aluno/10-conteudo.js"></script>

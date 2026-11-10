@@ -84,7 +84,7 @@
   function SIGN_OUT() {
     window.__signingOut = true;
     var done = function () {
-      try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\.(cadastro|db|contaIniciada|papeis|sessao|tela)/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
+      try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\.(cadastro|db|conta|papeis|sessao|tela)/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
       location.hash = ''; location.reload();
     };
     if (window.CONTA) window.CONTA.signOut().then(done, done); else done();
@@ -165,6 +165,8 @@
     var noPeople = function () { return !(DB.alunos || []).length && !(DB.t1_convites || []).length && !(DB.t1_pedidos || []).length; };
     var empty = { alunos: noPeople, hoje: noPeople,
       recebimentos: function () { return !(DB.t6_envios || []).length && !((DB.t6_extrato || {}).extra || []).length; }, insights: function () { return true; } };
+    // aluno: enquanto a conta não tem vínculo confirmado no servidor, as telas do dia a dia abrem vazias
+    if (scr.page === 'aluno') return scr.key === 'contratacoes' && !(DB.contratacoes || []).length ? 'vazio' : '';
     if (scr.page === 'treinador' && !(empty[scr.key] || function () { return false; })()) return '';
     if (scr.page !== 'treinador') return '';
     var keys = (scr.scens || []).map(function (x) { return x[0]; });
@@ -176,6 +178,12 @@
       render: function (c) {
         var props = c.props, st = c.state;
         var scr = REG.get(page, props.s) || REG.first(page);
+        // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
+        if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area() && !(window.ACCT.hasLink && window.ACCT.hasLink())
+          && scr && ['hoje', 'sessao', 'execucao', 'encerrar', 'evolucao', 'mensagens', 'programas', 'treinador', 'agenda', 'conteudo', 'formulario'].indexOf(scr.key) >= 0) {
+          var navFrom = typeof scr.nav === 'function' ? 'hoje' : (scr.nav || 'hoje');
+          scr = REG.get('aluno', 'semvinculo'); props = Object.assign({}, props, { navFrom: navFrom });
+        }
         var R = ROLES[role];
         var set = function (o) { c.setState(o); };
         var ui = st.ui || {};
