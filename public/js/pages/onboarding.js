@@ -147,7 +147,8 @@ class Component extends DCLogic {
     const ini = (st.name || '').split(' ').filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
     // ========== cadastro completo do treinador (ACC05–ACC10 por seções) ==========
     const now = () => { const d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); };
-    const saved = (extra, msg) => { const t = now(); set(Object.assign({ savedAt: t, version: st.version + 1, toast: msg || ('Salvo às ' + t + ' · versão ' + (st.version + 1) + (st.published ? '. Publique de novo para atualizar o perfil.' : '. Ainda não publicado.')) }, extra || {})); };
+    const sync = (next, pub) => { if (!window.CONTA || !window.CONTA.session() || st.scn) return; window.CONTA.saveTrainer(next).then((r) => (r.ok && pub ? window.CONTA.publish() : r)).then((r) => { if (!r.ok && !r.offline && !r.nosession) set({ toast: 'O servidor não aceitou salvar o perfil: ' + (r.msg || 'erro ' + r.status) + '. Seus dados continuam neste aparelho.' }); else if (r.ok && pub) set({ toast: 'Perfil publicado na 99Coach.' }); }); };
+    const saved = (extra, msg) => { const t = now(); sync(Object.assign({}, st, extra || {}), false); set(Object.assign({ savedAt: t, version: st.version + 1, toast: msg || ('Salvo às ' + t + ' · versão ' + (st.version + 1) + (st.published ? '. Publique de novo para atualizar o perfil.' : '. Ainda não publicado.')) }, extra || {})); };
     const KIND = { recorrente: ['Recorrente mensal', 'Acompanhamento com ciclo mensal', '/ mês', 'calendar'], avulsa: ['Sessão avulsa', 'Uma sessão, sem renovação', '/ sessão', 'dumbbell'], consulta: ['Sob consulta', 'Valor combinado antes de marcar', '', 'message'] };
     const svcPrice = (s) => s.kind === 'consulta' ? 'Sob consulta' : 'R$ ' + (s.price || '—') + ' ' + KIND[s.kind][2];
     const REG = [['centro', 'Centro'], ['zonasul', 'Zona Sul'], ['zonanorte', 'Zona Norte'], ['zonaleste', 'Zona Leste'], ['zonaoeste', 'Zona Oeste'], ['gleba', 'Gleba Palhano']];
@@ -350,6 +351,7 @@ class Component extends DCLogic {
       go: () => {
         if (!minOk) return set({ toast: 'Falta o mínimo para publicar: modalidade, cidade e formato.' });
         if (st.pubUnknown) { set({ step: 'publicado', published: true, pubUnknown: false, version: st.version + 1, toast: 'Consultamos: o perfil foi publicado uma vez, às 09:18.' }); return top(); }
+        sync(st, true);
         set({ step: 'publicado', published: true, version: st.version + 1, toast: '' }); top();
       }
     };
