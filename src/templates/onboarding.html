@@ -1,0 +1,707 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
+
+  <!-- Barra de cenário · fora do produto -->
+  <div class="v4-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios</span><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar percurso</button></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Percurso</span><div class="v4-scroll no-sb"><sc-for list="{{flows}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scens}}" as="c" hint-placeholder-count="6"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== Telas públicas de acesso (ACC01–ACC04, REL03, REL04, REL07) ===================== -->
+  <sc-if value="{{authShell}}" hint-placeholder-val="{{ true }}">
+  <header class="onb-top">
+    <div class="wrap onb-top__in">
+      <button type="button" class="onb-back" onClick="{{back}}" aria-label="{{backLabel}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button>
+      <button type="button" class="v4-reset onb-logo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <span class="onb-top__step label">{{stepLabel}}</span>
+    </div>
+  </header>
+  <main class="onb-auth" id="conteudo">
+    <div class="onb-card">
+
+      <!-- ACC01 · escolha de entrada -->
+      <sc-if value="{{is.escolha}}" hint-placeholder-val="{{ false }}">
+        <div class="onb-head"><span class="eyebrow">Criar conta</span><h1 class="onb-h1">Como você quer usar o 99Coach?</h1></div>
+        <div class="onb-choices" role="radiogroup" aria-label="Como você quer usar o 99Coach">
+          <sc-for list="{{intents}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for>
+        </div>
+        <p class="field__help">Você pode ter os dois papéis depois, na mesma conta.</p>
+        <sc-if value="{{intentErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">Escolha uma opção para continuar.</p></sc-if>
+        <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{continueIntent}}">Continuar<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
+        <p class="onb-alt">Já tem conta? <button type="button" class="onb-link" onClick="{{goLogin}}">Entrar</button></p>
+      </sc-if>
+
+      <!-- ACC02 · entrar ou criar conta mínima -->
+      <sc-if value="{{is.conta}}" hint-placeholder-val="{{ false }}">
+        <div class="onb-head"><span class="eyebrow">{{conta.eyebrow}}</span><h1 class="onb-h1">{{conta.title}}</h1><p class="onb-lede">{{conta.sub}}</p></div>
+        <sc-if value="{{conta.hasInvite}}" hint-placeholder-val="{{ false }}"><div class="onb-ctx"><span class="av av--sm onb-av"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt=""></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span><span>Convite de <b>{{inv.name}}</b> · {{inv.svc}}</span></div></sc-if>
+        <sc-if value="{{conta.hasSession}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Seu rascunho está salvo</b>Entre para continuar exatamente de onde parou.</div></div></sc-if>
+        <div class="onb-form">
+          <sc-if value="{{conta.askName}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-nome">Nome</label><div class="input"><input id="onb-nome" type="text" autocomplete="name" value="{{f.name}}" onInput="{{f.setName}}"></div></div></sc-if>
+          <div class="field"><label class="field__label" for="onb-email">E-mail ou celular</label><div class="{{f.emailCls}}"><input id="onb-email" type="text" inputmode="email" autocomplete="username" value="{{f.email}}" onInput="{{f.setEmail}}" aria-describedby="onb-email-msg"></div>
+            <sc-if value="{{f.emailExists}}" hint-placeholder-val="{{ false }}"><span class="field__err" id="onb-email-msg" role="alert">Este e-mail já tem conta. Entre com ela; nada é duplicado.</span></sc-if>
+          </div>
+          <sc-if value="{{f.emailExists}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{f.loginExisting}}">Entrar com esta conta</button></sc-if>
+          <sc-if value="{{conta.askTerms}}" hint-placeholder-val="{{ true }}"><button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{f.termsOn}}" onClick="{{f.toggleTerms}}"><span class="{{f.termsCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Li e aceito os <u>Termos de uso</u> e a <u>Política de privacidade</u>.</span></button>
+            <sc-if value="{{f.termsErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para criar a conta, aceite os Termos. A opção não vem marcada.</span></sc-if>
+          </sc-if>
+        </div>
+        <sc-if value="{{f.noExists}}" hint-placeholder-val="{{ true }}"><div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{f.submit}}">{{conta.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+          <div class="onb-or"><span>ou</span></div>
+          <button type="button" class="btn btn--outline btn--lg btn--block" onClick="{{f.social}}">Continuar com Google</button>
+          <button type="button" class="btn btn--outline btn--lg btn--block" onClick="{{f.social}}">Continuar com Apple</button>
+        </div></sc-if>
+        <p class="field__help onb-fine">{{conta.fine}}</p>
+        <sc-if value="{{conta.hasSwitch}}" hint-placeholder-val="{{ true }}"><p class="onb-alt">{{conta.switchQ}} <button type="button" class="onb-link" onClick="{{conta.switchGo}}">{{conta.switchLabel}}</button></p></sc-if>
+      </sc-if>
+
+      <!-- ACC03 · código -->
+      <sc-if value="{{is.codigo}}" hint-placeholder-val="{{ false }}">
+        <div class="onb-head"><span class="eyebrow">Verificação</span><h1 class="onb-h1">Digite o código</h1><p class="onb-lede">Enviamos um código de 6 dígitos para <b>{{f.email}}</b>. Senha não é necessária.</p></div>
+        <sc-if value="{{c.expired}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>O código venceu</b>Enviamos um novo agora. O que você preencheu continua salvo.</div></div></sc-if>
+        <div class="field"><label class="field__label" for="onb-code">Código de acesso</label><div class="input onb-codebox"><input id="onb-code" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{c.value}}" onInput="{{c.set}}"></div>
+          <sc-if value="{{c.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">O código tem 6 números. Confira o e-mail ou peça outro.</span></sc-if>
+        </div>
+        <p class="onb-alt"><span class="t3">Reenviar em 0:42</span> · <button type="button" class="onb-link" onClick="{{c.change}}">Trocar e-mail</button></p>
+        <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{c.verify}}">Verificar acesso<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
+        <sc-if value="{{c.hasIntent}}" hint-placeholder-val="{{ false }}"><p class="field__help onb-fine">{{c.intent}}</p></sc-if>
+      </sc-if>
+
+      <!-- Confirmando (operação em curso) -->
+      <sc-if value="{{is.confirmando}}" hint-placeholder-val="{{ false }}">
+        <div class="state onb-state"><span class="onb-spin" aria-hidden="true"></span><b>Confirmando seu acesso</b><span>Estamos registrando o aceite do convite. Não feche esta tela; se a conexão cair, retomamos a mesma operação.</span></div>
+      </sc-if>
+
+      <!-- Conta criada (Quero treinar) e Entrou -->
+      <sc-if value="{{is.pronto}}" hint-placeholder-val="{{ false }}">
+        <div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-check"></i></span><b>{{pronto.title}}</b><span>{{pronto.sub}}</span></div>
+        <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{pronto.go}}">{{pronto.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{pronto.go2}}">{{pronto.cta2}}</button></div>
+      </sc-if>
+
+      <!-- REL03 · abrir convite -->
+      <sc-if value="{{is.convite}}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{cv.normal}}" hint-placeholder-val="{{ true }}">
+          <div class="onb-inv">
+            <span class="av onb-inv__av"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt="Foto de perfil de {{inv.name}}"></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span>
+            <b class="onb-inv__n">{{inv.name}}</b><span class="onb-inv__r">{{inv.role}}</span>
+            <div class="onb-trust"><sc-for list="{{inv.trust}}" as="t" hint-placeholder-count="2"><span class="{{t.cls}}"><i class="{{t.ic}}" aria-hidden="true"></i>{{t.label}}</span></sc-for></div>
+          </div>
+          <h1 class="onb-h1 onb-h1--c">{{inv.first}} convidou você para treinar</h1>
+          <ul class="onb-inc"><sc-for list="{{inv.inc}}" as="i" hint-placeholder-count="3"><li><i class="ic ic--xs i-check" aria-hidden="true"></i>{{i}}</li></sc-for></ul>
+          <div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div>Ao aceitar, você fica conectado a {{inv.first}}. <b>Nada é cobrado agora</b> e {{inv.first}} não precisa aprovar de novo. <button type="button" class="onb-link" onClick="{{cv.terms}}">Ver termos do convite</button></div></div>
+          <sc-if value="{{cv.logged}}" hint-placeholder-val="{{ false }}"><p class="onb-alt">Você entrou como <b>ana@email.com</b> · <button type="button" class="onb-link" onClick="{{cv.otherAccount}}">Usar outra conta</button></p></sc-if>
+          <div class="onb-actions"><button type="button" class="btn btn--brand btn--lg btn--block btn--arrow onb-cta" onClick="{{cv.accept}}">{{cv.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{cv.ignore}}">Não é para você? Ignorar convite</button></div>
+        </sc-if>
+        <sc-if value="{{cv.hasState}}" hint-placeholder-val="{{ false }}">
+          <div class="state onb-state"><span class="{{cv.stIcCls}}" aria-hidden="true"><i class="{{cv.stIc}}"></i></span><b>{{cv.stTitle}}</b><span>{{cv.stSub}}</span></div>
+          <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{cv.stGo}}">{{cv.stCta}}</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- REL04 · vínculo confirmado -->
+      <sc-if value="{{is.conectado}}" hint-placeholder-val="{{ false }}">
+        <div class="onb-pair" aria-hidden="true"><span class="av onb-pair__a">{{stu.ini}}</span><span class="av onb-pair__b"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt=""></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span></div>
+        <h1 class="onb-h1 onb-h1--c">Você já está conectado a {{inv.first}}</h1>
+        <p class="onb-lede onb-c">{{inv.svc}} ativo desde hoje. {{inv.first}} não precisa aprovar de novo.</p>
+        <div class="onb-next"><span class="label">Próximo passo</span><b>Responder preparação</b><span>5 perguntas rápidas para o primeiro treino sair do seu jeito. O progresso fica salvo; pode ser agora ou depois.</span></div>
+        <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{goPrep}}">Responder preparação<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{prepLater}}">Responder depois</button></div>
+      </sc-if>
+
+      <!-- REL07 · preparação progressiva -->
+      <sc-if value="{{is.prep}}" hint-placeholder-val="{{ false }}">
+        <div class="onb-head"><span class="eyebrow">Preparação · {{p.pos}} de 5</span><div class="bar onb-bar" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="{{p.n}}" aria-label="Preparação"><span style="{{p.barW}}"></span></div><h1 class="onb-h1">{{p.q}}</h1><sc-if value="{{p.hasHelp}}" hint-placeholder-val="{{ false }}"><p class="onb-lede">{{p.help}}</p></sc-if></div>
+        <div class="onb-chips" role="group" aria-label="{{p.q}}"><sc-for list="{{p.opts}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+        <sc-if value="{{p.hasText}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="onb-dor">Onde dói e desde quando (opcional)</label><div class="input input--area"><textarea id="onb-dor" rows="3" onInput="{{p.setText}}">{{p.text}}</textarea></div><span class="field__help">Vai só para {{inv.first}}. Se houver dor, ele pode pedir liberação de um profissional de saúde antes de começar.</span></div></sc-if>
+        <p class="field__help onb-fine"><i class="ic ic--xs i-save" aria-hidden="true"></i> Salvo automaticamente. Você pode parar e continuar depois.</p>
+        <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{p.next}}">{{p.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+          <sc-if value="{{p.canBack}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{p.prev}}">Voltar à pergunta anterior</button></sc-if>
+          <button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{prepLater}}">Responder depois</button></div>
+      </sc-if>
+
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ===================== ACC05 · Cadastro do treinador · Primeiros dados (VFINAL) ===================== -->
+  <sc-if value="{{cvShell}}" hint-placeholder-val="{{ false }}">
+  <div class="{{d.rootCls}}">
+    <!-- desktop: topo leve do cadastro -->
+    <div class="wrap cv-top"><button type="button" class="v4-reset cv-logo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button><span class="cv-top__r">Cadastro do treinador · <b style="color: var(--fg)">Passo 1 de 3</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{d.openHelp}}">Ajuda</button></span></div>
+    <!-- celular: barra de app -->
+    <div class="cv-bar"><button type="button" class="icon-btn" aria-label="Voltar" onClick="{{d.openBack}}"><i class="ic ic--sm i-arrow-l" aria-hidden="true"></i></button><b>Passo 1 de 3</b><button type="button" class="cv-skip" onClick="{{d.openSkip}}">Pular</button></div>
+
+    <main class="card cv-card" id="conteudo" aria-labelledby="cv-h1">
+      <div class="cv-head">
+        <div class="steps cv-steps" aria-hidden="true"><span class="is-on"></span><span></span><span></span></div>
+        <span class="eyebrow" style="font-size: 11px">Seu perfil</span>
+        <h1 id="cv-h1" class="cv-h1">O que você treina?</h1>
+        <p class="cv-lede">Três respostas para alunos te encontrarem na busca. O resto você completa depois, no painel.</p>
+      </div>
+
+      <!-- 1 · Modalidades -->
+      <div class="field" role="group" aria-labelledby="cv-l1">
+        <span id="cv-l1" class="field__label">Modalidades<small>{{d.modCount}}</small></span>
+        <div class="cv-chips"><sc-for list="{{d.mods}}" as="m" hint-placeholder-count="8"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}"><sc-if value="{{m.isOn}}" hint-placeholder-val="{{ false }}"><i class="ic ic--xs i-check" aria-hidden="true"></i></sc-if>{{m.label}}</button></sc-for><button type="button" class="cv-more" onClick="{{d.openMore}}"><i class="ic ic--xs i-plus" aria-hidden="true"></i>Mais modalidades</button></div>
+        <sc-if value="{{d.modErr}}" hint-placeholder-val="{{ false }}"><p class="field__err"><i class="ic ic--sm i-alert" aria-hidden="true"></i>Escolha pelo menos uma modalidade.</p></sc-if>
+      </div>
+
+      <!-- 2 · Formato -->
+      <div class="field" role="group" aria-labelledby="cv-l2">
+        <span id="cv-l2" class="field__label">Como você atende<small>uma ou as duas</small></span>
+        <div class="cv-fmt">
+          <button type="button" class="{{d.presCls}}" aria-pressed="{{d.presOn}}" onClick="{{d.togPres}}"><span class="cv-tog__c"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span class="cv-tog__t"><b>Presencial</b><span>Na sua cidade</span></span></button>
+          <button type="button" class="{{d.onlCls}}" aria-pressed="{{d.onlOn}}" onClick="{{d.togOnl}}"><span class="cv-tog__c"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span class="cv-tog__t"><b>Online</b><span>Treino no app, todo o Brasil</span></span></button>
+        </div>
+      </div>
+
+      <!-- 3 · Cidade com autocompletar (Componentes-16) -->
+      <div class="field" role="group" aria-labelledby="cv-l3">
+        <span id="cv-l3" class="field__label">Onde você atende<small>{{d.cityReq}}</small></span>
+        <sc-if value="{{d.locDenied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn cv-loc" role="status"><i class="ic ic--sm i-pin" aria-hidden="true"></i><div><b>Sem acesso à localização</b>Tudo bem: digite a cidade. A localização nunca é obrigatória.</div></div></sc-if>
+        <sc-if value="{{d.noCity}}" hint-placeholder-val="{{ true }}">
+          <div class="{{d.cityCls}}">
+            <div class="cv-city__row">
+              <div class="{{d.inCls}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><input id="cv-city" class="cv-in__q" type="text" role="combobox" autocomplete="off" spellcheck="false" placeholder="{{d.ph}}" aria-autocomplete="list" aria-expanded="{{d.ddOpen}}" aria-controls="cv-list" aria-activedescendant="{{d.activeId}}" aria-invalid="{{d.cityErr}}" aria-describedby="cv-city-msg" aria-labelledby="cv-l3" value="{{d.q}}" onInput="{{d.setQ}}" onKeyDown="{{d.key}}" onFocusIn="{{d.open}}" onClick="{{d.open}}"><sc-if value="{{d.hasQ}}" hint-placeholder-val="{{ false }}"><button type="button" class="cv-x" aria-label="Limpar" onClick="{{d.clearQ}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if></div>
+              <button type="button" class="cv-cancel" onClick="{{d.closeDd}}">Cancelar</button>
+            </div>
+            <sc-if value="{{d.ddOn}}" hint-placeholder-val="{{ false }}">
+            <div class="cv-dd" id="cv-list" role="listbox" aria-label="Cidades">
+              <sc-if value="{{d.ddEmpty}}" hint-placeholder-val="{{ true }}">
+                <button type="button" id="cv-o-loc" class="{{d.locCls}}" role="option" aria-selected="{{d.locSel}}" onClick="{{d.askLoc}}"><span class="cv-opt__i"><i class="ic ic--sm i-target" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Usar minha localização</b><span>Só para achar a cidade; o endereço não aparece no perfil</span></span></button>
+                <span class="label cv-sec">Usada na sua conta</span>
+                <button type="button" id="cv-o-last" class="{{d.lastCls}}" role="option" aria-selected="{{d.lastSel}}" onClick="{{d.pickLast}}"><span class="cv-opt__i"><i class="ic ic--sm i-clock" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Londrina</b><span>Paraná · informada no cadastro da conta</span></span><span class="cv-uf">PR</span></button>
+                <div class="cv-dd__foot"><span>Digite ao menos 2 letras</span></div>
+              </sc-if>
+              <sc-if value="{{d.ddTyping}}" hint-placeholder-val="{{ false }}">
+                <span class="label cv-sec">Cidades</span>
+                <sc-for list="{{d.matches}}" as="o" hint-placeholder-count="1"><button type="button" id="{{o.id}}" class="{{o.cls}}" role="option" aria-selected="{{o.act}}" onClick="{{o.pick}}"><span class="cv-opt__i"><i class="ic ic--sm i-pin" aria-hidden="true"></i></span><span class="cv-opt__t"><b>{{o.pre}}<mark class="cv-mark">{{o.hit}}</mark>{{o.rest}}</b><span><span class="cv-dk">{{o.sub}}</span><span class="cv-mb">{{o.subS}}</span></span></span><span class="cv-uf">{{o.uf}}</span></button></sc-for>
+                <sc-if value="{{d.hasNear}}" hint-placeholder-val="{{ false }}">
+                  <span class="label cv-sec">{{d.nearTitle}}</span>
+                  <sc-for list="{{d.nearby}}" as="o" hint-placeholder-count="2"><button type="button" id="{{o.id}}" class="{{o.cls}}" role="option" aria-selected="{{o.act}}" onClick="{{o.pick}}"><span class="cv-opt__i"><i class="ic ic--sm i-pin" aria-hidden="true"></i></span><span class="cv-opt__t"><b>{{o.name}}</b><span>{{o.sub}}</span></span><span class="cv-uf">{{o.uf}}</span></button></sc-for>
+                </sc-if>
+                <sc-if value="{{d.homonym}}" hint-placeholder-val="{{ false }}"><p class="cv-hint">Cidades com o mesmo nome sempre mostram a UF.</p></sc-if>
+                <div class="cv-dd__foot"><span class="cv-kb">↑ ↓ para escolher · Enter confirma · Esc fecha</span><span>{{d.total}}</span></div>
+              </sc-if>
+              <sc-if value="{{d.ddNone}}" hint-placeholder-val="{{ false }}">
+                <div class="cv-none"><b>Nenhuma cidade com “{{d.q}}”</b><span>Confira a grafia ou digite sem acento. Se a cidade não aparece mesmo, mande para revisão: o perfil continua salvo.</span><div class="cv-chips"><button type="button" class="btn btn--outline btn--sm" onClick="{{d.clearQ}}">Digitar de novo</button><button type="button" class="btn btn--primary btn--sm" onClick="{{d.openReview}}">Não encontrei minha cidade</button></div></div>
+              </sc-if>
+            </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{d.ddOn}}" hint-placeholder-val="{{ false }}"><div class="cv-catch" aria-hidden="true" onClick="{{d.closeDd}}"></div></sc-if>
+        </sc-if>
+        <sc-if value="{{d.hasCity}}" hint-placeholder-val="{{ false }}">
+          <div class="cv-picked"><span class="cv-pchip"><i class="ic ic--xs i-pin" aria-hidden="true"></i>{{d.cityLabel}}<button type="button" aria-label="Remover {{d.cityLabel}}" onClick="{{d.removeCity}}" onKeyDown="{{d.chipKey}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></span><button type="button" class="cv-change" onClick="{{d.change}}">Trocar cidade</button></div>
+        </sc-if>
+        <div id="cv-city-msg">
+          <sc-if value="{{d.showHelp}}" hint-placeholder-val="{{ true }}"><p class="field__help">{{d.cityHelp}}</p></sc-if>
+          <sc-if value="{{d.cityErr2}}" hint-placeholder-val="{{ false }}"><p class="field__err"><i class="ic ic--sm i-alert" aria-hidden="true"></i>Escolha a cidade onde você atende presencialmente, ou marque só Online.</p></sc-if>
+        </div>
+        <span class="cv-sr" aria-live="polite">{{d.live}}</span>
+
+        <sc-if value="{{d.hasCity}}" hint-placeholder-val="{{ false }}">
+        <div class="cv-regions" role="group" aria-labelledby="cv-l4"><span id="cv-l4" class="field__label">Regiões ou bairros<small>opcional · {{d.regCount}}</small></span>
+          <div class="cv-chips"><sc-for list="{{d.regions}}" as="r" hint-placeholder-count="6"><button type="button" class="{{r.cls}}" aria-pressed="{{r.on}}" onClick="{{r.pick}}"><sc-if value="{{r.isOn}}" hint-placeholder-val="{{ false }}"><i class="ic ic--xs i-check" aria-hidden="true"></i></sc-if>{{r.label}}</button></sc-for></div>
+          <p class="field__help">Aparece no perfil como região. Endereço completo nunca é público.</p>
+        </div>
+        </sc-if>
+      </div>
+
+      <!-- 4 · Idioma -->
+      <div class="field" role="group" aria-labelledby="cv-l5">
+        <span id="cv-l5" class="field__label">Idioma de atendimento</span>
+        <div class="cv-chips"><sc-for list="{{d.langs}}" as="l" hint-placeholder-count="3"><button type="button" class="{{l.cls}}" aria-pressed="{{l.on}}" onClick="{{l.pick}}"><sc-if value="{{l.isOn}}" hint-placeholder-val="{{ false }}"><i class="ic ic--xs i-check" aria-hidden="true"></i></sc-if>{{l.label}}</button></sc-for></div>
+      </div>
+
+      <div class="cv-foot">
+        <button type="button" class="{{d.ctaCls}}" aria-disabled="{{d.ctaDis}}" onClick="{{d.save}}">Salvar e continuar<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+        <sc-if value="{{d.showWhy}}" hint-placeholder-val="{{ false }}"><p class="cv-why">{{d.why}}</p></sc-if>
+        <button type="button" class="cv-skip cv-skip-d" onClick="{{d.openSkip}}">Pular por agora</button>
+      </div>
+    </main>
+    <div class="wrap"><p class="cv-note">O perfil só aparece na busca depois de publicado. Nada aqui é público até lá.</p></div>
+
+    <sc-if value="{{d.sheetOn}}" hint-placeholder-val="{{ false }}">
+      <div class="cv-scrim" onClick="{{d.closeSheet}}"></div>
+      <div class="card cv-sheet" role="dialog" aria-modal="true" aria-labelledby="cv-sh">
+        <div class="cv-sheet__hd"><b id="cv-sh">{{d.shTitle}}</b><button type="button" class="icon-btn" aria-label="Fechar" onClick="{{d.closeSheet}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+        <div class="cv-sheet__bd">
+          <sc-if value="{{d.shMore}}" hint-placeholder-val="{{ false }}">
+            <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" placeholder="Buscar modalidade" aria-label="Buscar modalidade" value="{{d.modQ}}" onInput="{{d.setModQ}}"></div>
+            <div class="cv-chips"><sc-for list="{{d.moreMods}}" as="m" hint-placeholder-count="12"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}"><sc-if value="{{m.isOn}}" hint-placeholder-val="{{ false }}"><i class="ic ic--xs i-check" aria-hidden="true"></i></sc-if>{{m.label}}</button></sc-for></div>
+            <sc-if value="{{d.moreNone}}" hint-placeholder-val="{{ false }}"><p class="field__help">Nenhuma modalidade com “{{d.modQ}}”.</p></sc-if>
+            <p class="field__help">{{d.modCountCap}}. Até 5 modalidades no perfil, para a busca continuar precisa.</p>
+          </sc-if>
+          <sc-for list="{{d.shLines}}" as="l" hint-placeholder-count="1"><p>{{l}}</p></sc-for>
+          <div class="cv-chips"><sc-for list="{{d.shBtns}}" as="b" hint-placeholder-count="2"><button type="button" class="{{b.cls}}" onClick="{{b.go}}">{{b.label}}</button></sc-for></div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- ===================== Área logada (treinador e aluno) ===================== -->
+  <sc-if value="{{appShell}}" hint-placeholder-val="{{ false }}">
+  <div class="onb-app">
+    <nav class="snav onb-snav" aria-label="{{navLabel}}">
+      <button type="button" class="v4-reset snav__brand" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <sc-for list="{{side}}" as="g" hint-placeholder-count="3"><span class="snav__sec">{{g.sec}}</span><sc-for list="{{g.items}}" as="s" hint-placeholder-count="4"><button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" onClick="{{s.go}}"><i class="{{s.ic}}" aria-hidden="true"></i>{{s.label}}</button></sc-for></sc-for>
+      <div class="snav__me"><span class="av av--sm">{{me.ini}}</span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div></div>
+    </nav>
+    <div class="onb-main">
+      <div class="mtop onb-mtop"><sc-if value="{{mtop.hasBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{mtop.back}}" aria-label="Voltar"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button></sc-if><sc-if value="{{mtop.noBack}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset onb-mlogo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button></sc-if><b class="mtop__t">{{mtop.title}}</b><span class="av av--sm onb-mme">{{me.ini}}</span></div>
+      <main class="onb-page" id="conteudo">
+
+      <!-- TRE01 · Hoje do treinador (conta nova): cabeçalho do Hoje do DS, tarefas primeiro -->
+      <sc-if value="{{is.hoje}}" hint-placeholder-val="{{ false }}">
+        <section class="onb-today" aria-labelledby="h-hoje">
+          <span class="label onb-today__d">{{h.date}}</span>
+          <h1 id="h-hoje" class="d3 onb-today__t">{{h.title}}</h1>
+          <p class="onb-today__s">{{h.sub}}</p>
+          <div class="onb-today__l"><sc-for list="{{h.paths}}" as="a" hint-placeholder-count="3"><button type="button" class="onb-today__r" onClick="{{a.go}}"><i class="{{a.ic}}" aria-hidden="true"></i><span class="onb-today__rt"><b>{{a.title}}</b><span>{{a.sub}}</span></span><span class="onb-today__m">{{a.meta}}</span></button></sc-for></div>
+        </section>
+        <section class="card onb-sec" aria-labelledby="h-perfil">
+          <div class="onb-sec__h"><div><h2 id="h-perfil" class="onb-h2">Seu cadastro</h2><p class="v4-sub">{{cad.summary}}</p></div><span class="{{cad.badgeCls}}">{{cad.badge}}</span></div>
+          <div class="bar onb-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{cad.total}}" aria-valuenow="{{cad.done}}" aria-label="Cadastro"><span style="{{cad.barW}}"></span></div>
+          <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{goCad}}">{{cad.cta}}</button><sc-if value="{{cad.published}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline" onClick="{{viewProfile}}">Ver meu perfil público</button></sc-if></div>
+        </section>
+      </sc-if>
+
+      <!-- ACC05/ACC06 · cadastro por seções (DS · edição por seções) -->
+      <sc-if value="{{is.cad}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><button type="button" class="pghead__back onb-dback" onClick="{{goHoje}}" aria-label="Voltar para Hoje"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><div class="pghead__txt"><span class="label">{{cad.saved}}</span><h1 class="pghead__title">Seu cadastro</h1><p class="pghead__sub">Complete por seções, no seu ritmo. Só o básico é obrigatório para publicar; vender exige recebimentos.</p></div></div>
+        <section class="card onb-sec" aria-labelledby="h-prog">
+          <div class="onb-sec__h"><div><h2 id="h-prog" class="onb-h2">{{cad.progress}}</h2><p class="v4-sub">{{cad.summary}}</p></div><span class="{{cad.badgeCls}}">{{cad.badge}}</span></div>
+          <div class="bar onb-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{cad.total}}" aria-valuenow="{{cad.done}}" aria-label="Cadastro"><span style="{{cad.barW}}"></span></div>
+          <ol class="onb-secs"><sc-for list="{{cad.secs}}" as="s" hint-placeholder-count="11"><li><button type="button" class="onb-secs__r" onClick="{{s.go}}"><span class="{{s.icCls}}" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-secs__t"><b>{{s.title}}</b><span>{{s.sub}}</span></span><span class="{{s.stCls}}">{{s.st}}</span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol>
+        </section>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--brand btn--lg btn--arrow" onClick="{{goPub}}">{{cad.pubCta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline btn--lg" onClick="{{viewProfile}}">Ver como os alunos veem</button></div>
+      </sc-if>
+
+      <!-- Uma seção do cadastro -->
+      <sc-if value="{{is.sec}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><button type="button" class="pghead__back onb-dback" onClick="{{goCad}}" aria-label="Voltar para o cadastro"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><div class="pghead__txt"><span class="label">{{sx.pos}}</span><h1 class="pghead__title">{{sx.title}}</h1><p class="pghead__sub">{{sx.sub}}</p></div></div>
+
+        <!-- Básico -->
+        <sc-if value="{{sx.is.basico}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Básico">
+            <div class="onb-grid2">
+              <div class="field"><label class="field__label" for="cb-nome">Nome público</label><div class="input"><input id="cb-nome" type="text" value="{{f.name}}" onInput="{{f.setName}}"></div></div>
+              <div class="field"><label class="field__label" for="cb-tit">Título profissional</label><div class="input"><input id="cb-tit" type="text" value="{{b.title}}" onInput="{{b.setTitle}}"></div></div>
+            </div>
+            <div class="field"><span class="field__label" id="cb-lmod">Modalidades</span><div class="onb-chips" role="group" aria-labelledby="cb-lmod"><sc-for list="{{d.sports}}" as="o" hint-placeholder-count="8"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><label class="field__label" for="cb-city">Cidade</label><div class="input"><i class="ic ic--sm i-pin" aria-hidden="true"></i><input id="cb-city" type="text" value="{{d.city}}" onInput="{{d.setCity}}"></div>
+              <div class="onb-chips" role="group" aria-label="Formato"><sc-for list="{{d.fmts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><span class="field__label" id="cb-llang">Idioma de atendimento</span><div class="onb-chips" role="group" aria-labelledby="cb-llang"><sc-for list="{{d.langs}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          </section>
+        </sc-if>
+
+        <!-- Foto -->
+        <sc-if value="{{sx.is.foto}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Foto de perfil">
+            <div class="onb-photo"><span class="av onb-photo__av onb-photo__av--lg"><sc-if value="{{ph.has}}" hint-placeholder-val="{{ false }}"><img src="{{ph.url}}" alt="Sua foto de perfil"></sc-if><sc-if value="{{ph.none}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span>
+              <div><b>{{ph.title}}</b><p class="v4-sub">Só a foto de perfil, enviada por você. Não existe galeria pública. Sem foto, o perfil mostra suas iniciais.</p>
+                <div class="v4-row"><label class="btn btn--outline btn--sm onb-file"><input type="file" accept="image/*" class="onb-file__in" onChange="{{ph.pick}}"><i class="ic ic--xs i-upload" aria-hidden="true"></i>{{ph.cta}}</label><sc-if value="{{ph.has}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{ph.remove}}">Remover</button></sc-if></div></div></div>
+            <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{ph.okOn}}" onClick="{{ph.toggleOk}}"><span class="{{ph.okCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>A foto é minha e autorizo exibi-la no perfil público. Posso retirar quando quiser.</span></button>
+            <sc-if value="{{ph.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para usar a foto, confirme que ela é sua e que autoriza exibir.</span></sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Apresentação -->
+        <sc-if value="{{sx.is.apresentacao}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Apresentação">
+            <div class="field"><label class="field__label" for="ca-pitch">Como você trabalha</label><div class="input input--area onb-area"><textarea id="ca-pitch" rows="4" onInput="{{ap.setPitch}}">{{ap.pitch}}</textarea><span class="cnt">{{ap.pitchN}}/400</span></div><span class="field__help">Duas ou três frases: a quem atende, como é o acompanhamento e o que oferece. Aparece no topo do perfil.</span></div>
+            <div class="field"><label class="field__label" for="ca-bio">Sobre você (opcional)</label><div class="input input--area onb-area"><textarea id="ca-bio" rows="4" onInput="{{ap.setBio}}">{{ap.bio}}</textarea><span class="cnt">{{ap.bioN}}/800</span></div><span class="field__help">Experiência, metodologia e limites do seu trabalho. Fica em “Ler mais”.</span></div>
+            <div class="field onb-narrow"><label class="field__label" for="ca-since">Treina alunos desde</label><div class="input"><input id="ca-since" type="text" inputmode="numeric" maxlength="4" value="{{ap.since}}" onInput="{{ap.setSince}}"></div><span class="field__help">Aparece como “declarado pelo treinador”.</span></div>
+          </section>
+        </sc-if>
+
+        <!-- Onde e como atende -->
+        <sc-if value="{{sx.is.atendimento}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Onde e como atende">
+            <sc-if value="{{at.pres}}" hint-placeholder-val="{{ true }}">
+              <div class="field"><span class="field__label" id="ct-lreg">Regiões de {{at.city}}</span><div class="onb-chips" role="group" aria-labelledby="ct-lreg"><sc-for list="{{at.regions}}" as="o" hint-placeholder-count="6"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">O endereço exato nunca aparece. Mostramos só as regiões.</span></div>
+              <div class="field"><span class="field__label" id="ct-lloc">Onde acontecem as sessões</span><div class="onb-chips" role="group" aria-labelledby="ct-lloc"><sc-for list="{{at.places}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            </sc-if>
+            <sc-if value="{{at.onl}}" hint-placeholder-val="{{ true }}">
+              <div class="field"><span class="field__label" id="ct-lon">Atendimento online</span><div class="onb-chips" role="group" aria-labelledby="ct-lon"><sc-for list="{{at.scopes}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">Vendas pela 99Coach são no Brasil, em reais, nesta versão.</span></div>
+            </sc-if>
+            <sc-if value="{{at.none}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Escolha presencial, online ou os dois</b>Volte em Básico para marcar o formato.</div></div></sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Serviços e preços -->
+        <sc-if value="{{sx.is.servicos}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{sv.listing}}" hint-placeholder-val="{{ true }}">
+            <section class="card onb-sec" aria-label="Serviços">
+              <sc-if value="{{sv.empty}}" hint-placeholder-val="{{ false }}"><div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-tag"></i></span><b>Nenhum serviço ainda</b><span>Sem serviço, o perfil mostra “Enviar mensagem” no lugar do preço.</span></div></sc-if>
+              <ul class="onb-svcs"><sc-for list="{{sv.items}}" as="s" hint-placeholder-count="2"><li class="onb-svc"><span class="onb-lrow__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><div class="onb-svc__t"><b>{{s.title}}</b><span>{{s.meta}}</span><span class="{{s.accCls}}">{{s.acc}}</span></div><b class="onb-svc__p">{{s.price}}</b><div class="onb-svc__a"><button type="button" class="btn btn--ghost btn--sm" onClick="{{s.edit}}">Editar</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{s.remove}}" aria-label="Remover {{s.title}}">Remover</button></div></li></sc-for></ul>
+              <button type="button" class="btn btn--outline" onClick="{{sv.add}}"><i class="ic ic--xs i-plus" aria-hidden="true"></i>Adicionar serviço</button>
+            </section>
+          </sc-if>
+          <sc-if value="{{sv.editing}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="{{sv.formTitle}}">
+              <h2 class="onb-h2">{{sv.formTitle}}</h2>
+              <div class="onb-choices" role="radiogroup" aria-label="Tipo de serviço"><sc-for list="{{sv.kinds}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div>
+              <div class="field"><label class="field__label" for="cs-t">Nome do serviço</label><div class="input"><input id="cs-t" type="text" value="{{sv.d.title}}" onInput="{{sv.setTitle}}"></div></div>
+              <div class="field"><label class="field__label" for="cs-i">O que inclui</label><div class="input input--area onb-area"><textarea id="cs-i" rows="3" onInput="{{sv.setInc}}">{{sv.d.inc}}</textarea></div></div>
+              <div class="field"><span class="field__label" id="cs-lf">Formato</span><div class="onb-chips" role="group" aria-labelledby="cs-lf"><sc-for list="{{sv.fmts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <sc-if value="{{sv.hasPrice}}" hint-placeholder-val="{{ true }}">
+                <div class="field onb-narrow"><label class="field__label" for="cs-p">Preço</label><div class="input"><span class="fix">R$</span><input id="cs-p" type="text" inputmode="decimal" value="{{sv.d.price}}" onInput="{{sv.setPrice}}"><span class="fix">{{sv.unit}}</span></div></div>
+                <div class="field"><span class="field__label" id="cs-la">Como o aluno contrata</span><div class="onb-choices" role="radiogroup" aria-labelledby="cs-la"><sc-for list="{{sv.accs}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div></div>
+              </sc-if>
+              <div class="onb-how"><span class="label">Como aparece no perfil</span><b>{{sv.preview}}</b><span class="v4-sub">{{sv.previewSub}}</span></div>
+              <sc-if value="{{sv.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Informe o nome e o preço do serviço.</span></sc-if>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{sv.save}}">Salvar serviço</button><button type="button" class="btn btn--ghost" onClick="{{sv.cancel}}">Cancelar</button></div>
+            </section>
+          </sc-if>
+        </sc-if>
+
+        <!-- Programas -->
+        <sc-if value="{{sx.is.programas}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Programas">
+            <sc-if value="{{pg.empty}}" hint-placeholder-val="{{ true }}"><p class="v4-sub">Programa é conteúdo pronto, de compra única, sem acompanhamento individual. É opcional e fica separado dos seus serviços.</p></sc-if>
+            <ul class="onb-svcs"><sc-for list="{{pg.items}}" as="s" hint-placeholder-count="1"><li class="onb-svc"><span class="onb-lrow__ic" aria-hidden="true"><i class="ic ic--sm i-book"></i></span><div class="onb-svc__t"><b>{{s.title}}</b><span>{{s.meta}}</span></div><b class="onb-svc__p">{{s.price}}</b><div class="onb-svc__a"><button type="button" class="btn btn--ghost btn--sm" onClick="{{s.remove}}" aria-label="Remover {{s.title}}">Remover</button></div></li></sc-for></ul>
+            <sc-if value="{{pg.adding}}" hint-placeholder-val="{{ false }}">
+              <div class="field"><label class="field__label" for="cp-t">Nome do programa</label><div class="input"><input id="cp-t" type="text" value="{{pg.d.title}}" onInput="{{pg.setTitle}}"></div></div>
+              <div class="onb-grid3">
+                <div class="field"><label class="field__label" for="cp-w">Semanas</label><div class="input"><input id="cp-w" type="text" inputmode="numeric" value="{{pg.d.weeks}}" onInput="{{pg.setWeeks}}"></div></div>
+                <div class="field"><label class="field__label" for="cp-n">Treinos</label><div class="input"><input id="cp-n" type="text" inputmode="numeric" value="{{pg.d.workouts}}" onInput="{{pg.setWorkouts}}"></div></div>
+                <div class="field"><label class="field__label" for="cp-p">Preço</label><div class="input"><span class="fix">R$</span><input id="cp-p" type="text" inputmode="decimal" value="{{pg.d.price}}" onInput="{{pg.setPrice}}"></div></div>
+              </div>
+              <p class="field__help">Pagamento único · 12 meses de acesso · sem acompanhamento individual. Fica em rascunho até você publicar.</p>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{pg.save}}">Salvar programa</button><button type="button" class="btn btn--ghost" onClick="{{pg.cancel}}">Cancelar</button></div>
+            </sc-if>
+            <sc-if value="{{pg.canAdd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline" onClick="{{pg.add}}"><i class="ic ic--xs i-plus" aria-hidden="true"></i>Criar programa</button></sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Vagas e horários -->
+        <sc-if value="{{sx.is.disponibilidade}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Vagas">
+            <h2 class="onb-h2">Você aceita novos alunos?</h2>
+            <div class="onb-choices" role="radiogroup" aria-label="Vagas"><sc-for list="{{av.opts}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div>
+            <p class="field__help">{{av.note}}</p>
+          </section>
+          <section class="card onb-sec" aria-label="Horários">
+            <div class="onb-sec__h"><div><h2 class="onb-h2">Mostrar horários livres</h2><p class="v4-sub">Opcional. Horário exibido não é reserva: o aluno confirma no pagamento.</p></div><button type="button" class="{{av.swCls}}" role="switch" aria-checked="{{av.swOn}}" aria-label="Mostrar horários livres" onClick="{{av.toggle}}"></button></div>
+            <sc-if value="{{av.agenda}}" hint-placeholder-val="{{ false }}">
+              <div class="field"><span class="field__label" id="cv-ld">Dias</span><div class="onb-chips" role="group" aria-labelledby="cv-ld"><sc-for list="{{av.days}}" as="o" hint-placeholder-count="6"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <div class="field"><span class="field__label" id="cv-lp">Períodos</span><div class="onb-chips" role="group" aria-labelledby="cv-lp"><sc-for list="{{av.periods}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">Horário de Brasília (UTC−3).</span></div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Credenciais -->
+        <sc-if value="{{sx.is.credenciais}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Credenciais">
+            <div class="onb-grid2">
+              <div class="field"><label class="field__label" for="cc-cref">Número do CREF</label><div class="input"><input id="cc-cref" type="text" value="{{k.cref}}" onInput="{{k.setCref}}"></div></div>
+              <div class="field"><label class="field__label" for="cc-for">Formação</label><div class="input"><input id="cc-for" type="text" value="{{k.formacao}}" onInput="{{k.setFormacao}}"></div></div>
+            </div>
+            <div class="onb-upload"><i class="ic ic--sm i-upload" aria-hidden="true"></i><div><b>{{k.docTitle}}</b><span class="v4-sub">{{k.docSub}}</span></div><sc-if value="{{k.canSend}}" hint-placeholder-val="{{ true }}"><label class="btn btn--outline btn--sm onb-file"><input type="file" accept="image/*,application/pdf" class="onb-file__in" onChange="{{k.send}}">Enviar foto ou PDF</label></sc-if><sc-if value="{{k.sent}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn">Em conferência</span></sc-if></div>
+            <div class="field"><span class="field__label">Certificações (declaradas)</span>
+              <div class="onb-chips"><sc-for list="{{k.certs}}" as="c" hint-placeholder-count="1"><span class="tagin__t">{{c.label}}<button type="button" class="onb-x" onClick="{{c.remove}}" aria-label="Remover {{c.label}}"><i class="ic ic--xs i-x" aria-hidden="true"></i></button></span></sc-for></div>
+              <div class="onb-addrow"><div class="input"><input type="text" aria-label="Nova certificação" value="{{k.certDraft}}" onInput="{{k.setCert}}"></div><button type="button" class="btn btn--outline" onClick="{{k.addCert}}">Adicionar</button></div>
+            </div>
+            <div class="onb-how"><span class="label">Como aparece no perfil</span><span class="{{k.chipCls}}"><i class="{{k.chipIc}}" aria-hidden="true"></i>{{k.chip}}</span><p class="v4-sub">{{k.how}}</p></div>
+          </section>
+        </sc-if>
+
+        <!-- Instagram (ACC08 · fluxo completo) -->
+        <sc-if value="{{sx.is.instagram}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Instagram">
+            <sc-if value="{{g.s.intro}}" hint-placeholder-val="{{ true }}">
+              <div class="field"><label class="field__label" for="ci-h">Seu perfil no Instagram</label><div class="input"><i class="ic ic--sm i-instagram" aria-hidden="true"></i><input id="ci-h" type="text" value="{{g.handle}}" onInput="{{g.setHandle}}"></div></div>
+              <ol class="onb-steps"><li><span class="onb-steps__n">1</span><div><b>Copie a mensagem</b><span class="v4-sub">Ela tem um código de referência.</span></div></li><li><span class="onb-steps__n">2</span><div><b>Envie de {{g.handle}} para @99coach.oficial</b><span class="v4-sub">Conta oficial da 99Coach para receber a prova.</span></div></li><li><span class="onb-steps__n">3</span><div><b>Volte e cole o código que respondermos</b><span class="v4-sub">Não pedimos sua senha nem o código de login do Instagram.</span></div></li></ol>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{g.copyMsg}}">Copiar mensagem</button></div>
+            </sc-if>
+            <sc-if value="{{g.s.instr}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--ok"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Mensagem copiada</b>“Quero confirmar meu perfil na 99Coach. Ref. K7Q-21”</div></div>
+              <p class="v4-sub">Se o Instagram não abrir a conversa, procure @99coach.oficial e cole a mensagem.</p>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{g.openIg}}">Abrir Instagram</button><button type="button" class="btn btn--ghost" onClick="{{g.copyMsg}}">Copiar de novo</button></div>
+            </sc-if>
+            <sc-if value="{{g.s.wait}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Aguardando sua mensagem</b>Quando ela chegar, respondemos no Instagram com um código de 6 dígitos. Enviar não é o mesmo que entregar: pode levar alguns minutos.</div></div>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{g.haveCode}}">Já tenho o código</button><button type="button" class="btn btn--ghost" onClick="{{g.cancel}}">Cancelar</button></div>
+            </sc-if>
+            <sc-if value="{{g.s.code}}" hint-placeholder-val="{{ false }}">
+              <div class="field"><label class="field__label" for="ci-c">Código recebido no direct de @99coach.oficial</label><div class="{{g.codeCls}}"><input id="ci-c" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{g.code}}" onInput="{{g.setCode}}"></div>
+                <sc-if value="{{g.wrong}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">O código não confere. 2 tentativas restantes.</span></sc-if></div>
+              <p class="onb-alt"><span class="t3">Não chegou? Reenviar em 0:45</span></p>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{g.verify}}">Verificar</button><button type="button" class="btn btn--ghost" onClick="{{g.review}}">Pedir revisão manual</button></div>
+            </sc-if>
+            <sc-if value="{{g.s.ok}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Titularidade confirmada · {{g.handle}} · 26/10/2026</b>Isso não publica o perfil, não verifica o CREF e não libera fotos.</div></div>
+            </sc-if>
+            <sc-if value="{{g.s.review}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Enviado para revisão · protocolo #C-301</b>Uma pessoa da equipe confere e avisa por e-mail. Seu cadastro continua.</div></div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Recebimentos -->
+        <sc-if value="{{sx.is.recebimentos}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Recebimentos">
+            <sc-if value="{{pay.s.intro}}" hint-placeholder-val="{{ true }}">
+              <ul class="onb-inc"><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Necessário para vender serviços e programas pela 99Coach</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Comissão de 5% por venda; taxas do processamento aparecem separadas</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Publicar o perfil e convidar alunos não dependem disto</li></ul>
+              <div class="field"><span class="field__label" id="cr-lt">Você recebe como</span><div class="onb-choices" role="radiogroup" aria-labelledby="cr-lt"><sc-for list="{{pay.types}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div></div>
+              <div class="onb-grid2">
+                <div class="field"><label class="field__label" for="cr-n">{{pay.nameLabel}}</label><div class="input"><input id="cr-n" type="text" value="{{pay.name}}" onInput="{{pay.setName}}"></div></div>
+                <div class="field"><label class="field__label" for="cr-d">{{pay.docLabel}}</label><div class="input"><input id="cr-d" type="text" inputmode="numeric" placeholder="{{pay.docPh}}" value="{{pay.doc}}" onInput="{{pay.setDoc}}"></div></div>
+              </div>
+              <div class="field"><label class="field__label" for="cr-k">Chave Pix para receber</label><div class="input"><input id="cr-k" type="text" placeholder="e-mail, celular ou chave aleatória" value="{{pay.pix}}" onInput="{{pay.setPix}}"></div><span class="field__help">Demonstração: não use dados reais. Nada é enviado a nenhum banco.</span></div>
+              <sc-if value="{{pay.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Preencha nome, documento e chave Pix.</span></sc-if>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{pay.submit}}">Enviar para verificação</button></div>
+            </sc-if>
+            <sc-if value="{{pay.s.wait}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--warn" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Em verificação pelo provedor de pagamentos</b>Pode levar até 2 dias úteis. Até lá, os serviços aparecem no perfil, mas a contratação fica indisponível.</div></div>
+              <div class="v4-row"><button type="button" class="btn btn--outline" onClick="{{pay.approve}}">Simular aprovação</button></div>
+            </sc-if>
+            <sc-if value="{{pay.s.ok}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Vendas habilitadas</b>Os pagamentos de alunos caem em Recebimentos, com bruto, taxas e líquido separados.</div></div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <!-- Assinatura 99Coach (Pro voluntário) -->
+        <sc-if value="{{sx.is.plano}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Plano atual">
+            <div class="onb-sec__h"><div><h2 class="onb-h2">{{pro.current}}</h2><p class="v4-sub">{{pro.currentSub}}</p></div><span class="{{pro.badgeCls}}">{{pro.badge}}</span></div>
+          </section>
+          <sc-if value="{{pro.s.offer}}" hint-placeholder-val="{{ true }}">
+            <section class="onb-pro" aria-label="Pro">
+              <span class="label onb-today__d">Opcional</span><b class="d3 onb-today__t">Pro</b>
+              <ul class="onb-pro__l"><li>Até 50 alunos ativos</li><li>6.000 créditos de IA por mês, inclusive no anual</li><li>R$ 99/mês ou R$ 990/ano</li><li>Não compra posição na busca nem selo</li></ul>
+              <div class="v4-row"><button type="button" class="btn btn--white" onClick="{{pro.start}}">Experimentar 7 dias</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{pro.s.review}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Revisar teste">
+              <h2 class="onb-h2">Revise antes de ativar</h2>
+              <div class="seg onb-seg" role="radiogroup" aria-label="Ciclo"><sc-for list="{{pro.cycles}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+              <div class="kv"><sc-for list="{{pro.rows}}" as="r" hint-placeholder-count="5"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+              <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{pro.okOn}}" onClick="{{pro.toggleOk}}"><span class="{{pro.okCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{pro.consent}}</span></button>
+              <sc-if value="{{pro.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para ativar, confirme que entendeu a cobrança automática.</span></sc-if>
+              <p class="field__help">Demonstração: nenhum cartão é pedido nem cobrado. Na versão real, o cartão é informado no canal habilitado.</p>
+              <div class="v4-row"><button type="button" class="btn btn--brand" onClick="{{pro.activate}}">Ativar teste de 7 dias</button><button type="button" class="btn btn--ghost" onClick="{{pro.back}}">Agora não</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{pro.s.active}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Teste ativo">
+              <div class="kv"><sc-for list="{{pro.activeRows}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+              <div class="v4-row"><button type="button" class="btn btn--outline" onClick="{{pro.cancel}}">Cancelar renovação</button></div>
+            </section>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{sx.hasSave}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{sx.save}}">{{sx.saveLabel}}</button><sc-if value="{{sx.hasNext}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg btn--arrow" onClick="{{sx.next}}">Próxima: {{sx.nextTitle}}<span class="btn__dot onb-dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-if></div></sc-if>
+        <sc-if value="{{sx.noSave}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{goCad}}">Voltar ao cadastro</button><sc-if value="{{sx.hasNext}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--lg" onClick="{{sx.next}}">Próxima: {{sx.nextTitle}}</button></sc-if></div></sc-if>
+      </sc-if>
+
+      <!-- ACC07 · prévia e publicação -->
+      <sc-if value="{{is.pub}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><button type="button" class="pghead__back onb-dback" onClick="{{goCad}}" aria-label="Voltar para o cadastro"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><div class="pghead__txt"><h1 class="pghead__title">Pronto para publicar?</h1><p class="pghead__sub">O que falta não impede o que já está pronto.</p></div></div>
+        <div class="onb-pub">
+          <section class="card onb-sec" aria-labelledby="h-ck">
+            <h2 id="h-ck" class="onb-h2">Checklist</h2>
+            <ul class="onb-check"><sc-for list="{{pb.checks}}" as="k" hint-placeholder-count="8"><li class="{{k.cls}}"><span class="{{k.mark}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span class="onb-check__t"><b>{{k.label}}</b><span>{{k.sub}}</span></span><sc-if value="{{k.hasGo}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{k.go}}">{{k.goLabel}}</button></sc-if></li></sc-for></ul>
+          </section>
+          <section class="card onb-sec" aria-labelledby="h-pv">
+            <h2 id="h-pv" class="onb-h2">Como aparece na busca</h2>
+            <div class="onb-pv"><span class="av onb-pv__av"><sc-if value="{{ph.has}}" hint-placeholder-val="{{ false }}"><img src="{{ph.url}}" alt=""></sc-if><sc-if value="{{ph.none}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span><div class="onb-pv__b"><b>{{f.name}}</b><span>{{pb.line}}</span><div class="onb-trust"><sc-for list="{{pb.trust}}" as="t" hint-placeholder-count="2"><span class="{{t.cls}}"><i class="{{t.ic}}" aria-hidden="true"></i>{{t.label}}</span></sc-for></div><span class="onb-pv__p">{{pb.price}}</span></div></div>
+            <p class="v4-sub">Ainda sem avaliações. Elas só aparecem depois de contratações concluídas pela 99Coach.</p>
+            <button type="button" class="btn btn--outline btn--sm" onClick="{{viewProfile}}">Ver o perfil completo como os alunos veem</button>
+          </section>
+        </div>
+        <sc-if value="{{pb.missing}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Falta o mínimo para publicar</b>Escolha pelo menos uma modalidade, a cidade e o formato em Básico.</div></div></sc-if>
+        <sc-if value="{{pb.unknown}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Ainda não confirmamos a publicação</b>O envio às 09:18 não respondeu. Consultamos antes de tentar de novo, para não publicar duas vezes.</div></div></sc-if>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--brand btn--lg btn--arrow" onClick="{{pb.go}}">{{pb.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline btn--lg" onClick="{{goCad}}">Voltar ao cadastro</button></div>
+      </sc-if>
+
+      <!-- Publicado (recibo) -->
+      <sc-if value="{{is.publicado}}" hint-placeholder-val="{{ false }}">
+        <div class="card onb-sec onb-receipt">
+          <div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-check"></i></span><b>Perfil publicado</b><span>Publicado em 26/10 às 09:18 · versão {{cad.version}}. Aparece na busca em instantes; a indexação no Google é outra etapa.</span></div>
+          <div class="onb-codeline onb-codeline--wide"><span class="mono">99coach.com.br/thiago-pereira</span><button type="button" class="btn btn--outline btn--sm" onClick="{{copy}}">Copiar link</button></div>
+          <div class="kv"><div class="kv__r"><span>Selos</span><b>{{pb.trustLine}}</b></div><div class="kv__r"><span>Serviços</span><b>{{pb.svcLine}}</b></div><div class="kv__r"><span>Recebimentos</span><b>{{pb.payLine}}</b></div></div>
+        </div>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg btn--arrow" onClick="{{goConvidar}}">Convidar primeiro aluno<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline btn--lg" onClick="{{viewProfile}}">Ver meu perfil público</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{goHoje}}">Ir para Hoje</button></div>
+      </sc-if>
+
+      <!-- REL01 · convidar aluno -->
+      <sc-if value="{{is.convidar}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><button type="button" class="pghead__back onb-dback" onClick="{{goHoje}}" aria-label="Voltar para Hoje"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><div class="pghead__txt"><h1 class="pghead__title">Convidar aluno</h1><p class="pghead__sub">O aluno aceita uma vez e vocês ficam conectados. Sem cartão e sem Pro.</p></div></div>
+        <sc-if value="{{iv.notCreated}}" hint-placeholder-val="{{ true }}">
+        <section class="card onb-sec" aria-labelledby="h-cv">
+          <h2 id="h-cv" class="onb-h2">Novo convite individual</h2>
+          <div class="field"><label class="field__label" for="onb-in">Nome do aluno (opcional)</label><div class="input"><input id="onb-in" type="text" value="{{iv.name}}" onInput="{{iv.setName}}"></div><span class="field__help">Só para você reconhecer o convite. O aluno não vê este campo.</span></div>
+          <div class="field"><span class="field__label" id="lb-sv">Já com um serviço? (opcional)</span><div class="onb-choices" role="radiogroup" aria-labelledby="lb-sv"><sc-for list="{{iv.svcs}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div></div>
+        </section>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg btn--arrow" onClick="{{iv.create}}">Criar convite<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
+        </sc-if>
+        <sc-if value="{{iv.created}}" hint-placeholder-val="{{ false }}">
+        <section class="card onb-sec" aria-labelledby="h-cvok">
+          <div class="onb-sec__h"><h2 id="h-cvok" class="onb-h2">Convite para {{iv.nameOr}}</h2><span class="{{iv.badgeCls}}">{{iv.badge}}</span></div>
+          <div class="onb-codeline onb-codeline--wide"><span class="mono">99coach.com.br/c/thiago/4KQ7</span><button type="button" class="btn btn--outline btn--sm" onClick="{{copy}}">Copiar</button></div>
+          <p class="field__help">Uso único · vale 7 dias, até 02/11. {{iv.svcLine}}</p>
+          <div class="v4-row"><button type="button" class="btn btn--whatsapp" onClick="{{iv.shareWa}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar pelo WhatsApp</button><button type="button" class="btn btn--outline" onClick="{{iv.shareMail}}"><i class="ic ic--sm i-send" aria-hidden="true"></i>Por e-mail</button></div>
+          <sc-if value="{{iv.shared}}" hint-placeholder-val="{{ false }}"><p class="field__help">{{iv.sharedLine}}</p></sc-if>
+        </section>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg btn--arrow" onClick="{{iv.preview}}">Ver como o aluno recebe<span class="btn__dot onb-dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--ghost btn--lg" onClick="{{goHoje}}">Ir para Hoje</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- Conta (ACC11–ACC15) -->
+      <sc-if value="{{is.acct}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Conta</h1><p class="pghead__sub">Seus dados, acesso e preferências. Nada aqui muda seus alunos, treinos ou compras sem você confirmar.</p></div></div>
+        <section class="card onb-sec onb-me-card" aria-label="Sua conta">
+          <span class="av onb-photo__av"><sc-if value="{{ct.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{ct.photo}}" alt=""></sc-if><sc-if value="{{ct.noPhoto}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span>
+          <div class="onb-me-card__t"><b>{{me.name}}</b><span>{{ct.email}}</span><span class="badge badge--plain">{{ct.role}}</span></div>
+        </section>
+        <sc-for list="{{ct.groups}}" as="gp" hint-placeholder-count="2">
+          <section class="card onb-sec" aria-label="{{gp.title}}">
+            <h2 class="onb-h2">{{gp.title}}</h2>
+            <ol class="onb-secs"><sc-for list="{{gp.items}}" as="s" hint-placeholder-count="4"><li><button type="button" class="onb-secs__r" onClick="{{s.go}}"><span class="onb-secs__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-secs__t"><b>{{s.title}}</b><span>{{s.sub}}</span></span><span class="onb-st">{{s.st}}</span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol>
+          </section>
+        </sc-for>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{ct.roleSwitch}}">{{ct.roleSwitchLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{ct.logout}}"><i class="ic ic--sm i-logout" aria-hidden="true"></i>Sair da conta</button></div>
+      </sc-if>
+
+      <sc-if value="{{is.cta}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><button type="button" class="pghead__back onb-dback" onClick="{{goConta}}" aria-label="Voltar para Conta"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><div class="pghead__txt"><span class="label">{{cx.code}}</span><h1 class="pghead__title">{{cx.title}}</h1><p class="pghead__sub">{{cx.sub}}</p></div></div>
+
+        <!-- ACC11 · idioma e região -->
+        <sc-if value="{{cx.is.idioma}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="{{lg.t.lang}}">
+            <div class="field"><span class="field__label" id="ci-ll">{{lg.t.lang}}</span><div class="seg onb-seg" role="radiogroup" aria-labelledby="ci-ll"><sc-for list="{{lg.langs}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}" lang="{{o.code}}">{{o.label}}</button></sc-for></div><span class="field__help">{{lg.t.langHelp}}</span></div>
+            <div class="field"><span class="field__label" id="ci-lt">{{lg.t.tz}}</span><div class="onb-chips" role="radiogroup" aria-labelledby="ci-lt"><sc-for list="{{lg.tzs}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><span class="field__label" id="ci-lu">{{lg.t.units}}</span><div class="seg onb-seg onb-seg--sm" role="radiogroup" aria-labelledby="ci-lu"><sc-for list="{{lg.units}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="kv"><div class="kv__r"><span>{{lg.t.country}}</span><b>{{lg.t.countryV}}</b></div><div class="kv__r"><span>{{lg.t.currency}}</span><b>{{lg.t.currencyV}}</b></div></div>
+            <sc-if value="{{lg.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>{{lg.t.failT}}</b>{{lg.t.failS}}</div></div></sc-if>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{lg.save}}">{{lg.t.save}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{lg.simFail}}">Simular falha ao salvar</button></div>
+        </sc-if>
+
+        <!-- ACC12 · segurança e sessões -->
+        <sc-if value="{{cx.is.seguranca}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Acesso">
+            <h2 class="onb-h2">Acesso</h2>
+            <div class="kv"><div class="kv__r"><span>E-mail</span><b>{{ct.email}}</b></div><div class="kv__r"><span>Entrar com</span><b>Código por e-mail · Google</b></div></div>
+            <div class="onb-sec__h"><div><b>Verificação em 2 etapas</b><p class="v4-sub">{{sg.mfaSub}}</p></div><button type="button" class="{{sg.mfaCls}}" role="switch" aria-checked="{{sg.mfaOn}}" aria-label="Verificação em 2 etapas" onClick="{{sg.toggleMfa}}"></button></div>
+          </section>
+          <section class="card onb-sec" aria-label="Aparelhos conectados">
+            <h2 class="onb-h2">Aparelhos conectados</h2>
+            <ul class="onb-check"><sc-for list="{{sg.sessions}}" as="s" hint-placeholder-count="3"><li class="onb-check__i"><span class="onb-lrow__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-check__t"><b>{{s.name}}</b><span>{{s.meta}}</span></span><sc-if value="{{s.current}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ok">Esta sessão</span></sc-if><sc-if value="{{s.canEnd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{s.end}}">Encerrar</button></sc-if></li></sc-for></ul>
+            <sc-if value="{{sg.hasOthers}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost" onClick="{{sg.endAll}}">Encerrar todas as outras sessões</button></sc-if>
+          </section>
+          <sc-if value="{{sg.confirming}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Confirme que é você">
+              <div class="alert alert--info"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div><b>Confirme que é você</b>{{sg.confirmWhat}} Enviamos um código para {{ct.email}}.</div></div>
+              <div class="field onb-narrow"><label class="field__label" for="cg-c">Código</label><div class="input onb-codebox"><input id="cg-c" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{sg.code}}" onInput="{{sg.setCode}}"></div></div>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{sg.confirm}}">Confirmar</button><button type="button" class="btn btn--ghost" onClick="{{sg.cancel}}">Cancelar</button></div>
+            </section>
+          </sc-if>
+        </sc-if>
+
+        <!-- ACC13 · privacidade e dados -->
+        <sc-if value="{{cx.is.privacidade}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Finalidades">
+            <h2 class="onb-h2">Você controla estas preferências</h2>
+            <ul class="onb-check"><sc-for list="{{pv.purposes}}" as="s" hint-placeholder-count="3"><li class="onb-check__i"><span class="onb-check__t"><b>{{s.title}}</b><span>{{s.sub}}</span></span><sc-if value="{{s.locked}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Necessária</span></sc-if><sc-if value="{{s.free}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{s.swCls}}" role="switch" aria-checked="{{s.on}}" aria-label="{{s.title}}" onClick="{{s.toggle}}"></button></sc-if></li></sc-for></ul>
+            <p class="field__help">Recusar o que é opcional não impede buscar, treinar, salvar ou contratar. Dados de acompanhamento não vão para medição de uso.</p>
+            <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{pv.save}}">Salvar preferências</button></div>
+          </section>
+          <section class="card onb-sec" aria-label="Seus dados">
+            <h2 class="onb-h2">Seus dados</h2>
+            <div class="onb-list">
+              <button type="button" class="lrow onb-lrow" onClick="{{pv.exportStart}}"><span class="onb-lrow__ic" aria-hidden="true"><i class="ic ic--sm i-download"></i></span><span class="onb-lrow__t"><b>Exportar meus dados</b><span>Perfil, treinos, mensagens e recibos em um arquivo</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+              <button type="button" class="lrow onb-lrow" onClick="{{pv.fix}}"><span class="onb-lrow__ic" aria-hidden="true"><i class="ic ic--sm i-edit"></i></span><span class="onb-lrow__t"><b>Corrigir dados</b><span>{{pv.fixSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+              <sc-if value="{{pv.isTrainer}}" hint-placeholder-val="{{ true }}"><button type="button" class="lrow onb-lrow" onClick="{{pv.unpublish}}"><span class="onb-lrow__ic" aria-hidden="true"><i class="ic ic--sm i-eye"></i></span><span class="onb-lrow__t"><b>Retirar perfil público</b><span>Sai da busca; sua conta e seus alunos continuam</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
+              <button type="button" class="lrow onb-lrow" onClick="{{pv.delStart}}"><span class="onb-lrow__ic onb-risk" aria-hidden="true"><i class="ic ic--sm i-trash"></i></span><span class="onb-lrow__t"><b>Excluir conta</b><span>Mostra o que acontece antes de pedir</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+            </div>
+          </section>
+          <sc-if value="{{pv.exportConfirm}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Confirmar exportação">
+              <div class="alert alert--info"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div><b>Confirme que é você</b>Código enviado para {{ct.email}}.</div></div>
+              <div class="field onb-narrow"><label class="field__label" for="cp-c">Código</label><div class="input onb-codebox"><input id="cp-c" class="onb-code" type="text" inputmode="numeric" maxlength="6" value="{{pv.code}}" onInput="{{pv.setCode}}"></div></div>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{pv.exportSend}}">Pedir exportação</button><button type="button" class="btn btn--ghost" onClick="{{pv.exportCancel}}">Cancelar</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{pv.delOpen}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Excluir conta">
+              <h2 class="onb-h2">Antes de excluir</h2>
+              <ul class="onb-inc onb-inc--plain"><sc-for list="{{pv.effects}}" as="i" hint-placeholder-count="5"><li><i class="ic ic--xs i-info" aria-hidden="true"></i>{{i}}</li></sc-for></ul>
+              <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{pv.delOkOn}}" onClick="{{pv.delToggle}}"><span class="{{pv.delOkCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Entendi o que acontece e quero pedir a exclusão.</span></button>
+              <div class="v4-row"><button type="button" class="btn btn--outline onb-danger" onClick="{{pv.delSend}}">Pedir exclusão da conta</button><button type="button" class="btn btn--ghost" onClick="{{pv.delCancel}}">Manter minha conta</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{pv.hasReqs}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Pedidos">
+              <h2 class="onb-h2">Pedidos</h2>
+              <ul class="onb-check"><sc-for list="{{pv.reqs}}" as="r" hint-placeholder-count="2"><li class="onb-check__i"><span class="onb-check__t"><b>{{r.title}}</b><span>{{r.sub}}</span></span><span class="{{r.cls}}">{{r.st}}</span><sc-if value="{{r.canCancel}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.cancel}}">Cancelar pedido</button></sc-if></li></sc-for></ul>
+            </section>
+          </sc-if>
+        </sc-if>
+
+        <!-- ACC14 · compartilhamento entre vínculos -->
+        <sc-if value="{{cx.is.compartilhamento}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Compartilhamentos">
+            <h2 class="onb-h2">Você decide o que cada treinador vê</h2>
+            <ul class="onb-check"><sc-for list="{{sh.items}}" as="s" hint-placeholder-count="2"><li class="onb-check__i"><span class="onb-check__t"><b>{{s.dado}}</b><span>{{s.meta}}</span></span><sc-if value="{{s.canRevoke}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{s.revoke}}">Revogar</button></sc-if><sc-if value="{{s.byLink}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Pelo vínculo</span></sc-if></li></sc-for></ul>
+            <p class="field__help">Comprar um programa não dá acesso aos seus dados. Cada compartilhamento tem dado, pessoa, finalidade e prazo.</p>
+            <sc-if value="{{sh.canAdd}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline" onClick="{{sh.add}}"><i class="ic ic--xs i-plus" aria-hidden="true"></i>Compartilhar um dado</button></sc-if>
+          </section>
+          <sc-if value="{{sh.adding}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec" aria-label="Compartilhar com Diego Moraes">
+              <h2 class="onb-h2">Compartilhar com Diego Moraes</h2>
+              <p class="v4-sub">Treinador de lutas · vínculo ativo</p>
+              <div class="field"><span class="field__label" id="cs-ld">Qual dado</span><div class="onb-chips" role="radiogroup" aria-labelledby="cs-ld"><sc-for list="{{sh.dados}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <div class="field"><label class="field__label" for="cs-f">Para qual finalidade</label><div class="input"><input id="cs-f" type="text" value="{{sh.fim}}" onInput="{{sh.setFim}}"></div></div>
+              <div class="field"><span class="field__label" id="cs-lv">Até quando</span><div class="onb-chips" role="radiogroup" aria-labelledby="cs-lv"><sc-for list="{{sh.prazos}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{sh.confirm}}">Confirmar compartilhamento</button><button type="button" class="btn btn--ghost" onClick="{{sh.cancel}}">Cancelar</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{sh.hasReceipt}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>{{sh.receiptT}}</b>{{sh.receiptS}}</div></div></sc-if>
+        </sc-if>
+
+        <!-- ACC15 · notificações -->
+        <sc-if value="{{cx.is.avisos}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{nt.blocked}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Notificações bloqueadas neste aparelho</b>Para receber push, libere nos Ajustes do aparelho › 99Coach › Notificações. E-mail continua funcionando.</div></div></sc-if>
+          <section class="card onb-sec" aria-label="Notificações">
+            <div class="onb-ntable" role="table" aria-label="Notificações por categoria e canal">
+              <div class="onb-ntable__h" role="row"><span role="columnheader">Categoria</span><span role="columnheader">Push</span><span role="columnheader">E-mail</span></div>
+              <sc-for list="{{nt.rows}}" as="r" hint-placeholder-count="5"><div class="onb-ntable__r" role="row"><span class="onb-check__t" role="cell"><b>{{r.title}}</b><span>{{r.sub}}</span></span><span role="cell"><button type="button" class="{{r.pushCls}}" role="checkbox" aria-checked="{{r.pushOn}}" aria-label="{{r.title}} por push" onClick="{{r.togglePush}}"><i class="ic ic--xs i-check" aria-hidden="true"></i></button></span><span role="cell"><button type="button" class="{{r.mailCls}}" role="checkbox" aria-checked="{{r.mailOn}}" aria-label="{{r.title}} por e-mail" onClick="{{r.toggleMail}}"><i class="ic ic--xs i-check" aria-hidden="true"></i></button></span></div></sc-for>
+            </div>
+          </section>
+          <section class="card onb-sec" aria-label="Prévia fora do app">
+            <h2 class="onb-h2">Prévia fora do app</h2>
+            <div class="onb-npv"><span class="onb-npv__app" aria-hidden="true">99</span><div><b>99Coach</b><span>{{nt.preview}}</span></div></div>
+            <p class="field__help">A notificação mostra só um aviso genérico. Nome de quem escreveu, conteúdo e qualquer dado de saúde aparecem apenas dentro do app.</p>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{nt.save}}">Salvar preferências</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{nt.simBlock}}">{{nt.simLabel}}</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ALU01 · Hoje do aluno no primeiro acesso -->
+      <sc-if value="{{is.alunoHoje}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="label">Hoje · seg 26/10</span><h1 class="pghead__title">Oi, {{stu.first}}</h1></div></div>
+        <div class="onb-coach"><span class="av av--md onb-coach__av"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt=""></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span><div class="onb-coach__t"><span class="label">Seu treinador</span><b>{{inv.name}}</b><span>{{inv.svc}} · ativo desde hoje</span></div><button type="button" class="btn btn--white btn--sm" onClick="{{msg}}"><i class="ic ic--xs i-message" aria-hidden="true"></i>Mensagem</button></div>
+        <section class="card onb-sec" aria-labelledby="h-prep">
+          <h2 id="h-prep" class="onb-h2">Preparando seu acompanhamento</h2>
+          <ul class="onb-check"><sc-for list="{{a.checks}}" as="k" hint-placeholder-count="4"><li class="{{k.cls}}"><span class="{{k.mark}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span class="onb-check__t"><b>{{k.label}}</b><span>{{k.sub}}</span></span><sc-if value="{{k.hasGo}}" hint-placeholder-val="{{ false }}"><button type="button" class="{{k.goCls}}" onClick="{{k.go}}">{{k.goLabel}}</button></sc-if><sc-if value="{{k.hasTag}}" hint-placeholder-val="{{ false }}"><span class="label">{{k.tag}}</span></sc-if></li></sc-for></ul>
+        </section>
+        <div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div>{{inv.first}} foi avisado. Seu primeiro treino aparece aqui quando ele publicar; não existe treino automático nem prazo inventado.</div></div>
+      </sc-if>
+
+      </main>
+    </div>
+    <nav class="tabbar onb-tabbar" aria-label="{{navLabel}}"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" class="{{t.cls}}" aria-current="{{t.cur}}" onClick="{{t.go}}"><i class="{{t.ic}}" aria-hidden="true"></i><span>{{t.label}}</span></button></sc-for></nav>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
+</div>

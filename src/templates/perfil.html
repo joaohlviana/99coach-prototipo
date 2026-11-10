@@ -1,0 +1,337 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
+
+  <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
+  <div class="v4-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios</span><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar cenário</button></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scnChips}}" as="c" hint-placeholder-count="12"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Percurso</span><div class="v4-scroll no-sb"><sc-for list="{{flowChips}}" as="c" hint-placeholder-count="17"><button type="button" class="chip" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho do site com busca compacta (ds4.header · Componentes-5 G16) — o mesmo da Home VFINAL -->
+  <header class="hdr">
+    <div class="wrap hdr__in">
+      <button type="button" class="v4-reset vfp-logo" aria-label="99Coach, página inicial" onClick="{{openHome}}"><img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <button type="button" class="hdr__search vf-hsearch" onClick="{{openSearch}}" aria-label="Busca atual: {{ctxLabel}}. Voltar para os resultados"><i class="ic ic--sm i-search" aria-hidden="true"></i><span class="vf-hs">{{ctxLabel}}</span><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+      <nav class="hdr__nav" aria-label="Principal">
+        <button type="button" class="hdr__link is-on" onClick="{{openSearch}}">Treinadores</button>
+        <button type="button" class="hdr__link" onClick="{{openSearch}}">Esportes</button>
+        <button type="button" class="hdr__link" onClick="{{openSearch}}">Programas</button>
+        <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
+      </nav>
+      <div class="hdr__tools">
+        <button type="button" class="hdr__ico" onClick="{{openSaved}}" aria-label="Salvos"><i class="ic ic--sm i-heart" aria-hidden="true"></i><sc-if value="{{favDot}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button>
+        <sc-if value="{{anon}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{openLogin}}">Entrar</button></sc-if>
+        <sc-if value="{{signed}}" hint-placeholder-val="{{ false }}"><button type="button" class="v4-me" onClick="{{openAcct}}" aria-label="{{userName}}: {{userDest}}"><span class="av av--sm"><sc-if value="{{userHasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{userPhoto}}" alt=""></sc-if><sc-if value="{{userNoPhoto}}" hint-placeholder-val="{{ true }}">{{userIni}}</sc-if></span><span class="v4-hide-c">{{userDest}}</span></button></sc-if>
+        <button type="button" class="hdr__ico v4-menu" onClick="{{openMenu}}" aria-label="Abrir menu" aria-expanded="{{menuOpen}}"><i class="ic ic--sm i-menu" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Perfil retirado -->
+  <sc-if value="{{removed}}" hint-placeholder-val="{{ false }}">
+  <main class="wrap vfp-main" id="conteudo">
+    <div class="card vfp-card" style="max-width: 640px; margin: 24px auto 0">
+      <h1 class="h-page">Perfil indisponível</h1>
+      <div class="alert"><i class="ic  i-info" aria-hidden="true"></i><div><b>O profissional retirou o perfil público ou ele foi removido</b>O conteúdo anterior não fica acessível.</div></div>
+      <div class="v4-row"><button type="button" class="btn btn--primary btn--lg btn--arrow" onClick="{{openSearch}}">Voltar para a busca<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><span class="tag tag--mono">{{ctxLabel}}</span></div>
+      <button type="button" class="btn btn--ghost btn--sm" onClick="{{openHelp}}" style="align-self: flex-start">Por que um perfil fica indisponível?</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{showProfile}}" hint-placeholder-val="{{ true }}">
+  <main class="wrap vfp-main" id="conteudo">
+    <!-- Trilha com voltar (G16) -->
+    <div class="v4-crumbs">
+      <button type="button" class="btn btn--ghost btn--sm" onClick="{{openSearch}}"><i class="ic ic--xs i-arrow-l" aria-hidden="true"></i>Voltar para a busca</button>
+      <span class="tag tag--mono">{{ctxLabel}}</span>
+      <nav class="v4-trail" aria-label="Você está em"><button type="button" class="v4-reset" onClick="{{openHome}}">Início</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openSearch}}">{{crumbSport}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openSearch}}">Londrina, PR</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><b aria-current="page">{{t.name}}</b></nav>
+    </div>
+
+    <sc-if value="{{note.on}}" hint-placeholder-val="{{ false }}"><div class="{{note.cls}} vfp-note"><i class="{{note.ic}}"></i><div style="flex: 1"><b>{{note.title}}</b>{{note.sub}}</div><sc-if value="{{note.hasBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{note.go}}">{{note.btn}}</button></sc-if></div></sc-if>
+
+    <!-- Celular: barra iOS, capa em sangria com o nome sobre a foto, abas sublinhadas fixas -->
+    <div class="vfp-ios"><button type="button" class="vfp-ios__b" aria-label="Voltar para a busca: {{ctxLabel}}" onClick="{{openSearch}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><b>{{t.name}}</b><button type="button" class="vfp-ios__b" aria-label="Compartilhar perfil" onClick="{{openShare}}"><i class="ic ic--sm i-share" aria-hidden="true"></i></button></div>
+    <div class="vfp-mhero">
+      <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
+      <sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="vfp-mhero__ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if>
+      <sc-if value="{{showSocial}}" hint-placeholder-val="{{ true }}"><button type="button" class="vfp-glass" aria-label="{{favLabel}} perfil" aria-pressed="{{favOn}}" onClick="{{toggleFav}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button></sc-if>
+      <div class="vfp-mhero__in">
+        <p class="pf-name" aria-hidden="true">{{t.name}}</p>
+        <span class="vfp-mhero__role">{{mrole}}</span>
+        <div class="vfp-mhero__meta"><sc-if value="{{mcref.on}}" hint-placeholder-val="{{ true }}"><span class="tag tag--glass"><sc-if value="{{mcref.ver}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if><sc-if value="{{mcref.inf}}" hint-placeholder-val="{{ false }}"><i class="ic ic--xs i-file" aria-hidden="true"></i></sc-if>{{mcref.t}}</span></sc-if><span><i class="ic ic--xs i-pin" aria-hidden="true"></i> {{mcity}}</span></div>
+        <div class="vfp-mhero__chips"><sc-for list="{{mchips}}" as="c" hint-placeholder-count="3"><span class="tag tag--glass">{{c}}</span></sc-for></div>
+      </div>
+    </div>
+    <nav class="vfp-mtabs" aria-label="Seções do perfil (celular)"><sc-for list="{{anchors}}" as="a" hint-placeholder-count="6"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></nav>
+    <div class="vfp-top" id="visao">
+      <div class="vfp-col">
+        <!-- Identidade do treinador (G18 · pf-avatar, pf-name) + selos de confiança (G03) + seletor de seções (G05) -->
+        <section class="card vfp-id" aria-labelledby="nome">
+          <div class="vfp-id__top">
+            <span class="vfp-av"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img class="pf-avatar" src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="pf-avatar vfp-ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if></span>
+            <div class="vfp-id__txt">
+              <div class="vfp-id__head">
+                <div class="vfp-name"><h1 id="nome" class="pf-name">{{t.name}}</h1><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></div>
+                <sc-if value="{{showSocial}}" hint-placeholder-val="{{ true }}"><div class="vfp-id__act"><button type="button" class="btn btn--outline btn--sm" aria-pressed="{{favOn}}" onClick="{{toggleFav}}"><i class="ic ic--xs i-heart" aria-hidden="true" style="{{favIc}}"></i>{{favLabel}}</button><button type="button" class="btn btn--outline btn--sm" onClick="{{openShare}}"><i class="ic ic--xs i-share" aria-hidden="true"></i>Compartilhar</button></div></sc-if>
+              </div>
+              <p class="vfp-line">{{vrole}}</p>
+              <div class="vfp-chips"><sc-for list="{{t.chips}}" as="c" hint-placeholder-count="2"><span class="{{c.cls}}"><sc-if value="{{c.seal}}" hint-placeholder-val="{{ false }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if><sc-if value="{{c.noSeal}}" hint-placeholder-val="{{ true }}"><i class="{{c.ic}}"></i></sc-if>{{c.t}}</span></sc-for></div>
+              <ul class="vfp-facts">
+                <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><span>Ainda sem avaliações</span></sc-if></li>
+                <sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><li><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></li></sc-if>
+                <li><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</li>
+                <li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li>
+              </ul>
+            </div>
+          </div>
+              <ul class="vfp-mstats" aria-label="Números do perfil"><sc-for list="{{mstats}}" as="d" hint-placeholder-count="3"><li><b>{{d.v}}</b><span>{{d.k}}</span></li></sc-for></ul>
+          <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></sc-if><span><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></div>
+          <nav class="vfp-tabs no-sb" aria-label="Seções do perfil"><div class="seg seg--fit seg--sm"><sc-for list="{{anchors}}" as="a" hint-placeholder-count="6"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></div></nav>
+        </section>
+
+        <!-- Como trabalho (G11 · card) -->
+        <section class="card vfp-card" aria-labelledby="como">
+          <h2 id="como" class="vf-h3">Como trabalho</h2>
+          <p class="vfp-text">{{t.pitch}}</p>
+          <sc-if value="{{bioOpen}}" hint-placeholder-val="{{ false }}"><p class="vfp-text t2">{{t.bio}}</p></sc-if>
+          <sc-if value="{{hasHow}}" hint-placeholder-val="{{ true }}"><ol class="vfp-how"><sc-for list="{{how}}" as="h" hint-placeholder-count="3"><li><span class="label">{{h.k}}</span><b>{{h.v}}</b></li></sc-for></ol></sc-if>
+          <sc-if value="{{t.hasBio}}" hint-placeholder-val="{{ true }}"><button type="button" class="link-arrow v4-reset vfp-more" aria-expanded="{{bioExp}}" onClick="{{toggleBio}}">{{bioLabel}}<i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{bioRot}}"></i></button></sc-if>
+        </section>
+
+        <div class="vfp-two">
+          <!-- Credenciais (G18) com situação de cada uma (G03 · selos) -->
+          <section class="card vfp-card" aria-labelledby="cred">
+            <h2 id="cred" class="vf-h3">Credenciais</h2>
+            <sc-if value="{{t.hasCreds}}" hint-placeholder-val="{{ true }}"><ul class="vfp-creds"><sc-for list="{{t.creds}}" as="c" hint-placeholder-count="4"><li><span class="label">{{c.k}}</span><b>{{c.v}}</b><span class="{{c.cls}} v4-bw">{{c.st}}</span></li></sc-for></ul></sc-if>
+            <sc-if value="{{t.noCreds}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-file" aria-hidden="true"></i></span><b>{{t.noCredsTitle}}</b><span>{{t.noCredsText}}</span></div></sc-if>
+            <p class="vfp-small vfp-own"><i class="ic ic--sm i-user" aria-hidden="true"></i><span>{{ownLine}}</span></p>
+          </section>
+          <!-- Avaliações em resumo (G08 · número) -->
+          <section class="card vfp-card" aria-labelledby="avr">
+            <h2 id="avr" class="vf-h3">Avaliações</h2>
+            <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
+              <div class="vfp-score"><span class="kpi__n">{{t.avg}}</span><div><div class="stars" role="img" aria-label="Nota {{t.avg}} de 5"><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i></div><b>{{t.n}} avaliações</b><span class="vfp-small">de alunos com contratação concluída</span></div></div>
+              <blockquote class="vfp-quote">“{{rev1.text}}”<cite>{{rev1.who}} · {{rev1.what}}</cite></blockquote>
+              <sc-if value="{{hasRev2}}" hint-placeholder-val="{{ true }}"><blockquote class="vfp-quote">“{{rev2.text}}”<cite>{{rev2.who}} · {{rev2.what}}</cite></blockquote></sc-if>
+              <button type="button" class="link-arrow v4-reset vfp-link" onClick="{{goRev}}">Ver as {{t.n}} avaliações<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+            </sc-if>
+            <sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-star" aria-hidden="true"></i></span><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if>
+          </section>
+        </div>
+      </div>
+
+      <!-- Cartão lateral de ofertas (G18 · contato) — fixo no desktop; no tablet e no celular vira a barra fixa -->
+      <aside class="vfp-aside" aria-label="Serviços e próxima etapa">
+        <sc-if value="{{hasA}}" hint-placeholder-val="{{ true }}">
+        <div class="card vfp-side">
+          <span class="label">{{sideLabel}}</span>
+          <sc-if value="{{showPicker}}" hint-placeholder-val="{{ true }}"><div class="vfp-picks" role="radiogroup" aria-label="Escolha uma oferta"><sc-for list="{{picker}}" as="m" hint-placeholder-count="5"><button type="button" role="radio" class="{{m.rowCls}}" aria-checked="{{m.on}}" onClick="{{m.pick}}"><span class="vfp-pick__h"><b>{{m.title}}</b><b class="vfp-pick__p">{{m.label}}</b></span><span class="vfp-pick__s">{{m.sub}}</span></button></sc-for></div></sc-if>
+          <sc-if value="{{showBox}}" hint-placeholder-val="{{ false }}"><div class="v4-pricebox">
+            <sc-if value="{{A.hasPrice}}" hint-placeholder-val="{{ false }}"><div class="price"><span class="price__k">{{A.title}}</span><span class="price__v">{{A.price}} <small>{{A.unit}}</small></span></div></sc-if>
+            <sc-if value="{{A.noPrice}}" hint-placeholder-val="{{ true }}"><b class="vfp-boxt">{{A.title}}</b><span class="vfp-boxl">{{A.line}}</span></sc-if>
+            <span class="vfp-small">{{A.sub}}</span>
+          </div></sc-if>
+          <sc-if value="{{A.isAnchor}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow v4-wrapbtn" onClick="{{goSvc}}" style="justify-content: space-between">{{A.label}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+          <sc-if value="{{A.hasAction}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{A.btnCls}}" onClick="{{A.go}}" style="justify-content: space-between">{{A.label}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+          <sc-if value="{{A.hasSecondary}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block v4-wrapbtn" onClick="{{A.go2}}">{{A.label2}}</button></sc-if>
+          <sc-if value="{{showMsg}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></sc-if>
+          <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
+          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram abre fora da 99Coach ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
+        </div>
+        </sc-if>
+      </aside>
+    </div>
+
+    <!-- Ofertas: Plano ou serviço (G18 · plan) -->
+    <section id="ofertas" class="vf-sec vfp-sec" aria-labelledby="h-of">
+      <div class="sec-head"><div><h2 id="h-of" class="sec-title sec-title--nonum">Serviços</h2><p class="sec-sub">{{svcSub}}</p></div></div>
+      <sc-if value="{{hasOffers}}" hint-placeholder-val="{{ true }}"><div class="vfp-plans"><sc-for list="{{offers}}" as="o" hint-placeholder-count="5">
+        <div class="{{o.cls}}">
+          <sc-if value="{{o.isOn}}" hint-placeholder-val="{{ false }}"><span class="plan__pop badge badge--ink">Escolhido</span></sc-if>
+          <span class="vfp-oth" aria-hidden="true"><i class="{{o.othIc}}"></i></span>
+          <div class="plan__body">
+            <div class="plan__type">{{o.kind}}<sc-if value="{{o.hasFlow}}" hint-placeholder-val="{{ true }}"><span class="{{o.flowCls}}">{{o.flowT}}</span></sc-if></div>
+            <b class="plan__title">{{o.title}}</b>
+            <span class="vfp-inc">{{o.inc}}</span>
+            <span class="v4-sub">{{o.meta}}</span>
+            <sc-if value="{{o.hasList}}" hint-placeholder-val="{{ false }}"><div class="plan__inc"><sc-for list="{{o.list}}" as="l" hint-placeholder-count="3"><span><i class="ic ic--xs i-check" aria-hidden="true"></i>{{l}}</span></sc-for></div></sc-if>
+            <sc-if value="{{o.hasNote}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn v4-bw" style="align-self: flex-start">{{o.note}}</span></sc-if>
+          </div>
+          <div class="plan__price"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><b>{{o.price}}</b><small>{{o.unit}}</small></sc-if><sc-if value="{{o.noPrice}}" hint-placeholder-val="{{ false }}"><b>{{o.priceNone}}</b></sc-if></div>
+          <sc-if value="{{o.canPick}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{o.btnCls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.btn}}</button></sc-if><sc-if value="{{o.hasDetail}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{o.detail}}">Ver detalhes</button></sc-if>
+          <sc-if value="{{o.blocked}}" hint-placeholder-val="{{ false }}"><span class="{{o.blockedCls}}">{{o.blockedText}}</span></sc-if>
+        </div>
+      </sc-for></div></sc-if>
+      <sc-if value="{{noOffers}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-tag" aria-hidden="true"></i></span><b>{{noOffersTitle}}</b><span>{{noOffersText}}</span></div></sc-if>
+    </section>
+
+    <!-- Programas: Card/Programa (G17 · pc) + comparação com o acompanhamento (G11) -->
+    <section id="programas" class="vf-sec vfp-sec" aria-labelledby="h-pg">
+      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas</h2><p class="sec-sub">Conteúdo pronto, compra única, acesso por 12 meses. Não inclui acompanhamento individual.</p></div></div>
+      <sc-if value="{{hasProgs}}" hint-placeholder-val="{{ true }}"><div class="vfp-pg">
+        <sc-for list="{{progs}}" as="p" hint-placeholder-count="1">
+        <div class="{{p.cls}}"><img src="{{p.img}}" alt="Capa do programa {{p.title}}">
+          <div class="pc__top"><div class="pc__tags"><sc-for list="{{p.tags}}" as="g" hint-placeholder-count="2"><span class="tag tag--glass">{{g}}</span></sc-for></div><sc-if value="{{p.isOn}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ink">Escolhido</span></sc-if></div>
+          <div class="pc__body">
+            <span class="vfp-pcacc">{{p.inc}}</span>
+            <h3 class="pc__title">{{p.title}}</h3>
+            <div class="pc__coach"><sc-if value="{{p.hasCoachPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{p.coachPhoto}}" alt=""></sc-if>{{p.coach}}</div>
+            <div class="pc__foot"><div class="pc__price">{{p.unit}}<b>{{p.price}}</b></div><sc-if value="{{p.canPick}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{p.btnCls}}" aria-pressed="{{p.on}}" onClick="{{p.pick}}">{{p.btn}}</button></sc-if><sc-if value="{{p.bought}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ok">Comprado</span></sc-if></div>
+          </div>
+        </div>
+        </sc-for>
+        <sc-if value="{{showCmp}}" hint-placeholder-val="{{ true }}">
+        <div class="card vfp-cmp">
+          <h3 class="vf-h3">Programa ou acompanhamento?</h3>
+          <p class="vfp-small">Os dois são do Rafael. A diferença é se alguém ajusta o treino para você.</p>
+          <div class="vfp-cmp__g">
+            <div class="vfp-cmp__c"><span class="label">Programa · CrossFit Base</span><b class="vfp-cmp__p">R$ 197 <small>pagamento único</small></b><ul><li><i class="ic ic--xs i-check" aria-hidden="true"></i>12 semanas · 36 treinos prontos</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>12 meses de acesso</li><li><i class="ic ic--xs i-x" aria-hidden="true"></i>Sem ajuste individual nem mensagens</li></ul><button type="button" class="{{cmpProgCls}}" onClick="{{pickBase}}">{{cmpProgLbl}}</button></div>
+            <div class="vfp-cmp__c"><span class="label">Acompanhamento online</span><b class="vfp-cmp__p">R$ 200 <small>/ mês</small></b><ul><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Treino semanal no app</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Ajuste a cada 15 dias e mensagens</li><li><i class="ic ic--xs i-info" aria-hidden="true"></i>Sujeito a aceite · cancela quando quiser</li></ul><button type="button" class="{{cmpOnCls}}" onClick="{{pickOnline}}">{{cmpOnLbl}}</button></div>
+          </div>
+        </div>
+        </sc-if>
+      </div></sc-if>
+      <sc-if value="{{noProgs}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-book" aria-hidden="true"></i></span><b>Nenhum programa publicado</b><span>{{noProgsText}}</span></div></sc-if>
+    </section>
+
+    <!-- Avaliações: número (G08) + distribuição (barra) + Avaliação (G18 · rev) -->
+    <section id="avaliacoes" class="vf-sec vfp-sec" aria-labelledby="h-av">
+      <div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2><p class="sec-sub">Só de alunos com contratação concluída pela 99Coach.</p></div></div>
+      <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
+      <div class="vfp-rev">
+        <div class="card vfp-card">
+          <div class="vfp-score"><span class="kpi__n vfp-big">{{t.avg}}</span><div><div class="stars" role="img" aria-label="Nota {{t.avg}} de 5"><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i></div><b>{{t.nLabel}}</b></div></div>
+          <ul class="vfp-dist" aria-label="Distribuição das notas"><sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><li><span class="vfp-dk">{{d.k}}<i class="ic ic--xs i-star" aria-hidden="true"></i></span><span class="bar"><span style="{{d.w}}"></span></span><span class="vfp-dc">{{d.c}}</span></li></sc-for></ul>
+          <p class="vfp-small">Só avalia quem concluiu um período contratado. A média não usa seguidores nem curtidas.</p>
+        </div>
+        <div class="vfp-revlist">
+          <div class="vfp-revtrack"><sc-for list="{{reviews}}" as="r" hint-placeholder-count="3"><div class="rev"><div class="rev__who"><span class="av av--md">{{r.ini}}</span><div style="flex: 1; min-width: 0"><b style="font-size: 14px">{{r.who}}</b><div class="label">{{r.what}}</div></div><div class="stars" role="img" aria-label="Nota {{r.n}} de 5"><sc-for list="{{r.stars}}" as="s" hint-placeholder-count="5"><i class="ic ic--xs i-star" aria-hidden="true" style="{{s}}"></i></sc-for></div></div><p style="font-size: 15px; line-height: 1.55; color: var(--text-2)">“{{r.text}}”</p></div></sc-for></div>
+          <sc-if value="{{revBtn}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline" onClick="{{moreRev}}">{{revBtnLabel}}</button></sc-if>
+        </div>
+      </div>
+      </sc-if>
+      <sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><i class="ic  i-star" aria-hidden="true"></i><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if>
+      <div class="vfp-flags"><button type="button" class="btn btn--ghost btn--sm" onClick="{{openFix}}"><i class="ic ic--xs i-edit" aria-hidden="true"></i>Corrigir ou retirar dados públicos</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{openReport}}"><i class="ic ic--xs i-alert" aria-hidden="true"></i>Denunciar perfil</button></div>
+    </section>
+
+    <!-- Atendimento: chave e valor (G08) · agenda por dia (G05/G07) · contato (G10 · linhas) -->
+    <section id="atendimento" class="vf-sec vfp-sec" aria-labelledby="h-at">
+      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2><p class="sec-sub">Onde, quando e como falar com {{t.first}}.</p></div></div>
+      <div class="vfp-g3">
+        <div class="card vfp-card">
+          <h3 class="vfp-h4"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Onde atende</h3>
+          <div class="kv"><sc-for list="{{t.where}}" as="c" hint-placeholder-count="4"><div class="kv__r"><span>{{c.k}}</span><b>{{c.v}}</b></div></sc-for></div>
+          <sc-if value="{{t.hasMap}}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{mapOff}}" hint-placeholder-val="{{ true }}"><div><button type="button" class="btn btn--outline btn--sm" onClick="{{loadMap}}"><i class="ic ic--xs i-pin" aria-hidden="true"></i>Carregar mapa da região</button><p class="vfp-small" style="margin-top: 8px">O mapa só carrega quando você pede. Em texto: {{t.map}}.</p></div></sc-if>
+            <sc-if value="{{mapOn}}" hint-placeholder-val="{{ false }}"><div class="v4-map" role="img" aria-label="Mapa ilustrativo: {{t.map}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>{{t.map}}</b><span class="label">Mapa ilustrativo · demonstração</span></div></sc-if>
+          </sc-if>
+        </div>
+        <div class="card vfp-card">
+          <h3 class="vfp-h4"><i class="ic ic--sm i-calendar" aria-hidden="true"></i>Horários livres nesta semana</h3>
+          <sc-if value="{{showSlots}}" hint-placeholder-val="{{ true }}">
+            <div class="vfp-days" role="group" aria-label="Dia da semana"><sc-for list="{{dayTabs}}" as="d" hint-placeholder-count="5"><button type="button" class="{{d.cls}}" aria-pressed="{{d.on}}" onClick="{{d.pick}}"><span>{{d.wd}}</span><b>{{d.dt}}</b></button></sc-for></div>
+            <sc-if value="{{dayHas}}" hint-placeholder-val="{{ true }}"><div class="vfp-times" role="group" aria-label="Horários livres em {{dayName}}"><sc-for list="{{dayTimes}}" as="s" hint-placeholder-count="2"><button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.t}}</button></sc-for></div></sc-if>
+            <sc-if value="{{dayNone}}" hint-placeholder-val="{{ false }}"><p class="vfp-small">Sem horários livres em {{dayName}}.</p></sc-if>
+            <p class="vfp-small">Sessão presencial · R$ 80 / sessão · 60 min. Atualizado hoje às 08:02, horário de Brasília. O horário só fica reservado depois do pagamento.</p>
+          </sc-if>
+          <sc-if value="{{noSlots}}" hint-placeholder-val="{{ false }}"><p class="vfp-small" style="font-size: 14px">{{noSlotsText}}</p></sc-if>
+        </div>
+        <div class="card vfp-card">
+          <h3 class="vfp-h4"><i class="ic ic--sm i-message" aria-hidden="true"></i>Mensagens e contato</h3>
+          <div>
+            <sc-if value="{{canMsg}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Mensagens pela 99Coach</b><span>Para tirar dúvidas. Mensagem não é contratação.</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{openMsg}}">Enviar</button></div></sc-if>
+            <sc-if value="{{noMsg}}" hint-placeholder-val="{{ false }}"><div class="vfp-crow"><div><b>Sem mensagens pela 99Coach</b><span>Perfis importados não recebem mensagens nem contratações.</span></div></div></sc-if>
+            <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Abre fora da 99Coach</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
+            <sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>É o seu perfil?</b><span>Reivindique ou recupere o acesso</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openClaim}}">É meu perfil</button></div></sc-if>
+            <div class="vfp-crow"><div><b>Compartilhar perfil</b><span>Copie o link para mandar a alguém</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openShare}}"><i class="ic ic--xs i-share" aria-hidden="true"></i>Copiar</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Perguntas frequentes (G19 · faq) -->
+    <section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
+      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2><p class="sec-sub">{{faqSub}}</p></div></div>
+      <div class="card vfp-faq"><div class="faq"><sc-for list="{{faqs}}" as="f" hint-placeholder-count="4"><div class="faq__item"><button type="button" class="faq__q" aria-expanded="{{f.exp}}" onClick="{{f.pick}}"><span>{{f.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{f.rot}}"></i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="faq__a"><p>{{f.a}}</p><span class="badge badge--plain">{{f.who}}</span></div></sc-if></div></sc-for></div></div>
+    </section>
+
+    <!-- Parecidos em Londrina (G17 · treinador em lista, mesmo card da Home VFINAL) -->
+    <section class="vf-sec" aria-labelledby="h-par">
+      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2><p class="sec-sub">Para comparar. Sua escolha neste perfil continua salva.</p></div></div>
+      <ul class="vf-g4"><sc-for list="{{others}}" as="o" hint-placeholder-count="4"><li class="vf-tc card" aria-label="{{o.name}}">
+        <div class="vf-tc__m"><button type="button" class="v4-ph" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></button></div>
+        <div class="vf-tc__b">
+          <span class="tc__sport">{{o.sport}}</span>
+          <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{o.open}}"><span>{{o.name}}</span><sc-if value="{{o.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{o.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{o.avg}} de 5, {{o.n}} avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{o.avg}}<small>({{o.n}})</small></span></sc-if></div>
+          <span class="vf-meta">{{o.role}}<sc-if value="{{o.noRating}}" hint-placeholder-val="{{ false }}"> · ainda sem avaliações</sc-if></span>
+          <span class="{{o.avCls}} v4-bw">{{o.avText}}</span>
+          <div class="vf-tc__f"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{o.price}} <small>{{o.unit}}</small></b><span>{{o.offName}}</span></span></sc-if><sc-if value="{{o.noPrice}}" hint-placeholder-val="{{ false }}"><span class="vf-price"><span>Sem serviço publicado</span></span></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{o.open}}">Ver perfil</button></div>
+        </div>
+      </li></sc-for></ul>
+    </section>
+  </main>
+  </sc-if>
+
+  <!-- Rodapé do DS (.ftr) com botões no lugar de links — o mesmo da Home VFINAL -->
+  <footer class="ftr" style="margin-top: 96px">
+    <div class="wrap"><div class="ftr__grid">
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
+      <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSearch}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
+      <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
+      <div class="ftr__col"><b>Em Londrina</b><button type="button" onClick="{{openSearch}}">CrossFit</button><button type="button" onClick="{{openSearch}}">Musculação</button><button type="button" onClick="{{openSearch}}">Funcional</button></div>
+      <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{openHelp}}">Central de ajuda</button><button type="button" onClick="{{openHelp}}">Pagamentos e reembolsos</button></div>
+    </div></div>
+    <div class="wrap"><div class="ftr__word">99Coach · mais que treino</div></div>
+    <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><div class="v4-row" style="gap: 20px"><button type="button" onClick="{{openHelp}}">Privacidade</button><button type="button" onClick="{{openHelp}}">Termos</button><button type="button" onClick="{{openHelp}}">Cookies</button></div></div></div>
+  </footer>
+
+  <!-- Barra fixa de contato (G18 · sticky-bar): rodapé no tablet, acima da barra inferior no celular -->
+  <sc-if value="{{barOn}}" hint-placeholder-val="{{ false }}">
+  <div class="v4-bar" role="region" aria-label="Próxima etapa"><div class="sticky-bar">
+    <span class="av av--sm" style="background: var(--ink-2); color: var(--paper)"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}">{{t.ini}}</sc-if></span>
+    <div class="v4-bar__t"><b style="font-size: 14px">{{A.title}}</b><div style="font-size: 13px; color: var(--text-on-dark)">{{A.barLine}}</div></div>
+    <sc-if value="{{A.isAnchor}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--white btn--arrow v4-wrapbtn" onClick="{{goSvc}}"><span class="vfp-cta-s">{{A.short}}</span><span class="vfp-cta-l">{{A.label}}</span><span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+    <sc-if value="{{A.hasAction}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{A.barCls}}" onClick="{{A.go}}"><span class="vfp-cta-s">{{A.short}}</span><span class="vfp-cta-l">{{A.label}}</span><span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+  </div></div>
+  </sc-if>
+
+  <!-- Barra inferior pública do celular (Hub H01 · G04) -->
+  <sc-if value="{{tabOn}}" hint-placeholder-val="{{ true }}">
+  <nav class="tabbar v4-tabbar" aria-label="Navegação do site">
+    <button type="button" class="tabbar__it is-on" onClick="{{openSearch}}"><i class="ic ic--sm i-search" aria-hidden="true"></i>Explorar</button>
+    <button type="button" class="tabbar__it" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Salvos</button>
+    <button type="button" class="tabbar__it" onClick="{{openConta}}"><i class="ic ic--sm i-user" aria-hidden="true"></i>Conta</button>
+  </nav>
+  </sc-if>
+
+  <!-- Aviso rápido com desfazer (G15 · toast) · camada 70 -->
+  <sc-if value="{{favNote}}" hint-placeholder-val="{{ false }}"><div class="toast v4-toast" role="status" style="top: {{toastTop}}"><i class="ic ic--sm i-check" aria-hidden="true" style="color: var(--success)"></i><span style="flex: 1">Salvo em Salvos</span><button type="button" class="btn btn--white btn--sm" onClick="{{undoFav}}">Desfazer</button></div></sc-if>
+
+  <!-- Folha / diálogo (G15) na altura de quem abriu · camadas 50 e 60 -->
+  <sc-if value="{{sheetOn}}" hint-placeholder-val="{{ false }}">
+    <div class="v4-scrim" onClick="{{close}}"></div>
+    <div class="{{dlgCls}}" role="dialog" aria-modal="true" aria-labelledby="sh-t" style="top: {{sheetTop}}">
+      <div class="v4-sheet__hd"><h2 id="sh-t" class="sec-title sec-title--sm">{{sh.title}}</h2><button type="button" class="icon-btn" aria-label="Fechar" onClick="{{close}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+      <div class="v4-sheet__bd">
+        <sc-if value="{{sh.hasTone}}" hint-placeholder-val="{{ false }}"><div class="{{sh.toneCls}}" role="status"><i class="{{sh.toneIc}}"></i><div><b>{{sh.toneTitle}}</b>{{sh.toneSub}}</div></div></sc-if>
+        <sc-if value="{{sh.hasChips}}" hint-placeholder-val="{{ false }}"><div class="v4-row" style="gap: 6px"><sc-for list="{{sh.chips}}" as="c" hint-placeholder-count="3"><span class="chip is-on">{{c}}</span></sc-for></div></sc-if>
+        <sc-for list="{{sh.lines}}" as="l" hint-placeholder-count="1"><p style="font-size: 15px; line-height: 1.5">{{l}}</p></sc-for>
+        <sc-if value="{{sh.hasRows}}" hint-placeholder-val="{{ false }}"><div class="kv"><sc-for list="{{sh.rows}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasMenu}}" hint-placeholder-val="{{ false }}"><div class="menu" style="box-shadow: none; padding: 0"><sc-for list="{{sh.menu}}" as="m" hint-placeholder-count="6"><button type="button" class="menu__it" onClick="{{m.go}}"><i class="{{m.ic}}"></i>{{m.label}}</button></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasSlots}}" hint-placeholder-val="{{ false }}"><sc-for list="{{slotDays}}" as="d" hint-placeholder-count="3"><div class="v4-row" style="gap: 8px"><span class="label" style="width: 92px">{{d.day}}</span><sc-for list="{{d.items}}" as="s" hint-placeholder-count="2"><button type="button" class="{{s.cls}}" style="border: 1px solid var(--line)" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.t}}</button></sc-for></div></sc-for></sc-if>
+        <sc-if value="{{sh.hasResults}}" hint-placeholder-val="{{ false }}"><div class="vfp-plans" style="gap: 8px"><sc-for list="{{sh.results}}" as="r" hint-placeholder-count="3"><div class="lrow"><div class="lrow__t"><b>{{r.name}}</b><span>{{r.line}}</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{r.open}}">{{r.btn}}</button></div></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasOpts}}" hint-placeholder-val="{{ false }}"><div class="vfp-plans" style="gap: 8px" role="radiogroup" aria-label="{{sh.optsLabel}}"><sc-for list="{{sh.opts}}" as="p" hint-placeholder-count="3"><button type="button" role="radio" class="{{p.cls}}" aria-checked="{{p.on}}" onClick="{{p.pick}}"><b>{{p.label}}</b></button></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasField}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="v4-f1">{{sh.fieldLabel}}</label><div class="input"><input id="v4-f1" class="v4-in" type="{{sh.fieldType}}" value="{{sh.fieldValue}}" autocomplete="{{sh.fieldAuto}}"></div></div></sc-if>
+        <sc-if value="{{sh.hasText}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="v4-f2">{{sh.textLabel}}</label><div class="input input--area"><textarea id="v4-f2" class="v4-in">{{sh.textValue}}</textarea></div></div></sc-if>
+        <sc-if value="{{sh.hasPay}}" hint-placeholder-val="{{ false }}"><div class="field"><span class="field__label">Forma de pagamento</span><div class="seg" role="radiogroup" aria-label="Forma de pagamento"><sc-for list="{{payOpts}}" as="p" hint-placeholder-count="2"><button type="button" role="radio" class="{{p.cls}}" aria-checked="{{p.on}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{sh.hasCode}}" hint-placeholder-val="{{ false }}"><div class="card card--flat v4-code mono">{{sh.code}}</div></sc-if>
+        <div class="vfp-plans" style="gap: 8px"><sc-for list="{{sh.btns}}" as="b" hint-placeholder-count="2"><button type="button" class="{{b.cls}}" onClick="{{b.go}}">{{b.label}}</button></sc-for></div>
+        <sc-if value="{{sh.hasFine}}" hint-placeholder-val="{{ false }}"><p class="v4-sub">{{sh.fine}}</p></sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>

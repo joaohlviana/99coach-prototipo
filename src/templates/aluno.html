@@ -1,0 +1,977 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
+  <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
+  <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios · {{dsId}}</span><span class="mod-demo__r"><button type="button" class="btn btn--outline btn--sm" onClick="{{openDs}}">Ver no DS</button><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar dados</button></span></div>
+      <sc-if value="{{hasScens}}" hint-placeholder-val="{{ true }}"><div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scens}}" as="c" hint-placeholder-count="5"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div></sc-if>
+    </div>
+  </div>
+
+  <!-- público: cabeçalho simples -->
+  <sc-if value="{{isPub}}" hint-placeholder-val="{{ false }}">
+    <header class="mod-top"><div class="wrap mod-top__in"><button type="button" class="v4-reset mod-logo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button><nav class="mod-top__nav" aria-label="{{navLabel}}"><sc-for list="{{top}}" as="t" hint-placeholder-count="4"><button type="button" class="{{t.cls}}" aria-current="{{t.cur}}" onClick="{{t.go}}">{{t.label}}</button></sc-for></nav></div></header>
+  </sc-if>
+
+  <div class="onb-app mod-app">
+    <sc-if value="{{hasSide}}" hint-placeholder-val="{{ true }}">
+    <nav class="snav onb-snav" aria-label="{{navLabel}}">
+      <button type="button" class="v4-reset snav__brand" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <sc-for list="{{side}}" as="g" hint-placeholder-count="3"><span class="snav__sec">{{g.sec}}</span><sc-for list="{{g.items}}" as="s" hint-placeholder-count="4"><button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" onClick="{{s.go}}"><i class="{{s.ic}}" aria-hidden="true"></i><span class="mod-snav__l">{{s.label}}</span><sc-if value="{{s.hasCount}}" hint-placeholder-val="{{ false }}"><span class="mod-count">{{s.count}}</span></sc-if></button></sc-for></sc-for>
+      <div class="snav__me"><span class="av av--sm"><sc-if value="{{me.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{me.photo}}" alt=""></sc-if><sc-if value="{{me.noPhoto}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div></div>
+    </nav>
+    </sc-if>
+    <div class="onb-main mod-main">
+      <sc-if value="{{hasSide}}" hint-placeholder-val="{{ true }}">
+      <div class="mtop onb-mtop"><sc-if value="{{mtop.hasBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{mtop.back}}" aria-label="Voltar"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button></sc-if><sc-if value="{{mtop.noBack}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset onb-mlogo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button></sc-if><b class="mtop__t">{{mtop.title}}</b><sc-if value="{{isOps}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{toggleOm}}" aria-expanded="{{omOpen}}" aria-label="Menu da operação"><i class="ic ic--sm i-menu" aria-hidden="true"></i></button></sc-if><sc-if value="{{hasTabs}}" hint-placeholder-val="{{ true }}"><span class="av av--sm onb-mme">{{me.ini}}</span></sc-if></div>
+      </sc-if>
+      <sc-if value="{{omOpen}}" hint-placeholder-val="{{ false }}"><div class="mod-om" role="menu" aria-label="Destinos da operação"><sc-for list="{{opsMenu}}" as="o" hint-placeholder-count="5"><button type="button" class="{{o.cls}}" role="menuitem" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></sc-if>
+      <main class="onb-page mod-page" id="conteudo">
+        <sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Esta tela falhou ao montar</b>{{err}}</div></div></sc-if>
+      <!-- AMENU · Conta da aluna -->
+      <sc-if value="{{is.menu}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Conta</h1></div></div>
+        <section class="card onb-sec onb-me-card" aria-label="Sua conta"><span class="av onb-photo__av">{{v.ini}}</span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.role}}</span><span class="badge badge--plain">Aluna</span></div></section>
+        <sc-for list="{{v.groups}}" as="gp" hint-placeholder-count="3">
+          <section class="card onb-sec" aria-label="{{gp.title}}"><h2 class="onb-h2">{{gp.title}}</h2>
+            <ol class="onb-secs"><sc-for list="{{gp.items}}" as="s" hint-placeholder-count="3"><li><button type="button" class="onb-secs__r" onClick="{{s.go}}"><span class="onb-secs__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-secs__t"><b>{{s.title}}</b><span>{{s.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol>
+          </section>
+        </sc-for>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.becomeTrainer}}">Também quero ser treinador</button></div>
+      </sc-if>
+
+      <!-- ALU10 · Agenda da aluna -->
+      <sc-if value="{{is.agenda}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Agenda</h1><p class="pghead__sub">{{v.tz}}</p></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.noG}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-calendar" aria-hidden="true"></i></span><b>Nenhum compromisso marcado</b><span class="mod-small">Chamadas e sessões com Rafael aparecem aqui.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goMsg}}">Falar com Rafael</button></div></sc-if>
+
+        <sc-if value="{{v.hasG}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-label="Próximo compromisso">
+            <div class="mod-card__h"><span class="label">Próximo compromisso</span><span class="{{v.g.stCls}}">{{v.g.st}}</span></div>
+            <div><b class="a1-big">{{v.g.when}}</b><p>{{v.g.what}}</p><p class="mod-small mod-muted">{{v.g.who}}</p></div>
+            <p class="mod-small mod-muted"><i class="ic ic--xs i-tag" aria-hidden="true"></i> {{v.g.origin}}</p>
+            <sc-if value="{{v.notMoving}}" hint-placeholder-val="{{ true }}">
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.startMove}}">Remarcar</button><button type="button" class="btn btn--outline btn--lg mod-danger" onClick="{{v.cancel}}">Cancelar sessão</button></div>
+            </sc-if>
+            <sc-if value="{{v.moving}}" hint-placeholder-val="{{ false }}">
+              <div class="a1-move" role="group" aria-label="Escolher novo horário">
+                <b class="mod-small">Escolher horário · horários livres do Rafael</b>
+                <div class="a1-slots"><sc-for list="{{v.slots}}" as="s" hint-placeholder-count="4">
+                  <sc-if value="{{s.ok}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" onClick="{{s.pick}}"><b>{{s.l}}</b><span>{{s.sub}}</span></button></sc-if>
+                  <sc-if value="{{s.off}}" hint-placeholder-val="{{ false }}"><div class="{{s.cls}}" aria-disabled="true"><b>{{s.l}}</b><span>{{s.sub}}</span></div></sc-if>
+                </sc-for></div>
+                <div class="{{v.effCls}}" role="note"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="a1-alert__t"><b>Efeito no seu plano</b><span>{{v.effect}}</span></div></div>
+                <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.confirmMove}}">Remarcar</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.stopMove}}">Voltar</button></div>
+              </div>
+            </sc-if>
+          </section>
+          <sc-for list="{{v.others}}" as="o" hint-placeholder-count="1"><button type="button" class="lrow" onClick="{{o.go}}"><span class="lrow__ic"><i class="ic ic--sm i-calendar" aria-hidden="true"></i></span><span class="lrow__t"><b>{{o.t}}</b></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for>
+        </sc-if>
+
+        <sc-if value="{{v.show}}" hint-placeholder-val="{{ true }}">
+          <div class="a1-two">
+            <section class="a1-card" aria-label="Chamadas incluídas"><b>Chamadas incluídas</b><div class="kv"><sc-for list="{{v.credit}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div><div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goBuy}}">Ver contratação</button></div></section>
+            <section class="a1-card" aria-label="Treinos programados"><b>Treinos programados</b><span class="mod-small mod-muted">Treino não é compromisso: você faz no seu tempo, e só conta quando registrar.</span>
+              <div class="mod-list"><sc-for list="{{v.trs}}" as="t" hint-placeholder-count="2"><button type="button" class="lrow a1-lrow" onClick="{{t.go}}"><span class="lrow__ic"><i class="ic ic--xs i-dumbbell" aria-hidden="true"></i></span><span class="lrow__t"><b>{{t.t}}</b><span>{{t.s}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div>
+            </section>
+          </div>
+          <sc-if value="{{v.hasPast}}" hint-placeholder-val="{{ true }}">
+            <section class="a1-card" aria-label="Anteriores"><b>Anteriores</b><ul class="a1-plain"><sc-for list="{{v.past}}" as="p" hint-placeholder-count="1"><li class="mod-between"><span class="mod-small">{{p.t}}</span><span class="{{p.cls}}">{{p.st}}</span></li></sc-for></ul></section>
+          </sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.goMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Contatar treinador</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ALU07 · Aula ou conteúdo do programa -->
+      <sc-if value="{{is.conteudo}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.kind}} · progresso {{v.version}}</p></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+        <div class="mod-grid2">
+          <div class="mod-col">
+            <sc-if value="{{v.isVideo}}" hint-placeholder-val="{{ true }}"><div class="a1-media a1-media--lg" role="img" aria-label="Vídeo da aula {{v.title}}, com legendas em português"><i class="ic i-play" aria-hidden="true"></i><span>Vídeo · legendas em português · transcrição abaixo</span></div></sc-if>
+            <sc-if value="{{v.isLoading}}" hint-placeholder-val="{{ false }}"><div class="a1-media a1-media--lg a1-skel" role="status"><span>Carregando mídia…</span></div></sc-if>
+            <sc-if value="{{v.isVidFail}}" hint-placeholder-val="{{ false }}"><p class="a1-media a1-media--off"><i class="ic ic--sm i-file" aria-hidden="true"></i><span>Vídeo indisponível: o texto abaixo tem o mesmo conteúdo.</span></p></sc-if>
+            <sc-if value="{{v.isWithdrawn}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-lock" aria-hidden="true"></i></span><b>Esta aula foi retirada pelo autor</b><span class="mod-small">Use “Ir para a próxima” acima. Nada do seu progresso se perde.</span></div></sc-if>
+            <sc-if value="{{v.isTreino}}" hint-placeholder-val="{{ false }}">
+              <section class="a1-card" aria-label="Sessão guiada"><b>Sessão guiada</b>
+                <ol class="a1-exlist"><sc-for list="{{v.drills}}" as="d" hint-placeholder-count="2"><li class="a1-ex"><div class="a1-ex__t"><b>{{d.name}}</b><span>{{d.presc}} · {{d.cues}}</span></div></li></sc-for></ol>
+                <p class="mod-small mod-muted"><i class="ic ic--xs i-info" aria-hidden="true"></i> Esta aula não registra um treino realizado. Treinos do seu acompanhamento ficam em Treinos.</p>
+                <div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goSessao}}">Ver treino do acompanhamento</button></div>
+              </section>
+            </sc-if>
+            <sc-if value="{{v.hasText}}" hint-placeholder-val="{{ true }}">
+              <section class="a1-card" aria-label="{{v.textT}}"><b>{{v.textT}}</b><ul class="a1-cues"><sc-for list="{{v.points}}" as="p" hint-placeholder-count="3"><li>{{p.t}}</li></sc-for></ul></section>
+            </sc-if>
+            <div class="onb-actions">
+              <sc-if value="{{v.canComplete}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.complete}}"><i class="ic ic--sm i-check" aria-hidden="true"></i>Concluir aula</button></sc-if>
+              <sc-if value="{{v.completeOff}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" disabled aria-disabled="true">Concluir aula</button></sc-if>
+              <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}"><div class="a1-row"><span class="badge badge--ok">Concluída</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.undo}}">Desfazer conclusão</button></div></sc-if>
+              <div class="a1-exnav">
+                <sc-if value="{{v.hasPrev}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goPrev}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Anterior</button></sc-if>
+                <span class="a1-exnav__t mod-small mod-muted">{{v.nextLbl}}{{v.lockedTxt}}</span>
+                <sc-if value="{{v.hasNext}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goNext}}">Próxima<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
+              </div>
+            </div>
+          </div>
+          <aside class="a1-card a1-treecard" aria-label="Conteúdo do programa">
+            <div class="mod-card__h"><b>Conteúdo</b><span class="mod-small mod-muted">{{v.drip}}</span></div>
+            <button type="button" class="btn btn--outline btn--sm a1-tree__tg" aria-expanded="{{v.treeExp}}" onClick="{{v.toggleTree}}"><i class="ic ic--sm i-list" aria-hidden="true"></i>{{v.treeLbl}}</button>
+            <div class="{{v.treeCls}}">
+              <sc-for list="{{v.tree}}" as="m" hint-placeholder-count="3">
+                <div class="a1-tree__m"><span class="label">{{m.t}} · {{m.sub}}</span>
+                  <ol class="a1-tree__l"><sc-for list="{{m.items}}" as="i" hint-placeholder-count="3"><li>
+                    <sc-if value="{{i.ok}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{i.cls}}" aria-current="{{i.cur}}" onClick="{{i.go}}"><i class="{{i.ic}}" aria-hidden="true"></i><span class="a1-tree__t"><b>{{i.t}}</b><span>{{i.meta}}</span></span></button></sc-if>
+                    <sc-if value="{{i.locked}}" hint-placeholder-val="{{ false }}"><div class="a1-tree__it is-locked"><i class="ic ic--sm i-lock" aria-hidden="true"></i><span class="a1-tree__t"><b>{{i.t}}</b><span>{{i.lockTxt}}</span></span></div></sc-if>
+                  </li></sc-for></ol>
+                </div>
+              </sc-for>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <!-- ALU04 · Encerrar sessão e dar feedback -->
+      <sc-if value="{{is.encerrar}}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}">
+          <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Encerrar treino</h1></div></div>
+          <div class="emp"><span class="emp__ic"><i class="ic i-check" aria-hidden="true"></i></span><b>Nenhum treino para encerrar</b><span class="mod-small">O último treino já foi encerrado e está na sua evolução.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goHome}}">Voltar a Hoje</button></div>
+        </sc-if>
+        <sc-if value="{{v.has}}" hint-placeholder-val="{{ true }}">
+          <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Encerrar sessão</span><h1 class="pghead__title">Como foi?</h1><p class="pghead__sub">{{v.sub}}</p></div></div>
+          <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+          <section class="card onb-sec" aria-label="Resumo">
+            <h2 class="onb-h2">Resumo</h2>
+            <div class="kv"><sc-for list="{{v.kv}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+            <sc-if value="{{v.hasInc}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Você pode encerrar com itens incompletos. Eles ficam registrados como incompletos.</p></sc-if>
+          </section>
+
+          <section class="card onb-sec" aria-label="Feedback">
+            <div class="field" role="group" aria-labelledby="a1-rpe-l"><span class="field__label" id="a1-rpe-l">Esforço (RPE)</span>
+              <div class="a1-rpe"><sc-for list="{{v.rpes}}" as="r" hint-placeholder-count="10"><button type="button" class="{{r.cls}}" aria-pressed="{{r.on}}" onClick="{{r.pick}}">{{r.n}}</button></sc-for></div>
+              <span class="field__help">{{v.rpeTxt}}</span></div>
+            <div class="field" role="group" aria-labelledby="a1-dor-l"><span class="field__label" id="a1-dor-l">Sentiu dor?</span>
+              <div class="seg seg--fit a1-seg"><sc-for list="{{v.dores}}" as="d" hint-placeholder-count="2"><button type="button" class="{{d.cls}}" aria-pressed="{{d.on}}" onClick="{{d.pick}}">{{d.l}}</button></sc-for></div></div>
+            <sc-if value="{{v.isDor}}" hint-placeholder-val="{{ false }}">
+              <div class="field" role="group" aria-labelledby="a1-loc-l"><span class="field__label" id="a1-loc-l">Onde? <i>*</i></span>
+                <div class="onb-chips"><sc-for list="{{v.locais}}" as="l" hint-placeholder-count="5"><button type="button" class="{{l.cls}}" aria-pressed="{{l.on}}" onClick="{{l.pick}}">{{l.l}}</button></sc-for></div></div>
+              <sc-if value="{{v.isOutro}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="a1-outro">Qual local?</label><div class="input"><input id="a1-outro" value="{{v.outro}}" onInput="{{v.setOutro}}" placeholder="Ex.: punho esquerdo"></div></div></sc-if>
+            </sc-if>
+            <div class="field"><label class="field__label" for="a1-obs">Algo a contar?</label><div class="input input--area"><textarea id="a1-obs" rows="3" maxlength="280" placeholder="Ex.: Ombro ok hoje." value="{{v.obs}}" onInput="{{v.setObs}}"></textarea><span class="cnt">{{v.obsCnt}}</span></div><span class="field__help">{{v.privacy}}</span></div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+          </section>
+
+          <div class="onb-actions">
+            <sc-if value="{{v.notSent}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.submit}}">Encerrar sessão</button></sc-if>
+            <sc-if value="{{v.sent}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.goHome}}">Voltar a Hoje</button></sc-if>
+            <button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{v.back}}">Voltar ao treino</button>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- H10E / ALU09 · Evolução da aluna -->
+      <sc-if value="{{is.evolucao}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">Evolução</h1><p class="pghead__sub">Continuidade, desempenho e objetivos, sempre com a origem do dado.</p></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.isFirst}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-chart" aria-hidden="true"></i></span><b>Seu histórico começa no primeiro treino</b><span class="mod-small">Nenhum gráfico de exemplo: os números aparecem quando você registrar.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goToday}}">Ver treino de hoje</button></div></sc-if>
+
+        <sc-if value="{{v.showMain}}" hint-placeholder-val="{{ true }}">
+          <div class="a1-evo">
+            <section class="a1-card" aria-label="Minha semana">
+              <b>Minha semana</b>
+              <span class="a1-kn a1-kn--lg">{{v.semN}}</span>
+              <span class="mod-small mod-muted">{{v.semTxt}}</span>
+              <ol class="a1-dots"><sc-for list="{{v.dots}}" as="d" hint-placeholder-count="7"><li title="{{d.title}}"><span class="a1-dots__l">{{d.l}}</span><span class="{{d.cls}}" aria-label="{{d.title}}">{{d.s}}</span></li></sc-for></ol>
+              <p class="mod-small mod-muted">{{v.semPrev}}</p>
+            </section>
+
+            <section class="a1-card a1-chartcard" aria-label="Desempenho">
+              <div class="seg seg--fit a1-seg" role="group" aria-label="O que ver"><sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="2"><button type="button" class="{{t.cls}}" aria-pressed="{{t.on}}" onClick="{{t.pick}}">{{t.l}}</button></sc-for></div>
+
+              <sc-if value="{{v.isEx}}" hint-placeholder-val="{{ true }}">
+                <sc-if value="{{v.isIncompat}}" hint-placeholder-val="{{ false }}">
+                  <b>Agachamento · variantes separadas</b>
+                  <div class="a1-two"><div class="a1-cf__o"><span class="label">Barra livre</span><b>72,5 kg × 6 · 22/10</b></div><div class="a1-cf__o"><span class="label">Smith</span><b>80 kg × 6 · 12/10</b></div></div>
+                  <p class="mod-small mod-muted">Smith não entra na comparação da barra livre.</p>
+                </sc-if>
+                <sc-if value="{{v.notIncompat}}" hint-placeholder-val="{{ true }}">
+                  <div class="mod-between a1-wrap"><b>Agachamento livre · carga por sessão</b><div class="seg seg--sm seg--fit" role="group" aria-label="Período"><sc-for list="{{v.pers}}" as="p" hint-placeholder-count="3"><button type="button" class="{{p.cls}}" aria-pressed="{{p.on}}" onClick="{{p.pick}}">{{p.l}}</button></sc-for></div></div>
+                  <sc-if value="{{v.noRows}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Ainda não há registros comparáveis neste período.</p></sc-if>
+                  <sc-if value="{{v.hasRows}}" hint-placeholder-val="{{ true }}">
+                    <svg class="a1-chart" viewBox="{{v.vb}}" role="img" aria-label="{{v.chartLbl}}" preserveAspectRatio="none">
+                      <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="3"><line x1="0" x2="{{v.gx2}}" y1="{{g.y}}" y2="{{g.y}}" class="a1-chart__g"></line></sc-for>
+                      <polyline points="{{v.poly}}" class="a1-chart__l"></polyline>
+                      <sc-for list="{{v.pts}}" as="p" hint-placeholder-count="4"><circle cx="{{p.x}}" cy="{{p.y}}" r="4.5" class="a1-chart__p"></circle><text x="{{p.x}}" y="{{p.ly}}" class="a1-chart__t">{{p.lbl}}</text></sc-for>
+                    </svg>
+                    <p class="mod-small">{{v.summary}} · <b>{{v.record}}</b></p>
+                    <div class="a1-tbl" role="table" aria-label="Registros do agachamento livre">
+                      <div class="a1-tbl__h" role="row"><span role="columnheader">Data</span><span role="columnheader">Carga × reps</span><span role="columnheader">Origem</span><span role="columnheader"><span class="a1-sr">Ações</span></span></div>
+                      <sc-for list="{{v.table}}" as="r" hint-placeholder-count="4">
+                        <div class="a1-tbl__r" role="row"><span role="cell">{{r.d}}</span><b role="cell">{{r.v}}</b><button type="button" role="cell" class="a1-link" aria-expanded="{{r.exp}}" onClick="{{r.toggle}}">{{r.origin}}</button><span role="cell"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.fix}}">Corrigir</button></span></div>
+                        <sc-if value="{{r.open}}" hint-placeholder-val="{{ false }}"><p class="a1-tbl__d mod-small mod-muted">Registro de origem: {{r.detail}}</p></sc-if>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{v.isFix}}" hint-placeholder-val="{{ false }}">
+                    <div class="a1-fix" role="group" aria-label="Corrigir registro">
+                      <b>Corrigir registro · {{v.fixD}}</b>
+                      <div class="a1-fix__g"><div class="field"><span class="field__label">Antes</span><span class="a1-strike">{{v.fixBefore}}</span></div>
+                        <div class="field"><label class="field__label" for="a1-fix">Depois (kg)</label><div class="input"><input id="a1-fix" inputmode="decimal" placeholder="Ex.: 70" value="{{v.fixVal}}" onInput="{{v.setFix}}"></div></div></div>
+                      <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+                      <span class="field__help">O gráfico e o recorde são recalculados; a correção fica na trilha.</span>
+                      <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.saveFix}}">Salvar correção</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancelFix}}">Cancelar</button></div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{v.hasTrail}}" hint-placeholder-val="{{ false }}"><div class="a1-trail"><span class="label">Trilha de correções</span><sc-for list="{{v.trail}}" as="t" hint-placeholder-count="1"><span class="mod-small">{{t.t}}</span></sc-for></div></sc-if>
+                </sc-if>
+              </sc-if>
+
+              <sc-if value="{{v.isMed}}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{v.medFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">As medidas não carregaram agora. Tente de novo.</p></sc-if>
+                <sc-if value="{{v.medOk}}" hint-placeholder-val="{{ true }}">
+                  <div class="onb-chips" role="group" aria-label="Medida"><sc-for list="{{v.mks}}" as="m" hint-placeholder-count="3"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}">{{m.l}}</button></sc-for></div>
+                  <ol class="a1-bars" aria-label="Medidas por avaliação"><sc-for list="{{v.bars}}" as="b" hint-placeholder-count="3"><li><span class="a1-bars__v">{{b.v}}</span><span class="a1-bars__b"><span style="height: {{b.h}}"></span></span><span class="a1-bars__d">{{b.d}}</span></li></sc-for></ol>
+                  <p class="mod-small mod-muted">{{v.medSrc}} · Peso e medidas só se você escolher registrar. Visível para você e Rafael.</p>
+                </sc-if>
+              </sc-if>
+            </section>
+
+            <section class="a1-card a1-card--soft" aria-label="Objetivos com o Rafael">
+              <b>Objetivos com o Rafael</b>
+              <div class="mod-list"><sc-for list="{{v.goals}}" as="g" hint-placeholder-count="3"><div class="lrow a1-lrow"><span class="lrow__ic"><i class="ic ic--xs i-target" aria-hidden="true"></i></span><span class="lrow__t"><b>{{g.t}}</b><span>{{g.s}}</span></span></div></sc-for></div>
+              <div class="onb-actions"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goTrain}}">Voltar ao treino</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goCoach}}">Falar com treinador</button></div>
+            </section>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ALU03 · Executar treino e descansar -->
+      <sc-if value="{{is.execucao}}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{v.idle}}" hint-placeholder-val="{{ false }}">
+          <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Treino</h1></div></div>
+          <div class="emp"><span class="emp__ic"><i class="ic i-dumbbell" aria-hidden="true"></i></span><b>Nenhum treino em andamento</b><span class="mod-small">Abra a sessão do dia para começar. Treinos encerrados ficam na sua evolução.</span><div class="mod-row"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.goToday}}">Ver treino de hoje</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goHome}}">Voltar a Hoje</button></div></div>
+        </sc-if>
+        <sc-if value="{{v.running}}" hint-placeholder-val="{{ true }}">
+          <div class="a1-exhead">
+            <div class="a1-exhead__t"><span class="label">Treino em andamento</span><b>{{v.name}} · {{v.pos}}</b></div>
+            <button type="button" class="btn btn--outline btn--sm" onClick="{{v.pauseOut}}"><i class="ic ic--sm i-pause" aria-hidden="true"></i>Pausar e sair</button>
+          </div>
+          <ol class="a1-steps" aria-label="Exercícios da sessão"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li><button type="button" class="{{s.cls}}" onClick="{{s.go}}" aria-label="{{s.lbl}}"></button></li></sc-for></ol>
+          <div class="a1-status"><span class="{{v.syncCls}}">{{v.syncTxt}}</span><span class="mod-small mod-muted"><i class="ic ic--xs i-shield" aria-hidden="true"></i> {{v.validTxt}}</span></div>
+          <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+          <sc-if value="{{v.restOn}}" hint-placeholder-val="{{ false }}">
+            <section class="a1-rest" aria-label="Descanso" aria-live="polite">
+              <div class="a1-rest__top"><span class="label a1-rest__l">Descanso</span><span class="a1-rest__nx">{{v.restLbl}}</span></div>
+              <sc-if value="{{v.restRun}}" hint-placeholder-val="{{ true }}"><b class="a1-rest__time" role="timer">{{v.restTime}}</b></sc-if>
+              <sc-if value="{{v.restDone}}" hint-placeholder-val="{{ false }}"><b class="a1-rest__time">Bora!</b><span class="a1-rest__nx">Descanso concluído.</span></sc-if>
+              <div class="a1-rest__bar"><span style="width: {{v.restPct}}"></span></div>
+              <div class="a1-rest__b">
+                <sc-if value="{{v.restRun}}" hint-placeholder-val="{{ true }}">
+                  <sc-if value="{{v.restLive}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--white btn--sm" onClick="{{v.pauseRest}}"><i class="ic ic--sm i-pause" aria-hidden="true"></i>Pausar</button></sc-if>
+                  <sc-if value="{{v.restPaused}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--white btn--sm" onClick="{{v.resumeRest}}"><i class="ic ic--sm i-play" aria-hidden="true"></i>Retomar</button></sc-if>
+                  <button type="button" class="btn btn--outline btn--sm a1-rest__o" onClick="{{v.addRest}}">+15 s</button>
+                </sc-if>
+                <button type="button" class="btn btn--outline btn--sm a1-rest__o" onClick="{{v.skipRest}}">{{v.skipLbl}}</button>
+              </div>
+            </section>
+          </sc-if>
+
+          <section class="a1-card a1-excard" aria-label="Exercício atual">
+            <span class="label">{{v.pos}}</span>
+            <h1 class="a1-exname">{{v.exName}}</h1>
+            <span class="mod-small mod-muted">{{v.presc}}</span>
+            <sc-if value="{{v.insBlocked}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted"><i class="ic ic--xs i-lock" aria-hidden="true"></i> Instrução bloqueada até reconectar.</p></sc-if>
+            <sc-if value="{{v.running}}" hint-placeholder-val="{{ true }}">
+              <button type="button" class="btn btn--ghost btn--sm a1-ex__tg" aria-expanded="{{v.insExp}}" onClick="{{v.toggleIns}}"><i class="ic ic--sm i-info" aria-hidden="true"></i>{{v.insTxt}}</button>
+            </sc-if>
+            <sc-if value="{{v.insOpen}}" hint-placeholder-val="{{ false }}">
+              <div class="a1-ex__ins">
+                <sc-if value="{{v.mediaOk}}" hint-placeholder-val="{{ true }}"><div class="a1-media" role="img" aria-label="Vídeo demonstrativo de {{v.exName}}, com legendas"><i class="ic i-play" aria-hidden="true"></i><span>Vídeo · legendas em português</span></div></sc-if>
+                <sc-if value="{{v.mediaOff}}" hint-placeholder-val="{{ false }}"><p class="a1-media a1-media--off"><i class="ic ic--sm i-file" aria-hidden="true"></i><span>{{v.mediaTxt}}</span></p></sc-if>
+                <ul class="a1-cues"><sc-for list="{{v.cues}}" as="c" hint-placeholder-count="3"><li>{{c.t}}</li></sc-for></ul>
+              </div>
+            </sc-if>
+
+            <ol class="a1-sets"><sc-for list="{{v.rows}}" as="s" hint-placeholder-count="4"><li class="{{s.cls}}">
+              <span class="a1-set__l">{{s.lbl}}</span><span class="a1-set__v">{{s.txt}}</span>
+              <sc-if value="{{s.isDone}}" hint-placeholder-val="{{ true }}"><span class="{{s.badgeCls}}">{{s.badge}}</span></sc-if>
+              <sc-if value="{{s.isCur}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ink">agora</span></sc-if>
+              <sc-if value="{{s.canFix}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm a1-set__fix" onClick="{{s.fix}}" aria-label="Corrigir {{s.lbl}}"><i class="ic ic--sm i-edit" aria-hidden="true"></i></button></sc-if>
+            </li></sc-for></ol>
+
+            <sc-if value="{{v.isConflict}}" hint-placeholder-val="{{ false }}">
+              <div class="a1-cf" role="group" aria-label="Escolher registro">
+                <b class="mod-small">{{v.cfLbl}}</b>
+                <div class="a1-cf__g"><div class="a1-cf__o"><span class="label">Este aparelho</span><b>{{v.cfHere}}</b></div><div class="a1-cf__o"><span class="label">Outro aparelho · 08:20</span><b>{{v.cfOther}}</b></div></div>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.keepHere}}">Manter deste aparelho</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.useOther}}">Usar a do outro aparelho</button></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{v.showForm}}" hint-placeholder-val="{{ true }}">
+              <div class="a1-setform">
+                <b class="a1-setform__t">{{v.formLbl}}</b>
+                <div class="a1-setform__g">
+                  <div class="field"><label class="field__label" for="a1-r">{{v.rLbl}}</label><div class="{{v.inCls}}"><input id="a1-r" inputmode="decimal" autocomplete="off" placeholder="{{v.rPh}}" value="{{v.r}}" onInput="{{v.setR}}" onKeyDown="{{v.onKey}}"></div></div>
+                  <sc-if value="{{v.hasLoad}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="a1-l">Carga (kg)</label><div class="input"><input id="a1-l" inputmode="decimal" autocomplete="off" placeholder="{{v.lPh}}" value="{{v.l}}" onInput="{{v.setL}}" onKeyDown="{{v.onKey}}"></div></div></sc-if>
+                </div>
+                <button type="button" class="chip a1-same" onClick="{{v.same}}">{{v.sameLbl}}</button>
+                <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+                <sc-if value="{{v.saveErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Não foi possível salvar neste aparelho. Tente de novo.</span></sc-if>
+                <button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.register}}"><i class="ic ic--sm i-check" aria-hidden="true"></i>{{v.regLbl}}</button>
+                <sc-if value="{{v.isEdit}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.cancelEdit}}">Cancelar correção</button></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{v.exDone}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.goNext}}">Próximo exercício<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></sc-if>
+            <sc-if value="{{v.allDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok a1-alert" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="a1-alert__t"><b>Todas as séries registradas</b><span>Revise e encerre para enviar ao Rafael.</span></div></div><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.finish}}">Encerrar treino</button></sc-if>
+          </section>
+
+          <div class="a1-exnav">
+            <sc-if value="{{v.hasPrev}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goPrev}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Anterior</button></sc-if>
+            <span class="a1-exnav__t mod-small mod-muted">{{v.nextTxt}}</span>
+            <sc-if value="{{v.hasNextBtn}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goNext}}">Pular<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
+          </div>
+          <div class="onb-actions onb-actions--row">
+            <button type="button" class="btn btn--outline btn--lg" onClick="{{v.finish}}">Encerrar treino</button>
+            <button type="button" class="btn btn--ghost btn--lg" onClick="{{v.goHist}}"><i class="ic ic--sm i-trend" aria-hidden="true"></i>Histórico de cargas</button>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ALU08 · Responder formulário ou check-in -->
+      <sc-if value="{{is.formulario}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Check-in</span><h1 class="pghead__title">Check-in semanal</h1><sc-if value="{{v.shown}}" hint-placeholder-val="{{ true }}"><p class="pghead__sub">{{v.sub}}</p></sc-if></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.isForm}}" hint-placeholder-val="{{ true }}">
+          <div class="steps" aria-hidden="true"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="5"><span class="{{s.cls}}"></span></sc-for></div>
+          <section class="card onb-sec" aria-label="Perguntas">
+            <sc-for list="{{v.qs}}" as="q" hint-placeholder-count="5">
+              <div class="field a1-q" role="group" aria-labelledby="{{q.gid}}">
+                <span class="field__label" id="{{q.gid}}">{{q.n}} {{q.t}}<sc-if value="{{q.req}}" hint-placeholder-val="{{ true }}"> <i>*</i></sc-if><sc-if value="{{q.opt}}" hint-placeholder-val="{{ false }}"> (opcional)</sc-if></span>
+                <sc-if value="{{q.isOpts}}" hint-placeholder-val="{{ true }}"><div class="onb-chips"><sc-for list="{{q.opts}}" as="o" hint-placeholder-count="5"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.l}}</button></sc-for></div></sc-if>
+                <sc-if value="{{q.hasHelp}}" hint-placeholder-val="{{ false }}"><span class="field__help">{{q.help}}</span></sc-if>
+                <sc-if value="{{q.isText}}" hint-placeholder-val="{{ false }}"><div class="input input--area"><textarea rows="3" maxlength="500" aria-labelledby="{{q.gid}}" placeholder="Ex.: Semana corrida no trabalho." value="{{q.val}}" onInput="{{q.setText}}"></textarea></div></sc-if>
+                <sc-if value="{{q.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{q.errTxt}}</span></sc-if>
+                <sc-if value="{{q.isDor}}" hint-placeholder-val="{{ false }}">
+                  <div class="field"><label class="field__label" for="a1-q3b">Onde e quanto (0 a 10)? <i>*</i></label><div class="{{q.dorCls}}"><input id="a1-q3b" placeholder="Ex.: ombro direito, 4" value="{{q.dorVal}}" onInput="{{q.setDor}}"></div>
+                  <sc-if value="{{q.dorErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Diga onde e dê uma nota de 0 a 10. Ex.: ombro direito, 4.</span></sc-if></div>
+                </sc-if>
+              </div>
+            </sc-for>
+            <p class="mod-small mod-muted"><i class="ic ic--xs i-lock" aria-hidden="true"></i> {{v.privacy}}</p>
+          </section>
+          <sc-if value="{{v.hasMiss}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.missTxt}}</span></sc-if>
+          <div class="onb-actions">
+            <sc-if value="{{v.canSend}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.submit}}"><i class="ic ic--sm i-send" aria-hidden="true"></i>Enviar respostas</button></sc-if>
+            <sc-if value="{{v.sending}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" disabled aria-disabled="true">Enviando…</button></sc-if>
+            <sc-if value="{{v.sendOff}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" disabled aria-disabled="true">Enviar respostas</button></sc-if>
+            <button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{v.saveLater}}">Salvar e continuar depois</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{v.isSent}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Resposta enviada">
+            <div class="mod-card__h"><b>Suas respostas</b><span class="badge badge--ok">Enviada</span></div>
+            <p class="mod-small mod-muted">{{v.sentTxt}}</p>
+            <div class="kv"><sc-for list="{{v.pairs}}" as="p" hint-placeholder-count="5"><div class="kv__r"><span>{{p.k}}</span><b>{{p.v}}</b></div></sc-for></div>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.goHome}}">Voltar a Hoje</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.goMsg}}">Contatar treinador</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- H10 / ALU01 · Hoje da aluna -->
+      <sc-if value="{{is.hoje}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.date}}</span><h1 class="pghead__title">{{v.hi}}</h1></div></div>
+        <sc-if value="{{v.flash.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.flash.cls}}" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.flash.t}}</b><span>{{v.flash.x}}</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.flash.close}}">Ok</button></div></sc-if>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.isVarios}}" hint-placeholder-val="{{ false }}">
+          <div class="a1-coachsel" role="group" aria-label="Escolher treinador"><span class="label">Treinador</span><div class="a1-hscroll no-sb"><sc-for list="{{v.coaches}}" as="c" hint-placeholder-count="2"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div><span class="mod-small mod-muted">Cada treinador vê só o que você compartilhou com ele.</span></div>
+        </sc-if>
+
+        <sc-if value="{{v.isWelcome}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Boas-vindas">
+            <div><h2 class="a1-h">Bem-vinda, Ana</h2><p class="mod-muted">Você e Rafael estão conectados.</p></div>
+            <div class="a1-task"><div class="a1-task__t"><b>Preparação</b><span>Rafael pediu 5 respostas para montar seu treino. Leva ~4 min.</span></div><button type="button" class="btn btn--primary btn--lg" onClick="{{v.goPrep}}">Responder agora</button></div>
+            <p class="mod-small mod-muted">Seu primeiro treino aparece aqui quando ele publicar.</p>
+          </section>
+        </sc-if>
+
+        <div class="a1-top">
+          <div class="a1-col">
+            <sc-if value="{{v.showHero}}" hint-placeholder-val="{{ true }}">
+              <section class="a1-hero" aria-label="Treino de hoje">
+                <span class="a1-hero__who"><span class="av av--sm" aria-hidden="true">{{v.hero.ini}}</span>{{v.hero.who}}</span>
+                <span class="a1-hero__eb">{{v.hero.eyebrow}}</span>
+                <h2 class="a1-hero__t">{{v.hero.title}}</h2>
+                <span class="a1-hero__s">{{v.hero.sub}}</span>
+                <div class="a1-hero__b"><button type="button" class="btn btn--white btn--lg" onClick="{{v.hero.f1}}">{{v.hero.b1}}</button><sc-if value="{{v.hero.hasB2}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg a1-hero__ghost" onClick="{{v.hero.f2}}">{{v.hero.b2}}</button></sc-if></div>
+              </section>
+            </sc-if>
+            <sc-if value="{{v.isSemTreino}}" hint-placeholder-val="{{ false }}">
+              <section class="card onb-sec" aria-label="Hoje"><span class="label">Hoje</span><h2 class="a1-h">Sem treino programado hoje</h2><p class="mod-muted">{{v.nextLine}}</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.goWeek}}">Ver semana</button></div></section>
+            </sc-if>
+            <sc-if value="{{v.isNenhum}}" hint-placeholder-val="{{ false }}">
+              <div class="emp"><span class="emp__ic"><i class="ic i-calendar" aria-hidden="true"></i></span><b>Nenhum treino confirmado nesta semana</b><span class="mod-small">Rafael ainda não publicou a semana 4. Seu vínculo continua ativo.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goMsg}}">Falar com Rafael</button></div>
+            </sc-if>
+            <sc-if value="{{v.isRevisao}}" hint-placeholder-val="{{ false }}">
+              <section class="card onb-sec" aria-label="Treino em revisão"><span class="badge badge--info">Em revisão</span><h2 class="a1-h">Rafael está montando seu treino</h2><p class="mod-muted">Ajuste da semana 4 depois do seu check-in de 22/10. Previsão: até qua 28/10. Responsável: Rafael Lima.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.goMsg}}">Falar com Rafael</button></div></section>
+            </sc-if>
+            <sc-if value="{{v.showCoachCard}}" hint-placeholder-val="{{ false }}">
+              <section class="card onb-sec a1-row" aria-label="Seu treinador"><span class="av av--md" aria-hidden="true">RL</span><div class="a1-task__t"><b>Rafael Lima</b><span>Acompanhamento online · ativo</span></div></section>
+            </sc-if>
+          </div>
+          <div class="a1-col">
+            <sc-if value="{{v.ckPend}}" hint-placeholder-val="{{ true }}">
+              <section class="a1-card a1-card--task" aria-label="Check-in pendente"><div class="mod-card__h"><b>Check-in semanal</b><span class="badge badge--warn">Pendente</span></div><p class="mod-small mod-muted">{{v.ckSub}}</p><button type="button" class="btn btn--primary btn--block" onClick="{{v.goCheckin}}">Responder check-in</button></section>
+            </sc-if>
+            <sc-if value="{{v.ckSent}}" hint-placeholder-val="{{ false }}">
+              <section class="a1-card" aria-label="Check-in enviado"><div class="mod-card__h"><b>Check-in semanal</b><span class="badge badge--ok">Enviado</span></div><p class="mod-small mod-muted">{{v.ckSentSub}}</p></section>
+            </sc-if>
+            <section class="a1-card" aria-label="Agenda">
+              <div class="mod-card__h"><b>Agenda</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goAgenda}}">Ver tudo</button></div>
+              <sc-if value="{{v.hasAgenda}}" hint-placeholder-val="{{ true }}"><div class="mod-list"><sc-for list="{{v.agenda}}" as="g" hint-placeholder-count="2"><button type="button" class="lrow a1-lrow" onClick="{{g.go}}"><span class="lrow__ic"><i class="{{g.ic}}" aria-hidden="true"></i></span><span class="lrow__t"><b>{{g.t}}</b><span>{{g.s}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div></sc-if>
+              <sc-if value="{{v.noAgenda}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum compromisso marcado.</p></sc-if>
+            </section>
+            <sc-if value="{{v.hasMsg}}" hint-placeholder-val="{{ true }}">
+              <section class="a1-card a1-card--soft" aria-label="Mensagem do Rafael">
+                <div class="mod-card__h"><b>Do Rafael</b><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goMsg}}">Responder</button></div>
+                <div class="a1-quote"><i class="ic ic--sm i-message" aria-hidden="true"></i><div><b>{{v.msgText}}</b><span>{{v.msgAt}}</span></div></div>
+              </section>
+            </sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{v.showWeek}}" hint-placeholder-val="{{ true }}">
+          <section class="a1-card" aria-label="Semana de 26/10 a 01/11">
+            <div class="mod-card__h"><b>Sua semana</b><span class="mod-small mod-muted">26/10 a 01/11</span></div>
+            <ol class="a1-week no-sb"><sc-for list="{{v.week}}" as="d" hint-placeholder-count="7"><li><sc-if value="{{d.hasGo}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{d.cls}}" aria-current="{{d.cur}}" onClick="{{d.go}}"><span class="a1-day__k">{{d.k}}</span><b>{{d.name}}</b><span class="a1-day__s">{{d.sub}}</span></button></sc-if><sc-if value="{{d.noGo}}" hint-placeholder-val="{{ false }}"><div class="{{d.cls}}" aria-current="{{d.cur}}"><span class="a1-day__k">{{d.k}}</span><b>{{d.name}}</b><span class="a1-day__s">{{d.sub}}</span></div></sc-if></li></sc-for></ol>
+          </section>
+          <div class="a1-kpis"><sc-for list="{{v.kpis}}" as="k" hint-placeholder-count="3"><div class="kcard"><span class="kcard__l">{{k.l}}</span><span class="a1-kn">{{k.n}}</span><span class="mod-small mod-muted">{{k.s}}</span></div></sc-for></div>
+        </sc-if>
+
+        <section class="card onb-sec" aria-label="Atalhos"><ol class="onb-secs"><sc-for list="{{v.links}}" as="s" hint-placeholder-count="3"><li><button type="button" class="onb-secs__r" onClick="{{s.go}}"><span class="onb-secs__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="onb-secs__t"><b>{{s.t}}</b><span>{{s.s}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol></section>
+      </sc-if>
+
+      <!-- ALU05 · Conversa com o treinador (lado da aluna) -->
+      <sc-if value="{{is.mensagens}}" hint-placeholder-val="{{ false }}">
+        <div class="a1-chathead">
+          <span class="av av--md"><sc-if value="{{v.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{v.coachImg}}" alt=""></sc-if><sc-if value="{{v.noImg}}" hint-placeholder-val="{{ true }}">RL</sc-if></span>
+          <div class="a1-task__t"><h1 class="a1-chathead__t">{{v.coach}}</h1><span>{{v.coachSub}}</span></div>
+          <button type="button" class="btn btn--outline btn--sm" onClick="{{v.goCoach}}">Meu treinador</button>
+        </div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <section class="a1-card a1-thread" aria-label="Conversa com Rafael Lima">
+          <sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-message" aria-hidden="true"></i></span><b>Comece a conversa</b><span class="mod-small">Conte como foi o treino, tire dúvidas ou avise sobre mudanças na rotina.</span></div></sc-if>
+          <sc-if value="{{v.hasList}}" hint-placeholder-val="{{ true }}">
+            <span class="a1-daysep">Hoje</span>
+            <ol class="a1-msgs" aria-live="polite"><sc-for list="{{v.list}}" as="m" hint-placeholder-count="3"><li class="{{m.cls}}">
+              <div class="a1-msg__b"><span>{{m.text}}</span>
+                <sc-if value="{{m.hasFile}}" hint-placeholder-val="{{ false }}"><span class="a1-msg__file"><i class="ic ic--sm i-lock" aria-hidden="true"></i>{{m.file}} · acesso revogado</span></sc-if>
+              </div>
+              <span class="a1-msg__m">{{m.meta}}</span>
+              <sc-if value="{{m.canRetry}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{m.retry}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>{{m.retryLbl}}</button></sc-if>
+            </li></sc-for></ol>
+          </sc-if>
+        </section>
+
+        <sc-if value="{{v.showComposer}}" hint-placeholder-val="{{ true }}">
+          <div class="a1-composer">
+            <label class="field__label" for="a1-msg">Mensagem para Rafael</label>
+            <div class="a1-composer__r">
+              <div class="input input--area a1-composer__in"><textarea id="a1-msg" rows="2" maxlength="1000" placeholder="Escreva…" value="{{v.draft}}" onInput="{{v.setDraft}}" onKeyDown="{{v.onKey}}"></textarea></div>
+              <sc-if value="{{v.notSending}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg a1-send" onClick="{{v.send}}" aria-label="Enviar mensagem"><i class="ic ic--sm i-send" aria-hidden="true"></i><span>Enviar</span></button></sc-if>
+              <sc-if value="{{v.sending}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg a1-send" disabled aria-disabled="true"><span>Enviando…</span></button></sc-if>
+            </div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+            <span class="field__help">{{v.note}}</span>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- ALU06 · Meus programas e retomada -->
+      <sc-if value="{{is.programas}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Meus programas</h1><p class="pghead__sub">Treino com seu treinador e programas que você acessa, com origem e vigência.</p></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.showCur}}" hint-placeholder-val="{{ true }}">
+          <section class="a1-card a1-card--ink" aria-label="Treino atual">
+            <span class="label a1-on-ink">Treino atual</span>
+            <b class="a1-prog__n">{{v.cur.title}}</b>
+            <span class="a1-on-ink mod-small">{{v.cur.sub}}</span>
+            <span class="a1-on-ink mod-small"><i class="ic ic--xs i-dumbbell" aria-hidden="true"></i> {{v.cur.state}}</span>
+            <div><button type="button" class="btn btn--white btn--lg" onClick="{{v.cur.go}}">{{v.cur.btn}}</button></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-book" aria-hidden="true"></i></span><b>Você ainda não tem programas</b><span class="mod-small">Programas que você comprar ou receber do treinador aparecem aqui, numa lista só.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goExplore}}">Explorar programas</button></div></sc-if>
+
+        <sc-if value="{{v.showProgs}}" hint-placeholder-val="{{ true }}">
+          <h2 class="onb-h2">Programas</h2>
+          <div class="a1-progs">
+            <sc-for list="{{v.progs}}" as="p" hint-placeholder-count="2">
+              <section class="a1-card a1-prog" aria-label="{{p.name}}">
+                <div class="a1-prog__h"><div class="a1-task__t"><b class="a1-prog__n">{{p.name}}</b><span>{{p.author}}</span></div><span class="{{p.originCls}}">{{p.origin}}</span></div>
+                <sc-if value="{{p.hasBadge}}" hint-placeholder-val="{{ false }}"><span class="{{p.badgeCls}}">{{p.badge}}</span></sc-if>
+                <div class="a1-prog__bar"><div class="bar"><span class="a1-fill" style="width: {{p.pct}}"></span></div><span class="mod-small">{{p.prog}}</span></div>
+                <p class="mod-small mod-muted"><i class="ic ic--xs i-calendar" aria-hidden="true"></i> {{p.valid}}</p>
+                <sc-if value="{{p.hasNote}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{p.note}}</p></sc-if>
+                <p class="a1-resume"><i class="ic ic--sm i-play" aria-hidden="true"></i><span>{{p.resume}}</span></p>
+                <span class="mod-small mod-muted">{{p.last}}</span>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{p.go}}">Continuar programa</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{p.goBuy}}">Ver contratação</button></div>
+              </section>
+            </sc-for>
+            <sc-if value="{{v.hasExt}}" hint-placeholder-val="{{ false }}">
+              <section class="a1-card a1-prog is-off" aria-label="{{v.ext.name}}">
+                <div class="a1-prog__h"><div class="a1-task__t"><b class="a1-prog__n">{{v.ext.name}}</b><span>{{v.ext.author}}</span></div><span class="{{v.ext.cls}}">{{v.ext.status}}</span></div>
+                <p class="mod-small">{{v.ext.txt}}</p>
+                <div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.ext.go}}">{{v.ext.btn}}</button></div>
+              </section>
+            </sc-if>
+          </div>
+        </sc-if>
+        <p class="mod-small mod-muted">Compras e recibos ficam em Minhas contratações. Dúvidas sobre acesso: <button type="button" class="a1-link" onClick="{{v.goHelp}}">fale com seu treinador</button>.</p>
+      </sc-if>
+
+      <!-- ALU02 · Detalhe da sessão prescrita -->
+      <sc-if value="{{is.sessao}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Sessão prescrita</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.sub}}</p></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+        <sc-if value="{{v.isOther}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info a1-alert" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="a1-alert__t"><b>Já existe um treino em andamento</b><span>{{v.otherTxt}}</span><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goOther}}">Continuar o treino em andamento</button></div></div></div></sc-if>
+        <sc-if value="{{v.isDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok a1-alert" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="a1-alert__t"><b>Sessão concluída</b><span>{{v.doneTxt}}</span><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goEvo}}">Ver evolução</button></div></div></div></sc-if>
+
+        <p class="a1-goal"><i class="ic ic--sm i-target" aria-hidden="true"></i><span>{{v.goal}}</span></p>
+
+        <sc-if value="{{v.showItems}}" hint-placeholder-val="{{ true }}">
+          <ol class="a1-exlist">
+            <sc-for list="{{v.items}}" as="it" hint-placeholder-count="3">
+              <li class="{{it.cls}}">
+                <div class="a1-ex__h"><span class="a1-ex__n" aria-hidden="true">{{it.n}}</span><div class="a1-ex__t"><b>{{it.name}}</b><span>{{it.presc}}</span></div><sc-if value="{{it.removed}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn">Retirado</span></sc-if></div>
+                <button type="button" class="btn btn--ghost btn--sm a1-ex__tg" aria-expanded="{{it.exp}}" onClick="{{it.toggle}}"><i class="ic ic--sm i-info" aria-hidden="true"></i>{{it.toggleTxt}}</button>
+                <sc-if value="{{it.isOpen}}" hint-placeholder-val="{{ false }}">
+                  <div class="a1-ex__ins">
+                    <sc-if value="{{it.hasVideo}}" hint-placeholder-val="{{ true }}"><div class="a1-media" role="img" aria-label="Vídeo demonstrativo de {{it.name}}, com legendas"><i class="ic i-play" aria-hidden="true"></i><span>Vídeo · legendas em português</span></div></sc-if>
+                    <sc-if value="{{it.noVideo}}" hint-placeholder-val="{{ false }}"><p class="a1-media a1-media--off"><i class="ic ic--sm i-file" aria-hidden="true"></i><span>{{it.mediaTxt}}</span></p></sc-if>
+                    <ul class="a1-cues"><sc-for list="{{it.cues}}" as="c" hint-placeholder-count="3"><li>{{c.t}}</li></sc-for></ul>
+                  </div>
+                </sc-if>
+              </li>
+            </sc-for>
+          </ol>
+        </sc-if>
+
+        <sc-if value="{{v.hasNote}}" hint-placeholder-val="{{ true }}"><section class="a1-card a1-card--soft" aria-label="Orientações do treinador"><b>Orientações do treinador</b><p class="a1-note">“{{v.note}}”</p><span class="mod-small mod-muted">Rafael Lima</span></section></sc-if>
+
+        <sc-if value="{{v.later}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.laterTxt}}</p></sc-if>
+        <div class="onb-actions a1-sticky">
+          <sc-if value="{{v.canStart}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.start}}"><i class="ic ic--sm i-play" aria-hidden="true"></i>{{v.startLbl}}</button></sc-if>
+          <sc-if value="{{v.cantStart}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" disabled aria-disabled="true">Iniciar treino</button><span class="mod-small mod-muted">{{v.blockTxt}}</span></sc-if>
+          <button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{v.goMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Falar com o treinador</button>
+        </div>
+      </sc-if>
+
+      <!-- ALU11 · Relação com o treinador e suporte -->
+      <sc-if value="{{is.treinador}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Meu treinador</h1></div></div>
+        <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
+
+        <sc-if value="{{v.show}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-label="Treinador">
+            <div class="a1-row a1-coach">
+              <span class="av av--lg"><sc-if value="{{v.hasImg}}" hint-placeholder-val="{{ false }}"><img src="{{v.img}}" alt=""></sc-if><sc-if value="{{v.noImg}}" hint-placeholder-val="{{ true }}">RL</sc-if></span>
+              <div class="a1-task__t"><b class="a1-big">{{v.name}}</b><span>{{v.sub}}</span><span>{{v.svc}}</span></div>
+            </div>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.goMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></div>
+          </section>
+
+          <div class="a1-two">
+            <section class="a1-card" aria-label="Relação"><div class="mod-card__h"><b>Relação</b><span class="{{v.stCls}}">{{v.stTxt}}</span></div>
+              <div class="kv"><sc-for list="{{v.kv}}" as="r" hint-placeholder-count="5"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+              <div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goBuy}}">Ver contratação</button></div>
+            </section>
+            <section class="a1-card" aria-label="O que ele vê"><b>O que ele vê</b>
+              <sc-if value="{{v.showShares}}" hint-placeholder-val="{{ true }}"><div class="kv"><sc-for list="{{v.shares}}" as="s" hint-placeholder-count="5"><div class="kv__r"><span>{{s.k}}</span><b>{{s.v}}</b></div></sc-for></div></sc-if>
+              <sc-if value="{{v.sharesFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não carregou agora. Nada foi alterado no que você compartilha.</p></sc-if>
+              <div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goShares}}">Gerenciar compartilhamentos</button></div>
+            </section>
+          </div>
+
+          <section class="card onb-sec" aria-label="Ações">
+            <h2 class="onb-h2">Ações</h2>
+            <sc-if value="{{v.isActive}}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{v.isPausing}}" hint-placeholder-val="{{ false }}">
+                <div class="field" role="group" aria-labelledby="a1-pz"><span class="field__label" id="a1-pz">Pausar por quanto tempo?</span><div class="onb-chips"><sc-for list="{{v.weeksOpts}}" as="w" hint-placeholder-count="2"><button type="button" class="{{w.cls}}" aria-pressed="{{w.on}}" onClick="{{w.pick}}">{{w.l}}</button></sc-for></div></div>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.pause}}">Ver efeito e pausar</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.closeMode}}">Voltar</button></div>
+              </sc-if>
+            </sc-if>
+            <sc-if value="{{v.isHelp}}" hint-placeholder-val="{{ false }}">
+              <div class="field" role="group" aria-labelledby="a1-mt"><span class="field__label" id="a1-mt">Assunto <i>*</i></span><div class="onb-chips"><sc-for list="{{v.mots}}" as="m" hint-placeholder-count="4"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}">{{m.l}}</button></sc-for></div></div>
+              <div class="field"><label class="field__label" for="a1-desc">O que aconteceu? <i>*</i></label><div class="input input--area"><textarea id="a1-desc" rows="3" maxlength="600" placeholder="Ex.: fui cobrada duas vezes em outubro." value="{{v.desc}}" onInput="{{v.setDesc}}"></textarea></div><span class="field__help">A equipe 99Coach vê só o que você escrever aqui e os dados da contratação.</span></div>
+              <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openCase}}">Abrir caso</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.closeMode}}">Voltar</button></div>
+            </sc-if>
+            <sc-if value="{{v.hasCase}}" hint-placeholder-val="{{ false }}"><p class="mod-small"><span class="badge badge--info">Caso aberto</span> Protocolo {{v.caso}}. Guarde este número para acompanhar.</p></sc-if>
+            <ol class="onb-secs">
+              <sc-if value="{{v.isActive}}" hint-placeholder-val="{{ true }}"><li><button type="button" class="onb-secs__r" onClick="{{v.startPause}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-pause"></i></span><span class="onb-secs__t"><b>Pausar acompanhamento</b><span>Suspende a cobrança e a publicação de treinos</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-if>
+              <sc-if value="{{v.isPaused}}" hint-placeholder-val="{{ false }}"><li><button type="button" class="onb-secs__r" onClick="{{v.resume}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-play"></i></span><span class="onb-secs__t"><b>Retomar agora</b><span>Volta a cobrança no próximo ciclo e os treinos</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-if>
+              <sc-if value="{{v.isEnding}}" hint-placeholder-val="{{ false }}"><li><button type="button" class="onb-secs__r" onClick="{{v.undoEnd}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-refresh"></i></span><span class="onb-secs__t"><b>Desfazer encerramento</b><span>Possível até 04/11</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-if>
+              <sc-if value="{{v.isActive}}" hint-placeholder-val="{{ true }}"><li><button type="button" class="onb-secs__r" onClick="{{v.end}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-x"></i></span><span class="onb-secs__t"><b>Encerrar</b><span>Veja o que muda antes de confirmar</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-if>
+              <sc-if value="{{v.noCase}}" hint-placeholder-val="{{ true }}"><li><button type="button" class="onb-secs__r" onClick="{{v.startHelp}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-shield"></i></span><span class="onb-secs__t"><b>Preciso de ajuda</b><span>Abrir um caso com a equipe 99Coach</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-if>
+            </ol>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      <!-- FC01 · Resumo da oferta -->
+      <sc-if value="{{is.fc01}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Resumo</span><h1 class="pghead__title">{{v.name}}</h1><p class="pghead__sub">{{v.by}}</p></div></div>
+        <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<sc-if value="{{v.alertHasBtn}}" hint-placeholder-val="{{ false }}"><div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button></div></sc-if></div></div></sc-if>
+        <section class="card onb-sec">
+          <h2 class="onb-h2">O que você recebe</h2>
+          <div class="kv"><sc-for list="{{v.kv}}" as="k" hint-placeholder-count="5"><div class="kv__r"><span>{{k.k}}</span><b>{{k.v}}</b></div></sc-for></div>
+          <div class="a2-commit">
+            <sc-if value="{{v.showPrice}}" hint-placeholder-val="{{ true }}"><div class="price"><span class="price__k">{{v.priceK}}</span><span class="price__v">{{v.priceV}}<sc-if value="{{v.hasUnit}}" hint-placeholder-val="{{ false }}"> <small>{{v.priceUnit}}</small></sc-if></span><sc-if value="{{v.hasOld}}" hint-placeholder-val="{{ false }}"><span class="price__old">{{v.oldTxt}}</span><span class="mod-small">{{v.discTxt}}</span></sc-if></div></sc-if>
+            <sc-if value="{{v.noPrice}}" hint-placeholder-val="{{ false }}"><div class="price"><span class="price__k">Total</span><span class="mod-muted">Valor indisponível até confirmar a disponibilidade</span></div></sc-if>
+            <p class="mod-small mod-muted">{{v.terms}}</p>
+          </div>
+          <sc-if value="{{v.isPreco}}" hint-placeholder-val="{{ false }}"><button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.revOn}}" onClick="{{v.toggleRev}}"><span class="{{v.revCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{v.newPrice}}</span></button></sc-if>
+          <sc-if value="{{v.showCoupon}}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{v.hasCoupon}}" hint-placeholder-val="{{ false }}"><div class="mod-between a2-coupon"><span class="badge badge--ok">{{v.couponTxt}}</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.removeCup}}">Remover</button></div></sc-if>
+            <sc-if value="{{v.noCoupon}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="a2-cup">Cupom (opcional)</label><div class="a2-inline"><div class="input"><input id="a2-cup" type="text" autocomplete="off" value="{{v.cup}}" onInput="{{v.setCup}}" onKeyDown="{{v.cupKey}}"></div><button type="button" class="btn btn--outline" onClick="{{v.applyCup}}">Aplicar</button></div>
+              <sc-if value="{{v.hasCupErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.cupErr}}</span></sc-if></div></sc-if>
+          </sc-if>
+          <div class="onb-actions">
+            <sc-if value="{{v.canGo}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.goNext}}">Continuar</button></sc-if>
+            <button type="button" class="btn btn--ghost" onClick="{{v.seeTrainer}}">Ver treinador</button>
+          </div>
+        </section>
+        <sc-if value="{{v.hasOthers}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec"><h2 class="onb-h2">Outras ofertas de Rafael</h2>
+            <div class="mod-list"><sc-for list="{{v.others}}" as="x" hint-placeholder-count="2"><button type="button" class="lrow" onClick="{{x.go}}"><span class="lrow__ic"><i class="ic ic--sm i-tag" aria-hidden="true"></i></span><span class="lrow__t"><b>{{x.name}}</b><span>{{x.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      <!-- FC02 · Identificação mínima -->
+      <sc-if value="{{is.fc02}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Passo 1 de 3</span><h1 class="pghead__title">Identificação</h1></div></div>
+        <div class="steps" aria-hidden="true"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><span class="{{s.cls}}"></span></sc-for></div>
+        <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<div class="mod-row a2-mt"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button><sc-if value="{{v.alertHasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn2}}">{{v.alert.btn2}}</button></sc-if></div></div></div></sc-if>
+        <section class="card onb-sec">
+          <span class="label">Você está comprando como…</span>
+          <div class="mod-between"><div class="a2-dhead"><span class="av av--md a2-av">{{v.ini}}</span><div class="a2-dhead__t"><b>{{v.name}}</b><span>{{v.acct}}</span></div></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.swap}}">Trocar conta</button></div>
+          <div class="field"><span class="field__label" id="a2-quem">Quem vai usar?</span><div class="seg" role="group" aria-labelledby="a2-quem"><button type="button" class="{{v.segMe}}" aria-pressed="{{v.meOn}}" onClick="{{v.pickMe}}">Para mim</button><button type="button" class="{{v.segOther}}" aria-pressed="{{v.otherOn}}" onClick="{{v.pickOther}}">Para outra pessoa</button></div></div>
+          <sc-if value="{{v.forMe}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="a2-mail">E-mail</label><div class="{{v.emailCls}}"><input id="a2-mail" type="email" inputmode="email" autocomplete="email" value="{{v.email}}" onInput="{{v.setEmail}}" aria-describedby="a2-mail-h"></div><span class="field__help" id="a2-mail-h">Enviamos o acesso para este e-mail.</span><sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if></div></sc-if>
+          <sc-if value="{{v.forOther}}" hint-placeholder-val="{{ false }}"><div class="lrow"><span class="lrow__ic"><i class="ic ic--sm i-gift" aria-hidden="true"></i></span><span class="lrow__t"><b>Quem recebe</b><span>{{v.rcpTxt}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.forOtherInstead}}">Trocar destinatário</button></div></sc-if>
+          <p class="mod-small mod-muted">Sem cadastro longo: anamnese fica para depois, se o treinador pedir.</p>
+          <div class="kv a2-sum"><div class="kv__r"><span>Item</span><b>{{v.item}}</b></div><div class="kv__r"><span>Total</span><b>{{v.total}}</b></div></div>
+          <div class="onb-actions">
+            <sc-if value="{{v.canGo}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.goNext}}">Continuar</button></sc-if>
+            <button type="button" class="btn btn--ghost" onClick="{{v.review}}">Revisar oferta</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- FC03 · Confirmação antes de pagar -->
+      <sc-if value="{{is.fc03}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Passo 2 de 3</span><h1 class="pghead__title">Confirme</h1></div></div>
+        <div class="steps" aria-hidden="true"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><span class="{{s.cls}}"></span></sc-for></div>
+        <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button></div></div></div></sc-if>
+        <section class="card onb-sec">
+          <div class="kv"><sc-for list="{{v.kv}}" as="k" hint-placeholder-count="3"><div class="kv__r"><span>{{k.k}}</span><b>{{k.v}}</b></div></sc-for>
+            <sc-if value="{{v.showTotal}}" hint-placeholder-val="{{ true }}"><div class="kv__r a2-total"><span>Total agora</span><b>{{v.todayTxt}}</b></div></sc-if>
+            <sc-if value="{{v.isRec}}" hint-placeholder-val="{{ false }}"><div class="kv__r"><span>Próxima cobrança</span><b>{{v.nextTxt}}</b></div></sc-if>
+            <sc-if value="{{v.oneOff}}" hint-placeholder-val="{{ true }}"><div class="kv__r"><span>Recorrência</span><b>compra única</b></div></sc-if>
+          </div>
+          <sc-if value="{{v.isRec}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.recNote}}</p></sc-if>
+          <div class="field"><span class="field__label" id="a2-met">Como pagar</span><div class="seg" role="group" aria-labelledby="a2-met"><sc-for list="{{v.methods}}" as="m" hint-placeholder-count="2"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for></div><sc-if value="{{v.noPix}}" hint-placeholder-val="{{ false }}"><span class="field__help">{{v.noPixTxt}}</span></sc-if></div>
+          <div class="alert alert--warn"><i class="ic ic--sm i-shield" aria-hidden="true"></i><div><b>Demonstração: não use dados reais</b>O pagamento acontece no ambiente do provedor, com cartão de teste ou Pix fictício. A 99Coach não pede dados de cartão.</div></div>
+          <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.okOn}}" onClick="{{v.toggleOk}}"><span class="{{v.okCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{v.policyTxt}}</span></button>
+          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">{{v.err}}</p></sc-if>
+          <div class="onb-actions">
+            <sc-if value="{{v.canPay}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--brand btn--lg btn--block" onClick="{{v.pay}}">{{v.payLabel}}</button></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost" onClick="{{v.readPolicy}}">Ler a política</button><button type="button" class="btn btn--ghost" onClick="{{v.editId}}">Editar identidade</button><button type="button" class="btn btn--ghost" onClick="{{v.reviewOffer}}">Revisar oferta</button></div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- FC04 · Checkout do provedor (demonstração) -->
+      <sc-if value="{{is.fc04}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Passo 3 de 3 · pedido {{v.orderNo}}</span><h1 class="pghead__title">Pagamento</h1></div></div>
+        <div class="steps" aria-hidden="true"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><span class="{{s.cls}}"></span></sc-for></div>
+        <sc-if value="{{v.isRedir}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec"><div class="emp a2-emp"><span class="emp__ic"><i class="ic i-lock" aria-hidden="true"></i></span><b>Abrindo pagamento seguro</b><span>Você continuará no pagamento seguro do provedor e volta para cá ao terminar, com o pedido {{v.orderNo}}.</span></div>
+            <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.seeProgress}}">Ver andamento</button><button type="button" class="btn btn--ghost" onClick="{{v.backSummary}}">Voltar ao resumo</button></div></section>
+        </sc-if>
+        <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<div class="mod-row a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button><sc-if value="{{v.alertHasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.alert.fn2}}">{{v.alert.btn2}}</button></sc-if></div></div></div></sc-if>
+        <sc-if value="{{v.showProv}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec a2-prov" aria-label="Ambiente do provedor de pagamento (demonstração)">
+            <div class="mod-between"><span class="label"><i class="ic ic--sm i-lock" aria-hidden="true"></i> Ambiente seguro do provedor</span><span class="badge badge--warn">Teste</span></div>
+            <div class="alert alert--warn"><i class="ic ic--sm i-shield" aria-hidden="true"></i><div><b>Demonstração: não use dados reais</b>Nada aqui cobra de verdade. Nenhum campo pede número de cartão.</div></div>
+            <div class="kv"><div class="kv__r"><span>Item</span><b>{{v.item}}</b></div><div class="kv__r"><span>Total</span><b>{{v.total}}</b></div></div>
+            <sc-if value="{{v.isCard}}" hint-placeholder-val="{{ true }}">
+              <div class="a2-card" aria-label="Cartão de teste preenchido"><span class="label">Cartão de teste</span><b class="a2-mono">4242 4242 4242 4242</b><span class="a2-mono mod-small">Validade 12/34 · CVC 123 · Ana C. Souza</span></div>
+              <div class="onb-actions">
+                <button type="button" class="btn btn--brand btn--lg btn--block" onClick="{{v.pay}}">{{v.payTxt}}</button>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline" onClick="{{v.decline}}">Simular recusa do banco</button><button type="button" class="btn btn--outline" onClick="{{v.unknown}}">Simular retorno sem resposta</button></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{v.isPix}}" hint-placeholder-val="{{ false }}">
+              <div class="a2-card"><span class="label">Pix copia e cola (fictício)</span><b class="a2-mono a2-break">{{v.pixCode}}</b><button type="button" class="btn btn--outline btn--sm" onClick="{{v.copyPix}}"><i class="ic ic--sm i-clipboard" aria-hidden="true"></i>Copiar código</button></div>
+              <div class="onb-actions">
+                <button type="button" class="btn btn--brand btn--lg btn--block" onClick="{{v.pixPaid}}">Simular Pix pago</button>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline" onClick="{{v.pixWait}}">Deixar aguardando</button><button type="button" class="btn btn--outline" onClick="{{v.unknown}}">Simular retorno sem resposta</button></div>
+              </div>
+            </sc-if>
+            <button type="button" class="btn btn--ghost" onClick="{{v.cancel}}">Cancelar e voltar à 99Coach</button>
+          </section>
+          <p class="mod-small mod-muted">Retornar ao pedido: se esta janela fechar, abra Minhas contratações e consulte o pedido {{v.orderNo}}. O retorno visual não confirma pagamento.</p>
+        </sc-if>
+      </sc-if>
+
+      <!-- FC05 · Resultado durável da compra -->
+      <sc-if value="{{is.fc05}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Pedido</span><h1 class="pghead__title">Pedido</h1></div></div>
+        <section class="card onb-sec">
+          <div class="emp a2-emp"><span class="emp__ic"><i class="{{v.ic}}" aria-hidden="true"></i></span><b>{{v.title}}</b><span>{{v.sub}}</span></div>
+          <sc-if value="{{v.isPending}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Acesso pendente</b>{{v.pendingTxt}}</div></div></sc-if>
+          <sc-if value="{{v.isUnknown}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não pague de novo</b>Consultamos o provedor com o mesmo pedido. Se houver cobrança, ela aparece aqui.</div></div></sc-if>
+          <sc-if value="{{v.hasTl}}" hint-placeholder-val="{{ true }}"><div class="tl"><sc-for list="{{v.tl}}" as="t" hint-placeholder-count="3"><div class="tl__it"><span class="{{t.dot}}"><i class="{{t.ic}}" aria-hidden="true"></i></span><div class="tl__b"><b>{{t.t}}</b><span class="mod-small mod-muted">{{t.s}}</span></div></div></sc-for></div></sc-if>
+          <div class="kv"><div class="kv__r"><span>Item</span><b>{{v.item}}</b></div><div class="kv__r"><span>Método</span><b>{{v.method}}</b></div></div>
+          <div class="onb-actions">
+            <button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.primary}}">{{v.primaryLabel}}</button>
+            <sc-if value="{{v.isSaas}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline" onClick="{{v.seeIa}}">Ver uso</button></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline" onClick="{{v.myCt}}">Minhas contratações</button><sc-if value="{{v.hasReceipt}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost" onClick="{{v.receipt}}"><i class="ic ic--sm i-download" aria-hidden="true"></i>Comprovante</button></sc-if><button type="button" class="btn btn--ghost" onClick="{{v.support}}">Suporte</button></div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- FC10 · Presente ou compra para outra pessoa -->
+      <sc-if value="{{is.fc10}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Presente</span><h1 class="pghead__title">É um presente</h1><p class="pghead__sub">{{v.item}} · {{v.total}}</p></div></div>
+        <sc-if value="{{v.hasStatus}}" hint-placeholder-val="{{ false }}"><div class="{{v.status.cls}}" role="status"><i class="ic ic--sm i-gift" aria-hidden="true"></i><div><b>{{v.status.b}}</b>{{v.status.t}}<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.status.fn}}">{{v.status.btn}}</button></div></div></div></sc-if>
+        <sc-if value="{{v.showForm}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec">
+            <div class="kv"><div class="kv__r"><span>Você paga</span><b>Ana Carolina Souza</b></div></div>
+            <h2 class="onb-h2">Quem recebe</h2>
+            <div class="field"><label class="field__label" for="a2-gnome">Nome de quem recebe</label><div class="{{v.nameCls}}"><input id="a2-gnome" type="text" autocomplete="off" value="{{v.name}}" onInput="{{v.setName}}"></div></div>
+            <div class="field"><label class="field__label" for="a2-gmail">E-mail</label><div class="{{v.emailCls}}"><input id="a2-gmail" type="email" inputmode="email" autocomplete="off" value="{{v.email}}" onInput="{{v.setEmail}}"></div><span class="field__help">O convite com o acesso vai para este e-mail.</span></div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">{{v.err}}</p></sc-if>
+            <div class="alert alert--info"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div><b>Privacidade</b>{{v.privacy}}</div></div>
+            <div class="onb-actions">
+              <button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.confirm}}">Confirmar destinatário</button>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost" onClick="{{v.forMe}}">Comprar para mim</button><button type="button" class="btn btn--ghost" onClick="{{v.seeOffer}}">Ver oferta</button></div>
+            </div>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      <!-- H11 / FC07 · Minhas contratações e detalhe -->
+      <sc-if value="{{is.contratacoes}}" hint-placeholder-val="{{ false }}">
+        <div class="{{v.rootCls}}">
+          <div class="pghead a2-ct__head"><div class="pghead__txt"><span class="eyebrow">Conta / Minhas contratações</span><h1 class="pghead__title">Minhas contratações</h1><p class="pghead__sub">O que você tem, o que vai acontecer e onde usar. Vínculo com o treinador é outra coisa.</p></div>
+            <div class="pghead__act a2-hide-sm"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.find}}"><i class="ic ic--sm i-search" aria-hidden="true"></i>Encontrar treinador</button></div></div>
+
+          <sc-if value="{{v.isPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Recibos indisponíveis agora</b>Contratos e acesso estão atualizados. Os recibos voltam assim que o provedor responder.</div></div></sc-if>
+
+          <sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec"><div class="emp"><span class="emp__ic"><i class="ic i-card" aria-hidden="true"></i></span><b>Você ainda não contratou nada</b><span>Seu vínculo com Rafael foi por convite, sem compra.</span>
+              <div class="mod-row a2-center"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.explore}}">Explorar programas</button><button type="button" class="btn btn--outline btn--sm" onClick="{{v.ask}}">Pedir acompanhamento</button></div></div></section>
+          </sc-if>
+
+          <sc-if value="{{v.notEmpty}}" hint-placeholder-val="{{ true }}">
+            <div class="mod-grid2 a2-ct__grid">
+              <div class="mod-col a2-ct__list">
+                <div class="onb-chips a2-scroll" role="group" aria-label="Filtrar contratações"><sc-for list="{{v.filters}}" as="f" hint-placeholder-count="4"><button type="button" class="{{f.cls}}" aria-pressed="{{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
+                <sc-if value="{{v.noResults}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic i-filter" aria-hidden="true"></i></span><b>Nenhuma contratação neste filtro</b><span>Tente outro filtro ou veja todas.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.clearFilter}}">Ver todas</button></div></sc-if>
+                <sc-for list="{{v.rows}}" as="r" hint-placeholder-count="3">
+                  <div class="{{r.cls}}">
+                    <button type="button" class="v4-reset a2-row__main" aria-current="{{r.cur}}" onClick="{{r.open}}">
+                      <span class="av av--md a2-av"><sc-if value="{{r.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{r.photo}}" alt=""></sc-if><sc-if value="{{r.noPhoto}}" hint-placeholder-val="{{ true }}">{{r.ini}}</sc-if></span>
+                      <span class="a2-row__t"><span class="label">{{r.with}}</span><b>{{r.title}}</b><span class="a2-badges"><sc-for list="{{r.badges}}" as="b" hint-placeholder-count="2"><span class="{{b.cls}}">{{b.text}}</span></sc-for></span><span class="a2-meta">{{r.meta}}</span></span>
+                    </button>
+                    <button type="button" class="{{r.actCls}} a2-row__act" onClick="{{r.act}}">{{r.actLabel}}</button>
+                  </div>
+                </sc-for>
+                <button type="button" class="btn btn--ghost btn--sm a2-show-sm" onClick="{{v.find}}"><i class="ic ic--sm i-search" aria-hidden="true"></i>Encontrar treinador</button>
+              </div>
+
+              <sc-if value="{{v.showDetail}}" hint-placeholder-val="{{ true }}">
+                <aside class="mod-col a2-ct__detail" aria-label="Detalhe da contratação">
+                  <section class="mod-card">
+                    <div class="a2-dhead"><span class="av av--md a2-av"><sc-if value="{{v.d.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.d.photo}}" alt=""></sc-if><sc-if value="{{v.d.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.d.ini}}</sc-if></span><div class="a2-dhead__t"><b>{{v.d.title}}</b><span>{{v.d.sub}}</span></div></div>
+                    <div class="a2-badges"><sc-for list="{{v.d.badges}}" as="b" hint-placeholder-count="2"><span class="{{b.cls}}">{{b.text}}</span></sc-for></div>
+                    <sc-if value="{{v.d.isReview}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Cobrança em revisão</b>Seu acesso está pronto. A cobrança de 05/10 está em revisão no provedor; não pague de novo.<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.d.consult}}">Consultar de novo</button></div></div></div></sc-if>
+                    <sc-if value="{{v.d.isPrep}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Pago · acesso em andamento</b>Não pague de novo. Se demorar, abrimos um caso com este pedido.<div class="mod-row a2-mt"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.d.seeProgress}}">Ver andamento</button><button type="button" class="btn btn--outline btn--sm" onClick="{{v.d.support}}">Falar com suporte</button></div></div></div></sc-if>
+                    <div class="kv"><sc-for list="{{v.d.kv}}" as="k" hint-placeholder-count="5"><div class="kv__r"><span>{{k.k}}</span><b>{{k.v}}</b></div></sc-for></div>
+                    <sc-if value="{{v.d.hasRefund}}" hint-placeholder-val="{{ false }}"><button type="button" class="lrow" onClick="{{v.d.trackRefund}}"><span class="lrow__ic"><i class="ic ic--sm i-refresh" aria-hidden="true"></i></span><span class="lrow__t"><b>Acompanhar reembolso</b><span>{{v.d.refundTxt}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
+                    <div class="mod-col a2-gap8">
+                      <button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.d.openContent}}">{{v.d.openLabel}}</button>
+                      <sc-if value="{{v.d.isRec}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block" onClick="{{v.d.manage}}">{{v.d.manageLabel}}</button></sc-if>
+                      <sc-if value="{{v.d.canRefund}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--block" onClick="{{v.d.refund}}">Solicitar reembolso</button></sc-if>
+                    </div>
+                  </section>
+                  <section class="mod-card"><div class="mod-card__h"><b>Linha do tempo</b><span class="mod-small mod-muted">pagamento, entrega e acesso</span></div>
+                    <div class="tl"><sc-for list="{{v.d.tl}}" as="t" hint-placeholder-count="3"><div class="tl__it"><span class="{{t.dot}}"><i class="{{t.ic}}" aria-hidden="true"></i></span><div class="tl__b"><b>{{t.t}}</b><span class="mod-small mod-muted">{{t.s}}</span></div></div></sc-for></div>
+                  </section>
+                  <section class="mod-card"><div class="mod-card__h"><b>Recibos</b></div>
+                    <sc-if value="{{v.d.recUnavail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Recibo indisponível</b>Volta assim que o provedor responder. Contratos e acesso não mudam.<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.d.retryRec}}">Consultar de novo</button></div></div></div></sc-if>
+                    <sc-if value="{{v.d.hasReceipts}}" hint-placeholder-val="{{ true }}"><div class="mod-list"><sc-for list="{{v.d.receipts}}" as="rc" hint-placeholder-count="3"><div class="a2-rec"><span><i class="ic ic--sm i-file" aria-hidden="true"></i>{{rc.label}}</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{rc.dl}}"><i class="ic ic--sm i-download" aria-hidden="true"></i>Baixar</button></div></sc-for></div></sc-if>
+                    <sc-if value="{{v.d.noReceipts}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum recibo para esta contratação.</p></sc-if>
+                    <p class="mod-small mod-muted">{{v.d.recNote}}</p>
+                  </section>
+                  <sc-if value="{{v.d.showCancelHint}}" hint-placeholder-val="{{ false }}"><div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Cancelar a renovação</b>{{v.d.cancelHint}}<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.d.manage}}">Cancelar renovação</button></div></div></div></sc-if>
+                  <button type="button" class="btn btn--ghost btn--sm a2-show-md" onClick="{{v.backToList}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Todas as contratações</button>
+                </aside>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- FC06 · Preparação e liberação do acesso -->
+      <sc-if value="{{is.fc06}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Pedido {{v.ref}}</span><h1 class="pghead__title">Acesso</h1></div></div>
+        <section class="card onb-sec">
+          <div class="emp a2-emp"><span class="emp__ic"><i class="ic i-check" aria-hidden="true"></i></span><b>{{v.title}}</b><span>{{v.hero}}</span></div>
+          <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="{{v.alert.ic}}" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<sc-if value="{{v.alertHasBtn}}" hint-placeholder-val="{{ false }}"><div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button></div></sc-if></div></div></sc-if>
+          <ul class="onb-check" aria-label="Situação do pedido"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="4"><li class="{{s.cls}}"><span class="{{s.chk}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span class="onb-check__t"><b>{{s.t}}</b><span>{{s.s}}</span></span><span class="badge badge--plain">{{s.b}}</span></li></sc-for></ul>
+          <div class="kv"><sc-for list="{{v.kv}}" as="k" hint-placeholder-count="3"><div class="kv__r"><span>{{k.k}}</span><b>{{k.v}}</b></div></sc-for></div>
+          <div class="onb-actions">
+            <sc-if value="{{v.hasPrimary}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.primary}}">{{v.primaryLabel}}</button></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline" onClick="{{v.support}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Falar com suporte</button><button type="button" class="btn btn--ghost" onClick="{{v.seeOrder}}">Ver pedido</button></div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- FC08 · Gestão da contratação recorrente -->
+      <sc-if value="{{is.fc08}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Minhas contratações / Assinatura</span><h1 class="pghead__title">Gerenciar este acompanhamento</h1></div></div>
+        <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec"><div class="emp"><span class="emp__ic"><i class="ic i-card" aria-hidden="true"></i></span><b>{{v.noneTitle}}</b><span>{{v.noneText}}</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.seeCt}}">Ver contratação</button></div></section>
+        </sc-if>
+        <sc-if value="{{v.hasC}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec">
+            <div class="mod-between"><div class="a2-dhead__t"><b>{{v.what}}</b><span>{{v.sub}}</span></div><span class="{{v.badge.cls}}">{{v.badge.text}}</span></div>
+            <sc-if value="{{v.hasAlert}}" hint-placeholder-val="{{ false }}"><div class="{{v.alert.cls}}" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>{{v.alert.b}}</b>{{v.alert.t}}<sc-if value="{{v.alertHasBtn}}" hint-placeholder-val="{{ false }}"><div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alert.fn}}">{{v.alert.btn}}</button></div></sc-if></div></div></sc-if>
+            <div class="kv"><sc-for list="{{v.kv}}" as="k" hint-placeholder-count="4"><div class="kv__r"><span>{{k.k}}</span><b>{{k.v}}</b></div></sc-for></div>
+            <sc-if value="{{v.active}}" hint-placeholder-val="{{ true }}"><div class="mod-row"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.updateMethod}}"><i class="ic ic--sm i-card" aria-hidden="true"></i>Atualizar método</button><button type="button" class="btn btn--outline btn--sm" onClick="{{v.changePlan}}"><i class="ic ic--sm i-swap" aria-hidden="true"></i>Mudar plano</button></div></sc-if>
+          </section>
+
+          <sc-if value="{{v.isIdle}}" hint-placeholder-val="{{ true }}">
+            <section class="card onb-sec"><h2 class="onb-h2">Pausar ou cancelar</h2>
+              <ol class="onb-secs">
+                <li><button type="button" class="onb-secs__r" onClick="{{v.startPause}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-pause"></i></span><span class="onb-secs__t"><b>Pausar acompanhamento</b><span>Sem cobrança no período; histórico guardado</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li>
+                <li><button type="button" class="onb-secs__r" onClick="{{v.startCancel}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-x"></i></span><span class="onb-secs__t"><b>Cancelar renovação</b><span>Seu acesso continua até o fim do período pago</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li>
+              </ol>
+            </section>
+          </sc-if>
+          <sc-if value="{{v.isPause}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec"><h2 class="onb-h2">Pausar acompanhamento</h2>
+              <div class="field"><span class="field__label" id="a2-pz">Por quanto tempo</span><div class="onb-chips" role="group" aria-labelledby="a2-pz"><sc-for list="{{v.pauses}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <ul class="mod-sheet__ul"><sc-for list="{{v.pauseLines}}" as="l" hint-placeholder-count="3"><li>{{l}}</li></sc-for></ul>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.confirmPause}}">Pausar</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.closeMode}}">Voltar</button></div>
+            </section>
+          </sc-if>
+          <sc-if value="{{v.isCancel}}" hint-placeholder-val="{{ false }}">
+            <section class="card onb-sec"><h2 class="onb-h2">Cancelar renovação</h2>
+              <div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Se cancelar</b><ul class="mod-sheet__ul a2-mt"><sc-for list="{{v.cancelLines}}" as="l" hint-placeholder-count="4"><li>{{l}}</li></sc-for></ul></div></div>
+              <div class="field"><span class="field__label" id="a2-mot">Motivo (opcional)</span><div class="onb-chips" role="group" aria-labelledby="a2-mot"><sc-for list="{{v.reasons}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg mod-danger" onClick="{{v.reviewCancel}}">Revisar cancelamento</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.closeMode}}">Manter assinatura</button></div>
+              <button type="button" class="btn btn--ghost btn--sm" onClick="{{v.refund}}">Quero pedir reembolso (é outro pedido)</button>
+            </section>
+          </sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost" onClick="{{v.seeCtt}}">Ver contratação</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- FC09 · Solicitar e acompanhar reembolso -->
+      <sc-if value="{{is.fc09}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Minhas contratações / Reembolso</span><h1 class="pghead__title">Reembolso</h1></div></div>
+        <sc-if value="{{v.isForm}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec"><h2 class="onb-h2">Pedir reembolso</h2>
+            <div class="kv"><div class="kv__r"><span>Item</span><b>{{v.what}}</b></div><div class="kv__r"><span>Vendedor</span><b>{{v.seller}}</b></div><div class="kv__r"><span>Valor disponível para análise</span><b>{{v.eligTxt}}</b></div></div>
+            <sc-if value="{{v.hasPrev}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Parcial anterior</b>{{v.prevTxt}}</div></div></sc-if>
+            <sc-if value="{{v.noElig}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>{{v.eligAlertT}}</b>{{v.eligAlertS}}<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.eligAct}}">{{v.eligBtn}}</button></div></div></div></sc-if>
+            <div class="alert {{v.effectCls}}"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div><b>Efeito no acesso</b>{{v.effect}} <sc-if value="{{v.hasKeep}}" hint-placeholder-val="{{ true }}">{{v.keep}}</sc-if><div class="a2-mt"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.effectWhy}}">Saiba por quê</button></div></div></div>
+            <div class="field"><span class="field__label" id="a2-rmot">Motivo</span><div class="onb-chips" role="group" aria-labelledby="a2-rmot"><sc-for list="{{v.reasons}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><label class="field__label" for="a2-rnote">Conte mais (opcional)</label><div class="input input--area"><textarea id="a2-rnote" rows="3" onInput="{{v.setNote}}">{{v.note}}</textarea></div><span class="field__help">Vai para {{v.seller}} e para a equipe da 99Coach. Não precisa contar detalhes de saúde.</span></div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">{{v.err}}</p></sc-if>
+            <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.review}}">Revisar solicitação</button>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost" onClick="{{v.policy}}">Ler política {{v.pol}}</button><button type="button" class="btn btn--ghost" onClick="{{v.back}}">Voltar à contratação</button></div></div>
+          </section>
+        </sc-if>
+        <sc-if value="{{v.isTrack}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec">
+            <div class="mod-between"><div class="a2-dhead__t"><span class="label">Reembolso {{v.protocol}}</span><b>{{v.what}}</b></div><span class="badge badge--info">{{v.rfStatus}}</span></div>
+            <sc-if value="{{v.isUnknown}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Resultado desconhecido</b>A resposta do envio se perdeu. Consulte o pedido; não enviamos outro.<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.consult}}">Consultar de novo</button></div></div></div></sc-if>
+            <sc-if value="{{v.isDenied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk"><i class="ic ic--sm i-x" aria-hidden="true"></i><div><b>Reembolso negado com motivo</b>Seu acesso continua normalmente.<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.deniedWhy}}">Saiba por quê</button></div></div></div></sc-if>
+            <div class="kv"><div class="kv__r"><span>Pedido</span><b>{{v.what}}</b></div><div class="kv__r"><span>Valor para análise</span><b>{{v.rfValue}}</b></div><div class="kv__r"><span>Motivo</span><b>{{v.rfReason}}</b></div></div>
+            <div class="tl"><sc-for list="{{v.steps}}" as="t" hint-placeholder-count="3"><div class="tl__it"><span class="{{t.dot}}"><i class="{{t.ic}}" aria-hidden="true"></i></span><div class="tl__b"><b>{{t.t}}</b><span class="mod-small mod-muted">{{t.s}}</span></div></div></sc-for></div>
+            <p class="mod-small mod-muted">{{v.effect}} {{v.keep}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary" onClick="{{v.consult}}">Acompanhar reembolso</button><button type="button" class="btn btn--ghost" onClick="{{v.back}}">Voltar à contratação</button></div>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      <!-- REL05 · Pedir acompanhamento pelo perfil -->
+      <sc-if value="{{is.pedir}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow">Pedido</span><h1 class="pghead__title">Pedir acompanhamento</h1></div></div>
+        <section class="card onb-sec a2-trainer"><div class="a2-dhead"><span class="av av--md a2-av"><sc-if value="{{v.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.tPhoto}}" alt=""></sc-if><sc-if value="{{v.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.tIni}}</sc-if></span><div class="a2-dhead__t"><b>{{v.tName}}</b><span>{{v.tSub}}</span></div></div></section>
+        <sc-if value="{{v.hasStatus}}" hint-placeholder-val="{{ false }}"><div class="{{v.status.cls}}" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>{{v.status.b}}</b>{{v.status.t}}<div class="mod-row a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.status.fn}}">{{v.status.btn}}</button><sc-if value="{{v.statusHasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.status.fn2}}">{{v.status.btn2}}</button></sc-if></div></div></div></sc-if>
+
+        <sc-if value="{{v.showForm}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec">
+            <div class="field"><span class="field__label" id="a2-psvc">Serviço</span><div class="onb-chips" role="group" aria-labelledby="a2-psvc"><sc-for list="{{v.svcs}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <sc-if value="{{v.already}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Você já tem este serviço</b>{{v.alreadyTxt}}<div class="a2-mt"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.seeCt}}">Ver contratação</button></div></div></div></sc-if>
+            <div class="field"><label class="field__label" for="a2-pgoal">Seu objetivo</label><div class="input input--area"><textarea id="a2-pgoal" rows="3" maxlength="300" onInput="{{v.setGoal}}">{{v.goal}}</textarea><span class="cnt">{{v.goalN}}/300</span></div></div>
+            <div class="field"><span class="field__label" id="a2-plvl">Seu nível</span><div class="onb-chips" role="group" aria-labelledby="a2-plvl"><sc-for list="{{v.levels}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><span class="field__label" id="a2-pav">Quando você pode treinar</span><div class="onb-chips" role="group" aria-labelledby="a2-pav"><sc-for list="{{v.avs}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><label class="field__label" for="a2-pmsg">Mensagem para Rafael (opcional)</label><div class="input input--area"><textarea id="a2-pmsg" rows="3" onInput="{{v.setMsg}}">{{v.msg}}</textarea></div><span class="field__help">Não precisa contar detalhes de saúde agora. Se ele aceitar, pede o que for necessário.</span></div>
+            <div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Isso não é uma contratação paga</b>Rafael recebe o pedido e responde. Valores e início são combinados depois, se ele aceitar.</div></div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">{{v.err}}</p></sc-if>
+            <div class="onb-actions">
+              <button type="button" class="btn btn--primary btn--lg btn--block" aria-busy="{{v.busy}}" onClick="{{v.send}}">{{v.sendLabel}}</button>
+              <button type="button" class="btn btn--ghost" onClick="{{v.backProfile}}">Voltar ao perfil</button>
+            </div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{v.showResult}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec">
+            <div class="emp a2-emp"><span class="emp__ic"><i class="ic i-send" aria-hidden="true"></i></span><b>Seu pedido foi enviado</b><span>Protocolo {{v.protocol}} · {{v.rSvc}}</span></div>
+            <div class="tl">
+              <div class="tl__it"><span class="tl__dot is-ink"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><div class="tl__b"><b>Enviado</b><span class="mod-small mod-muted">{{v.sentAt}}</span></div></div>
+              <div class="tl__it"><span class="tl__dot is-brand"><i class="ic ic--xs i-clock" aria-hidden="true"></i></span><div class="tl__b"><b>Aguardando resposta</b><span class="mod-small mod-muted">o treinador foi avisado</span></div></div>
+            </div>
+            <div class="kv"><div class="kv__r"><span>Objetivo</span><b>{{v.rGoal}}</b></div><div class="kv__r"><span>Disponibilidade</span><b>{{v.rAv}}</b></div><sc-if value="{{v.hasMsg}}" hint-placeholder-val="{{ false }}"><div class="kv__r"><span>Mensagem</span><b>{{v.rMsg}}</b></div></sc-if></div>
+            <p class="mod-small mod-muted">Isso não é uma contratação paga. Se Rafael aceitar, o acompanhamento abre e a proposta de valor vem depois.</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline mod-danger" onClick="{{v.cancelReq}}">Cancelar pedido</button><button type="button" class="btn btn--ghost" onClick="{{v.backProfile}}">Voltar ao perfil</button></div>
+          </section>
+        </sc-if>
+      </sc-if>
+
+      </main>
+    </div>
+    <sc-if value="{{hasTabs}}" hint-placeholder-val="{{ true }}"><nav class="tabbar onb-tabbar" aria-label="{{navLabel}}"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" class="{{t.cls}}" aria-current="{{t.cur}}" onClick="{{t.go}}"><i class="{{t.ic}}" aria-hidden="true"></i><span>{{t.label}}</span></button></sc-for></nav></sc-if>
+  </div>
+
+  <sc-if value="{{sheetOn}}" hint-placeholder-val="{{ false }}">
+    <div class="mod-scrim" onClick="{{closeSheet}}"></div>
+    <div class="card mod-sheet" role="dialog" aria-modal="true" aria-labelledby="mod-sh">
+      <div class="mod-sheet__hd"><b id="mod-sh">{{shTitle}}</b><button type="button" class="icon-btn" aria-label="Fechar" onClick="{{closeSheet}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+      <div class="mod-sheet__bd">
+        <sc-if value="{{shHasText}}" hint-placeholder-val="{{ true }}"><p>{{shText}}</p></sc-if>
+        <sc-if value="{{shHasLines}}" hint-placeholder-val="{{ false }}"><ul class="mod-sheet__ul"><sc-for list="{{shLines}}" as="l" hint-placeholder-count="2"><li>{{l}}</li></sc-for></ul></sc-if>
+        <div class="mod-sheet__ft"><button type="button" class="{{shOkCls}}" onClick="{{shDoOk}}">{{shOk}}</button><sc-if value="{{shHasCancel}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost" onClick="{{closeSheet}}">{{shCancel}}</button></sc-if></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
+</div>

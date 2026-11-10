@@ -1,0 +1,525 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
+  <!-- Barra de cenário (fora do produto) · Componentes: Escolhas/Chip, Ações/Botão -->
+  <div class="v4-demo" role="region" aria-label="Cenários de demonstração">
+    <div class="wrap v4-demo__in">
+      <span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios</span>
+      <div class="v4-demo__list no-sb"><sc-for list="{{scens}}" as="c" hint-placeholder-count="9"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.on}}">{{c.label}}</button></sc-for><sc-for list="{{sxScens}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.on}}">{{c.label}}</button></sc-for></div>
+      <button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar cenário</button>
+    </div>
+    <p class="wrap v4-demo__desc"><b>{{scenName}}.</b> {{scenDesc}}</p>
+  </div>
+
+
+  <!-- ============ TELA DE APP (celular < 600) — VITRINE para quem procura treinador (marketplace) ============ -->
+  <div class="vfm" id="conteudo-app">
+    <!-- Barra superior: logo · Salvos · Entrar/conta (a navegação é a barra inferior) -->
+    <div class="vfm-bar vfm-bar--pub">
+      <img class="vfm-logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach">
+      <span class="vfm-bar__r">
+        <button type="button" class="icon-btn vfm-ib" onClick="{{openSaved}}" aria-label="Salvos: {{favN}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i><sc-if value="{{hasFav}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button>
+        <sc-if value="{{visitor}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--sm vfm-enter" onClick="{{openLogin}}">Entrar</button></sc-if>
+        <sc-if value="{{logged}}" hint-placeholder-val="{{ false }}"><button type="button" class="vfm-me" onClick="{{openMine}}" aria-label="Conta de Ana Ribeiro: {{mineLabel}}"><span class="av av--sm vfm-av">AR</span></button></sc-if>
+      </span>
+    </div>
+
+    <!-- Hero de app: foto em sangria, título grande e busca sobreposta -->
+    <section class="vfm-hero2" aria-labelledby="vfm-h1">
+      <div class="vfm-hero2__media"><img src="@@IMG:570416df9063df47@@" alt=""></div>
+      <div class="vfm-hero2__in">
+        <span class="vfm-eb2">Marketplace de treinadores</span>
+        <h1 id="vfm-h1" class="vfm-h1b"><span>{{h1a}}</span> <em>{{h1b}}</em></h1>
+        <p class="vfm-lede2">Compare preço, formato e credencial antes de conversar.</p>
+        <div class="vfm-proof"><span class="tag tag--glass">CREF conferido na fonte</span><span class="tag tag--glass">Preço claro</span><span class="tag tag--glass">Ninguém paga para subir</span></div>
+      </div>
+    </section>
+    <section class="vfm-hero vfm-qwrap" aria-label="Buscar treinadores">
+      <div class="qbar vfm-qbar" role="search" aria-label="Buscar treinadores">
+        <button type="button" class="qbar__go vfm-qgo" onClick="{{openSx}}" aria-label="Abrir a busca"><i class="ic ic--sm i-search" aria-hidden="true"></i></button>
+        <button type="button" class="vfm-qtx" onClick="{{openSx}}" aria-haspopup="dialog"><b>{{sportLabel}} · {{cityShort}}</b><span>{{modeLabel}} · toque para buscar</span></button>
+        <button type="button" class="qbar__btn vfm-qbtn" onClick="{{doSearch}}">Buscar<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+      </div>
+      <p class="vfm-hint">Buscar não pede cadastro. A ordem nunca é paga.</p>
+    </section>
+
+    <!-- Barra de esportes com os ícones do DS -->
+    <div class="vfm-rail no-sb" role="group" aria-label="Modalidades"><sc-for list="{{chips}}" as="s" hint-placeholder-count="10"><button type="button" class="vfm-sp" aria-pressed="{{s.on}}" onClick="{{s.pick}}"><span class="vfm-sp__i"><img src="{{s.icon}}" alt=""></span><span>{{s.label}}</span></button></sc-for><button type="button" class="vfm-sp" onClick="{{openSports}}"><span class="vfm-sp__i vfm-sp__more"><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></span><span>Todas</span></button></div>
+
+    <div class="vfm-body">
+      <!-- Só para quem já é aluno: uma linha compacta -->
+      <sc-if value="{{showLink}}" hint-placeholder-val="{{ false }}">
+      <section class="vfm-linkrow" aria-labelledby="vfm-lk">
+        <span class="av av--md"><img src="@@IMG:272071ea45b1ee18@@" alt=""></span>
+        <div><span id="vfm-lk" class="label">{{linkTitle}}</span><b>{{lk.coach}}</b><small>{{lk.today}}</small></div>
+        <button type="button" class="btn btn--primary btn--sm" onClick="{{lk.go}}">Abrir</button>
+        <sc-if value="{{twoLinks}}" hint-placeholder-val="{{ false }}"><div class="seg seg--sm vfm-seg" role="tablist" aria-label="Escolha o acompanhamento"><sc-for list="{{linkTabs}}" as="l" hint-placeholder-count="2"><button type="button" role="tab" class="{{l.cls}}" aria-selected="{{l.on}}" onClick="{{l.pick}}">{{l.coach}}</button></sc-for></div></sc-if>
+      </section>
+      </sc-if>
+      <sc-if value="{{showPending}}" hint-placeholder-val="{{ false }}">
+      <div class="vfm-status"><span class="{{pedCls}}">{{pedStatus}}</span><b>{{pedTitle}}</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{openPedido}}">{{pedCta}}</button></div>
+      </sc-if>
+      <sc-if value="{{showCont}}" hint-placeholder-val="{{ false }}">
+      <div class="vfm-status"><span class="label">Continue de onde parou</span><b>{{sportLabel}} · {{cityShort}} · {{modeLabel}}</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{openEdit}}">Abrir</button></div>
+      </sc-if>
+
+      <!-- Treinadores para a sua busca: linhas (máx. 4) -->
+      <section class="vfm-sec" id="treinadores-app" aria-labelledby="vfm-t">
+        <div class="vfm-head"><h2 id="vfm-t" class="vfm-title">Treinadores para a sua busca</h2></div>
+        <p class="vfm-sub">{{tSub}} · <button type="button" class="vfm-u" onClick="{{openOrder}}">por que estes?</button></p>
+        <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>Escolha uma cidade</b><span>Sem cidade não existe “perto de você”.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
+        <sc-if value="{{tEmpty}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-search" aria-hidden="true"></i><b>Ninguém com estes filtros</b><span>{{emptyText}}</span><div class="vfm-row-btns"><sc-for list="{{alts}}" as="a" hint-placeholder-count="2"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">
+        <div class="vfm-list vfm-cap4">
+          <sc-for list="{{tlist}}" as="t" hint-placeholder-count="4">
+            <sc-if value="{{t.hid}}" hint-placeholder-val="{{ false }}"><div class="vfm-hidrow"><i class="ic  i-eye" aria-hidden="true"></i><span>{{t.name}} ocultado nesta busca</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{t.unhide}}">Mostrar</button></div></sc-if>
+            <sc-if value="{{t.vis}}" hint-placeholder-val="{{ true }}">
+            <div class="vfm-row">
+              <button type="button" class="vfm-thumb" onClick="{{t.open}}" tabindex="-1" aria-label="Ver {{t.name}}"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="vfm-ini">{{t.ini}}</span></sc-if></button>
+              <div class="vfm-row__b">
+                <button type="button" class="vfm-name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button>
+                <span class="vfm-meta"><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><i class="ic ic--xs i-star" aria-hidden="true"></i><b>{{t.rating}}</b> ({{t.n}})</sc-if><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}">Ainda sem avaliações</sc-if></span>
+                <span class="vfm-why {{t.whyCls}}">{{t.why2}}</span>
+                <sc-if value="{{t.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vfm-pricel"><b>{{t.price}}</b> {{t.unit}}</span></sc-if>
+              </div>
+              <button type="button" class="{{t.favCls}} vfm-fav" onClick="{{t.fav}}" aria-label="{{t.favLabel}}" aria-pressed="{{t.favOn}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button>
+            </div>
+            </sc-if>
+          </sc-for>
+        </div>
+        </sc-if>
+        <button type="button" class="btn btn--outline btn--block vfm-all" onClick="{{goTrainers}}">Ver os 8 treinadores</button>
+      </section>
+
+      <!-- Do jeito que você prefere -->
+      <section class="vfm-sec" aria-labelledby="vfm-c">
+        <div class="vfm-head"><h2 id="vfm-c" class="vfm-title">Do jeito que você prefere</h2></div>
+        <div class="vf-track vfm-t44 no-sb"><sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><button type="button" class="vfm-tile" onClick="{{c.go}}"><img src="{{c.img}}" alt=""><span><b>{{c.label}}</b><small>{{c.sub}}</small></span></button></sc-for></div>
+      </section>
+
+      <!-- Serviços em Londrina: cards -->
+      <section class="vfm-sec" aria-labelledby="vfm-s">
+        <div class="vfm-head"><h2 id="vfm-s" class="vfm-title">Serviços em {{cityShortTitle}}</h2><button type="button" class="vfm-more" onClick="{{seeAllSvc}}">Ver {{mSvcN}}<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
+        <div class="vf-track vfm-t76 no-sb"><sc-for list="{{svcs}}" as="v" hint-placeholder-count="8">
+          <button type="button" class="vfm-svc" onClick="{{v.open}}">
+            <span class="vfm-svc__m"><img src="{{v.cover}}" alt=""><span class="tag tag--white">{{v.kind}}</span></span>
+            <span class="vfm-svc__b"><b class="vfm-name2">{{v.coach}}</b><span class="vfm-meta vfm-clamp">{{v.title}}</span><span class="vfm-svc__f"><span class="vfm-pricel"><b>{{v.price}}</b> {{v.unit}}</span><span class="vfm-small">{{v.rate}}</span></span></span>
+          </button></sc-for></div>
+      </section>
+
+      <!-- Programas prontos -->
+      <section class="vfm-sec" aria-labelledby="vfm-p">
+        <div class="vfm-head"><h2 id="vfm-p" class="vfm-title">Programas prontos</h2><button type="button" class="vfm-more" onClick="{{seeAllP}}">Ver tudo<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
+        <p class="vfm-sub">Compra única · 12 meses de acesso · sem acompanhamento</p>
+        <sc-if value="{{pFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status" style="margin-top: 12px"><i class="ic  i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não carregou agora.</b>O resto da tela continua funcionando.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{retryP}}">Tentar</button></div></sc-if>
+        <sc-if value="{{pLoading}}" hint-placeholder-val="{{ false }}"><div class="vf-track vfm-t62 no-sb" aria-busy="true"><div class="v4-sk vfm-sk"></div><div class="v4-sk vfm-sk"></div></div></sc-if>
+        <sc-if value="{{pEmpty}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-book" aria-hidden="true"></i><b>Ainda não há programas de {{sportLabel}}</b></div></sc-if>
+        <sc-if value="{{pHas}}" hint-placeholder-val="{{ true }}">
+        <div class="vf-track vfm-t62 no-sb"><sc-for list="{{plist4}}" as="p" hint-placeholder-count="4">
+          <button type="button" class="pc vfm-pc" onClick="{{p.open}}"><img src="{{p.cover}}" alt="">
+            <span class="pc__top"><span class="pc__tags"><span class="tag tag--glass">{{p.weeks}}</span><span class="tag tag--glass">{{p.level}}</span></span></span>
+            <span class="pc__body"><span class="pc__title">{{p.title}}</span><span class="pc__coach">{{p.coach}}</span><span class="pc__foot"><span class="pc__price">Compra única<b>{{p.price}}</b></span></span></span>
+          </button></sc-for></div>
+        </sc-if>
+      </section>
+
+      <!-- Explore os esportes -->
+      <section class="vfm-sec" aria-labelledby="vfm-e">
+        <div class="vfm-head"><h2 id="vfm-e" class="vfm-title">Explore os esportes</h2><button type="button" class="vfm-more" onClick="{{openSports}}">Ver todos<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
+        <div class="vf-track vfm-t44 no-sb"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><button type="button" class="st vfm-st" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span></button></sc-for></div>
+      </section>
+
+      <!-- Como funciona -->
+      <section class="vfm-sec" aria-labelledby="vfm-h">
+        <div class="vfm-head"><h2 id="vfm-h" class="vfm-title">Como funciona</h2></div>
+        <ol class="vfm-card vfm-how">
+          <li><span class="jstep__n is-ink" aria-hidden="true">1</span><span><b>Compare com calma</b><small>Preço com unidade, formato e credencial antes da conversa. Ninguém paga para subir.</small></span></li>
+          <li><span class="jstep__n is-ink" aria-hidden="true">2</span><span><b>Converse e contrate</b><small>Alguns pedem aceite antes; outros contratam direto, com Pix ou cartão.</small></span></li>
+          <li><span class="jstep__n is-ink" aria-hidden="true">3</span><span><b>Treine pelo app</b><small>Treino, registro e conversa com o treinador no mesmo lugar.</small></span></li>
+        </ol>
+      </section>
+
+      <!-- Guias -->
+      <section class="vfm-sec" aria-labelledby="vfm-g">
+        <div class="vfm-head"><h2 id="vfm-g" class="vfm-title">Guias para começar bem</h2><button type="button" class="vfm-more" onClick="{{seeGuides}}">Ver tudo<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
+        <div class="vf-track vfm-t76 no-sb"><sc-for list="{{guides}}" as="g" hint-placeholder-count="3"><button type="button" class="vfm-guide" onClick="{{g.go}}"><img src="{{g.img}}" alt=""><span class="label">{{g.kind}}</span><b>{{g.title}}</b></button></sc-for></div>
+      </section>
+
+      <!-- Para treinadores: card tinta com um CTA -->
+      <section class="vfm-sec" aria-labelledby="vfm-pro">
+        <div class="vfm-card vfm-dark vfm-pro">
+          <span class="label vfm-lab-d">Para treinadores</span>
+          <h2 id="vfm-pro" class="vfm-h vfm-h--lg">Chega de mandar PDF no WhatsApp</h2>
+          <p class="vfm-note">Perfil, treinos no app, conversa e cobrança num lugar só. Essencial grátis; Pro R$ 99/mês. O Pro não compra posição.</p>
+          <button type="button" class="btn btn--brand btn--block vfm-go" onClick="{{openPro}}">Criar meu perfil grátis<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+        </div>
+      </section>
+
+      <!-- Cidades -->
+      <section class="vfm-sec" aria-labelledby="vfm-ci">
+        <div class="vfm-head"><h2 id="vfm-ci" class="vfm-title">Procure na sua cidade</h2><button type="button" class="vfm-more" onClick="{{mCities}}">Ver {{mCityN}}<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
+        <div class="vfm-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><button type="button" class="chip" onClick="{{k.go}}">{{k.label}}</button></sc-for></div>
+      </section>
+
+      <div class="vfm-foot"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"><div><button type="button" onClick="{{openHelp}}">Ajuda</button><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button><button type="button" onClick="{{openLang}}">Português · R$</button></div><span>© 2026 99Coach · Compare profissionais, modalidades e formatos para escolher com mais clareza.</span></div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho do site com busca compacta (ds4.header · Componentes-5 G16) -->
+  <header class="hdr">
+    <div class="wrap hdr__in">
+      <img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach">
+      <div class="sx-pill vf-hsx v4-hide-c" id="vf-hsx" data-sx role="combobox" aria-haspopup="listbox" aria-controls="sx-list" aria-expanded="{{sxExp}}"><button type="button" class="sx-go" onClick="{{openSx}}" aria-label="Buscar"><i class="ic ic--sm i-search" aria-hidden="true"></i></button><button type="button" class="sx-inbtn" onClick="{{openSx}}"><span class="{{sxInCls}}">{{sxQText}}</span></button><sc-if value="{{sxHasQ}}" hint-placeholder-val="{{ false }}"><button type="button" class="sx-x" onClick="{{sxClear}}" aria-label="Limpar busca"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if><button type="button" class="{{sxIaCls}}" aria-pressed="{{sxIaOn}}" onClick="{{sxIaOpen}}"><i class="ic ic--xs i-sparkle" aria-hidden="true"></i>IA</button></div>
+      <nav class="hdr__nav" aria-label="Principal">
+        <button type="button" class="hdr__link is-on" aria-current="page" onClick="{{goTrainers}}">Treinadores</button>
+        <button type="button" class="hdr__link" onClick="{{openSports}}">Esportes</button>
+        <button type="button" class="hdr__link" onClick="{{goPrograms}}">Programas</button>
+        <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
+      </nav>
+      <div class="hdr__tools">
+        <button type="button" class="hdr__ico" onClick="{{openSaved}}" aria-label="Salvos: {{favN}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i><sc-if value="{{hasFav}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button>
+        <sc-if value="{{visitor}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{openLogin}}">Entrar</button></sc-if>
+        <sc-if value="{{logged}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-me" onClick="{{openMine}}" aria-label="Conta de Ana Ribeiro: {{mineLabel}}"><span class="av av--sm" style="background: var(--ink); color: #fff">AR</span><span class="v4-hide-c">{{mineLabel}}</span></button></sc-if>
+        <button type="button" class="hdr__ico v4-menu" onClick="{{openMenu}}" aria-label="Abrir menu" aria-expanded="{{menuOpen}}"><i class="ic ic--sm i-menu" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </header>
+  <!-- Barra de esportes em cartão de vidro (Componentes-5 G16) -->
+  <div class="wrap vf-rail"><div class="rail" role="group" aria-label="Modalidades"><div class="rail__in">
+    <div class="rail__list no-sb"><sc-for list="{{chips}}" as="s" hint-placeholder-count="10"><button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" onClick="{{s.pick}}"><img src="{{s.icon}}" alt=""><span>{{s.label}}</span></button></sc-for></div>
+    <button type="button" class="rail__arrow" onClick="{{openSports}}" aria-label="Ver todas as modalidades"><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+  </div></div></div>
+
+  <main id="conteudo">
+  <!-- Retorno: faixa “Continue de onde parou” do Hub H01 -->
+  <sc-if value="{{showCont}}" hint-placeholder-val="{{ false }}">
+  <section class="wrap v4-top" aria-labelledby="v4-cont-t">
+    <div class="card--ink v4-cont">
+      <span class="eyebrow eyebrow--light">Continue de onde parou</span>
+      <div class="v4-row v4-row--between" style="align-items: flex-end">
+        <h1 id="v4-cont-t" class="d3" style="color: #fff">{{sportLabel}} · {{cityShort}} · {{modeLabel}}</h1>
+        <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--glass btn--sm" onClick="{{openEdit}}">Alterar</button><button type="button" class="btn btn--glass btn--sm" onClick="{{clearSearch}}">Limpar</button><button type="button" class="btn btn--primary btn--arrow" onClick="{{continueSearch}}">Continuar busca<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
+      </div>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--text-on-dark)">Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou. <button type="button" class="v4-reset" style="color: #fff; text-decoration: underline; min-height: 44px" onClick="{{openHist}}">Gerenciar histórico</button></p>
+    </div>
+    <sc-if value="{{showRecent}}" hint-placeholder-val="{{ true }}">
+      <div class="v4-row v4-row--between" style="margin-top: 16px"><span class="label">Vistos recentemente</span><span class="badge badge--warn">Variante condicional · depende da política de histórico</span></div>
+      <div class="v4-recent">
+        <sc-for list="{{recent}}" as="r" hint-placeholder-count="2"><button type="button" class="lrow" style="text-align: left; cursor: pointer" onClick="{{r.open}}"><span class="av av--md"><img src="{{r.photo}}" alt=""></span><span class="lrow__t"><b>{{r.name}}</b><span>{{r.when}}</span></span></button></sc-for>
+        <button type="button" class="btn btn--ghost btn--sm" onClick="{{clearRecent}}">Limpar vistos</button>
+      </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <!-- Hero B do DS: título D1, busca (Busca/Barra G16), leitura de treino sobre a foto, barra de esportes -->
+  <sc-if value="{{showHero}}" hint-placeholder-val="{{ true }}">
+  <section class="{{heroCls}}" aria-labelledby="v4-h1">
+    <div class="v4-hero__img"><img src="@@IMG:570416df9063df47@@" alt="Atleta em arrancada com a fita vermelha da marca"></div>
+    <div class="v4-hud" aria-hidden="true">
+      <div class="hud"><span class="hud__dot"></span><span class="hud__line"></span><span class="hud__box"><span>SEMANA 03/12 · EXEMPLO DO APP</span><br><b>Força · Membros inferiores</b></span></div>
+      <div class="prog"><div class="prog__k"><span>ANA RIBEIRO</span><span>TREINO B</span></div><div style="display: flex; align-items: baseline; gap: 8px; margin-top: 6px"><b class="num" style="font-size: 40px">3/4</b><span style="font-size: 12.5px; color: rgba(255,255,255,.75)">sessões da semana</span></div><p style="font-size: 12.5px; color: rgba(255,255,255,.75); margin-top: 4px">Recebido por Rafael Lima · 08:12</p></div>
+    </div>
+    <div class="wrap v4-hero__in">
+      <span class="eyebrow">99Coach · marketplace de treinadores</span>
+      <h1 id="v4-h1" class="d1">{{h1a}} <span>{{h1b}}</span></h1>
+      <p class="lead">Escolha uma modalidade e como quer treinar.</p>
+      <form class="qbar v4-q" data-sx onSubmit="{{doSearch}}" aria-label="Buscar treinadores">
+        <span class="qbar__go" aria-hidden="true"><i class="ic ic--sm i-search" aria-hidden="true"></i></span>
+        <button type="button" class="v4-qf" onClick="{{openSx}}" aria-haspopup="listbox"><span class="label">Modalidade ou objetivo</span><span class="v4-fv">{{sportLabel}}<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></span></button>
+        <button type="button" class="v4-qf" onClick="{{openCity}}" aria-haspopup="dialog"><span class="label">Onde</span><span class="{{cityCls}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>{{cityLabel}}</span></button>
+        <div class="v4-qf v4-qf--seg" role="group" aria-labelledby="v4-fmt"><span id="v4-fmt" class="label">Formato</span>
+          <div class="seg seg--sm"><button type="button" class="{{segP}}" aria-pressed="{{prP}}" onClick="{{modeP}}">Presencial</button><button type="button" class="{{segO}}" aria-pressed="{{prO}}" onClick="{{modeO}}">Online</button><button type="button" class="{{segQ}}" aria-pressed="{{prQ}}" onClick="{{modeQ}}">Qualquer formato</button></div>
+        </div>
+        <button type="submit" class="qbar__btn">Encontrar treinadores<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+      </form>
+      <p class="v4-hint"><span>Buscar não pede cadastro. A ordem dos resultados nunca é paga.</span><button type="button" class="link-arrow" onClick="{{useLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></p>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- Seu acompanhamento (Hub H01 · Listas/Linha) -->
+  <sc-if value="{{showLink}}" hint-placeholder-val="{{ true }}">
+  <section class="wrap vf-top" aria-labelledby="vf-link-t">
+    <div class="card vf-strip">
+      <span class="av av--md"><img src="{{lk.photo}}" alt="Foto de perfil de {{lk.coach}}"></span>
+      <div class="vf-strip__t"><span id="vf-link-t" class="label">{{linkTitle}}</span><p><b>{{lk.coach}}</b> · {{lk.today}} · {{lk.week}}</p></div>
+      <sc-if value="{{twoLinks}}" hint-placeholder-val="{{ false }}"><div class="seg seg--sm seg--fit" role="tablist" aria-label="Escolha o acompanhamento"><sc-for list="{{linkTabs}}" as="l" hint-placeholder-count="2"><button type="button" role="tab" class="{{l.cls}}" style="border: 0" aria-selected="{{l.on}}" onClick="{{l.pick}}">{{l.coach}}</button></sc-for></div></sc-if>
+      <button type="button" class="btn btn--primary btn--sm" onClick="{{lk.go}}">Abrir acompanhamento</button>
+    </div>
+  </section>
+  </sc-if>
+  <sc-if value="{{showPending}}" hint-placeholder-val="{{ false }}">
+  <section class="wrap vf-top" aria-labelledby="vf-ped-t">
+    <div class="card vf-strip">
+      <span class="av av--md"><img src="@@IMG:272071ea45b1ee18@@" alt="Foto de perfil de Rafael Lima"></span>
+      <div class="vf-strip__t"><span class="{{pedCls}}">{{pedStatus}}</span><p id="vf-ped-t"><b>{{pedTitle}}</b> · {{pedText}}</p></div>
+      <button type="button" class="btn btn--primary btn--sm" onClick="{{openPedido}}">{{pedCta}}</button>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- Treinadores para a sua busca (Hub H01) -->
+  <section id="treinadores" class="wrap vf-sec vf-sec--near" aria-labelledby="vf-t-t">
+    <div class="vf-sh"><h2 id="vf-t-t" class="sec-title sec-title--sm">Treinadores para a sua busca</h2><p class="vf-shsub">{{tSub}} · <button type="button" class="vf-u" onClick="{{openOrder}}">por que estes?</button></p><button type="button" class="link-arrow vf-shr" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Salvos ({{favN}})</button></div>
+    <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}">
+      <div class="card empty" style="align-items: flex-start; text-align: left"><i class="ic  i-pin" aria-hidden="true"></i><b>Escolha uma cidade para ver quem atende presencialmente</b><span>Sem cidade, não existe “perto de você”. A localização só é pedida se você tocar em “Usar minha localização”.</span>
+        <div class="v4-row" style="gap: 8px; margin-top: 10px"><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button><button type="button" class="btn btn--outline btn--sm" onClick="{{useLoc}}">Usar minha localização</button><button type="button" class="btn btn--outline btn--sm" onClick="{{modeO}}">Ver quem atende online</button></div></div>
+    </sc-if>
+    <sc-if value="{{tEmpty}}" hint-placeholder-val="{{ false }}">
+      <div class="card empty" style="align-items: flex-start; text-align: left"><i class="ic  i-search" aria-hidden="true"></i><b>Não encontramos profissionais com estes filtros</b><span>{{emptyText}} Nada muda até você escolher uma alternativa.</span>
+        <div class="v4-row" style="gap: 8px; margin-top: 10px"><sc-for list="{{alts}}" as="a" hint-placeholder-count="3"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div>
+    </sc-if>
+    <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">
+      <div class="vf-g4">
+        <sc-for list="{{tlist}}" as="t" hint-placeholder-count="4">
+          <sc-if value="{{t.hid}}" hint-placeholder-val="{{ false }}"><div class="empty v4-hidden"><i class="ic  i-eye" aria-hidden="true"></i><b>{{t.name}} ocultado nesta busca</b><span>Volta se você mudar a busca.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{t.unhide}}">Desfazer</button></div></sc-if>
+          <sc-if value="{{t.vis}}" hint-placeholder-val="{{ true }}"><article class="vf-tc" aria-label="{{t.name}}">
+            <div class="vf-tc__m"><button type="button" class="v4-ph" onClick="{{t.open}}" tabindex="-1" aria-label="Ver resumo de {{t.name}}"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{t.ini}}</span></sc-if></button>
+              <button type="button" class="{{t.favCls}}" onClick="{{t.fav}}" aria-label="{{t.favLabel}}" aria-pressed="{{t.favOn}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button></div>
+            <div class="vf-tc__b">
+              <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.nrev}}"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.rating}}<small>({{t.n}})</small></span></sc-if></div>
+              <span class="vf-meta">{{t.where}}<sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"> · ainda sem avaliações</sc-if></span>
+              <span class="vf-reason {{t.whyCls}}">{{t.why2}}</span>
+              <sc-if value="{{t.pend}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn" style="align-self: flex-start">Pedido enviado · aguardando resposta</span></sc-if>
+              <div class="vf-tc__f"><sc-if value="{{t.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offName}}</span></span></sc-if><button type="button" class="icon-btn" onClick="{{t.why}}" aria-label="Por que estou vendo {{t.name}}?"><i class="ic ic--sm i-more" aria-hidden="true"></i></button></div>
+            </div>
+          </article></sc-if>
+        </sc-for>
+      </div>
+    </sc-if>
+    <div class="vf-explore"><span class="label">Explorar outra coisa</span><div class="vf-opts"><sc-for list="{{exploreChips}}" as="x" hint-placeholder-count="5"><button type="button" class="opt" onClick="{{x.go}}">{{x.label}}</button></sc-for></div><button type="button" class="link-arrow vf-shr" onClick="{{goProgramsSec}}">Ver programas prontos<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+  </section>
+
+  <!-- Do jeito que você prefere treinar -->
+  <section class="wrap vf-sec" aria-labelledby="vf-c-t">
+    <div class="sec-head"><div><h2 id="vf-c-t" class="sec-title sec-title--nonum">Do jeito que você prefere treinar</h2><p class="sec-sub">Cada formato diz o que inclui antes do preço.</p></div></div>
+    <div class="vf-g5"><sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><button type="button" class="cat vf-cat" onClick="{{c.go}}"><b>{{c.label}}</b><span class="vf-cat__s">{{c.sub}}</span><span class="cat__img"><img src="{{c.img}}" alt=""></span></button></sc-for></div>
+  </section>
+
+  <!-- Serviços em Londrina -->
+  <section class="wrap vf-sec" aria-labelledby="vf-s-t">
+    <div class="sec-head"><div><h2 id="vf-s-t" class="sec-title sec-title--nonum">Serviços em {{cityShortTitle}}</h2><p class="sec-sub">Escolhidos pela sua busca recente; ninguém paga para aparecer aqui.</p></div><button type="button" class="link-arrow" onClick="{{seeAllSvc}}">Ver todos os serviços<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+    <div class="vf-g4"><sc-for list="{{svcs}}" as="v" hint-placeholder-count="8"><button type="button" class="vf-svc" onClick="{{v.open}}"><span class="vf-svc__m"><img src="{{v.cover}}" alt=""><span class="tag tag--white svc__kind">{{v.kind}}</span></span><span class="vf-svc__b"><span class="vf-svc__who"><span class="av av--xs"><sc-if value="{{v.hasAv}}" hint-placeholder-val="{{ true }}"><img src="{{v.av}}" alt=""></sc-if><sc-if value="{{v.noAv}}" hint-placeholder-val="{{ false }}">{{v.ini}}</sc-if></span><b>{{v.coach}}</b></span><span class="svc__title">{{v.title}}</span><span class="vf-svc__r">{{v.rate}}</span><span class="svc__price"><b>{{v.price}}</b> <span>{{v.unit}}</span></span></span></button></sc-for></div>
+  </section>
+
+  <!-- Programas prontos (Card/Programa .pc) -->
+  <section id="programas" class="wrap vf-sec" aria-labelledby="vf-p-t">
+    <div class="sec-head"><div><h2 id="vf-p-t" class="sec-title sec-title--nonum">Programas prontos</h2><p class="sec-sub">Compra única, acesso por 12 meses, treino no app. Não inclui acompanhamento individual.</p></div><button type="button" class="link-arrow" onClick="{{seeAllP}}">Ver programas<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+    <sc-if value="{{pFail}}" hint-placeholder-val="{{ false }}">
+      <div class="alert alert--warn" role="status"><i class="ic  i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não conseguimos carregar os programas agora.</b>O restante da página continua funcionando. Você pode tentar de novo.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{retryP}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Tentar de novo</button></div>
+    </sc-if>
+    <sc-if value="{{pLoading}}" hint-placeholder-val="{{ false }}"><div class="vf-g4" aria-busy="true" aria-label="Carregando programas"><div class="v4-sk"></div><div class="v4-sk"></div><div class="v4-sk"></div><div class="v4-sk"></div></div></sc-if>
+    <sc-if value="{{pEmpty}}" hint-placeholder-val="{{ false }}"><div class="card empty"><i class="ic  i-book" aria-hidden="true"></i><b>Ainda não há programas de {{sportLabel}} publicados</b><span>Os treinadores acima podem montar um treino sob medida.</span></div></sc-if>
+    <sc-if value="{{pHas}}" hint-placeholder-val="{{ true }}">
+      <div class="vf-g4"><sc-for list="{{plist4}}" as="p" hint-placeholder-count="4">
+        <button type="button" class="pc vf-pc" onClick="{{p.open}}"><img src="{{p.cover}}" alt="">
+          <span class="pc__top"><span class="pc__tags"><span class="tag tag--glass">{{p.weeks}}</span><span class="tag tag--glass">{{p.level}}</span></span></span>
+          <span class="pc__body"><span class="pc__title">{{p.title}}</span><span class="pc__coach">{{p.coach}}</span>
+            <span class="pc__foot"><span class="pc__price">Compra única<b>{{p.price}}</b></span><span class="btn btn--white btn--sm">Ver programa</span></span></span>
+        </button></sc-for></div>
+    </sc-if>
+  </section>
+
+  <!-- Explore os esportes -->
+  <section class="wrap vf-sec" aria-labelledby="vf-e-t">
+    <div class="sec-head"><div><h2 id="vf-e-t" class="sec-title sec-title--nonum">Explore os esportes</h2><p class="sec-sub">Do presencial ao online.</p></div><button type="button" class="link-arrow" onClick="{{openSports}}">Ver todas as modalidades<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+    <div class="vf-g6"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><button type="button" class="st vf-st" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-for></div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="wrap vf-sec" aria-labelledby="vf-h-t">
+    <div class="sec-head"><h2 id="vf-h-t" class="sec-title sec-title--nonum">Como funciona</h2></div>
+    <ol class="vf-g3 vf-how">
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">1</span><b>Compare com calma</b><p>Preço com unidade, formato, onde atende e credencial aparecem antes de qualquer conversa. A ordem vem da sua busca; ninguém paga para subir.</p></li>
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">2</span><b>Converse e contrate</b><p>Alguns perfis pedem conversa e aceite antes; outros permitem contratar direto. Pix ou cartão; você vê o total e a renovação antes de confirmar.</p></li>
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">3</span><b>Treine pelo app</b><p>O treino chega no app. Você registra cada série, acompanha a evolução e fala com o treinador no mesmo lugar.</p></li>
+    </ol>
+  </section>
+
+  <!-- Guias para começar bem -->
+  <section class="wrap vf-sec" aria-labelledby="vf-gd-t">
+    <div class="sec-head"><div><h2 id="vf-gd-t" class="sec-title sec-title--nonum">Guias para começar bem</h2></div><button type="button" class="link-arrow" onClick="{{seeGuides}}">Ver guias<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+    <div class="vf-g3"><sc-for list="{{guides}}" as="g" hint-placeholder-count="3"><button type="button" class="vf-guide" onClick="{{g.go}}"><img src="{{g.img}}" alt=""><span class="label">{{g.kind}}</span><b>{{g.title}}</b></button></sc-for></div>
+  </section>
+
+  <!-- Para treinadores -->
+  <section class="wrap vf-sec" aria-labelledby="vf-pro-t">
+    <div class="card--ink vf-pro">
+      <div class="vf-pro__l"><span class="eyebrow eyebrow--light">Para treinadores</span><h2 id="vf-pro-t" class="h-page">Chega de mandar PDF no WhatsApp</h2>
+        <p>Perfil público, treinos no app, conversa e cobrança num lugar só. Convide quem já treina com você; o aluno aceita uma vez e pronto.</p>
+        <div class="v4-row" style="gap: 10px"><button type="button" class="btn btn--brand btn--lg" onClick="{{openPro}}">Criar perfil grátis</button><button type="button" class="btn btn--glass btn--lg" onClick="{{openPlans}}">Ver planos</button></div></div>
+      <div class="vf-pro__r">
+        <div class="vf-plan vf-plan--dark"><b>Essencial</b><b class="vf-plan__v">Grátis</b><span>Até 3 alunos ativos, perfil, treinos e mensagens.</span></div>
+        <div class="vf-plan"><b>Pro</b><b class="vf-plan__v">R$ 99<small>/mês</small></b><span>Até 50 alunos e 6.000 créditos de IA por mês, ou R$ 990/ano. Teste de 7 dias só se você ativar.</span></div>
+        <p class="vf-pro__note">Comissão de 5% só nas vendas pela 99Coach. O Pro não compra posição nem selo na busca.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Procure na sua cidade -->
+  <section class="wrap vf-sec" aria-labelledby="vf-ci-t">
+    <div class="sec-head"><h2 id="vf-ci-t" class="sec-title sec-title--nonum">Procure na sua cidade</h2></div>
+    <div class="vf-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><button type="button" onClick="{{k.go}}">{{k.label}}</button></sc-for></div>
+  </section>
+  </main>
+
+  <!-- Rodapé do DS (.ftr) -->
+  <footer class="ftr">
+    <div class="wrap"><div class="ftr__grid">
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
+      <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{goTrainers}}">Treinadores</button><button type="button" onClick="{{openSports}}">Esportes</button><button type="button" onClick="{{goPrograms}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
+      <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPanel}}">Entrar no painel</button></div>
+      <div class="ftr__col"><b>Modalidades e cidades</b><sc-for list="{{ftrLinks}}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{f.go}}">{{f.label}}</button></sc-for></div>
+      <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{openHelp}}">Central de ajuda</button></div>
+    </div></div>
+    <div class="wrap"><div class="ftr__word">99Coach · mais que treino</div></div>
+    <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><div class="v4-row" style="gap: 20px"><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button><button type="button" onClick="{{openCookies}}">Cookies</button></div></div></div>
+  </footer>
+
+  <!-- Barra inferior pública do celular (Hub H01 · G04) · camada 30 -->
+  <nav class="tabbar v4-tabbar" aria-label="Navegação do site">
+    <button type="button" class="tabbar__it is-on" aria-current="page" onClick="{{goTop}}"><i class="ic ic--sm i-search" aria-hidden="true"></i><span>Explorar</span></button>
+    <button type="button" class="tabbar__it" onClick="{{openSaved}}" aria-label="Salvos"><i class="ic ic--sm i-heart" aria-hidden="true"></i><span>Salvos</span></button>
+    <button type="button" class="tabbar__it" onClick="{{openAccount}}" aria-label="Conta"><i class="ic ic--sm i-user" aria-hidden="true"></i><span>Conta</span></button>
+  </nav>
+
+
+  <!-- Busca com sugestões (DS · Componentes-15, grupo + 38): lista abaixo da barra no desktop; tela cheia no celular · camada 40/50 -->
+  <sc-if value="{{sxOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="sx-scrim" onClick="{{sxClose}}"></div>
+    <div class="sx-layer" style="{{sxPos}}" role="dialog" aria-label="Busca">
+      <div class="sx-mtop"><div class="sx-pill is-focus sx-mpill"><span class="sx-go"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><span class="{{sxInCls}}">{{sxQText}}<span class="sx-caret"></span></span><sc-if value="{{sxHasQ}}" hint-placeholder-val="{{ false }}"><button type="button" class="sx-x" onClick="{{sxClear}}" aria-label="Limpar busca"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if></div><button type="button" class="sx-cancel" onClick="{{sxClose}}">Cancelar</button></div>
+      <div class="sx-mchips no-sb"><button type="button" class="{{sxIaQc}}" aria-pressed="{{sxIaOn}}" onClick="{{sxToggleIa}}"><i class="ic ic--xs i-sparkle" aria-hidden="true"></i>IA</button><button type="button" class="qchip" onClick="{{sxFilters}}"><i class="ic ic--xs i-filter" aria-hidden="true"></i>Filtros</button><button type="button" class="qchip" onClick="{{sxCity}}"><i class="ic ic--xs i-pin" aria-hidden="true"></i>{{cityShort}}</button></div>
+      <div class="sx-dd" id="sx-list" role="listbox" aria-label="Sugestões de busca">
+        <div class="sx-tabsrow"><sc-for list="{{sxTabs}}" as="t" hint-placeholder-count="3"><button type="button" class="{{t.cls}}" aria-pressed="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for><span class="sx-tabsr"><button type="button" class="{{sxIaCls}} sx-dia" aria-pressed="{{sxIaOn}}" onClick="{{sxToggleIa}}"><i class="ic ic--xs i-sparkle" aria-hidden="true"></i>IA</button><button type="button" class="sx-x sx-dclose" onClick="{{sxClose}}" aria-label="Fechar sugestões"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></span></div>
+
+        <sc-if value="{{sxEmpty}}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{sxHasRec}}" hint-placeholder-val="{{ true }}"><div class="sx-sec"><span class="label">Buscas recentes</span><button type="button" class="link-arrow sx-lnk" onClick="{{sxRecClear}}">Limpar</button></div>
+            <sc-for list="{{sxRec}}" as="c" hint-placeholder-count="2"><div class="sx-rec"><i class="ic ic--sm i-clock" aria-hidden="true"></i><button type="button" class="sx-recgo" onClick="{{c.go}}"><b>{{c.t}}</b>{{c.s}}</button><button type="button" class="sx-x" onClick="{{c.rm}}" aria-label="Remover {{c.t}} das buscas recentes"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div></sc-for></sc-if>
+          <div class="sx-sec"><span class="label">Em alta em Londrina</span></div>
+          <div class="sx-chips"><sc-for list="{{sxHot}}" as="c" hint-placeholder-count="5"><button type="button" class="qchip" onClick="{{c.go}}"><i class="ic ic--xs i-trend" aria-hidden="true"></i>{{c.label}}</button></sc-for></div>
+          <p class="sx-note">Buscas mais feitas na cidade nos últimos 7 dias, somadas sem identificar ninguém. Nada aqui é patrocinado.</p>
+          <div class="sx-sec"><span class="label">Modalidades</span></div>
+          <div class="sx-chips"><sc-for list="{{sxMods}}" as="c" hint-placeholder-count="6"><button type="button" class="qchip" onClick="{{c.pick}}"><img src="{{c.icon}}" alt="" class="sx-spi sx-spi--sm">{{c.label}}</button></sc-for></div>
+        </sc-if>
+
+        <sc-if value="{{sxTyping}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{sxTabT}}" hint-placeholder-val="{{ true }}">
+            <div class="sx-sec"><span class="label">Modalidades</span></div><button type="button" class="sx-row is-active" role="option" onClick="{{sxModGo}}"><span class="sx-sq"><img src="{{sxModIcon}}" alt="" class="sx-spi"></span><span class="sx-t"><b><span><mark class="sx-mark">Cross</mark>Fit</span></b><span>8 treinadores presenciais em Londrina · 3 online</span></span><span></span><i class="ic ic--sm sx-chev i-chev-r" aria-hidden="true"></i></button>
+            <div class="sx-sec"><span class="label">Treinadores</span></div><sc-for list="{{sxTr}}" as="r" hint-placeholder-count="4"><button type="button" class="sx-row" role="option" onClick="{{r.go}}"><sc-if value="{{r.hasImg}}" hint-placeholder-val="{{ true }}"><img class="sx-av" src="{{r.img}}" alt=""></sc-if><sc-if value="{{r.noImg}}" hint-placeholder-val="{{ false }}"><span class="sx-ini">{{r.ini}}</span></sc-if><span class="sx-t"><b><span>{{r.name}}</span><sc-if value="{{r.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></b><span>{{r.pre}}<mark class="sx-mark">{{r.mk}}</mark>{{r.post}}</span><span style="margin-top: 4px"><span class="tag">CrossFit</span></span></span><span class="sx-r"><i class="ic ic--sm i-pin" aria-hidden="true"></i>{{r.city}}</span><i class="ic ic--sm sx-chev i-chev-r" aria-hidden="true"></i></button></sc-for>
+            <div class="sx-sec"><span class="label">Programas</span></div><sc-for list="{{sxPr1}}" as="p" hint-placeholder-count="1"><button type="button" class="sx-row" role="option" onClick="{{p.go}}"><img class="sx-cov" src="{{p.cover}}" alt=""><span class="sx-t"><b><span>{{p.pre}}<mark class="sx-mark">{{p.mk}}</mark>{{p.post}}</span></b><span>{{p.sub}}</span></span><span class="sx-r"><b>{{p.price}}</b>pagamento único</span><i class="ic ic--sm sx-chev i-chev-r" aria-hidden="true"></i></button></sc-for>
+          </sc-if>
+          <sc-if value="{{sxTabP}}" hint-placeholder-val="{{ false }}"><div class="sx-sec"><span class="label">Programas de CrossFit · acesso por 12 meses</span></div><sc-for list="{{sxPr}}" as="p" hint-placeholder-count="3"><button type="button" class="sx-row" role="option" onClick="{{p.go}}"><img class="sx-cov" src="{{p.cover}}" alt=""><span class="sx-t"><b><span>{{p.pre}}<mark class="sx-mark">{{p.mk}}</mark>{{p.post}}</span></b><span>{{p.sub}}</span></span><span class="sx-r"><b>{{p.price}}</b>pagamento único</span><i class="ic ic--sm sx-chev i-chev-r" aria-hidden="true"></i></button></sc-for></sc-if>
+          <sc-if value="{{sxTabE}}" hint-placeholder-val="{{ false }}"><div class="sx-sec"><span class="label">Esportes</span></div><button type="button" class="sx-row is-active" role="option" onClick="{{sxModGo}}"><span class="sx-sq"><img src="{{sxModIcon}}" alt="" class="sx-spi"></span><span class="sx-t"><b><span><mark class="sx-mark">Cross</mark>Fit</span></b><span>8 treinadores presenciais em Londrina · 3 online</span></span><span></span><i class="ic ic--sm sx-chev i-chev-r" aria-hidden="true"></i></button><p class="sx-note">Só aparecem modalidades com treinadores publicados.</p></sc-if>
+          <div class="sx-foot"><span>{{sxCount}}</span><button type="button" class="sx-all" onClick="{{sxAll}}">{{sxAllLabel}}<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+          <button type="button" class="btn btn--primary btn--lg btn--block sx-mcta" onClick="{{sxAll}}">{{sxMcta}}</button>
+        </sc-if>
+
+        <sc-if value="{{sxIaS}}" hint-placeholder-val="{{ false }}">
+          <div class="sx-sec"><span class="label">A IA transformou sua frase em filtros</span></div>
+          <div class="sx-chips"><sc-for list="{{sxIaChips}}" as="c" hint-placeholder-count="5"><span class="qchip is-on">{{c}}</span></sc-for></div>
+          <div class="alert sx-alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div>{{sxIaNote}} A IA só reescreve a busca: não recomenda nem ordena treinadores.</div></div>
+          <div class="sx-btns"><button type="button" class="btn btn--primary btn--sm" onClick="{{sxIaApply}}">Buscar com estes filtros</button><button type="button" class="btn btn--outline btn--sm" onClick="{{sxFilters}}">Editar filtros</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{sxIaOff}}">Buscar o texto como escrito</button></div>
+        </sc-if>
+
+        <sc-if value="{{sxNone}}" hint-placeholder-val="{{ false }}">
+          <div class="sx-none"><span class="emp__ic"><i class="ic  i-search" aria-hidden="true"></i></span><b>{{sxNoneT}}</b><span>Escolha o próximo passo. A busca continua salva.</span></div>
+          <div class="sx-btns sx-btns--col"><button type="button" class="btn btn--primary btn--block" onClick="{{sxNear}}">Ver 8 em Londrina<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button><button type="button" class="btn btn--outline btn--block" onClick="{{sxOnline}}">Ver 3 que atendem online<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button><button type="button" class="btn btn--ghost btn--block" onClick="{{sxAskIa}}"><i class="ic ic--xs i-sparkle" aria-hidden="true"></i>Pedir à IA para reescrever a busca</button></div>
+        </sc-if>
+      </div>
+      <p class="v4-vh" aria-live="polite">{{sxLive}}</p>
+    </div>
+  </sc-if>
+  <!-- Aviso rápido (.toast) · camada 70 -->
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}">
+    <div class="toast v4-toast" role="status" style="top: {{toastTop}}"><p>{{toastMsg}}</p><sc-if value="{{toastUndo}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--white btn--sm" onClick="{{doUndo}}">Desfazer</button></sc-if><button type="button" class="icon-btn" onClick="{{closeToast}}" aria-label="Fechar aviso"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+  </sc-if>
+
+  <!-- Folha / diálogo (Sobreposições G15) · camadas 50 e 60 -->
+  <sc-if value="{{sheetOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="v4-scrim" onClick="{{closeSheet}}"></div>
+    <div class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="v4-sh-t" style="top: {{sheetTop}}">
+      <div class="v4-sheet__hd"><h2 id="v4-sh-t" class="sec-title sec-title--sm">{{shTitle}}</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+      <div class="v4-sheet__bd">
+        <sc-if value="{{shSub}}" hint-placeholder-val="{{ false }}"><p class="t2">{{shSubText}}</p></sc-if>
+
+        <sc-if value="{{shSport}}" hint-placeholder-val="{{ false }}">
+          <div class="v4-opts"><sc-for list="{{allSports}}" as="s" hint-placeholder-count="12"><button type="button" class="{{s.cls}}" onClick="{{s.pick}}"><img src="{{s.icon}}" alt="">{{s.label}}</button></sc-for></div>
+          <span class="label">Ou comece pelo objetivo</span>
+          <div class="v4-opts"><sc-for list="{{goals}}" as="g" hint-placeholder-count="4"><button type="button" class="opt" onClick="{{g.pick}}">{{g.label}} → {{g.to}}</button></sc-for></div>
+          <div class="alert alert--info"><i class="ic  i-info" aria-hidden="true"></i><div>O objetivo só ajuda a escolher a modalidade. Não é diagnóstico nem avaliação.</div></div>
+        </sc-if>
+
+        <sc-if value="{{shCity}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{locAsk}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-pin" aria-hidden="true"></i><div><b>Permitir localização aproximada?</b>O navegador vai perguntar. Usamos só para escolher a cidade; seu endereço não aparece para ninguém.<div class="v4-row" style="gap: 8px; margin-top: 10px"><button type="button" class="btn btn--primary btn--sm" onClick="{{locAllow}}">Permitir</button><button type="button" class="btn btn--outline btn--sm" onClick="{{locDeny}}">Agora não</button></div></div></div></sc-if>
+          <sc-if value="{{locDenied}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Tudo bem. Escolha a cidade na lista.</span></sc-if>
+          <div class="v4-opts"><sc-for list="{{cities}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+          <div class="v4-row" style="gap: 8px"><sc-if value="{{locBtn}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{locStart}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{onlyOnline}}">Treinar só online</button></div>
+          <p class="t3" style="font-size: 13px">Distância só aparece quando a base e a precisão permitem.</p>
+        </sc-if>
+
+        <sc-if value="{{shEdit}}" hint-placeholder-val="{{ false }}">
+          <span class="label">Modalidade</span><div class="v4-opts"><sc-for list="{{editSports}}" as="s" hint-placeholder-count="6"><button type="button" class="{{s.cls}}" onClick="{{s.pick}}"><img src="{{s.icon}}" alt="">{{s.label}}</button></sc-for></div>
+          <span class="label">Cidade</span><div class="v4-opts"><sc-for list="{{cities}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" onClick="{{c.pick2}}">{{c.label}}</button></sc-for></div>
+          <span class="label">Formato</span><div class="seg"><button type="button" class="{{segP}}" style="border: 0" onClick="{{modeP}}">Presencial</button><button type="button" class="{{segO}}" style="border: 0" onClick="{{modeO}}">Online</button><button type="button" class="{{segQ}}" style="border: 0" onClick="{{modeQ}}">Qualquer formato</button></div>
+          <button type="button" class="btn btn--primary btn--arrow" style="align-self: flex-start" onClick="{{continueSearch}}">Ver resultados<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+        </sc-if>
+
+        <sc-if value="{{shTrainer}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><div class="kv__r"><span>Oferta</span><b>{{tv.offer}}</b></div><div class="kv__r"><span>Avaliações</span><b>{{tv.rev}}</b></div><div class="kv__r"><span>Credencial</span><b>{{tv.cred}}</b></div><div class="kv__r"><span>Disponibilidade</span><b>{{tv.availLong}}</b></div><div class="kv__r"><span>Onde</span><b>{{tv.where}}</b></div></div>
+          <p class="t3" style="font-size: 13px">Voltar mantém {{ctxLine}} e a sua posição na lista.</p>
+          <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--primary btn--arrow" onClick="{{tvGo}}">Ver perfil completo<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline" onClick="{{tvFav}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>{{tvFavLabel}}</button></div>
+        </sc-if>
+
+        <sc-if value="{{shWhy}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><sc-for list="{{whyLines}}" as="w" hint-placeholder-count="3"><div class="kv__r"><span><i class="ic ic--sm i-check" aria-hidden="true"></i> {{w}}</span></div></sc-for></div>
+          <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--primary btn--sm" onClick="{{notInterested}}">Não tenho interesse</button><button type="button" class="btn btn--outline btn--sm" onClick="{{clearPrefs}}">Limpar minhas preferências</button></div>
+          <p class="t3" style="font-size: 13px">“Não tenho interesse” vale só para esta busca e não é denúncia. Para denunciar um perfil, use a opção no próprio perfil.</p>
+        </sc-if>
+
+        <sc-if value="{{shOrder}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><div class="kv__r"><span>Relevância</span><b>Atende a modalidade, a cidade e o formato escolhidos; perfil completo e credencial informada contam a favor.</b></div><div class="kv__r"><span>Mais recentes</span><b>Na página da modalidade: data de publicação, sem personalização.</b></div><div class="kv__r"><span>Não influencia</span><b>Plano Pro, anúncio ou comissão.</b></div></div>
+        </sc-if>
+
+        <sc-if value="{{shSvc}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><div class="kv__r"><span>Treinador</span><b>{{sv.coach}}</b></div><div class="kv__r"><span>Formato</span><b>{{sv.kind}}</b></div><div class="kv__r"><span>O que inclui</span><b>{{sv.title}}</b></div><div class="kv__r"><span>Preço</span><b>{{sv.price}} <small>{{sv.unit}}</small></b></div><div class="kv__r"><span>Avaliações</span><b>{{sv.rate}}</b></div></div>
+          <p class="t3" style="font-size: 13px">Mesma entrega, preço e ciclo no perfil e no resumo antes de pagar.</p>
+          <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--primary btn--arrow" onClick="{{svGo}}">Ver no perfil de {{sv.first}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline" onClick="{{closeSheet}}">Voltar</button></div>
+        </sc-if>
+
+        <sc-if value="{{shProgram}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><div class="kv__r"><span>Programação</span><b>{{pv.dur}}</b></div><div class="kv__r"><span>Preço</span><b>{{pv.price}} · pagamento único</b></div><div class="kv__r"><span>Acesso</span><b>12 meses a partir da compra</b></div><div class="kv__r"><span>Acompanhamento</span><b>Não incluso</b></div></div>
+          <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--brand btn--arrow" onClick="{{pvBuy}}">Comprar programa<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline" onClick="{{pvCoach}}">Ver serviços de {{pv.coach}}</button></div>
+        </sc-if>
+
+        <sc-if value="{{shSaved}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{savedEmpty}}" hint-placeholder-val="{{ false }}"><div class="empty"><i class="ic ic--sm i-heart" aria-hidden="true"></i><b>Nada salvo ainda</b><span>Toque no coração de um treinador para guardar aqui.</span></div></sc-if>
+          <sc-for list="{{savedList}}" as="s" hint-placeholder-count="2"><div class="lrow"><span class="av av--md">{{s.ini}}</span><div class="lrow__t"><b>{{s.name}}</b><span>{{s.spec}}</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{s.remove}}">Remover</button></div></sc-for>
+          <sc-if value="{{visitor}}" hint-placeholder-val="{{ true }}"><div class="alert"><i class="ic  i-info" aria-hidden="true"></i><div>Salvos ficam neste aparelho. Entre para guardar na sua conta e ver em outro aparelho.</div></div><button type="button" class="btn btn--primary btn--sm" style="align-self: flex-start" onClick="{{openLoginSaved}}">Entrar</button></sc-if>
+        </sc-if>
+
+        <sc-if value="{{shAuth}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{codeAsk}}" hint-placeholder-val="{{ true }}"><label class="field"><span class="field__label">E-mail ou celular</span><span class="input"><input type="email" autocomplete="email" placeholder="voce@email.com" style="border: 0; outline: 0; flex: 1; min-width: 0; font: 400 16px var(--font); background: transparent"></span></label><button type="button" class="btn btn--primary btn--arrow" style="align-self: flex-start" onClick="{{sendCode}}">Receber código<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+            <sc-if value="{{authChoice}}" hint-placeholder-val="{{ true }}"><span class="label">Ainda não tem conta?</span><div class="v4-opts"><button type="button" class="opt" onClick="{{signTrain}}">Quero treinar · Encontrar treinador</button><button type="button" class="opt" onClick="{{signCoach}}">Sou treinador · Criar meu perfil</button></div></sc-if>
+          </sc-if>
+          <sc-if value="{{codeSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok"><i class="ic ic--sm i-check" aria-hidden="true"></i><div>Código enviado para v***@email.com. Vale por 10 minutos.</div></div><label class="field"><span class="field__label">Código de 6 dígitos</span><span class="input"><input inputmode="numeric" autocomplete="one-time-code" placeholder="000000" style="border: 0; outline: 0; flex: 1; min-width: 0; font: 400 16px var(--font); background: transparent"></span></label><div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--primary" onClick="{{confirmCode}}">{{authDone}}</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{resend}}">Reenviar código</button></div></sc-if>
+          <sc-if value="{{authOk}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>{{authOkText}}</b>Demonstração: o acesso é simulado. Na versão completa você volta para onde estava, com a escolha preservada.</div></div></sc-if>
+        </sc-if>
+
+        <sc-if value="{{shMenu}}" hint-placeholder-val="{{ false }}">
+          <div class="menu" style="box-shadow: none; padding: 0"><sc-for list="{{menuItems}}" as="m" hint-placeholder-count="6"><button type="button" class="menu__it" style="min-height: 44px" onClick="{{m.go}}">{{m.label}}</button></sc-for></div>
+        </sc-if>
+
+        <sc-if value="{{shPedido}}" hint-placeholder-val="{{ false }}">
+          <div class="kv"><div class="kv__r"><span>Pedido enviado</span><b>26/10 às 09:40 · Acompanhamento online · R$ 200 / mês</b></div><div class="kv__r"><span>{{pedNow}}</span><b>{{pedNowSub}}</b></div><div class="kv__r"><span>Depois do aceite</span><b>Você confirma o resumo e paga. Até lá não há acompanhamento ativo e nada é cobrado.</b></div></div>
+          <sc-if value="{{pedActive}}" hint-placeholder-val="{{ true }}"><div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--outline btn--sm" onClick="{{pedMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Mandar mensagem</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{pedCancel}}">Cancelar pedido</button></div></sc-if>
+        </sc-if>
+
+        <sc-if value="{{shInfo}}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{infoLines}}" as="i" hint-placeholder-count="2"><p>{{i}}</p></sc-for>
+          <button type="button" class="btn btn--primary btn--sm" style="align-self: flex-start" onClick="{{closeSheet}}">{{infoCta}}</button>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>

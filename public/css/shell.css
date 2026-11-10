@@ -1,0 +1,18 @@
+/* O protótipo é tema claro (entrega principal da web). O visualizador pode pedir tema escuro: fixamos o claro
+   para os controles nativos não mudarem de cor por conta própria. */
+:root,:root[data-theme],:root[data-theme="dark"]{color-scheme:light!important}
+/* Botões do DS não herdam o cinza e a borda padrão do navegador; cada componente define os seus. */
+:where(#app) button{background-color:transparent;border-style:none}
+/* As telas posicionam folhas, avisos e sugestões em coordenadas da página; a raiz não vira referência de posição */
+#app > .v4{position:static}
+html,body{margin:0;background:#EFEDEA}
+/* Barra do protótipo (fora do produto): troca de tela */
+.pv-bar{position:relative;z-index:80;background:#121214;color:#fff;font-family:"Inter",-apple-system,"Segoe UI",sans-serif}
+.pv-bar__in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.pv-bar__k{font-family:"Space Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#A1A1AA}
+.pv-bar__seg{display:flex;gap:4px;background:#2A2A30;border-radius:999px;padding:3px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.pv-bar__seg::-webkit-scrollbar{display:none}
+@media (max-width:599px){.pv-bar__k{display:none}.pv-bar__seg button{padding:0 12px;flex:none}}
+.pv-bar__seg button{appearance:none;border:0;background:transparent;color:#fff;font:600 14px/1 "Inter",-apple-system,sans-serif;padding:0 16px;min-height:36px;border-radius:999px;cursor:pointer}
+.pv-bar__seg button[aria-current="page"]{background:#DF0A3D}
+.pv-bar__seg button:focus-visible{outline:2px solid #fff;outline-offset:2px}

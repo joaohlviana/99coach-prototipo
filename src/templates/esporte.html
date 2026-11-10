@@ -1,0 +1,295 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
+
+  <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
+  <div class="v4-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios</span><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh"></i>Reiniciar cenário</button></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scens4}}" as="s" hint-placeholder-count="11"><button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for><button type="button" class="chip v4-only-m" onClick="{{toggleSeo}}" aria-expanded="{{seoOpen}}">SEO · {{seoIndex}}</button></div></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">SEO</span><button type="button" class="btn btn--outline btn--sm" onClick="{{toggleSeo}}" aria-expanded="{{seoOpen}}"><i class="ic ic--xs i-info"></i>Anotação de SEO desta combinação · {{seoIndex}}</button></div>
+      <sc-if value="{{seoOpen}}" hint-placeholder-val="{{ false }}"><div class="card card--flat v4-seo"><div class="kv">
+        <div class="kv__r"><span>H1</span><b>{{h1}}</b></div><div class="kv__r"><span>Título da página</span><b>{{seoTitle}}</b></div><div class="kv__r"><span>Descrição</span><b>{{seoDesc}}</b></div><div class="kv__r"><span>Trilha</span><b>{{seoCrumb}}</b></div><div class="kv__r"><span>Indexação</span><b>{{seoIndex}} — {{seoWhy}}</b></div><div class="kv__r"><span>Situação</span><b>Anotação de design; a configuração real de SEO é trabalho futuro</b></div>
+      </div></div></sc-if>
+    </div>
+  </div>
+
+  <!-- Cabeçalho do site com busca compacta (ds4.header · G16) — o mesmo da Home e do Perfil VFINAL -->
+  <header class="hdr">
+    <div class="wrap hdr__in">
+      <button type="button" class="v4-reset vfe-logo" aria-label="99Coach, página inicial" onClick="{{goHome}}"><img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <button type="button" class="hdr__search vf-hsearch" onClick="{{openMod}}" aria-label="Busca atual: {{ctxLine}}. Alterar busca"><i class="ic ic--sm i-search"></i><span class="vf-hs"><b>{{mod}}</b> · {{ctxShort}}</span><i class="ic ic--sm i-arrow-r"></i></button>
+      <nav class="hdr__nav" aria-label="Principal">
+        <button type="button" class="hdr__link is-on" aria-current="page">Treinadores</button>
+        <button type="button" class="hdr__link" onClick="{{openMod}}">Esportes</button>
+        <button type="button" class="hdr__link" onClick="{{goProgs}}">Programas</button>
+        <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
+      </nav>
+      <div class="hdr__tools">
+        <button type="button" class="hdr__ico" onClick="{{openSaved}}" aria-label="Salvos, {{favCount}} profissionais"><i class="ic ic--sm i-heart"></i><sc-if value="{{hasFavs}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button>
+        <button type="button" class="btn btn--primary btn--sm" onClick="{{openLogin}}">Entrar</button>
+        <button type="button" class="hdr__ico v4-menu" onClick="{{openMenu}}" aria-label="Abrir menu" aria-expanded="{{menuOpen}}"><i class="ic ic--sm i-menu"></i></button>
+      </div>
+    </div>
+    <div class="vfe-ios v4-only-m"><button type="button" class="vfe-ios__b" onClick="{{goHome}}" aria-label="Voltar para o início"><i class="ic ic--sm i-chev-l"></i></button><b class="vfe-ios__t">{{mod}} em {{cityLabelShort}}</b><button type="button" class="vfe-ios__b" onClick="{{openSaved}}" aria-label="Salvos, {{favCount}} profissionais"><i class="ic ic--sm i-heart"></i><sc-if value="{{hasFavs}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button></div>
+    <div class="wrap vfe-msearch v4-only-m"><button type="button" class="hdr__search vfe-msearch__b" onClick="{{openMod}}" aria-label="Busca atual: {{ctxLine}}. Alterar busca"><i class="ic ic--sm i-search"></i><span class="vf-hs"><b>{{mod}}</b> · {{ctxShort}}</span><span class="vfe-msearch__go"><i class="ic ic--xs i-filter"></i></span></button></div>
+  </header>
+  <!-- Barra de esportes (Componentes-5 G16) -->
+  <div class="wrap vfe-rail"><div class="rail" role="group" aria-label="Modalidades"><div class="rail__in">
+    <div class="rail__list no-sb"><sc-for list="{{sports4}}" as="s" hint-placeholder-count="10"><button type="button" class="{{s.cls}}" onClick="{{s.pick}}" aria-current="{{s.cur}}"><img src="{{s.icon}}" alt=""><span>{{s.label}}</span></button></sc-for></div>
+    <button type="button" class="rail__arrow" onClick="{{openMod}}" aria-label="Ver todas as modalidades"><i class="ic ic--sm i-chev-r"></i></button>
+  </div></div></div>
+
+  <main class="wrap" id="conteudo">
+    <!-- Trilha (G16) -->
+    <nav class="v4-crumb" aria-label="Você está em">
+      <button type="button" class="v4-reset" onClick="{{goHome}}">Início</button><i class="ic ic--xs i-chev-r"></i>
+      <sc-if value="{{crumbModLink}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset" onClick="{{crumbMod}}">{{mod}}</button><i class="ic ic--xs i-chev-r"></i></sc-if>
+      <b aria-current="page">{{crumbLast}}</b>
+    </nav>
+
+    <!-- Topo da modalidade (G19): foto em P&B com a tinta do esporte, título, números reais -->
+    <section class="vfe-hero" aria-labelledby="h1" style="{{tint4}}">
+      <img class="vfe-hero__img" src="{{bannerImg}}" alt="">
+      <span class="vfe-hero__tint" aria-hidden="true"></span>
+      <div class="vfe-hero__t"><span class="eyebrow eyebrow--light">{{eyebrow4}}</span><h1 class="h-page" id="h1">{{h1}}</h1><p class="vfe-hero__lede">{{lede}}</p></div>
+      <sc-if value="{{hasKpis}}" hint-placeholder-val="{{ true }}"><div class="vfe-kpis"><sc-for list="{{kpis}}" as="k" hint-placeholder-count="3"><div class="kpi vfe-kpi"><span class="{{k.ncls}}">{{k.n}}</span><span class="kpi__l">{{k.l}}</span></div></sc-for></div></sc-if>
+    </section>
+
+    <!-- Foco declarado (Escolhas/Chip) -->
+    <sc-if value="{{hasFoco}}" hint-placeholder-val="{{ true }}"><div class="vfe-foco no-sb" role="group" aria-label="Foco declarado pelos profissionais"><span class="label">Foco</span><sc-for list="{{focoChips}}" as="c" hint-placeholder-count="6"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}<sc-if value="{{c.hasN}}" hint-placeholder-val="{{ true }}"><small class="vfe-n">{{c.n}}</small></sc-if></button></sc-for></div></sc-if>
+
+    <!-- Celular: abas sublinhadas fixas (G05 · utabs) -->
+    <nav class="utabs vfe-mtabs v4-only-m no-sb" aria-label="Seções da página"><a class="utab is-on" href="#lista" aria-current="true">Treinadores <small>{{countB}}</small></a><a class="utab" href="#custa">Preços</a><a class="utab" href="#programas">Programas</a><a class="utab" href="#faq">Perguntas</a></nav>
+    <!-- Celular: barra única de chips (Escolhas/Chip + Filtros) — o resto fica na folha de filtros -->
+    <div class="vfe-mbar v4-only-m no-sb" role="group" aria-label="Filtros">
+      <button type="button" class="vfe-mchip vfe-mchip--ink" onClick="{{openFilters}}"><i class="ic ic--xs i-filter"></i>Filtros<sc-if value="{{hasExtra}}" hint-placeholder-val="{{ false }}"><span class="fbtn__n">{{extraCount}}</span></sc-if></button>
+      <sc-for list="{{fmtSeg4}}" as="f" hint-placeholder-count="3"><button type="button" class="vfe-mchip{{f.mcls}}" aria-pressed="{{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for>
+      <button type="button" class="vfe-mchip" onClick="{{openCity}}"><i class="ic ic--xs i-pin"></i>{{cityLabelShort}}</button>
+      <sc-for list="{{focoChips}}" as="c" hint-placeholder-count="6"><button type="button" class="vfe-mchip{{c.mcls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for>
+      <sc-for list="{{qchips4}}" as="q" hint-placeholder-count="3"><button type="button" class="vfe-mchip{{q.mcls}}" aria-pressed="{{q.on}}" onClick="{{q.pick}}">{{q.label}}</button></sc-for>
+    </div>
+    <!-- Barra de filtros (G19) — desktop -->
+    <div class="fbar vfe-fbar v4-only-wide" role="group" aria-label="Filtros">
+      <div class="seg seg--fit" role="radiogroup" aria-label="Formato"><sc-for list="{{fmtSeg4}}" as="f" hint-placeholder-count="3"><button type="button" class="{{f.cls}}" role="radio" aria-checked="{{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
+      <div class="v4-dd"><button type="button" class="{{cityFddCls}}" onClick="{{tgCity}}" aria-expanded="{{ddCity}}" aria-haspopup="menu"><span>{{cityFddTxt}}</span><i class="ic ic--sm i-chev-d"></i></button><sc-if value="{{ddCity}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu" role="menu"><sc-for list="{{cityMenu}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span>{{o.label}}<small>{{o.sub}}</small></span></button></sc-for><button type="button" class="menu__it" onClick="{{askLocWide}}"><span>Usar minha localização<small>Pede permissão só depois deste clique</small></span></button></div></sc-if></div>
+      <sc-if value="{{showArea}}" hint-placeholder-val="{{ true }}"><div class="v4-dd"><button type="button" class="{{areaFddCls}}" onClick="{{tgArea}}" aria-expanded="{{ddArea}}" aria-haspopup="menu"><span>{{areaFddTxt}}</span><i class="ic ic--sm i-chev-d"></i></button><sc-if value="{{ddArea}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu" role="menu"><sc-for list="{{areaMenu}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span>{{o.label}}<small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div></sc-if>
+      <div class="v4-dd"><button type="button" class="{{langFddCls}}" onClick="{{tgLang}}" aria-expanded="{{ddLang}}" aria-haspopup="menu"><span>{{langFddTxt}}</span><i class="ic ic--sm i-chev-d"></i></button><sc-if value="{{ddLang}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu" role="menu"><sc-for list="{{langMenu}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span>{{o.label}}<small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div>
+      <span class="fdd v4-off" aria-disabled="true" title="Capacidade futura"><span>Preço</span><i class="ic ic--xs i-lock"></i></span>
+      <button type="button" class="fbtn" onClick="{{openFilters}}"><i class="ic ic--sm i-filter"></i>Todos os filtros<sc-if value="{{hasExtra}}" hint-placeholder-val="{{ false }}"><span class="fbtn__n">{{extraCount}}</span></sc-if></button>
+    </div>
+    <!-- Barra de filtros — celular e tablet -->
+    <div class="fbar vfe-fbar v4-only-cmp" role="group" aria-label="Filtros">
+      <button type="button" class="fbtn" onClick="{{openFilters}}"><i class="ic ic--sm i-filter"></i>Filtros<sc-if value="{{hasExtra}}" hint-placeholder-val="{{ false }}"><span class="fbtn__n">{{extraCount}}</span></sc-if></button>
+      <button type="button" class="{{cityFddCls}}" onClick="{{openCity}}"><span>{{cityLabelShort}}</span><i class="ic ic--sm i-chev-d"></i></button>
+      <button type="button" class="fdd is-set" onClick="{{openFilters}}"><span>{{fmtLabel}}</span><i class="ic ic--sm i-chev-d"></i></button>
+      <div class="v4-dd"><button type="button" class="sortbtn" onClick="{{tgSortC}}" aria-expanded="{{ddSortC}}" aria-haspopup="menu">Ordenar por <b>{{sortLabel}}</b><i class="ic ic--xs i-chev-d"></i></button><sc-if value="{{ddSortC}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu v4-menu--r" role="menu"><sc-for list="{{sortMenu}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span><b>{{o.label}}</b><small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div>
+    </div>
+    <div class="vfe-qchips no-sb" aria-label="Atalhos de filtro"><sc-for list="{{qchips4}}" as="q" hint-placeholder-count="3"><button type="button" class="{{q.cls}}" onClick="{{q.pick}}" aria-pressed="{{q.on}}"><i class="{{q.icon}}"></i>{{q.label}}</button></sc-for></div>
+    <div class="vfe-res">
+      <span class="vfe-res__n" role="status" aria-live="polite"><sc-if value="{{hasCountB}}" hint-placeholder-val="{{ true }}"><b>{{countB}}</b></sc-if>{{countT}}</span>
+      <sc-for list="{{applied}}" as="c" hint-placeholder-count="1"><button type="button" class="ftoken" onClick="{{c.remove}}" aria-label="Remover filtro {{c.label}}">{{c.label}}<i class="ic ic--sm i-x"></i></button></sc-for>
+      <sc-if value="{{hasApplied}}" hint-placeholder-val="{{ false }}"><button type="button" class="link-arrow vfe-u" onClick="{{clearExtra}}">Limpar filtros</button></sc-if>
+      <div class="vfe-order"><span class="v4-only-m"><div class="v4-dd"><button type="button" class="sortbtn" onClick="{{tgSortC}}" aria-expanded="{{ddSortC}}" aria-haspopup="menu">Ordenar por <b>{{sortLabel}}</b><i class="ic ic--xs i-chev-d"></i></button><sc-if value="{{ddSortC}}" hint-placeholder-val="{{ false }}"><div class="menu v4-menu v4-menu--r" role="menu"><sc-for list="{{sortMenu}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span><b>{{o.label}}</b><small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div></span><span class="v4-only-wide"><div class="v4-dd"><button type="button" class="sortbtn" onClick="{{tgSort}}" aria-expanded="{{ddSort}}" aria-haspopup="menu">Ordenar por <b>{{sortLabel}}</b><i class="ic ic--xs i-chev-d"></i></button><sc-if value="{{ddSort}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu v4-menu--r" role="menu"><sc-for list="{{sortMenu}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span><b>{{o.label}}</b><small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div></span><button type="button" class="link-arrow vfe-u" onClick="{{openOrdem}}"><i class="ic ic--xs i-info"></i>Por que esta ordem?</button></div>
+      <sc-if value="{{mapToggle}}" hint-placeholder-val="{{ false }}"><div class="seg seg--fit seg--sm" role="radiogroup" aria-label="Visualização"><sc-for list="{{viewSeg}}" as="v" hint-placeholder-count="2"><button type="button" class="{{v.cls}} seg__it" role="radio" aria-checked="{{v.on}}" onClick="{{v.pick}}"><i class="{{v.icon}}"></i>{{v.label}}</button></sc-for></div></sc-if>
+    </div>
+
+    <sc-if value="{{removedNote}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info vfe-alert" role="status"><i class="ic ic--sm i-info"></i><div style="flex: 1"><b>A lista foi atualizada</b>O perfil de Diego Moraes, que você abriu, não está mais disponível na busca. Seus filtros e a página foram mantidos.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{dismissRemoved}}">Entendi</button></div></sc-if>
+    <sc-if value="{{noCityNote}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn vfe-alert"><i class="ic ic--sm i-pin"></i><div style="flex: 1"><b>Sem cidade escolhida</b>Mostramos todas as cidades e quem atende online. Escolha uma cidade para ver só quem atende presencialmente perto de você.</div><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
+    <sc-if value="{{updating}}" hint-placeholder-val="{{ false }}"><div class="alert vfe-alert" role="status"><span class="spin"></span><div>Atualizando resultados com os filtros aplicados…</div></div></sc-if>
+
+    <!-- Resultados: Card/Treinador (G17) no formato da Home VFINAL r1 -->
+    <div class="{{layCls}} vfe-lay" id="lista" style="{{syVar}}">
+      <div>
+        <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}"><ul class="vfe-grid" aria-busy="true" aria-label="Carregando treinadores"><sc-for list="{{skels}}" as="k" hint-placeholder-count="4"><li class="vf-tc"><div class="vf-tc__m skel"></div><div class="vf-tc__b"><span class="skel vfe-sk" style="width: 40%"></span><span class="skel vfe-sk" style="width: 80%"></span><span class="skel vfe-sk" style="width: 60%"></span></div></li></sc-for></ul></sc-if>
+        <sc-if value="{{showEmpty}}" hint-placeholder-val="{{ false }}"><section class="emp vfe-emp" aria-labelledby="vazio">
+          <span class="emp__ic"><i class="ic ic--sm i-search"></i></span><b id="vazio">Não encontramos profissionais com estes filtros</b>
+          <span>{{ctxLine}}. Nada foi alterado na sua busca: escolha uma alternativa, se fizer sentido para você.</span>
+          <div class="vfe-alts"><sc-for list="{{alts4}}" as="a" hint-placeholder-count="3"><button type="button" class="lrow v4-lrow" onClick="{{a.pick}}"><span class="lrow__ic"><i class="{{a.icon}}"></i></span><span class="lrow__t"><b>{{a.label}}</b><span>{{a.sub}}</span></span><i class="ic ic--sm i-chev-r"></i></button></sc-for></div>
+          <span>Profissionais de outras cidades ou só online não entram nesta lista como se atendessem presencialmente aqui.</span>
+        </section></sc-if>
+        <sc-if value="{{showList}}" hint-placeholder-val="{{ true }}">
+          <ul class="vfe-grid" aria-label="Treinadores">
+            <sc-for list="{{cards4}}" as="t" hint-placeholder-count="8">
+            <li class="{{t.tcCls}}">
+              <div class="vf-tc__m">
+                <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
+                <sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if>
+                <button type="button" class="v4-hit" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></button>
+                <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.badgeCls}}"><sc-if value="{{t.badgeDot}}" hint-placeholder-val="{{ true }}"><span class="dot"></span></sc-if>{{t.badge}}</span></sc-if>
+                <button type="button" class="{{t.favCls}}" onClick="{{t.fav}}" aria-pressed="{{t.favOn}}" aria-label="{{t.favLabel}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button>
+              </div>
+              <div class="vfe-mrow v4-only-m">
+                <button type="button" class="v4-hit" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></button>
+                <span class="vfe-mrow__ph"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true">{{t.ini}}</span></sc-if></span>
+                <span class="vfe-mrow__t">
+                  <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.mstatCls}}"><span class="vfe-mstat__d"></span>{{t.badge}}</span></sc-if>
+                  <b class="vfe-mrow__n"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></b>
+                  <span class="vfe-mrow__meta"><sc-if value="{{t.rated}}" hint-placeholder-val="{{ true }}"><span class="vfe-mrow__rt"><i class="ic ic--xs i-star"></i>{{t.rating}} ({{t.reviews}})</span></sc-if><sc-if value="{{t.unrated}}" hint-placeholder-val="{{ false }}"><span>Ainda sem avaliações</span></sc-if><span>{{t.mplace}}</span></span>
+                  <sc-if value="{{t.hasOffer}}" hint-placeholder-val="{{ true }}"><span class="vfe-mrow__p"><b>{{t.price}}</b> {{t.unit}}</span></sc-if>
+                  <sc-if value="{{t.noOffer}}" hint-placeholder-val="{{ false }}"><span class="vfe-mrow__p is-none">Sem oferta publicada</span></sc-if>
+                </span>
+                <button type="button" class="{{t.favCls}} vfe-mfav" onClick="{{t.fav}}" aria-pressed="{{t.favOn}}" aria-label="{{t.favLabel}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button>
+                <span class="vfe-mrow__chev" aria-hidden="true"><i class="ic ic--sm i-chev-r"></i></span>
+              </div>
+              <div class="vf-tc__b">
+                <span class="tc__sport">{{t.spec}}</span>
+                <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.bodyBadgeCls}}"><sc-if value="{{t.badgeDot}}" hint-placeholder-val="{{ true }}"><span class="dot"></span></sc-if>{{t.badge}}</span></sc-if>
+                <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{t.rated}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.reviews}} avaliações"><i class="ic ic--xs i-star"></i>{{t.rating}}<small>({{t.reviews}})</small></span></sc-if></div>
+                <span class="vf-meta">{{t.fmtTxt}} · {{t.place}}</span>
+                <sc-if value="{{t.hasMeta2}}" hint-placeholder-val="{{ true }}"><span class="vf-meta">{{t.meta2}}</span></sc-if>
+                <sc-if value="{{t.unrated}}" hint-placeholder-val="{{ false }}"><span class="vf-meta">Ainda sem avaliações</span></sc-if>
+                <div class="vf-tc__f">
+                  <sc-if value="{{t.hasOffer}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offerName}}</span></span></sc-if>
+                  <sc-if value="{{t.noOffer}}" hint-placeholder-val="{{ false }}"><span class="vf-price"><span>{{t.noOfferTxt}}</span></span></sc-if>
+                  <sc-if value="{{t.mapBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{t.locate}}" aria-label="Mostrar {{t.name}} no mapa"><i class="ic ic--xs i-pin"></i>{{t.mapNum}}</button></sc-if>
+                </div>
+              </div>
+            </li>
+            </sc-for>
+          </ul>
+          <div class="vfe-more">
+            <sc-if value="{{canMore}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{loadMore}}">{{moreLabel4}}<i class="ic ic--sm i-plus"></i></button><sc-if value="{{showPbar}}" hint-placeholder-val="{{ true }}"><div class="pbar vfe-pbar" aria-hidden="true"><span style="{{pbarW}}"></span></div></sc-if></sc-if>
+            <nav class="vfe-pager" aria-label="Páginas de resultados">
+              <div class="pager">
+                <button type="button" class="{{prevCls4}}" onClick="{{prevPage}}" aria-disabled="{{prevDis}}" aria-label="Página anterior"><span><i class="ic ic--sm i-chev-l"></i></span></button>
+                <sc-for list="{{pages4}}" as="p" hint-placeholder-count="2"><button type="button" class="v4-pgb" onClick="{{p.pick}}" aria-current="{{p.cur}}" aria-label="Página {{p.n}}"><span class="{{p.cls}}">{{p.n}}</span></button></sc-for>
+                <button type="button" class="{{nextCls4}}" onClick="{{nextPage}}" aria-disabled="{{nextDis}}" aria-label="Próxima página"><span><i class="ic ic--sm i-chev-r"></i></span></button>
+              </div>
+              <span class="label">{{pagStatus}}</span>
+            </nav>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{mapShown}}" hint-placeholder-val="{{ false }}">
+        <section class="card v4-map" aria-label="Mapa dos resultados">
+          <div class="v4-map__hd"><button type="button" class="btn btn--outline btn--sm v4-only-mapback" onClick="{{toList}}"><i class="ic ic--xs i-arrow-l"></i>Voltar à lista</button><span class="label">{{mapTitle}} · regiões aproximadas</span></div>
+          <div class="v4-map__cv">
+            <span class="v4-zone label" style="left: 38%; top: 6%; width: 30%; height: 22%">Zona Norte</span>
+            <span class="v4-zone label" style="left: 4%; top: 28%; width: 26%; height: 26%">Zona Oeste</span>
+            <span class="v4-zone label" style="left: 38%; top: 32%; width: 26%; height: 24%">Região central</span>
+            <span class="v4-zone label" style="left: 66%; top: 30%; width: 28%; height: 26%">Zona Leste</span>
+            <span class="v4-zone label" style="left: 14%; top: 56%; width: 26%; height: 22%">Gleba Palhano</span>
+            <span class="v4-zone label" style="left: 42%; top: 64%; width: 30%; height: 26%">Zona Sul</span>
+            <sc-if value="{{mapOk}}" hint-placeholder-val="{{ true }}"><sc-for list="{{markers4}}" as="m" hint-placeholder-count="4"><button type="button" class="{{m.cls}}" style="{{m.pos}}" onClick="{{m.pick}}" aria-label="{{m.aria}}" aria-pressed="{{m.on}}"><span class="numc">{{m.n}}</span></button></sc-for></sc-if>
+            <sc-if value="{{mapFail}}" hint-placeholder-val="{{ false }}"><div class="state v4-map__fail" role="alert"><span class="state__ic" style="background: var(--paper)"><i class="ic ic--lg i-alert"></i></span><b>Não conseguimos carregar o mapa agora</b><span class="t3" style="font-size: 13px">A lista continua completa e com os mesmos filtros.</span><div class="v4-row" style="justify-content: center"><button type="button" class="btn btn--primary btn--sm" onClick="{{retryMap}}">Tentar de novo</button><button type="button" class="btn btn--outline btn--sm" onClick="{{toList}}">Ver só a lista</button></div></div></sc-if>
+          </div>
+          <sc-if value="{{mapOk}}" hint-placeholder-val="{{ true }}"><div class="v4-map__ls no-sb" aria-label="Selecionar no mapa sem gestos"><sc-for list="{{markers4}}" as="m" hint-placeholder-count="4"><button type="button" class="{{m.lcls}}" onClick="{{m.pick}}" aria-pressed="{{m.on}}">{{m.n}} · {{m.short}}</button></sc-for></div></sc-if>
+          <p class="v4-map__note t3">{{mapNote}}</p>
+        </section>
+      </sc-if>
+    </div>
+
+    <!-- Quanto custa (G08 · número) — só com ofertas publicadas, sempre com unidade -->
+    <sc-if value="{{showPrices}}" hint-placeholder-val="{{ true }}"><section class="vfe-sec" aria-labelledby="custa">
+      <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="custa">{{priceTitle}}</h2><p class="sec-sub">{{localTxt}}</p></div></div>
+      <ul class="vfe-prices"><sc-for list="{{ranges}}" as="r" hint-placeholder-count="4"><li class="card vfe-price"><span class="label">{{r.k}}</span><span class="price__v">{{r.v}}</span><span class="vfe-unit">{{r.unit}}</span><span class="vfe-small">{{r.n}}</span></li></sc-for></ul><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div>
+      <p class="vfe-small vfe-note"><i class="ic ic--xs i-info"></i>{{priceNote}}</p>
+    </section></sc-if>
+
+    <!-- Programas (G17 · .pc) -->
+    <section class="vfe-sec" id="programas" aria-labelledby="progs">
+      <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="progs">Programas de {{mod}}</h2><p class="sec-sub">Conteúdo pronto, pagamento único, 12 meses de acesso. Não inclui acompanhamento individual e não entra na ordem dos treinadores.</p></div></div>
+      <sc-if value="{{progFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert"></i><div style="flex: 1"><b>Não conseguimos carregar os programas agora</b>A lista de treinadores acima está atualizada; só este bloco ficou indisponível.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{retryProgs}}"><i class="ic ic--xs i-refresh"></i>Tentar de novo</button></div></sc-if>
+      <sc-if value="{{progsOk}}" hint-placeholder-val="{{ true }}"><div class="vfe-pgrid">
+        <sc-for list="{{progs4}}" as="p" hint-placeholder-count="3"><button type="button" class="pc vfe-pc" onClick="{{p.open}}" aria-label="Ver programa {{p.title}}"><img src="{{p.cover}}" alt=""><div class="pc__top"><div class="pc__tags"><span class="tag tag--glass">{{p.weeks}}</span><span class="tag tag--glass">{{p.n}} treinos</span></div></div><div class="pc__body"><h3 class="pc__title">{{p.title}}</h3><div class="pc__coach"><img src="{{p.coachImg}}" alt="">{{p.by}}</div><div class="pc__foot"><div class="pc__price">Pagamento único<b>{{p.price}}</b></div><span class="btn btn--white btn--sm">Ver programa</span></div></div></button></sc-for>
+      </div><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div></sc-if>
+    </section>
+
+    <!-- Como escolher (Jornada/Passo dentro de card) -->
+    <section class="vfe-sec" aria-labelledby="escolher">
+      <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="escolher">Como escolher</h2><p class="sec-sub">Três conferências rápidas antes de conversar com alguém.</p></div></div>
+      <ol class="vfe-how">
+        <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">1</span><b>Veja a credencial</b><p>“CREF verificado” foi conferido na fonte oficial. “CREF informado” foi digitado pelo treinador e ainda não foi conferido.</p></li>
+        <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">2</span><b>Compare o que está incluso</b><p>Sessão avulsa (“/ sessão”) e acompanhamento (“/ mês”) não se comparam só pelo preço: veja o que cada oferta inclui.</p></li>
+        <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">3</span><b>Confira vaga e horário</b><p>“Aceita novos alunos” é informado pelo profissional, com a data. O horário é combinado no contato ou aparece na agenda do perfil.</p></li>
+      </ol><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div>
+    </section>
+
+    <!-- Perguntas frequentes (G19 · .faq) -->
+    <section class="vfe-sec" aria-labelledby="faq">
+      <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="faq">Perguntas frequentes</h2><p class="sec-sub">Regras da 99Coach, válidas para qualquer profissional desta lista.</p></div></div>
+      <div class="card vfe-faq"><div class="faq"><sc-for list="{{faqs4}}" as="q" hint-placeholder-count="5"><div class="faq__item"><button type="button" class="faq__q" onClick="{{q.toggle}}" aria-expanded="{{q.open}}"><span>{{q.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{q.rot}}"></i></button><sc-if value="{{q.open}}" hint-placeholder-val="{{ false }}"><p class="faq__a">{{q.a}}</p></sc-if></div></sc-for></div></div>
+    </section>
+
+    <!-- Perto e outras modalidades: chips de região + Buscas relacionadas (G17 · .st com tinta) -->
+    <section class="vfe-sec" aria-labelledby="perto">
+      <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="perto">{{nearTitle}}</h2><p class="sec-sub">Só combinações com profissionais publicados.</p></div></div>
+      <sc-if value="{{hasNear}}" hint-placeholder-val="{{ true }}"><div class="vfe-near" role="group" aria-label="Regiões da cidade"><sc-for list="{{nearChips}}" as="c" hint-placeholder-count="5"><button type="button" class="chip" onClick="{{c.pick}}">{{c.label}}<small class="vfe-n">{{c.n}}</small></button></sc-for></div></sc-if>
+      <sc-if value="{{hasRel4}}" hint-placeholder-val="{{ true }}"><div class="vfe-stgrid"><sc-for list="{{rel4}}" as="r" hint-placeholder-count="7"><button type="button" class="st vfe-st" style="{{r.tint}}" onClick="{{r.pick}}"><img src="{{r.img}}" alt=""><span><b>{{r.label}}</b><small>{{r.n}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r"></i></span></button></sc-for></div><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div></sc-if>
+      <sc-if value="{{isLondrina}}" hint-placeholder-val="{{ true }}"><div class="card card--flat vfe-empnote"><span class="lrow__ic"><i class="ic ic--sm i-search"></i></span><div class="vfe-empnote__t"><b>Quando não há ninguém na cidade</b><span>Em Tamarana ainda não há {{mod}} presencial publicado. A página mostra alternativas (Londrina, a 50 km, e o online) em vez de uma lista vazia, e não é indexada.</span></div><div class="v4-row"><button type="button" class="btn btn--outline btn--sm" onClick="{{seeEmpty}}">Ver como fica</button><button type="button" class="btn btn--primary btn--sm" onClick="{{seeOnline}}">Ver online</button></div></div></sc-if>
+    </section>
+  </main>
+
+  <!-- Rodapé do DS (.ftr) com botões — o mesmo da Home e do Perfil VFINAL -->
+  <footer class="ftr">
+    <div class="wrap"><div class="ftr__grid">
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{info_regiao}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d"></i></button></div>
+      <div class="ftr__col"><b>Para treinar</b><sc-for list="{{ftrLinks}}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{r.pick}}">{{r.label}}</button></sc-for><button type="button" onClick="{{openSaved}}">Salvos</button></div>
+      <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
+      <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{info_ajuda}}">Central de ajuda</button></div>
+      <div class="ftr__col"><b>Legal</b><button type="button" onClick="{{info_termos}}">Termos de uso</button><button type="button" onClick="{{info_priv}}">Privacidade</button></div>
+    </div></div>
+    <div class="wrap"><div class="ftr__word" aria-hidden="true">99Coach · mais que treino</div></div>
+    <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><span>Plano pago do treinador não compra posição, selo nem garantia de clientes.</span></div></div>
+  </footer>
+
+  <!-- Barra inferior pública do celular (Hub H01 · G04) -->
+  <sc-if value="{{showTabbar}}" hint-placeholder-val="{{ true }}"><nav class="tabbar v4-tabbar" aria-label="Navegação do site">
+    <button type="button" class="tabbar__it is-on" aria-current="page"><i class="ic ic--sm i-search"></i>Explorar</button>
+    <button type="button" class="tabbar__it" onClick="{{openSaved}}"><i class="ic ic--sm i-heart"></i>Salvos</button>
+    <button type="button" class="tabbar__it" onClick="{{openLogin}}"><i class="ic ic--sm i-user"></i>Conta</button>
+  </nav></sc-if>
+
+  <!-- Folhas e diálogos (G15) na altura de quem abriu · camadas 50 e 60 -->
+  <sc-if value="{{sh_filters}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="fh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="fh" class="sec-title sec-title--sm">Filtros</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><p class="t2" style="font-size: 14px">Busca: <b style="color: var(--fg)">{{mod}} · {{cityLabel}}</b>. Fechar sem aplicar mantém os filtros anteriores.</p>
+  <div><span class="label">Formato</span><div class="v4-opts" role="radiogroup" aria-label="Formato"><sc-for list="{{pFmt4}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+  <div><span class="label">Idioma do atendimento</span><div class="v4-opts" role="radiogroup" aria-label="Idioma do atendimento"><sc-for list="{{pLang4}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+  <div><span class="label">Disponibilidade</span><button type="button" class="setrow v4-row" role="switch" aria-checked="{{pAvailOn}}" onClick="{{pAvailToggle}}"><span class="setrow__t"><b>Só quem aceita novos alunos</b><span>Informado pelo próprio profissional, com a data. Quem não informou não aparece com este filtro.</span></span><span class="{{pSwCls}}" aria-hidden="true"></span></button></div>
+  <div><span class="label">Preço</span><div style="margin-top: 10px"><span class="fdd v4-off" aria-disabled="true"><span>Faixa e ordenação por preço</span><i class="ic ic--xs i-lock"></i></span></div><p class="t3" style="font-size: 13px; margin-top: 8px">Capacidade futura, não habilitada nesta versão: depende do contrato de ofertas antes da paginação. Cada cartão mostra o preço com a unidade.</p></div></div><div class="v4-sheet__ft"><button type="button" class="btn btn--ghost" onClick="{{pClear}}">Limpar</button><sc-if value="{{pDirty}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn">Alterações não aplicadas</span></sc-if><button type="button" class="btn btn--primary btn--lg" onClick="{{pApply}}">Aplicar filtros</button></div></section></sc-if>
+  <sc-if value="{{sh_city}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="ch" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="ch" class="sec-title sec-title--sm">Cidade ou região</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><div class="input input--search"><i class="ic ic--sm i-search"></i><span class="ph">Digite uma cidade ou região</span></div>
+  <sc-if value="{{locIdle}}" hint-placeholder-val="{{ true }}"><button type="button" class="lrow v4-lrow" onClick="{{askLoc}}"><span class="lrow__ic"><i class="ic ic--sm i-pin"></i></span><span class="lrow__t"><b>Usar minha localização</b><span>Só pedimos permissão depois deste toque. Usamos a cidade aproximada; nada fica público.</span></span></button></sc-if>
+  <sc-if value="{{locAsk}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="dialog" aria-label="Permissão de localização (simulação)"><i class="ic ic--sm i-info"></i><div><b>O navegador pede sua localização</b>Simulação do aviso do navegador. Usaremos só a cidade aproximada.<div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap"><button type="button" class="btn btn--primary btn--sm" onClick="{{locAllow}}">Permitir</button><button type="button" class="btn btn--outline btn--sm" onClick="{{locDeny}}">Agora não</button></div></div></div></sc-if>
+  <sc-if value="{{locDenied}}" hint-placeholder-val="{{ false }}"><div class="alert"><i class="ic ic--sm i-info"></i><div>Tudo bem. Escolha a cidade na lista ou digite.</div></div></sc-if>
+  <div class="v4-list"><sc-for list="{{cityMenu}}" as="c" hint-placeholder-count="3"><button type="button" class="{{c.cls2}}" onClick="{{c.pick}}" aria-pressed="{{c.on}}"><span class="lrow__ic"><i class="ic ic--sm i-pin"></i></span><span class="lrow__t"><b>{{c.label}}</b><span>{{c.sub}}</span></span><span class="lrow__meta">{{c.n}}</span></button></sc-for></div>
+  <p class="t3" style="font-size: 13px">Contagem de quem atende presencialmente em {{mod}}. Cidades com o mesmo nome aparecem com estado e país.</p></div></section></sc-if>
+  <sc-if value="{{sh_mod}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="mh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="mh" class="sec-title sec-title--sm">Modalidade</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><div class="v4-list"><sc-for list="{{modOpts4}}" as="c" hint-placeholder-count="10"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.on}}"><span class="lrow__ic"><img src="{{c.icon}}" alt=""></span><span class="lrow__t"><b>{{c.label}}</b></span><span class="lrow__meta">{{c.n}}</span></button></sc-for></div>
+  <p class="t3" style="font-size: 13px">Quantidade no contexto atual ({{ctxShort}}). Trocar a modalidade mantém cidade, formato e idioma.</p></div></section></sc-if>
+  <sc-if value="{{sh_saved}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="svh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="svh" class="sec-title sec-title--sm">Salvos</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><sc-if value="{{noFavs}}" hint-placeholder-val="{{ true }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-heart"></i></span><b>Nenhum profissional salvo ainda</b><span>Toque no coração de um card para guardar aqui.</span></div></sc-if>
+  <div class="v4-list"><sc-for list="{{favList}}" as="f" hint-placeholder-count="2"><div class="lrow"><span class="lrow__ic"><i class="ic ic--sm i-heart"></i></span><span class="lrow__t"><b>{{f.name}}</b><span>{{f.spec}}</span></span><button type="button" class="btn btn--outline btn--sm" onClick="{{f.open}}">Ver perfil</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{f.remove}}">Remover</button></div></sc-for></div>
+  <div class="alert"><i class="ic ic--sm i-info"></i><div><b>Anotação</b>Visitante salva neste aparelho; ao entrar, os salvos vão para a conta. Limpar a busca não apaga salvos.</div></div></div></section></sc-if>
+  <sc-if value="{{sh_menu}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="mnh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="mnh" class="sec-title sec-title--sm">Menu</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><div class="v4-list">
+    <button type="button" class="lrow v4-lrow is-on" onClick="{{closeSheet}}" aria-current="page"><span class="lrow__ic"><i class="ic ic--sm i-users"></i></span><span class="lrow__t"><b>Treinadores</b></span></button>
+    <button type="button" class="lrow v4-lrow" onClick="{{openMod}}"><span class="lrow__ic"><i class="ic ic--sm i-target"></i></span><span class="lrow__t"><b>Esportes</b></span></button>
+    <button type="button" class="lrow v4-lrow" onClick="{{goProgs}}"><span class="lrow__ic"><i class="ic ic--sm i-book"></i></span><span class="lrow__t"><b>Programas</b></span></button>
+    <button type="button" class="lrow v4-lrow" onClick="{{openSaved}}"><span class="lrow__ic"><i class="ic ic--sm i-heart"></i></span><span class="lrow__t"><b>Salvos</b></span><span class="lrow__meta">{{favCount}}</span></button>
+    <button type="button" class="lrow v4-lrow" onClick="{{openLogin}}"><span class="lrow__ic"><i class="ic ic--sm i-user"></i></span><span class="lrow__t"><b>Entrar</b></span></button>
+    <button type="button" class="lrow v4-lrow" onClick="{{openPro}}"><span class="lrow__ic"><i class="ic ic--sm i-user-plus"></i></span><span class="lrow__t"><b>Sou treinador</b><span>Criar perfil com conta mínima</span></span></button>
+  </div>
+  <div class="alert"><i class="ic ic--sm i-info"></i><div><b>Anotação</b>Fechar devolve o foco ao botão Menu; Esc fecha.</div></div></div></section></sc-if>
+  <sc-if value="{{sh_prog}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="pgh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="pgh" class="sec-title sec-title--sm">Programa</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><div class="pc" style="aspect-ratio: 16/9"><img src="{{pg.cover}}" alt=""><div class="pc__body"><h3 class="pc__title">{{pg.title}}</h3><div class="pc__coach"><img src="{{pgCoach}}" alt="">{{pg.by}}</div></div></div>
+  <div class="kv"><div class="kv__r"><span>Programação</span><b>{{pg.dur}} · {{pg.n}} treinos</b></div><div class="kv__r"><span>Pagamento</span><b>{{pg.price}} · único</b></div><div class="kv__r"><span>Acesso</span><b>{{pg.access}}</b></div><div class="kv__r"><span>Suporte</span><b>Sem acompanhamento individual</b></div></div>
+  <div class="alert"><i class="ic ic--sm i-info"></i><div><b>Anotação</b>Comprar o programa não cria vínculo com {{pg.by}}. O detalhe e a compra ficam no Perfil e no Serviço.</div></div></div></section></sc-if>
+  <sc-if value="{{sh_auth}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="ah" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="ah" class="sec-title sec-title--sm">{{authTitle}}</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><sc-if value="{{codeIdle}}" hint-placeholder-val="{{ true }}"><p class="t2">{{authSub}}</p><div class="input"><span class="ph">voce@email.com</span></div><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{sendCode}}">Enviar código</button></sc-if>
+  <sc-if value="{{codeSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check"></i><div><b>Código enviado (simulação)</b>Depois de entrar, você volta para esta busca com os mesmos filtros: {{ctxLine}}.</div></div></sc-if></div></section></sc-if>
+  <sc-if value="{{sh_info}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="ih" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="ih" class="sec-title sec-title--sm">{{infoTitle}}</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><p class="t2" style="font-size: 15px; line-height: 1.5">{{infoBody}}</p></div></section></sc-if>
+  <sc-if value="{{pfOpen}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeProfile}}"></div><section class="card v4-sheet v4-sheet--wide" role="dialog" aria-modal="true" aria-labelledby="pfn" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="pfn" class="sec-title sec-title--sm">{{pf.name}}</h2><button type="button" class="icon-btn" onClick="{{closeProfile}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><p class="label">{{ctxLine}} · {{pagStatus}}</p>
+  <div class="vfe-pf">
+    <span class="av av--xl"><sc-if value="{{pf.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{pf.photo}}" alt="Foto de perfil de {{pf.name}}"></sc-if><sc-if value="{{pf.noPhoto}}" hint-placeholder-val="{{ false }}">{{pf.ini}}</sc-if></span>
+    <div class="vfe-pf__t">
+      <h3 class="pf-name vfe-pf__n">{{pf.name}}</h3>
+      <p class="t2">{{pf.spec}} · {{pf.fmtTxt}} · {{pf.place}}</p>
+      <div class="v4-row"><sc-for list="{{pfTrust4}}" as="b" hint-placeholder-count="2"><span class="{{b.cls}} v4-bw">{{b.label}}</span></sc-for></div>
+      <sc-if value="{{pf.rated}}" hint-placeholder-val="{{ true }}"><span class="tc__rate"><i class="ic ic--xs i-star"></i>{{pf.rating}}<small>({{pf.reviews}}) · de alunos com contratação concluída</small></span></sc-if>
+      <sc-if value="{{pf.unrated}}" hint-placeholder-val="{{ false }}"><span class="t3" style="font-size: 14px">Ainda sem avaliações</span></sc-if>
+    </div>
+  </div>
+  <span class="label">Serviços</span>
+  <sc-if value="{{pf.hasOffers}}" hint-placeholder-val="{{ true }}"><div class="kv"><sc-for list="{{pf.offers}}" as="o" hint-placeholder-count="3"><div class="kv__r"><span><b style="color: var(--fg)">{{o.name}}</b><br>{{o.sub}}</span><b>{{o.price}}</b></div></sc-for></div></sc-if>
+  <sc-if value="{{pf.noOffers}}" hint-placeholder-val="{{ false }}"><p class="t2">{{pf.noOffersTxt}}</p></sc-if>
+  <div class="alert"><i class="ic ic--sm i-info"></i><div><b>Anotação</b>Resumo para demonstrar o percurso busca → perfil → voltar. O perfil completo está no quadro Perfil do treinador · VFINAL.</div></div>
+  <button type="button" class="btn btn--primary" style="align-self: flex-start" onClick="{{closeProfile}}"><i class="ic ic--xs i-arrow-l"></i>Voltar para a busca</button></div></section></sc-if>
+
+  <!-- Aviso rápido com desfazer (G15 · toast) · camada 70 -->
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast v4-toast" role="status" aria-live="polite" style="top: {{toastTop}}"><span>{{toastTxt}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{toastUndo}}">Desfazer</button><sc-if value="{{toastSaved}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--glass btn--sm" onClick="{{openSaved}}">Ver salvos</button></sc-if><button type="button" class="icon-btn" onClick="{{toastClose}}" aria-label="Fechar aviso"><i class="ic ic--sm i-x"></i></button></div></sc-if>
+</div>

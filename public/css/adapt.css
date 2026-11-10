@@ -1,0 +1,9 @@
+/* Adaptação ao navegador: no canvas as folhas abrem na altura do clique; aqui ficam presas à janela */
+#app .v4-scrim{position:fixed;z-index:90}
+#app .v4-sheet{position:fixed;z-index:91;top:50%!important;left:50%;transform:translate(-50%,-50%);max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);overflow:auto;overscroll-behavior:contain}
+@media (max-width:599px){#app .v4-sheet{top:auto!important;bottom:0;left:0;right:0;transform:none;width:100%;max-height:88vh;max-height:88dvh;border-radius:28px 28px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}}
+body:has(#app .has-sheet){overflow:hidden}
+/* Busca com sugestões (Home r6): no celular a camada ocupa a janela, não o topo da página */
+#app .sx-scrim{position:fixed}
+@media (max-width:599px){#app .sx-layer{position:fixed!important;inset:0!important;width:auto!important;min-height:0;height:100vh;height:100dvh;overflow:auto;overscroll-behavior:contain;z-index:92;padding-top:calc(12px + env(safe-area-inset-top,0px))}}
+body:has(#app .sx-on){overflow:hidden}

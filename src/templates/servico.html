@@ -1,0 +1,246 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skip}}">Pular para o conteúdo</button>
+
+  <!-- Barra de cenário · fora do produto (Escolhas/Chip · Ações/Botão) -->
+  <div class="v4-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios</span><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar cenário</button></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scnChips}}" as="c" hint-placeholder-count="12"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+      <div class="v4-demo__row"><span class="label v4-demo__k">Percurso</span><div class="v4-scroll no-sb"><sc-for list="{{flowChips}}" as="c" hint-placeholder-count="17"><button type="button" class="chip" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+    </div>
+  </div>
+
+  <!-- Cabeçalho do site com busca compacta (ds4.header · Componentes-5 G16) — o mesmo da Home VFINAL -->
+  <header class="hdr">
+    <div class="wrap hdr__in">
+      <button type="button" class="v4-reset vfp-logo" aria-label="99Coach, página inicial" onClick="{{openHome}}"><img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <button type="button" class="hdr__search vf-hsearch" onClick="{{openSearch}}" aria-label="Busca atual: {{ctxLabel}}. Voltar para os resultados"><i class="ic ic--sm i-search" aria-hidden="true"></i><span class="vf-hs">{{ctxLabel}}</span><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+      <nav class="hdr__nav" aria-label="Principal">
+        <button type="button" class="hdr__link is-on" onClick="{{openSearch}}">Treinadores</button>
+        <button type="button" class="hdr__link" onClick="{{openSearch}}">Esportes</button>
+        <button type="button" class="hdr__link" onClick="{{openSearch}}">Programas</button>
+        <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
+      </nav>
+      <div class="hdr__tools">
+        <button type="button" class="hdr__ico" onClick="{{openSaved}}" aria-label="Salvos"><i class="ic ic--sm i-heart" aria-hidden="true"></i><sc-if value="{{favDot}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button>
+        <sc-if value="{{anon}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{openLogin}}">Entrar</button></sc-if>
+        <sc-if value="{{signed}}" hint-placeholder-val="{{ false }}"><button type="button" class="v4-me" onClick="{{openAcct}}" aria-label="{{userName}}: {{userDest}}"><span class="av av--sm"><sc-if value="{{userHasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{userPhoto}}" alt=""></sc-if><sc-if value="{{userNoPhoto}}" hint-placeholder-val="{{ true }}">{{userIni}}</sc-if></span><span class="v4-hide-c">{{userDest}}</span></button></sc-if>
+        <button type="button" class="hdr__ico v4-menu" onClick="{{openMenu}}" aria-label="Abrir menu" aria-expanded="{{menuOpen}}"><i class="ic ic--sm i-menu" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </header>
+
+
+
+  <!-- Celular (< 600): barra de navegação iOS (voltar + título centrado + mais) e abas sublinhadas fixas -->
+  <div class="vfs-nav" role="navigation" aria-label="Navegação da tela"><button type="button" class="vfs-nb" aria-label="Voltar para o perfil de Rafael Lima" onClick="{{openPerfil}}"><i class="ic ic--sm i-arrow-l" aria-hidden="true"></i></button><b class="vfs-nav__t">{{o.title}}</b><button type="button" class="vfs-nb" aria-label="Mais opções" onClick="{{openMenu}}"><i class="ic ic--sm i-more" aria-hidden="true"></i></button></div>
+  <nav class="utabs vfs-tabs no-sb" aria-label="Seções do serviço"><sc-for list="{{mtabs}}" as="a" hint-placeholder-count="5"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></nav>
+  <main class="wrap vfp-main" id="conteudo">
+
+    <!-- Celular (< 600): tela de detalhe de app — capa em sangria, folha sobre a capa, detalhes 2×2, escolha da oferta, jornada -->
+    <section class="vfs-app" id="visao" aria-labelledby="titulo-m">
+      <div class="vfs-cov"><img src="{{sel.cover}}" alt="{{sel.coverAlt}}"></div>
+      <div class="vfs-sh">
+        <div class="vfs-chips"><sc-for list="{{chipsM}}" as="c" hint-placeholder-count="3"><span class="{{c.cls}}">{{c.t}}</span></sc-for></div>
+        <h1 id="titulo-m" class="h-page vfs-t">{{sel.big}}</h1>
+        <p class="vfs-about">{{sel.about}}</p>
+        <div class="vfs-coachrow">
+          <button type="button" class="v4-reset vfs-who__p" onClick="{{openPerfil}}"><span class="av av--sm"><img src="{{t.photo}}" alt=""></span><span>Rafael Lima</span><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota 4,9 de 5, 23 avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>4,9<small>(23)</small></button>
+        </div>
+
+        <h2 class="vfs-h">Detalhes do plano</h2>
+        <ul class="vfs-det"><sc-for list="{{det}}" as="d" hint-placeholder-count="4"><li><span class="vfs-det__ic"><i class="{{d.ic}}" aria-hidden="true"></i></span><b>{{d.v}}</b><span>{{d.l}}</span></li></sc-for></ul>
+
+        <h2 class="vfs-h">Escolha a oferta</h2>
+        <div class="vfs-rows" role="radiogroup" aria-label="Escolha a oferta"><sc-for list="{{pickerM}}" as="m" hint-placeholder-count="4"><button type="button" role="radio" class="{{m.mCls}}" aria-checked="{{m.on}}" onClick="{{m.pick}}"><span class="{{m.rCls}}" aria-hidden="true"></span><b class="vfs-row__n">{{m.title}}</b><b class="vfs-row__p">{{m.label}}</b><span class="vfs-row__s">{{m.sub}}</span></button></sc-for></div>
+        <dl class="vfs-msum"><sc-for list="{{sum}}" as="r" hint-placeholder-count="3"><div><dt>{{r.k}}</dt><dd>{{r.v}}</dd></div></sc-for></dl>
+        <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
+
+        <h2 class="vfs-h">Sua jornada</h2>
+        <ol class="vfs-jr"><sc-for list="{{jsteps}}" as="s" hint-placeholder-count="4"><li class="vfs-jr__it"><button type="button" class="vfs-jr__q" aria-expanded="{{s.exp}}" onClick="{{s.toggle}}"><span class="jstep__n is-ink" aria-hidden="true">{{s.n}}</span><span class="vfs-jr__t"><span class="label">{{s.when}}</span><b>{{s.t}}</b></span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{s.rot}}"></i></button><sc-if value="{{s.open}}" hint-placeholder-val="{{ false }}"><p class="vfs-jr__a">{{s.d}}</p></sc-if></li></sc-for></ol>
+        <button type="button" class="btn btn--outline btn--block vfs-msg" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem ao Rafael</button>
+      </div>
+    </section>
+    <!-- Trilha com voltar (G16) -->
+    <div class="v4-crumbs vfs-hide-s">
+      <button type="button" class="btn btn--ghost btn--sm" onClick="{{openPerfil}}"><i class="ic ic--xs i-arrow-l" aria-hidden="true"></i>Voltar para o perfil de Rafael Lima</button>
+      <span class="tag tag--mono">{{ctxLabel}}</span>
+      <nav class="v4-trail" aria-label="Você está em"><button type="button" class="v4-reset" onClick="{{openHome}}">Início</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openSearch}}">CrossFit</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openPerfil}}">Rafael Lima</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><b aria-current="page">{{o.title}}</b></nav>
+    </div>
+
+    <div class="vfp-top">
+      <div class="vfp-col">
+        <!-- Cabeçalho de entidade (G12): título no papel Página, treinador e confiança (G03) -->
+        <section class="vfs-head vfs-hide-s" aria-labelledby="titulo">
+          <span class="label">{{sel.kindLine}}</span>
+          <h1 id="titulo" class="h-page">{{sel.big}}</h1>
+          <div class="vfs-who">
+            <button type="button" class="v4-reset vfs-who__p" onClick="{{openPerfil}}"><span class="av av--sm"><img src="{{t.photo}}" alt=""></span>Rafael Lima</button>
+            <span class="trust trust--ver"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>CREF verificado</span>
+            <button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota 4,9 de 5, 23 avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>4,9<small>(23 avaliações)</small></button>
+            <span class="badge badge--ok v4-bw">Aceita novos alunos · informado em 20/10</span>
+          </div>
+          <figure class="vfs-cover"><img src="{{sel.cover}}" alt="{{sel.coverAlt}}"></figure>
+        </section>
+
+        <!-- Sobre esta oferta: texto + chave e valor (G08) -->
+        <section class="card vfp-card vfs-hide-s" aria-labelledby="sobre">
+          <h2 id="sobre" class="vf-h3">Sobre esta oferta</h2>
+          <p class="vfp-text">{{sel.about}}</p>
+          <div class="kv"><sc-for list="{{sel.facts}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+        </section>
+
+        <!-- O que está incluso (lista com status por ícone e texto) -->
+        <section class="card vfp-card" aria-labelledby="inclui">
+          <h2 id="inclui" class="vf-h3">O que está incluso</h2>
+          <ul class="vfs-checks"><sc-for list="{{sel.yes}}" as="i" hint-placeholder-count="4"><li><i class="ic ic--sm i-check" aria-hidden="true"></i><span>{{i}}</span></li></sc-for></ul>
+          <span class="label" style="margin-top: 8px">Não inclui</span>
+          <ul class="vfs-checks vfs-no"><sc-for list="{{sel.no}}" as="i" hint-placeholder-count="3"><li><i class="ic ic--sm i-x" aria-hidden="true"></i><span>{{i}}</span></li></sc-for></ul>
+        </section>
+
+        <!-- Como funciona: Jornada/Passo (jstep__n) -->
+        <section class="card vfp-card vfs-hide-s" aria-labelledby="como">
+          <h2 id="como" class="vf-h3">Como funciona</h2>
+          <ol class="vfs-steps"><sc-for list="{{sel.steps}}" as="s" hint-placeholder-count="4"><li><span class="jstep__n is-ink" aria-hidden="true">{{s.n}}</span><div><span class="label">{{s.when}}</span><b>{{s.t}}</b><p>{{s.d}}</p></div></li></sc-for></ol>
+        </section>
+      </div>
+
+      <!-- Cartão lateral "Escolha a oferta" (G07 escolha + G08 resumo + G02 ações) — fixo no desktop -->
+      <aside class="vfp-aside" aria-label="Escolha a oferta e resumo">
+        <div class="card vfp-side">
+          <span class="label">Escolha a oferta</span>
+          <div class="vfp-picks" role="radiogroup" aria-label="Escolha a oferta"><sc-for list="{{picker}}" as="m" hint-placeholder-count="4"><button type="button" role="radio" class="{{m.rowCls}}" aria-checked="{{m.on}}" onClick="{{m.pick}}"><span class="vfp-pick__h"><b>{{m.title}}</b><b class="vfp-pick__p">{{m.label}}</b></span><span class="vfp-pick__s">{{m.sub}}</span></button></sc-for></div>
+          <sc-if value="{{A.noPrice}}" hint-placeholder-val="{{ false }}"><div class="v4-pricebox"><b class="vfp-boxt">{{A.title}}</b><span class="vfp-boxl">{{A.line}}</span><span class="vfp-small">{{A.sub}}</span></div></sc-if>
+          <div class="kv vfs-sum"><sc-for list="{{sum}}" as="r" hint-placeholder-count="3"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+          <button type="button" class="{{A.btnCls}}" onClick="{{A.go}}" style="justify-content: space-between">{{A.label}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
+          <button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button>
+          <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
+          <p class="vfp-ext"><button type="button" class="v4-reset vfp-u" onClick="{{goCmp}}">Comparar as ofertas do Rafael</button></p>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Comparar ofertas: tabela do DS (.tbl); no celular vira lista de cards (fundamento 4) -->
+    <section id="comparar" class="vf-sec vfp-sec" aria-labelledby="h-cmp">
+      <div class="sec-head"><div><h2 id="h-cmp" class="sec-title sec-title--nonum">Comparar ofertas do Rafael</h2><p class="sec-sub">“R$ 80 / sessão”, “R$ 200 / mês” e “R$ 197 pagamento único” não são valores equivalentes: compare entrega e frequência.</p></div></div>
+      <div class="card vfs-tblw vfs-hide-s"><table class="tbl vfs-tbl"><thead><tr><th scope="col">Oferta</th><th scope="col" class="{{hl0}}">R$ 200 / mês<small>Acompanhamento online</small></th><th scope="col" class="{{hl1}}">R$ 520 / mês<small>Treino presencial 2x por semana</small></th><th scope="col" class="{{hl2}}">R$ 80 / sessão<small>Sessão presencial</small></th><th scope="col" class="{{hl3}}">R$ 197 · pagamento único<small>CrossFit Base</small></th></tr></thead><tbody><tr><th scope="row">Formato</th><td class="{{hl0}}">Online</td><td class="{{hl1}}">Presencial</td><td class="{{hl2}}">Presencial</td><td class="{{hl3}}">Online · no seu ritmo</td></tr><tr><th scope="row">Entrega</th><td class="{{hl0}}">Treino semanal no app</td><td class="{{hl1}}">8 sessões por mês</td><td class="{{hl2}}">60 min individual</td><td class="{{hl3}}">36 treinos em 12 semanas</td></tr><tr><th scope="row">Ajustes</th><td class="{{hl0}}">A cada 15 dias</td><td class="{{hl1}}">Nas sessões</td><td class="{{hl2}}">Na sessão</td><td class="{{hl3}}">Não tem</td></tr><tr><th scope="row">Mensagens</th><td class="{{hl0}}">Sim, com o Rafael</td><td class="{{hl1}}">Para combinar horários</td><td class="{{hl2}}">Para combinar horário</td><td class="{{hl3}}">Não inclui</td></tr><tr><th scope="row">Como começa</th><td class="{{hl0}}">Pedido sujeito a aceite</td><td class="{{hl1}}">Pedido sujeito a aceite</td><td class="{{hl2}}">Contratação direta</td><td class="{{hl3}}">Compra direta</td></tr><tr><th scope="row">Cobrança</th><td class="{{hl0}}">R$ 200 por mês</td><td class="{{hl1}}">R$ 520 por mês</td><td class="{{hl2}}">R$ 80 por sessão</td><td class="{{hl3}}">R$ 197 pagamento único</td></tr><tr><th scope="row">Renovação</th><td class="{{hl0}}">Mensal · cancela quando quiser</td><td class="{{hl1}}">Mensal · cancela quando quiser</td><td class="{{hl2}}">Não renova</td><td class="{{hl3}}">Não renova · 12 meses de acesso</td></tr></tbody></table></div>
+      <div class="vfp-plans vfs-only-s vfs-track no-sb"><sc-for list="{{optCards}}" as="c" hint-placeholder-count="4"><div class="{{c.cls}}" style="flex-direction: column; align-items: stretch; gap: 8px"><div class="plan__body"><span class="plan__type">{{c.label}}</span><b class="plan__title">{{c.title}}</b></div><div class="kv"><sc-for list="{{c.rows}}" as="r" hint-placeholder-count="7"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div><button type="button" class="{{c.btnCls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.btn}}</button></div></sc-for></div>
+    </section>
+
+    <!-- Sobre o treinador: identidade (G18) + chave e valor (G08) -->
+    <section id="treinador" class="vf-sec vfp-sec" aria-labelledby="h-tr">
+      <div class="sec-head"><div><h2 id="h-tr" class="sec-title sec-title--nonum">Sobre o treinador</h2></div></div>
+      <div class="vfs-coach">
+        <div class="card vfp-card">
+          <div class="vfs-coach__id"><span class="av"><img src="{{t.photo}}" alt="Foto de perfil de Rafael Lima"></span><div style="display: flex; flex-direction: column; gap: 8px; min-width: 0"><span class="vfs-coach__n">Rafael Lima<svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="vfp-small" style="font-size: 14px">Treinador de CrossFit e Musculação · Londrina, PR · Centro e Zona Sul</span><div class="vfp-chips"><span class="trust trust--owner"><i class="ic ic--xs i-user" aria-hidden="true"></i>Titularidade confirmada</span><span class="trust trust--ver"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>CREF verificado</span></div></div></div>
+          <p class="vfp-text">Atendo quem quer começar no CrossFit ou voltar à musculação com segurança. Na primeira semana avalio movimento e rotina; depois o treino chega toda semana no app, com ajuste a cada 15 dias.</p>
+          <button type="button" class="link-arrow v4-reset vfp-link" style="margin-top: 0" onClick="{{openPerfil}}">Ver perfil completo<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+        </div>
+        <div class="card vfp-card"><div class="kv">
+          <div class="kv__r"><span>Atende</span><b>Presencial e online</b></div>
+          <div class="kv__r"><span>Idioma</span><b>Português</b></div>
+          <div class="kv__r"><span>CREF</span><b>012345-G/PR · verificado</b></div>
+          <div class="kv__r"><span>Perfil confirmado</span><b>24/09/2026</b></div>
+          <div class="kv__r"><span>Avaliações</span><b>4,9 · 23 no total</b></div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- Avaliações desta oferta (G18 · rev) -->
+    <section id="avaliacoes" class="vf-sec vfp-sec" aria-labelledby="h-av">
+      <div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações desta oferta</h2><p class="sec-sub">Só de alunos com contratação concluída pela 99Coach.</p></div></div>
+      <div class="vfs-revnote" style="margin-bottom: 24px"><div class="kpi"><span class="kpi__n">4,9</span><span class="kpi__l">média geral · 23 avaliações</span></div><p class="vfp-small" style="flex: 1 1 280px; max-width: 68ch; font-size: 15px; color: var(--text-2)">A média é de todos os serviços do Rafael. Abaixo, só os comentários de quem contratou {{o.title}}.</p></div>
+      <sc-if value="{{hasRev}}" hint-placeholder-val="{{ true }}"><div class="vfs-revs vfs-track no-sb"><sc-for list="{{reviews}}" as="r" hint-placeholder-count="3"><div class="rev"><div class="rev__who"><span class="av av--md">{{r.ini}}</span><div style="flex: 1; min-width: 0"><b style="font-size: 15px">{{r.who}}</b><div class="label">{{r.what}}</div></div><div class="stars" role="img" aria-label="Nota {{r.n}} de 5"><sc-for list="{{r.stars}}" as="s" hint-placeholder-count="5"><i class="ic ic--xs i-star" aria-hidden="true" style="{{s}}"></i></sc-for></div></div><p style="font-size: 15px; line-height: 1.55; color: var(--text-2)">“{{r.text}}”</p></div></sc-for></div></sc-if>
+      <sc-if value="{{noRev}}" hint-placeholder-val="{{ false }}"><div class="emp"><i class="ic  i-star" aria-hidden="true"></i><b>Ainda sem avaliações desta oferta</b><span>{{noRevText}}</span></div></sc-if>
+    </section>
+
+    <!-- Perguntas frequentes (G19 · faq) -->
+    <section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
+      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2><p class="sec-sub">Regras de pedido, cobrança e cancelamento da 99Coach.</p></div></div>
+      <div class="card vfp-faq"><div class="faq"><sc-for list="{{faqs}}" as="f" hint-placeholder-count="5"><div class="faq__item"><button type="button" class="faq__q" aria-expanded="{{f.exp}}" onClick="{{f.toggle}}"><span>{{f.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{f.rot}}"></i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="faq__a"><p>{{f.a}}</p></div></sc-if></div></sc-for></div></div>
+    </section>
+
+    <!-- Programas do Rafael (G17 · pc) + comparação com o acompanhamento -->
+    <section class="vf-sec" aria-labelledby="h-pg">
+      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas do Rafael</h2><p class="sec-sub">Conteúdo pronto, compra única, acesso por 12 meses. Não inclui acompanhamento individual.</p></div></div>
+      <div class="vfp-pg vfs-track no-sb">
+        <div class="{{pcCls}}"><img src="{{pcImg}}" alt="Capa do programa CrossFit Base">
+          <div class="pc__top"><div class="pc__tags"><span class="tag tag--glass">CrossFit</span><span class="tag tag--glass">12 semanas</span></div><sc-if value="{{pcOn}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ink">Escolhido</span></sc-if></div>
+          <div class="pc__body"><span class="vfp-pcacc">12 semanas de programação · 36 treinos</span><h3 class="pc__title">CrossFit Base</h3><div class="pc__coach"><img src="{{t.photo}}" alt="">Rafael Lima</div>
+            <div class="pc__foot"><div class="pc__price">pagamento único<b>R$ 197</b></div><button type="button" class="{{pcBtnCls}}" aria-pressed="{{pcOnS}}" onClick="{{pickBase}}">{{pcBtn}}</button></div></div>
+        </div>
+        <div class="card vfp-cmp">
+          <h3 class="vf-h3">Programa ou acompanhamento?</h3>
+          <p class="vfp-small">Os dois são do Rafael. A diferença é se alguém ajusta o treino para você.</p>
+          <div class="vfp-cmp__g">
+            <div class="vfp-cmp__c"><span class="label">Programa · CrossFit Base</span><b class="vfp-cmp__p">R$ 197 <small>pagamento único</small></b><ul><li><i class="ic ic--xs i-check" aria-hidden="true"></i>12 semanas · 36 treinos prontos</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>12 meses de acesso</li><li><i class="ic ic--xs i-x" aria-hidden="true"></i>Sem ajuste individual nem mensagens</li></ul><button type="button" class="{{cmpProgCls}}" onClick="{{pickBase}}">{{cmpProgLbl}}</button></div>
+            <div class="vfp-cmp__c"><span class="label">Acompanhamento online</span><b class="vfp-cmp__p">R$ 200 <small>/ mês</small></b><ul><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Treino semanal no app</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Ajuste a cada 15 dias e mensagens</li><li><i class="ic ic--xs i-info" aria-hidden="true"></i>Sujeito a aceite · cancela quando quiser</li></ul><button type="button" class="{{cmpOnCls}}" onClick="{{pickOnline}}">{{cmpOnLbl}}</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Rodapé do DS (.ftr) com botões no lugar de links — o mesmo da Home VFINAL -->
+  <footer class="ftr" style="margin-top: 96px">
+    <div class="wrap"><div class="ftr__grid">
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
+      <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSearch}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
+      <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
+      <div class="ftr__col"><b>Em Londrina</b><button type="button" onClick="{{openSearch}}">CrossFit</button><button type="button" onClick="{{openSearch}}">Musculação</button><button type="button" onClick="{{openSearch}}">Funcional</button></div>
+      <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{openHelp}}">Central de ajuda</button><button type="button" onClick="{{openHelp}}">Pagamentos e reembolsos</button></div>
+    </div></div>
+    <div class="wrap"><div class="ftr__word">99Coach · mais que treino</div></div>
+    <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><div class="v4-row" style="gap: 20px"><button type="button" onClick="{{openHelp}}">Privacidade</button><button type="button" onClick="{{openHelp}}">Termos</button><button type="button" onClick="{{openHelp}}">Cookies</button></div></div></div>
+  </footer>
+
+  <!-- Barra fixa de contato (G18 · sticky-bar): rodapé no tablet, acima da barra inferior no celular -->
+  <sc-if value="{{barOn}}" hint-placeholder-val="{{ false }}">
+  <div class="v4-bar" role="region" aria-label="Próxima etapa"><div class="sticky-bar">
+    <span class="av av--sm" style="background: var(--ink-2); color: var(--paper)"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}">{{t.ini}}</sc-if></span>
+    <div class="v4-bar__t"><b style="font-size: 14px">{{A.title}}</b><div style="font-size: 13px; color: var(--text-on-dark)">{{A.barLine}}</div></div>
+    <sc-if value="{{A.isAnchor}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--white btn--arrow v4-wrapbtn" onClick="{{goSvc}}">{{A.short}}<span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+    <sc-if value="{{A.hasAction}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{A.barCls}}" onClick="{{A.go}}">{{A.short}}<span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
+  </div></div>
+  </sc-if>
+
+  <!-- Celular: barra de ação de app (CTA pill em tinta; vermelho só em contratação direta) acima da barra inferior -->
+  <sc-if value="{{barOn}}" hint-placeholder-val="{{ true }}"><div class="vfs-mbar" role="region" aria-label="Próxima etapa"><button type="button" class="{{mbarCls}}" onClick="{{A.go}}"><span>{{mbarLabel}}</span><span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></div></sc-if>
+
+  <!-- Barra inferior pública do celular (Hub H01 · G04) -->
+  <sc-if value="{{tabOn}}" hint-placeholder-val="{{ true }}">
+  <nav class="tabbar v4-tabbar" aria-label="Navegação do site">
+    <button type="button" class="tabbar__it is-on" onClick="{{openSearch}}"><i class="ic ic--sm i-search" aria-hidden="true"></i><span class="vfs-tl">Explorar</span></button>
+    <button type="button" class="tabbar__it" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i><span class="vfs-tl">Salvos</span></button>
+    <button type="button" class="tabbar__it" onClick="{{openConta}}"><i class="ic ic--sm i-user" aria-hidden="true"></i><span class="vfs-tl">Conta</span></button>
+  </nav>
+  </sc-if>
+
+  <!-- Aviso rápido com desfazer (G15 · toast) · camada 70 -->
+  <sc-if value="{{favNote}}" hint-placeholder-val="{{ false }}"><div class="toast v4-toast" role="status" style="top: {{toastTop}}"><i class="ic ic--sm i-check" aria-hidden="true" style="color: var(--success)"></i><span style="flex: 1">Salvo em Salvos</span><button type="button" class="btn btn--white btn--sm" onClick="{{undoFav}}">Desfazer</button></div></sc-if>
+
+  <!-- Folha / diálogo (G15) na altura de quem abriu · camadas 50 e 60 -->
+  <sc-if value="{{sheetOn}}" hint-placeholder-val="{{ false }}">
+    <div class="v4-scrim" onClick="{{close}}"></div>
+    <div class="{{dlgCls}}" role="dialog" aria-modal="true" aria-labelledby="sh-t" style="top: {{sheetTop}}">
+      <div class="v4-sheet__hd"><h2 id="sh-t" class="sec-title sec-title--sm">{{sh.title}}</h2><button type="button" class="icon-btn" aria-label="Fechar" onClick="{{close}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+      <div class="v4-sheet__bd">
+        <sc-if value="{{sh.hasTone}}" hint-placeholder-val="{{ false }}"><div class="{{sh.toneCls}}" role="status"><i class="{{sh.toneIc}}"></i><div><b>{{sh.toneTitle}}</b>{{sh.toneSub}}</div></div></sc-if>
+        <sc-if value="{{sh.hasChips}}" hint-placeholder-val="{{ false }}"><div class="v4-row" style="gap: 6px"><sc-for list="{{sh.chips}}" as="c" hint-placeholder-count="3"><span class="chip is-on">{{c}}</span></sc-for></div></sc-if>
+        <sc-for list="{{sh.lines}}" as="l" hint-placeholder-count="1"><p style="font-size: 15px; line-height: 1.5">{{l}}</p></sc-for>
+        <sc-if value="{{sh.hasRows}}" hint-placeholder-val="{{ false }}"><div class="kv"><sc-for list="{{sh.rows}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasMenu}}" hint-placeholder-val="{{ false }}"><div class="menu" style="box-shadow: none; padding: 0"><sc-for list="{{sh.menu}}" as="m" hint-placeholder-count="6"><button type="button" class="menu__it" onClick="{{m.go}}"><i class="{{m.ic}}"></i>{{m.label}}</button></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasSlots}}" hint-placeholder-val="{{ false }}"><sc-for list="{{slotDays}}" as="d" hint-placeholder-count="3"><div class="v4-row" style="gap: 8px"><span class="label" style="width: 92px">{{d.day}}</span><sc-for list="{{d.items}}" as="s" hint-placeholder-count="2"><button type="button" class="{{s.cls}}" style="border: 1px solid var(--line)" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.t}}</button></sc-for></div></sc-for></sc-if>
+        <sc-if value="{{sh.hasResults}}" hint-placeholder-val="{{ false }}"><div class="vfp-plans" style="gap: 8px"><sc-for list="{{sh.results}}" as="r" hint-placeholder-count="3"><div class="lrow"><div class="lrow__t"><b>{{r.name}}</b><span>{{r.line}}</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{r.open}}">{{r.btn}}</button></div></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasOpts}}" hint-placeholder-val="{{ false }}"><div class="vfp-plans" style="gap: 8px" role="radiogroup" aria-label="{{sh.optsLabel}}"><sc-for list="{{sh.opts}}" as="p" hint-placeholder-count="3"><button type="button" role="radio" class="{{p.cls}}" aria-checked="{{p.on}}" onClick="{{p.pick}}"><b>{{p.label}}</b></button></sc-for></div></sc-if>
+        <sc-if value="{{sh.hasField}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="v4-f1">{{sh.fieldLabel}}</label><div class="input"><input id="v4-f1" class="v4-in" type="{{sh.fieldType}}" value="{{sh.fieldValue}}" autocomplete="{{sh.fieldAuto}}"></div></div></sc-if>
+        <sc-if value="{{sh.hasText}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="v4-f2">{{sh.textLabel}}</label><div class="input input--area"><textarea id="v4-f2" class="v4-in">{{sh.textValue}}</textarea></div></div></sc-if>
+        <sc-if value="{{sh.hasPay}}" hint-placeholder-val="{{ false }}"><div class="field"><span class="field__label">Forma de pagamento</span><div class="seg" role="radiogroup" aria-label="Forma de pagamento"><sc-for list="{{payOpts}}" as="p" hint-placeholder-count="2"><button type="button" role="radio" class="{{p.cls}}" aria-checked="{{p.on}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{sh.hasCode}}" hint-placeholder-val="{{ false }}"><div class="card card--flat v4-code mono">{{sh.code}}</div></sc-if>
+        <div class="vfp-plans" style="gap: 8px"><sc-for list="{{sh.btns}}" as="b" hint-placeholder-count="2"><button type="button" class="{{b.cls}}" onClick="{{b.go}}">{{b.label}}</button></sc-for></div>
+        <sc-if value="{{sh.hasFine}}" hint-placeholder-val="{{ false }}"><p class="v4-sub">{{sh.fine}}</p></sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>

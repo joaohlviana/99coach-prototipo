@@ -1,0 +1,909 @@
+<div class="{{rootCls}}">
+  <button type="button" class="btn btn--primary btn--sm v4-skip" onClick="{{skipTo}}">Pular para o conteúdo</button>
+  <!-- barra do protótipo (fora do produto): situações da tela, composição no DS e dados de exemplo -->
+  <div class="v4-demo mod-demo" role="region" aria-label="Demonstração do protótipo">
+    <div class="wrap v4-demo__in">
+      <div class="v4-demo__top"><span class="label" style="color: var(--brand-text)">Demonstração · dados fictícios · {{dsId}}</span><span class="mod-demo__r"><button type="button" class="btn btn--outline btn--sm" onClick="{{openDs}}">Ver no DS</button><button type="button" class="btn btn--brand btn--sm" onClick="{{reset}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Reiniciar dados</button></span></div>
+      <sc-if value="{{hasScens}}" hint-placeholder-val="{{ true }}"><div class="v4-demo__row"><span class="label v4-demo__k">Situação</span><div class="v4-scroll no-sb"><sc-for list="{{scens}}" as="c" hint-placeholder-count="5"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div></sc-if>
+    </div>
+  </div>
+
+  <!-- público: cabeçalho simples -->
+  <sc-if value="{{isPub}}" hint-placeholder-val="{{ false }}">
+    <header class="mod-top"><div class="wrap mod-top__in"><button type="button" class="v4-reset mod-logo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button><nav class="mod-top__nav" aria-label="{{navLabel}}"><sc-for list="{{top}}" as="t" hint-placeholder-count="4"><button type="button" class="{{t.cls}}" aria-current="{{t.cur}}" onClick="{{t.go}}">{{t.label}}</button></sc-for></nav></div></header>
+  </sc-if>
+
+  <div class="onb-app mod-app">
+    <sc-if value="{{hasSide}}" hint-placeholder-val="{{ true }}">
+    <nav class="snav onb-snav" aria-label="{{navLabel}}">
+      <button type="button" class="v4-reset snav__brand" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
+      <sc-for list="{{side}}" as="g" hint-placeholder-count="3"><span class="snav__sec">{{g.sec}}</span><sc-for list="{{g.items}}" as="s" hint-placeholder-count="4"><button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" onClick="{{s.go}}"><i class="{{s.ic}}" aria-hidden="true"></i><span class="mod-snav__l">{{s.label}}</span><sc-if value="{{s.hasCount}}" hint-placeholder-val="{{ false }}"><span class="mod-count">{{s.count}}</span></sc-if></button></sc-for></sc-for>
+      <div class="snav__me"><span class="av av--sm"><sc-if value="{{me.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{me.photo}}" alt=""></sc-if><sc-if value="{{me.noPhoto}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div></div>
+    </nav>
+    </sc-if>
+    <div class="onb-main mod-main">
+      <sc-if value="{{hasSide}}" hint-placeholder-val="{{ true }}">
+      <div class="mtop onb-mtop"><sc-if value="{{mtop.hasBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{mtop.back}}" aria-label="Voltar"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button></sc-if><sc-if value="{{mtop.noBack}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset onb-mlogo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button></sc-if><b class="mtop__t">{{mtop.title}}</b><sc-if value="{{isOps}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{toggleOm}}" aria-expanded="{{omOpen}}" aria-label="Menu da operação"><i class="ic ic--sm i-menu" aria-hidden="true"></i></button></sc-if><sc-if value="{{hasTabs}}" hint-placeholder-val="{{ true }}"><span class="av av--sm onb-mme">{{me.ini}}</span></sc-if></div>
+      </sc-if>
+      <sc-if value="{{omOpen}}" hint-placeholder-val="{{ false }}"><div class="mod-om" role="menu" aria-label="Destinos da operação"><sc-for list="{{opsMenu}}" as="o" hint-placeholder-count="5"><button type="button" class="{{o.cls}}" role="menuitem" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></sc-if>
+      <main class="onb-page mod-page" id="conteudo">
+        <sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Esta tela falhou ao montar</b>{{err}}</div></div></sc-if>
+      <!-- PUB10 · Avaliações e ciclo de contribuição -->
+      <sc-if value="{{is.avaliacoes}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt p1-grow"><h1 class="pghead__title">Avaliações</h1><p class="pghead__sub">{{v.tName}} · {{v.sub}}</p></div>
+          <sc-if value="{{v.showAvaliar}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary" onClick="{{v.avaliar}}">{{v.avaliarLabel}}</button></sc-if></div>
+
+        <div class="p1-viewas"><span class="label" id="p1-as-l">Ver como</span><div class="seg p1-seg" role="radiogroup" aria-labelledby="p1-as-l"><sc-for list="{{v.views}}" as="w" hint-placeholder-count="3"><button type="button" class="{{w.cls}}" role="radio" aria-checked="{{w.on}}" onClick="{{w.pick}}">{{w.label}}</button></sc-for></div></div>
+
+        <sc-if value="{{v.errored}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Não foi possível carregar as avaliações</b>Isso não quer dizer que não há avaliações. Tente de novo em instantes.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.pendente}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="p1-grow"><b>Envio pendente</b>Ainda não confirmamos se sua avaliação chegou. Não envie de novo: consultamos o resultado para você.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.consultar}}">Consultar de novo</button></div></sc-if>
+        <sc-if value="{{v.inReview}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-shield" aria-hidden="true"></i><div><b>Avaliação enviada para análise</b>Só você vê o novo texto, marcado “em análise”, até a moderação aprovar (até 2 dias úteis).</div></div></sc-if>
+        <sc-if value="{{v.edicao}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Edição indisponível agora</b>Não conseguimos abrir a edição. Sua avaliação continua publicada como está; a edição é permitida até 30 dias após o envio.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retryEdit}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.notEligible}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="p1-grow"><b>Só quem treinou avalia</b>{{v.neText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.neOk}}">Continuar</button></div></sc-if>
+
+        <sc-if value="{{v.formOn}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-labelledby="p1-rf-t"><h2 class="onb-h2" id="p1-rf-t">{{v.formTitle}}</h2><p class="mod-small mod-muted">{{v.svcLine}}</p>
+            <div class="field"><span class="field__label" id="p1-rf-st">Sua nota</span><div class="p1-starpick" role="radiogroup" aria-labelledby="p1-rf-st"><sc-for list="{{v.starBtns}}" as="s" hint-placeholder-count="5"><button type="button" class="{{s.cls}}" role="radio" aria-checked="{{s.on}}" aria-label="{{s.label}}" onClick="{{s.pick}}">★</button></sc-for></div><sc-if value="{{v.errStars}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Escolha uma nota de 1 a 5.</span></sc-if></div>
+            <div class="field"><label class="field__label" for="p1-rf-tx">Como foi?</label><div class="{{v.textCls}}"><textarea id="p1-rf-tx" rows="3" maxlength="600" placeholder="O que ajudou, o que poderia melhorar" onInput="{{v.setText}}" aria-invalid="{{v.textInvalid}}">{{v.text}}</textarea><span class="cnt">{{v.textCount}}</span></div><sc-if value="{{v.errText}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Escreva pelo menos 10 caracteres.</span></sc-if><span class="field__help">Não escreva dados de saúde que você não quer tornar públicos.</span></div>
+            <div class="field"><span class="field__label" id="p1-rf-an">Como aparecer</span><div class="mod-row" role="radiogroup" aria-labelledby="p1-rf-an"><sc-for list="{{v.anonOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.anonHelp}}</span></div>
+            <p class="mod-small mod-muted">{{v.draftNote}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.enviar}}">Enviar avaliação</button><button type="button" class="btn btn--ghost" onClick="{{v.cancelar}}">Cancelar</button></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-message" aria-hidden="true"></i></span><b>Ainda não há avaliações</b><span>Avaliações aparecem depois que alunos que contrataram {{v.first}} pelo 99Coach contam como foi.</span><button type="button" class="btn btn--ghost" onClick="{{v.voltarPerfil}}">Voltar ao perfil</button></div></sc-if>
+
+        <sc-if value="{{v.hasSummary}}" hint-placeholder-val="{{ true }}">
+          <div class="mod-grid2">
+            <div class="mod-list">
+              <sc-if value="{{v.asTrainer}}" hint-placeholder-val="{{ false }}"><div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div>Você pode responder e contestar. A nota é do aluno: o treinador não edita.</div></div></sc-if>
+              <sc-for list="{{v.reviews}}" as="r" hint-placeholder-count="4">
+                <article class="card onb-sec p1-rev">
+                  <div class="mod-between"><div><b>{{r.author}}</b><p class="mod-small mod-muted">{{r.meta}}</p></div><span class="p1-stars" role="img" aria-label="{{r.starsLabel}}">{{r.stars}}</span></div>
+                  <div class="mod-row"><sc-if value="{{r.isMine}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ink">Sua avaliação</span></sc-if><sc-if value="{{r.inReview}}" hint-placeholder-val="{{ false }}"><span class="badge badge--info">Em análise · só você vê</span></sc-if><sc-if value="{{r.contest}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn">Contestação em análise</span></sc-if></div>
+                  <p class="p1-p">{{r.text}}</p>
+                  <sc-if value="{{r.hasReply}}" hint-placeholder-val="{{ false }}"><div class="p1-reply"><span class="label">Resposta do treinador</span><p>{{r.reply}}</p></div></sc-if>
+                  <sc-if value="{{r.replying}}" hint-placeholder-val="{{ false }}">
+                    <div class="field"><label class="field__label" for="p1-rp">Resposta do treinador</label><div class="input input--area"><textarea id="p1-rp" rows="2" onInput="{{r.setReply}}">{{r.replyText}}</textarea></div></div>
+                    <div class="mod-row"><button type="button" class="btn btn--primary btn--sm" onClick="{{r.sendReply}}">Publicar resposta</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.cancelReply}}">Cancelar</button></div>
+                  </sc-if>
+                  <div class="mod-row p1-rev__a">
+                    <sc-if value="{{r.canEdit}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{r.edit}}">Editar minha avaliação</button></sc-if>
+                    <sc-if value="{{r.isTrainer}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{r.openReply}}">{{r.replyLabel}}</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.contestIt}}">Contestar</button></sc-if>
+                    <sc-if value="{{r.canReport}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.report}}"><i class="ic ic--sm i-alert" aria-hidden="true"></i>Denunciar</button></sc-if>
+                  </div>
+                </article>
+              </sc-for>
+              <sc-if value="{{v.hasReviews}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">{{v.shownLine}}</p></sc-if>
+            </div>
+            <aside class="mod-col p1-rail" aria-label="Distribuição das notas">
+              <section class="card onb-sec">
+                <div class="p1-avsum"><span class="p1-avsum__n">{{v.avg}}</span><div><span class="p1-stars" aria-hidden="true">★★★★★</span><p class="mod-small mod-muted">{{v.nLine}}</p></div></div>
+                <span class="label">Distribuição</span>
+                <div class="mod-list p1-dist"><sc-for list="{{v.dist}}" as="d" hint-placeholder-count="5"><div class="p1-dist__r"><span class="p1-dist__k">{{d.k}} <span aria-hidden="true">★</span></span><span class="bar"><span style="{{d.w}}"></span></span><span class="p1-dist__c">{{d.c}}</span></div></sc-for></div>
+                <p class="mod-small mod-muted">Avaliação não é prova de credencial. A comprovação profissional fica no perfil.</p>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- PUB08 · Continuar busca e editar contexto -->
+      <sc-if value="{{is.continuar}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Continuar sua busca</h1><sc-if value="{{v.active}}" hint-placeholder-val="{{ true }}"><p class="pghead__sub">{{v.savedAt}}</p></sc-if></div></div>
+
+        <sc-if value="{{v.cleared}}" hint-placeholder-val="{{ false }}">
+          <div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Busca limpa</b>Apagamos modalidade, local, atendimento e idioma deste aparelho. {{v.favLine}}</div></div>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.novaBusca}}">Começar nova busca</button><button type="button" class="btn btn--ghost" onClick="{{v.verFavoritos}}">Ver favoritos</button></div>
+        </sc-if>
+
+        <sc-if value="{{v.expirado}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="p1-grow"><b>Contexto expirado</b>Esta busca é de 24/10 e as condições podem ter mudado. Revise antes de buscar: o resultado antigo não garante oferta.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.consultar}}">Consultar de novo</button></div></sc-if>
+        <sc-if value="{{v.offline}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Sem conexão ou consulta indisponível</b>Seu contexto está guardado neste aparelho. Tente de novo para ver resultados atuais.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.consultar}}">Tentar de novo</button></div></sc-if>
+
+        <sc-if value="{{v.aparelhos}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-labelledby="p1-dev-t"><h2 class="onb-h2" id="p1-dev-t">Conflito entre aparelhos</h2><p class="mod-small mod-muted">Você salvou buscas diferentes em dois aparelhos. Escolha qual continuar; a outra é descartada.</p>
+            <div class="mod-list"><sc-for list="{{v.dev}}" as="d" hint-placeholder-count="2"><div class="lrow"><span class="lrow__ic"><i class="ic ic--sm i-monitor" aria-hidden="true"></i></span><span class="lrow__t"><b>{{d.line}}</b><span>{{d.where}} · salvo em {{d.at}}</span></span><button type="button" class="btn btn--outline btn--sm" onClick="{{d.pick}}">Usar esta</button></div></sc-for></div>
+          </section>
+        </sc-if>
+        <sc-if value="{{v.contextos}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-labelledby="p1-ctx-t"><h2 class="onb-h2" id="p1-ctx-t">Conflito entre contextos</h2><p class="p1-p">Em 25/10 você mudou o idioma do app para espanhol, mas o idioma do atendimento continua português. Qual vale para esta busca? Mudar o idioma não muda o local.</p>
+            <div class="mod-row"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.keepPt}}">Manter português</button><button type="button" class="btn btn--outline btn--sm" onClick="{{v.useEs}}">Atendimento em espanhol</button></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{v.viewing}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-labelledby="p1-sum-t"><h2 class="onb-h2" id="p1-sum-t">Sua busca</h2>
+            <div class="kv"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+            <div class="mod-row"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.alterar}}"><i class="ic ic--sm i-edit" aria-hidden="true"></i>Alterar busca</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.limpar}}">Limpar esta busca</button></div>
+          </section>
+          <sc-if value="{{v.canGo}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.continuar}}">Continuar busca</button></sc-if>
+          <p class="mod-small mod-muted">As condições atuais são consultadas de novo ao continuar. Seus favoritos e acompanhamentos ficam separados desta busca.</p>
+        </sc-if>
+
+        <sc-if value="{{v.editing}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-labelledby="p1-ed-t"><h2 class="onb-h2" id="p1-ed-t">Alterar busca</h2>
+            <div class="field"><span class="field__label" id="p1-ed-sp">Modalidade</span><div class="onb-chips" role="radiogroup" aria-labelledby="p1-ed-sp"><sc-for list="{{v.sports}}" as="o" hint-placeholder-count="6"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><label class="field__label" for="p1-ed-city">Local</label><div class="{{v.cityCls}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><input id="p1-ed-city" type="text" placeholder="Cidade ou bairro" value="{{v.dCity}}" onInput="{{v.setCity}}" aria-invalid="{{v.cityInvalid}}"></div><sc-if value="{{v.cityErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Escreva uma cidade ou bairro, ou escolha no mapa.</span></sc-if><button type="button" class="p1-link" onClick="{{v.escolherLocal}}">Escolher local no mapa</button></div>
+            <div class="field"><span class="field__label" id="p1-ed-md">Atendimento</span><div class="seg" role="radiogroup" aria-labelledby="p1-ed-md"><sc-for list="{{v.modes}}" as="m" hint-placeholder-count="3"><button type="button" class="{{m.cls}}" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for></div></div>
+            <div class="field"><span class="field__label" id="p1-ed-lg">Idioma do atendimento</span><div class="onb-chips" role="radiogroup" aria-labelledby="p1-ed-lg"><sc-for list="{{v.langs}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">O idioma do atendimento não muda o idioma do app nem o local.</span></div>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.salvar}}">Salvar alterações</button><button type="button" class="btn btn--ghost" onClick="{{v.cancelar}}">Cancelar</button></div>
+        </sc-if>
+      </sc-if>
+
+      <!-- PUB09 · Explicação e controle de recomendações -->
+      <sc-if value="{{is.explicacao}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt p1-grow"><h1 class="pghead__title">Sugestões para você</h1><p class="pghead__sub">{{v.ctxLine}}</p></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.limparPref}}">Limpar preferências</button></div>
+
+        <sc-if value="{{v.failed}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Não foi possível carregar as sugestões</b>A busca continua funcionando. Veja os treinadores da sua busca ou tente de novo.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button></div><div><button type="button" class="btn btn--primary" onClick="{{v.outros}}">Ver treinadores da busca</button></div></sc-if>
+        <sc-if value="{{v.notSaved}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Não salvou a escolha</b>Gabriel Santos continua na lista porque “Ocultar por agora” não foi confirmado.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retryChoice}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.noMore}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><b>Sem mais sugestões</b><span>Já mostramos todos que atendem esta busca. Mude o local, a modalidade ou o atendimento para ver outros.</span><div class="mod-row"><button type="button" class="btn btn--primary" onClick="{{v.corrigir}}">Corrigir contexto</button><button type="button" class="btn btn--ghost" onClick="{{v.outros}}">Mostrar outros</button></div></div></sc-if>
+
+        <div class="mod-grid2">
+          <div class="mod-list">
+            <sc-for list="{{v.items}}" as="s" hint-placeholder-count="4">
+              <sc-if value="{{s.shown}}" hint-placeholder-val="{{ true }}">
+                <article class="{{s.selCls}}">
+                  <div class="p1-sug__top">
+                    <sc-if value="{{s.hasPhoto}}" hint-placeholder-val="{{ true }}"><span class="av av--md"><img src="{{s.photo}}" alt=""></span></sc-if>
+                    <sc-if value="{{s.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="av av--md" aria-hidden="true">{{s.ini}}</span></sc-if>
+                    <div class="p1-grow"><button type="button" class="v4-reset p1-sug__n" onClick="{{s.open}}">{{s.name}}</button><span class="mod-small mod-muted">{{s.line}}</span><span class="mod-small"><span class="badge badge--plain">Sugerido</span> <b>{{s.price}}</b><sc-if value="{{s.hasRating}}" hint-placeholder-val="{{ true }}"> · <span class="p1-rate"><span aria-hidden="true">★</span> {{s.rating}}</span></sc-if></span></div>
+                  </div>
+                  <div class="mod-row p1-sug__a">
+                    <button type="button" class="btn btn--outline btn--sm" aria-pressed="{{s.selPressed}}" onClick="{{s.why}}"><i class="ic ic--sm i-info" aria-hidden="true"></i>Por que aparece?</button>
+                    <button type="button" class="btn btn--ghost btn--sm" onClick="{{s.hide}}">Ocultar por agora</button>
+                    <button type="button" class="btn btn--ghost btn--sm" onClick="{{s.noInterest}}">Não tenho interesse</button>
+                  </div>
+                </article>
+              </sc-if>
+              <sc-if value="{{s.saving}}" hint-placeholder-val="{{ false }}"><div class="lrow p1-sug__row" role="status" aria-live="polite"><span class="lrow__t"><b>{{s.name}}</b><span>Salvando sua escolha…</span></span></div></sc-if>
+              <sc-if value="{{s.hidden}}" hint-placeholder-val="{{ false }}"><div class="lrow p1-sug__row" role="status"><span class="lrow__t"><b>Ocultado por agora</b><span>{{s.hiddenText}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{s.undo}}">Desfazer</button></div></sc-if>
+              <sc-if value="{{s.gone}}" hint-placeholder-val="{{ false }}"><div class="lrow p1-sug__row" role="status"><span class="lrow__t"><b>Não tenho interesse</b><span>{{s.goneText}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{s.undo}}">Desfazer</button></div></sc-if>
+            </sc-for>
+          </div>
+
+          <aside class="mod-col p1-rail" aria-label="Por que aparece">
+            <sc-if value="{{v.hasSel}}" hint-placeholder-val="{{ true }}">
+              <section class="card onb-sec p1-why" aria-labelledby="p1-why-t" aria-live="polite">
+                <span class="label">Por que aparece?</span>
+                <h2 class="onb-h2" id="p1-why-t">Por que {{v.selName}} aparece</h2>
+                <sc-if value="{{v.motivoOk}}" hint-placeholder-val="{{ true }}"><p class="p1-p">{{v.reason}}</p></sc-if>
+                <sc-if value="{{v.motivoFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Motivo indisponível agora</b>Não vamos inventar um motivo. Tente de novo em instantes.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button></div></sc-if>
+                <div class="mod-row"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.corrigir}}">Corrigir contexto</button><button type="button" class="btn btn--primary btn--sm" onClick="{{v.outros}}">Mostrar outros</button></div>
+              </section>
+            </sc-if>
+            <section class="card onb-sec">
+              <span class="label">Como sugerimos</span>
+              <p class="mod-small">Usamos só a busca que você escolheu (modalidade, local, atendimento e idioma) e o que o treinador publicou. Não usamos dados de saúde, mensagens nem visitas a perfis.</p>
+              <p class="mod-small mod-muted">Nenhuma sugestão aqui é paga. “Ocultar por agora” vale até a próxima busca; “Não tenho interesse” vale até você limpar as preferências.</p>
+            </section>
+          </aside>
+        </div>
+      </sc-if>
+
+      <!-- H01 · Descoberta que continua -->
+      <sc-if value="{{is.explorar}}" hint-placeholder-val="{{ false }}">
+        <h1 class="p1-sr">Explorar</h1>
+        <sc-if value="{{v.notFirst}}" hint-placeholder-val="{{ true }}">
+          <section class="p1-hero" aria-label="Continue de onde parou">
+            <div class="p1-hero__top">
+              <div class="p1-hero__txt"><span class="p1-hero__eb">{{v.heroEyebrow}}</span><h2 class="p1-hero__t">{{v.heroTitle}}</h2></div>
+              <div class="p1-hero__act">
+                <button type="button" class="btn btn--outline btn--sm p1-hero__ghost" onClick="{{v.alterar}}">Alterar</button>
+                <button type="button" class="btn btn--outline btn--sm p1-hero__ghost" onClick="{{v.limpar}}">Limpar</button>
+                <button type="button" class="btn btn--white" onClick="{{v.continuar}}">Continuar busca<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <span class="p1-hero__sub">{{v.heroSub}}</span>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{v.ausencia}}" hint-placeholder-val="{{ false }}">
+          <div class="alert alert--info" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="p1-grow"><b>{{v.ausTitle}}</b>{{v.ausText}}</div><button type="button" class="btn btn--primary btn--sm" onClick="{{v.verOnline}}">Ver online</button></div>
+        </sc-if>
+        <sc-if value="{{v.parcial}}" hint-placeholder-val="{{ false }}">
+          <div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>{{v.parTitle}}</b>{{v.parText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button></div>
+        </sc-if>
+
+        <sc-if value="{{v.aluno}}" hint-placeholder-val="{{ false }}">
+          <section class="card p1-acomp" aria-label="Seu acompanhamento">
+            <span class="av av--md"><img src="{{v.acomp.photo}}" alt=""></span>
+            <div class="p1-grow"><span class="label">Seu acompanhamento</span><p class="p1-acomp__l"><b>{{v.acomp.name}}</b> · {{v.acomp.line}}</p></div>
+            <button type="button" class="btn btn--primary btn--sm" onClick="{{v.abrirAcomp}}">Abrir acompanhamento</button>
+          </section>
+        </sc-if>
+
+        <!-- busca por modalidade e cidade -->
+        <section class="card p1-search" aria-labelledby="p1-search-t">
+          <div><h2 class="p1-h2" id="p1-search-t">{{v.searchTitle}}</h2><p class="mod-muted mod-small">{{v.searchSub}}</p></div>
+          <div class="p1-search__f">
+            <div class="field p1-search__q"><label class="field__label" for="p1-sport">Modalidade</label><div class="{{v.sportCls}}"><i class="ic ic--sm i-search" aria-hidden="true"></i><input id="p1-sport" type="text" placeholder="Ex.: CrossFit, corrida, yoga" autocomplete="off" value="{{v.sport}}" onInput="{{v.setSport}}" onKeyDown="{{v.onKey}}" aria-invalid="{{v.sportInvalid}}"></div><sc-if value="{{v.errSport}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Escreva uma modalidade para buscar.</span></sc-if></div>
+            <div class="field p1-search__q"><label class="field__label" for="p1-city">Onde</label><div class="{{v.cityCls}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><input id="p1-city" type="text" placeholder="Cidade ou bairro" autocomplete="off" value="{{v.city}}" onInput="{{v.setCity}}" onKeyDown="{{v.onKey}}" aria-invalid="{{v.cityInvalid}}"></div><sc-if value="{{v.errCity}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Escreva uma cidade ou bairro, ou use “Perto de mim”.</span></sc-if></div>
+            <div class="field p1-search__m"><span class="field__label" id="p1-mode-l">Como prefere</span><div class="seg" role="radiogroup" aria-labelledby="p1-mode-l"><sc-for list="{{v.modes}}" as="m" hint-placeholder-count="2"><button type="button" class="{{m.cls}}" role="radio" aria-checked="{{m.on}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for></div></div>
+          </div>
+          <div class="mod-row p1-search__a"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.search}}">Buscar treinadores</button><button type="button" class="btn btn--ghost" onClick="{{v.perto}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Perto de mim</button></div>
+        </section>
+
+        <!-- treinadores -->
+        <section class="p1-sec" aria-labelledby="p1-list-t">
+          <div class="p1-sec__h">
+            <div class="p1-grow"><h2 class="p1-h2 p1-h2--d" id="p1-list-t">{{v.listTitle}}</h2><p class="mod-muted mod-small">{{v.listSub}}<sc-if value="{{v.hasWhyLink}}" hint-placeholder-val="{{ true }}"> · <button type="button" class="p1-link" onClick="{{v.porque}}">por que estes?</button></sc-if></p></div>
+            <button type="button" class="p1-link" onClick="{{v.goSalvos}}">{{v.savedLabel}}</button>
+          </div>
+          <div class="p1-cards">
+            <sc-for list="{{v.cards}}" as="c" hint-placeholder-count="4">
+              <article class="p1-tcard">
+                <button type="button" class="v4-reset p1-tcard__open" onClick="{{c.open}}" aria-label="Ver perfil de {{c.name}}">
+                  <span class="p1-tcard__ph"><sc-if value="{{c.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{c.photo}}" alt=""></sc-if><sc-if value="{{c.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="p1-tcard__ini" aria-hidden="true">{{c.ini}}</span></sc-if></span>
+                  <span class="p1-tcard__b">
+                    <b class="p1-tcard__n">{{c.name}}</b>
+                    <span class="p1-tcard__l">{{c.line}}</span>
+                    <sc-if value="{{c.hasWhy}}" hint-placeholder-val="{{ true }}"><span class="p1-tcard__why">{{c.why}}</span></sc-if>
+                    <span class="p1-tcard__f"><b>{{c.price}}</b><sc-if value="{{c.hasRating}}" hint-placeholder-val="{{ true }}"><span class="p1-rate"><span aria-hidden="true">★</span> {{c.rating}} <span class="mod-muted">{{c.nRev}}</span></span></sc-if></span>
+                  </span>
+                </button>
+                <button type="button" class="{{c.heartCls}} p1-tcard__heart" aria-pressed="{{c.heartPressed}}" aria-label="{{c.heartLabel}}" onClick="{{c.toggle}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button>
+              </article>
+            </sc-for>
+          </div>
+        </section>
+
+        <div class="p1-split">
+          <sc-if value="{{v.showVistos}}" hint-placeholder-val="{{ true }}">
+            <section class="card onb-sec" aria-labelledby="p1-vistos-t">
+              <div class="mod-between"><h2 class="onb-h2" id="p1-vistos-t">Vistos recentemente</h2><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.limparVistos}}">Limpar</button></div>
+              <div class="mod-list">
+                <sc-for list="{{v.vistos}}" as="r" hint-placeholder-count="3">
+                  <button type="button" class="lrow" onClick="{{r.open}}">
+                    <sc-if value="{{r.hasPhoto}}" hint-placeholder-val="{{ true }}"><span class="av av--md"><img src="{{r.photo}}" alt=""></span></sc-if>
+                    <sc-if value="{{r.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="av av--md">{{r.ini}}</span></sc-if>
+                    <sc-if value="{{r.isP}}" hint-placeholder-val="{{ false }}"><span class="lrow__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span></sc-if>
+                    <span class="lrow__t"><b>{{r.title}}</b><span>{{r.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i>
+                  </button>
+                </sc-for>
+              </div>
+              <p class="mod-muted mod-small">Vistos ficam só neste aparelho e são separados dos favoritos.</p>
+            </section>
+          </sc-if>
+          <section class="card onb-sec" aria-labelledby="p1-progs-t">
+            <div class="mod-between"><h2 class="onb-h2" id="p1-progs-t">Programas online</h2><button type="button" class="p1-link" onClick="{{v.verProgramas}}">Ver programas prontos</button></div>
+            <div class="mod-list">
+              <sc-for list="{{v.progs}}" as="p" hint-placeholder-count="2">
+                <div class="p1-prow">
+                  <button type="button" class="lrow p1-prow__open" onClick="{{p.open}}"><span class="lrow__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span><span class="lrow__t"><b>{{p.name}}</b><span>{{p.meta}}</span><span class="p1-prow__p">{{p.price}} · {{p.note}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+                  <button type="button" class="{{p.heartCls}}" aria-pressed="{{p.heartPressed}}" aria-label="{{p.heartLabel}}" onClick="{{p.toggle}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+
+        <section class="p1-other" aria-labelledby="p1-other-t">
+          <span class="label" id="p1-other-t">Explorar outra coisa</span>
+          <div class="mod-row"><sc-for list="{{v.other}}" as="o" hint-placeholder-count="5"><button type="button" class="chip p1-chip" onClick="{{o.go}}">{{o.label}}</button></sc-for></div>
+          <button type="button" class="p1-link p1-other__r" onClick="{{v.souTreinador}}">Sou treinador</button>
+        </section>
+      </sc-if>
+
+      <!-- H02 · Perfil que ajuda a decidir (hub do Rafael) -->
+      <sc-if value="{{is.perfilHub}}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{v.imported}}" hint-placeholder-val="{{ false }}">
+          <section class="card p1-phead" aria-labelledby="p1-imp-t">
+            <span class="av p1-phead__av" aria-hidden="true">{{v.imp.ini}}</span>
+            <div class="p1-grow"><h1 class="pghead__title p1-phead__t" id="p1-imp-t">{{v.imp.name}}</h1><p class="mod-muted">{{v.imp.line}}</p><div class="mod-row"><span class="badge badge--warn">Perfil ainda não reivindicado</span></div></div>
+          </section>
+          <div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Dados públicos importados</b>{{v.imp.src}}</div></div>
+          <div class="emp"><span class="emp__ic"><i class="ic ic--sm i-tag" aria-hidden="true"></i></span><b>Sem ofertas publicadas</b><span>Não há preço nem contratação pelo 99Coach enquanto o perfil não for reivindicado.</span><button type="button" class="btn btn--primary" onClick="{{v.pedirContato}}">Pedir contato</button></div>
+          <div class="mod-row"><button type="button" class="p1-link" onClick="{{v.meuPerfil}}">É meu perfil</button><span class="mod-muted">·</span><button type="button" class="p1-link" onClick="{{v.corrigir}}">Corrigir ou retirar</button></div>
+        </sc-if>
+
+        <sc-if value="{{v.full}}" hint-placeholder-val="{{ true }}">
+          <div class="mod-grid2">
+            <div class="mod-col">
+              <section class="card p1-phead" aria-labelledby="p1-ph-t">
+                <span class="av p1-phead__av"><img src="{{v.photo}}" alt=""></span>
+                <div class="p1-grow">
+                  <h1 class="pghead__title p1-phead__t" id="p1-ph-t">{{v.name}}</h1>
+                  <p class="mod-muted p1-only-d">{{v.line}}</p><p class="mod-muted p1-only-m">{{v.mline}}</p>
+                  <div class="mod-row"><span class="badge badge--plain">Perfil do treinador</span><span class="badge badge--ok">CREF verificado</span></div>
+                </div>
+                <button type="button" class="{{v.heartCls}}" aria-pressed="{{v.heartPressed}}" aria-label="{{v.heartLabel}}" onClick="{{v.toggleSave}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button>
+              </section>
+
+              <div class="card p1-mcta p1-only-m"><div class="p1-grow"><span class="label">Acompanhamento</span><b>R$ 200 / mês</b></div><button type="button" class="btn btn--brand" onClick="{{v.solicitar}}">Solicitar</button></div>
+
+              <nav class="utabs p1-tabs no-sb" aria-label="Seções do perfil"><sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="5"><button type="button" class="{{t.cls}}" aria-pressed="{{t.sel}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></nav>
+              <sc-if value="{{v.filtered}}" hint-placeholder-val="{{ false }}"><button type="button" class="p1-link" onClick="{{v.verTudo}}">Mostrar todas as seções</button></sc-if>
+
+              <sc-if value="{{v.showComo}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec" aria-labelledby="p1-como-t"><h2 class="onb-h2" id="p1-como-t">Como trabalho</h2><p class="p1-p">{{v.pitch}}</p>
+                  <div class="kv"><sc-for list="{{v.how}}" as="r" hint-placeholder-count="3"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+                </section>
+              </sc-if>
+
+              <sc-if value="{{v.showOfertas}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec" aria-labelledby="p1-of-t"><h2 class="onb-h2" id="p1-of-t">Ofertas</h2>
+                  <div class="mod-list"><sc-for list="{{v.offers}}" as="o" hint-placeholder-count="4"><button type="button" class="lrow" onClick="{{o.go}}"><span class="lrow__t"><b>{{o.title}}</b><span>{{o.meta}}</span></span><b class="p1-price">{{o.price}}</b><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div>
+                </section>
+              </sc-if>
+
+              <sc-if value="{{v.showProgs}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec" aria-labelledby="p1-pg-t"><h2 class="onb-h2" id="p1-pg-t">Programas</h2>
+                  <sc-if value="{{v.ausencia}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>{{v.ausTitle}}</b>{{v.ausText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.verOfertas}}">Ver ofertas</button></div></sc-if>
+                  <div class="mod-list"><sc-for list="{{v.progs}}" as="p" hint-placeholder-count="2"><button type="button" class="lrow" onClick="{{p.go}}"><span class="lrow__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span><span class="lrow__t"><b>{{p.name}}</b><span>{{p.meta}}</span></span><b class="p1-price">{{p.price}}</b><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div>
+                </section>
+              </sc-if>
+
+              <sc-if value="{{v.showAval}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec" aria-labelledby="p1-av-t"><h2 class="onb-h2" id="p1-av-t">Avaliações</h2>
+                  <sc-if value="{{v.parcial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Avaliações indisponíveis agora</b>O resto do perfil está atualizado.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retryAval}}">Tentar de novo</button></div></sc-if>
+                  <sc-if value="{{v.revOk}}" hint-placeholder-val="{{ true }}">
+                    <div class="p1-avsum"><span class="p1-avsum__n">{{v.avg}}</span><div><span class="p1-stars" aria-hidden="true">★★★★★</span><p class="mod-small mod-muted">{{v.avg}} de 5 · {{v.nLine}}</p></div></div>
+                    <sc-if value="{{v.hasQuote}}" hint-placeholder-val="{{ true }}"><blockquote class="p1-quote"><p>{{v.quote}}</p><span class="mod-muted mod-small">{{v.quoteBy}}</span></blockquote></sc-if>
+                    <div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.lerAval}}">Ler avaliações</button></div>
+                  </sc-if>
+                </section>
+              </sc-if>
+
+              <sc-if value="{{v.showCred}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec" aria-labelledby="p1-cr-t"><h2 class="onb-h2" id="p1-cr-t">Credenciais</h2>
+                  <div class="mod-list"><sc-for list="{{v.creds}}" as="c" hint-placeholder-count="4"><div class="p1-cred"><sc-if value="{{c.ok}}" hint-placeholder-val="{{ true }}"><span class="badge badge--ok">Confirmado</span></sc-if><sc-if value="{{c.no}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Declarado</span></sc-if><div class="p1-grow"><b>{{c.k}}</b><p class="mod-small mod-muted">{{c.v}}</p></div></div></sc-for></div>
+                  <p class="mod-small mod-muted">Avaliação de aluno não é prova de credencial.</p>
+                </section>
+              </sc-if>
+            </div>
+
+            <aside class="mod-col p1-rail" aria-label="Decidir">
+              <section class="card onb-sec">
+                <span class="label">Mais procurado</span>
+                <div><b class="p1-rail__t">Acompanhamento online</b><p class="p1-rail__p">R$ 200 <span class="mod-muted">/ mês</span></p><p class="mod-small mod-muted">Treino semanal no app · ajuste a cada 15 dias · nada é cobrado até o Rafael aceitar.</p></div>
+                <button type="button" class="btn btn--brand btn--lg btn--block" onClick="{{v.solicitar}}">Solicitar acompanhamento</button>
+                <button type="button" class="btn btn--outline btn--block" onClick="{{v.mensagem}}">Enviar mensagem</button>
+                <button type="button" class="btn btn--ghost btn--block" onClick="{{v.perfilCompleto}}">Ver perfil completo</button>
+              </section>
+              <section class="card onb-sec">
+                <button type="button" class="p1-link" onClick="{{v.instagram}}">Instagram abre fora do 99Coach ↗</button>
+                <div class="mod-row"><button type="button" class="p1-link" onClick="{{v.meuPerfil}}">É meu perfil</button><span class="mod-muted">·</span><button type="button" class="p1-link" onClick="{{v.corrigir}}">Corrigir ou retirar</button></div>
+              </section>
+            </aside>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <!-- PUB06 · Detalhe público de programa -->
+      <sc-if value="{{is.programa}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead p1-pgh"><div class="pghead__txt p1-grow"><span class="{{v.badgeCls}}">{{v.badge}}</span><h1 class="pghead__title">{{v.name}}</h1><p class="pghead__sub">{{v.meta}}</p></div>
+          <button type="button" class="{{v.heartCls}}" aria-pressed="{{v.heartPressed}}" aria-label="{{v.heartLabel}}" onClick="{{v.toggleSave}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button></div>
+
+        <sc-if value="{{v.adq}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Você já tem este programa</b>Acesso até 02/10/2027. O botão abre o programa na sua área.</div></div></sc-if>
+        <sc-if value="{{v.ret}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Programa retirado</b>{{v.retText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.explorar}}">Ver outros programas</button></div></sc-if>
+        <sc-if value="{{v.pre}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="p1-grow"><b>Pré-venda</b>{{v.preText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.saibaPorque}}">Saiba por quê</button></div></sc-if>
+        <sc-if value="{{v.alt}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Oferta alterada</b>{{v.altText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.revisar}}">Revisar</button></div></sc-if>
+
+        <div class="mod-grid2">
+          <div class="mod-col">
+            <section class="card onb-sec" aria-labelledby="p1-ct-t"><h2 class="onb-h2" id="p1-ct-t">Conteúdo do programa</h2><p class="mod-small mod-muted">{{v.contentSub}}</p>
+              <div class="mod-list"><sc-for list="{{v.modules}}" as="m" hint-placeholder-count="3"><div class="lrow"><span class="lrow__ic"><sc-if value="{{m.open}}" hint-placeholder-val="{{ true }}"><i class="ic ic--sm i-play" aria-hidden="true"></i></sc-if><sc-if value="{{m.locked}}" hint-placeholder-val="{{ false }}"><i class="ic ic--sm i-lock" aria-hidden="true"></i></sc-if></span><span class="lrow__t"><b>{{m.title}}</b><span>{{m.n}}<sc-if value="{{m.locked}}" hint-placeholder-val="{{ false }}"> · {{m.lock}}</sc-if></span></span></div></sc-for></div>
+              <p class="mod-small mod-muted">{{v.updated}}.</p>
+            </section>
+
+            <section class="card onb-sec" aria-labelledby="p1-pv-t"><h2 class="onb-h2" id="p1-pv-t">Prévia</h2>
+              <sc-if value="{{v.prevFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Prévia indisponível</b>O vídeo da prévia não carregou. O resto da página está atualizado.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retryPreview}}">Tentar de novo</button></div></sc-if>
+              <sc-if value="{{v.previewOff}}" hint-placeholder-val="{{ true }}"><p class="p1-p">Sessão 1 aberta para ver como é.</p><div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.togglePreview}}" aria-expanded="false"><i class="ic ic--sm i-play" aria-hidden="true"></i>{{v.previewBtn}}</button></div></sc-if>
+              <sc-if value="{{v.previewOn}}" hint-placeholder-val="{{ false }}">
+                <b>{{v.previewTitle}}</b>
+                <div class="kv"><sc-for list="{{v.previewItems}}" as="r" hint-placeholder-count="3"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+                <p class="mod-small mod-muted">{{v.previewSrc}}. A prévia só mostra mídia autorizada.</p>
+                <div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.togglePreview}}" aria-expanded="true">{{v.previewBtn}}</button></div>
+              </sc-if>
+            </section>
+
+            <section class="card onb-sec" aria-labelledby="p1-pq-t"><h2 class="onb-h2" id="p1-pq-t">Para quem é</h2><p class="p1-p">{{v.audience}}</p>
+              <div class="kv"><div class="kv__r"><span>Nível</span><b>{{v.level}}</b></div><div class="kv__r"><span>Pré-requisito</span><b>{{v.prereq}}</b></div><div class="kv__r"><span>Equipamento</span><b>{{v.equip}}</b></div></div>
+            </section>
+
+            <section class="card onb-sec" aria-labelledby="p1-au-t"><h2 class="onb-h2" id="p1-au-t">Autor</h2>
+              <button type="button" class="lrow" onClick="{{v.conhecerAutor}}"><span class="av av--md"><sc-if value="{{v.autor.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{v.autor.photo}}" alt=""></sc-if><sc-if value="{{v.autor.noPhoto}}" hint-placeholder-val="{{ false }}">{{v.autor.ini}}</sc-if></span><span class="lrow__t"><b>{{v.autor.name}}</b><span>{{v.autor.line}}</span></span><span class="p1-link">Conhecer autor</span></button>
+            </section>
+          </div>
+
+          <aside class="mod-col p1-rail" aria-label="Acesso e compra">
+            <section class="card onb-sec">
+              <span class="label">Acesso</span>
+              <p class="p1-rail__p">{{v.price}} <span class="mod-muted">· {{v.priceUnit}}</span></p>
+              <div class="kv"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="4"><div class="kv__r"><span>{{r.k}}</span><b>{{r.v}}</b></div></sc-for></div>
+              <div class="alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Acompanhamento individual não incluído</b>O programa é conteúdo pronto; não inclui conversa nem ajuste com o treinador.</div></div>
+              <sc-if value="{{v.buyable}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--brand btn--lg btn--block" onClick="{{v.revisar}}">{{v.ctaLabel}}</button><p class="mod-small mod-muted">Você revisa o total antes de pagar.</p></sc-if>
+              <sc-if value="{{v.adq}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.continuar}}">Continuar programa</button></sc-if>
+              <sc-if value="{{v.ret}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--lg btn--block" onClick="{{v.explorar}}">Explorar programas</button></sc-if>
+              <button type="button" class="p1-link" onClick="{{v.condicoes}}">Ler condições</button>
+            </section>
+          </aside>
+        </div>
+      </sc-if>
+
+      <!-- PUB07 · Favoritos -->
+      <sc-if value="{{is.salvos}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Favoritos</h1><p class="pghead__sub">Só você vê esta lista.</p></div></div>
+
+        <sc-if value="{{v.saving}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status" aria-live="polite"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Salvando Carolina Albuquerque Montenegro…</b>O coração fica em progresso até confirmar. Nada é enviado ao treinador.</div></div></sc-if>
+        <sc-if value="{{v.notSaved}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Não salvou</b>Carolina Albuquerque Montenegro não entrou nos favoritos e o coração foi desfeito. Verifique a conexão e tente de novo.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retrySave}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.expired}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div class="p1-grow"><b>Sua sessão expirou</b>Entre de novo para ver e alterar seus favoritos. Nada foi apagado, e o item que você tentou salvar será salvo depois de entrar.</div><button type="button" class="btn btn--primary btn--sm" onClick="{{v.entrar}}">Entrar para salvar</button></div></sc-if>
+        <sc-if value="{{v.failed}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Não foi possível carregar seus favoritos</b>Isso não quer dizer que a lista está vazia. Tente de novo em instantes.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retryList}}">Tentar de novo</button></div></sc-if>
+
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><div class="mod-list" aria-busy="true" aria-label="Carregando favoritos"><sc-for list="{{v.skel}}" as="k" hint-placeholder-count="3"><div class="card p1-fav"><span class="skel p1-skel-av"></span><div class="p1-grow mod-col p1-skel-col"><span class="skel p1-skel-l1"></span><span class="skel p1-skel-l2"></span></div></div></sc-for></div></sc-if>
+
+        <sc-if value="{{v.hasUndo}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok p1-undo" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="p1-grow"><b>Removido dos favoritos</b>{{v.undoText}}</div><button type="button" class="btn btn--primary btn--sm" onClick="{{v.undo}}">Desfazer</button><button type="button" class="icon-btn" aria-label="Fechar aviso" onClick="{{v.closeUndo}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div></sc-if>
+
+        <sc-if value="{{v.showList}}" hint-placeholder-val="{{ true }}">
+          <div class="seg p1-seg" role="radiogroup" aria-label="Filtrar favoritos"><sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="3"><button type="button" class="{{t.cls}}" role="radio" aria-checked="{{t.on}}" onClick="{{t.pick}}">{{t.label}} <small>{{t.n}}</small></button></sc-for></div>
+          <div class="mod-list">
+            <sc-for list="{{v.items}}" as="it" hint-placeholder-count="4">
+              <article class="card p1-fav">
+                <sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ true }}"><span class="av av--md"><img src="{{it.photo}}" alt=""></span></sc-if>
+                <sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="av av--md" aria-hidden="true">{{it.ini}}</span></sc-if>
+                <sc-if value="{{it.isP}}" hint-placeholder-val="{{ false }}"><span class="lrow__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span></sc-if>
+                <div class="p1-grow p1-fav__b">
+                  <b class="p1-fav__n">{{it.name}}</b>
+                  <span class="mod-small mod-muted">{{it.sub}}</span>
+                  <sc-if value="{{it.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="mod-small"><b>{{it.price}}</b><sc-if value="{{it.hasRating}}" hint-placeholder-val="{{ true }}"> · <span class="p1-rate"><span aria-hidden="true">★</span> {{it.rating}}</span></sc-if></span></sc-if>
+                  <span class="label">{{it.at}}</span>
+                </div>
+                <div class="p1-fav__a">
+                  <sc-if value="{{it.ok}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{it.open}}">{{it.openLabel}}</button></sc-if>
+                  <sc-if value="{{it.idle}}" hint-placeholder-val="{{ true }}"><button type="button" class="p1-heart is-on" aria-pressed="true" aria-label="{{it.removeLabel}}" onClick="{{it.remove}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button></sc-if>
+                  <sc-if value="{{it.busy}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain" aria-live="polite">{{it.busyText}}</span></sc-if>
+                </div>
+              </article>
+            </sc-for>
+            <sc-if value="{{v.noItemsFilter}}" hint-placeholder-val="{{ false }}"><p class="mod-muted mod-small">Nenhum item neste filtro.</p></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-heart" aria-hidden="true"></i></span><b>Nenhum favorito ainda</b><span>Toque no coração em um perfil ou programa para guardar aqui. Favoritar não envia mensagem nem pedido.</span><button type="button" class="btn btn--primary" onClick="{{v.encontrar}}">Encontrar treinador</button></div></sc-if>
+        <sc-if value="{{v.emptyConf}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-check" aria-hidden="true"></i></span><b>Sua lista está vazia</b><span>{{v.confAt}}: você removeu todos os favoritos. Sua busca salva continua disponível.</span><div class="mod-row"><button type="button" class="btn btn--primary" onClick="{{v.encontrar}}">Encontrar treinador</button><button type="button" class="btn btn--ghost" onClick="{{v.continuar}}">Continuar busca</button></div></div></sc-if>
+
+        <p class="mod-small mod-muted p1-note"><i class="ic ic--xs i-lock" aria-hidden="true"></i> Favoritar não envia contato e não aparece para o treinador. Ele não recebe lista de quem salvou.</p>
+      </sc-if>
+
+      <!-- PUB11 · Ajuda e páginas informativas -->
+      <sc-if value="{{is.ajuda}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+
+          <!-- índice: busca, categorias e artigos -->
+          <sc-if value="{{v.isIndex}}" hint-placeholder-val="{{ true }}">
+            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Ajuda</h1><p class="pghead__sub">Como podemos ajudar?</p></div></div>
+            <div class="mod-grid2">
+              <div class="mod-col">
+                <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" placeholder="Buscar na ajuda" aria-label="Buscar na ajuda" value="{{v.q}}" onInput="{{v.setQ}}"></div>
+                <div class="p2-chips" role="group" aria-label="Categorias da ajuda"><sc-for list="{{v.cats}}" as="c" hint-placeholder-count="5"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+                <sc-if value="{{v.hasList}}" hint-placeholder-val="{{ true }}">
+                  <p class="p2-count" role="status">{{v.count}}</p>
+                  <ol class="onb-secs"><sc-for list="{{v.list}}" as="it" hint-placeholder-count="4"><li><button type="button" class="onb-secs__r" onClick="{{it.go}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-file"></i></span><span class="onb-secs__t"><b>{{it.title}}</b><span>{{it.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ol>
+                </sc-if>
+                <sc-if value="{{v.noList}}" hint-placeholder-val="{{ false }}">
+                  <div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><b>Busca sem resultado</b><span class="p2-emp__t">Nenhum artigo fala de “{{v.qLabel}}”. Tente outras palavras ou fale com o suporte.</span><div class="mod-row p2-center"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.clearQ}}">Limpar busca</button><button type="button" class="btn btn--primary btn--sm" onClick="{{v.openContact}}">Falar com o suporte</button></div></div>
+                </sc-if>
+              </div>
+              <aside class="mod-col" aria-label="Suporte e atalhos">
+                <section class="card onb-sec" aria-label="Suporte"><h2 class="onb-h2">Falar com o suporte</h2><p class="p2-p">Abrimos um caso com protocolo. Você acompanha aqui, sem precisar de conta.</p><div class="onb-actions"><button type="button" class="btn btn--primary" onClick="{{v.openContact}}">Falar com o suporte</button><button type="button" class="btn btn--outline" onClick="{{v.openTrack}}">Acompanhar solicitação</button></div></section>
+                <section class="card onb-sec" aria-label="Atalhos"><h2 class="onb-h2">Atalhos</h2>
+                  <ol class="onb-secs">
+                    <li><button type="button" class="onb-secs__r" onClick="{{v.toFix}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-edit"></i></span><span class="onb-secs__t"><b>Corrigir perfil público</b><span>Sem precisar criar conta</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li>
+                    <li><button type="button" class="onb-secs__r" onClick="{{v.toPrivacy}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-shield"></i></span><span class="onb-secs__t"><b>Privacidade e dados</b><span>Acesso, correção e exclusão</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li>
+                    <li><button type="button" class="onb-secs__r" onClick="{{v.toHires}}"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-card"></i></span><span class="onb-secs__t"><b>Minhas contratações</b><span>Cancelar ou ver cobranças</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li>
+                  </ol>
+                </section>
+              </aside>
+            </div>
+          </sc-if>
+
+          <!-- artigo aberto: o mesmo modelo de leitura para ajuda, institucional, termos, privacidade, cookies e pagamentos -->
+          <sc-if value="{{v.isArt}}" hint-placeholder-val="{{ false }}">
+            <div><button type="button" class="btn btn--ghost btn--sm p2-backlink" onClick="{{v.toIndex}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Ajuda</button></div>
+            <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.art.cat}}</span><h1 class="pghead__title">{{v.art.title}}</h1><p class="pghead__sub">{{v.art.version}}</p></div></div>
+            <div class="mod-grid2">
+              <article class="card onb-sec p2-art" aria-label="{{v.art.title}}">
+                <p class="p2-lead">{{v.art.lead}}</p>
+                <sc-for list="{{v.sections}}" as="s" hint-placeholder-count="3"><section id="{{s.id}}" class="{{s.cls}}"><h2 class="onb-h2">{{s.h}}</h2><p class="p2-p">{{s.body}}</p></section></sc-for>
+                <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><div class="alert p2-alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="p2-alert__b"><b>Por que a política está em definição</b><span>Mudanças de regra passam por revisão antes de valer. Até lá, a versão vigente continua aplicada da mesma forma aqui e em cada oferta.</span></div></div></sc-if>
+                <sc-if value="{{v.hasArtLinks}}" hint-placeholder-val="{{ true }}"><div class="mod-row"><sc-for list="{{v.artLinks}}" as="l" hint-placeholder-count="2"><button type="button" class="btn btn--outline btn--sm" onClick="{{l.go}}">{{l.label}}<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div></sc-if>
+              </article>
+              <aside class="mod-col" aria-label="Sobre este artigo">
+                <section class="card onb-sec" aria-label="Nesta seção"><h2 class="onb-h2">Nesta seção</h2>
+                  <ol class="p2-toc"><sc-for list="{{v.sections}}" as="s" hint-placeholder-count="3"><li><button type="button" class="{{s.rowCls}}" aria-current="{{s.cur}}" onClick="{{s.pick}}">{{s.h}}</button></li></sc-for></ol>
+                </section>
+                <section class="card onb-sec" aria-label="Esta informação se aplica a"><h2 class="onb-h2">Esta informação se aplica a</h2>
+                  <div class="kv"><div class="kv__r"><span>Mercado</span><b>Brasil</b></div><div class="kv__r"><span>Versão vigente</span><b>{{v.art.ver}}</b></div><div class="kv__r"><span>Idioma</span><b>{{v.langName}}</b></div></div>
+                  <div class="seg seg--sm" role="group" aria-label="Idioma do artigo"><sc-for list="{{v.langs}}" as="l" hint-placeholder-count="3"><button type="button" class="{{l.cls}}" aria-pressed="{{l.on}}" onClick="{{l.pick}}">{{l.label}}</button></sc-for></div>
+                </section>
+              </aside>
+            </div>
+          </sc-if>
+
+          <!-- contato: abre caso com protocolo -->
+          <sc-if value="{{v.isContact}}" hint-placeholder-val="{{ false }}">
+            <div><button type="button" class="btn btn--ghost btn--sm p2-backlink" onClick="{{v.toIndex}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Ajuda</button></div>
+            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Falar com o suporte</h1><p class="pghead__sub">Abrir um caso não significa que ele já foi resolvido. Você recebe um protocolo para acompanhar.</p></div></div>
+            <div class="mod-grid2">
+              <section class="card onb-sec" aria-label="Sua solicitação">
+                <sc-if value="{{v.notSending}}" hint-placeholder-val="{{ true }}">
+                  <div class="field"><span class="field__label" id="p2-aj-assunto">Assunto</span><div class="p2-chips" role="group" aria-labelledby="p2-aj-assunto"><sc-for list="{{v.subjects}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div><sc-if value="{{v.hasErrSubject}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errSubject}}</span></sc-if></div>
+                  <div class="field"><label class="field__label" for="p2-aj-email">Seu e-mail para resposta</label><div class="{{v.emailCls}}"><input id="p2-aj-email" type="email" autocomplete="email" placeholder="nome@email.com" value="{{v.email}}" onInput="{{v.setEmail}}"></div><sc-if value="{{v.hasErrEmail}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errEmail}}</span></sc-if></div>
+                  <div class="field"><label class="field__label" for="p2-aj-texto">O que aconteceu?</label><div class="{{v.textCls}}"><textarea id="p2-aj-texto" rows="4" onInput="{{v.setText}}">{{v.text}}</textarea></div><span class="field__help">Não envie senha nem número de cartão. Demonstração: não use dados reais.</span><sc-if value="{{v.hasErrText}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errText}}</span></sc-if></div>
+                  <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">Enviar solicitação</button></div>
+                </sc-if>
+                <sc-if value="{{v.sending}}" hint-placeholder-val="{{ false }}">
+                  <div class="p2-sending" role="status" aria-live="polite"><span class="p2-spin" aria-hidden="true"></span><div><b>Enviando sua solicitação…</b><span>Não feche esta página. Se a conexão cair, consultamos antes de reenviar.</span></div></div>
+                  <div class="kv"><div class="kv__r"><span>Assunto</span><b>{{v.subject}}</b></div><div class="kv__r"><span>Resposta para</span><b>{{v.email}}</b></div></div>
+                  <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" disabled aria-disabled="true">Enviando…</button></div>
+                </sc-if>
+              </section>
+              <aside class="mod-col" aria-label="Antes de enviar">
+                <section class="card onb-sec"><h2 class="onb-h2">Antes de enviar</h2><p class="p2-p">Cobrança, cancelamento e reembolso seguem a mesma regra da oferta.</p><button type="button" class="btn btn--outline" onClick="{{v.openPay}}">Ler Pagamentos e reembolsos</button></section>
+              </aside>
+            </div>
+          </sc-if>
+
+          <!-- acompanhamento do caso -->
+          <sc-if value="{{v.isTrack}}" hint-placeholder-val="{{ false }}">
+            <div><button type="button" class="btn btn--ghost btn--sm p2-backlink" onClick="{{v.toIndex}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Ajuda</button></div>
+            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Acompanhar solicitação</h1><p class="pghead__sub">Sem precisar de conta: use o protocolo.</p></div></div>
+            <div class="mod-grid2">
+              <div class="mod-col">
+                <sc-if value="{{v.hasCase}}" hint-placeholder-val="{{ true }}">
+                  <section class="card onb-sec" aria-label="Solicitação {{v.cs.id}}">
+                    <sc-if value="{{v.justSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="p2-alert__b"><b>Solicitação recebida</b><span>Guarde o protocolo {{v.cs.id}}. Enviamos uma cópia para {{v.cs.email}}.</span></div></div></sc-if>
+                    <div class="kv"><div class="kv__r"><span>Protocolo</span><b class="p2-mono">{{v.cs.id}}</b></div><div class="kv__r"><span>Assunto</span><b>{{v.cs.subject}}</b></div><div class="kv__r"><span>Aberto em</span><b>{{v.cs.at}}</b></div><div class="kv__r"><span>Situação</span><b><span class="badge badge--info">{{v.cs.status}}</span></b></div></div>
+                    <ol class="p2-steps" aria-label="Etapas"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li class="{{s.cls}}"><span class="p2-step__n" aria-hidden="true">{{s.n}}</span><span>{{s.label}}</span></li></sc-for></ol>
+                    <p class="p2-note">Abrir um caso não significa que ele já foi resolvido. A resposta chega no e-mail informado; o que for analisado no atendimento não fica público.</p>
+                  </section>
+                </sc-if>
+                <sc-if value="{{v.noCase}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-file" aria-hidden="true"></i></span><b>Nenhuma solicitação aberta</b><span class="p2-emp__t">Consulte pelo protocolo ou fale com o suporte.</span></div></sc-if>
+              </div>
+              <aside class="mod-col">
+                <section class="card onb-sec" aria-label="Consultar protocolo"><h2 class="onb-h2">Consultar outro protocolo</h2>
+                  <div class="field"><label class="field__label" for="p2-aj-prot">Protocolo</label><div class="input"><input id="p2-aj-prot" type="text" placeholder="99C-0000-0000" autocomplete="off" value="{{v.lookQ}}" onInput="{{v.setLook}}"></div><sc-if value="{{v.hasLookErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.lookErr}}</span></sc-if></div>
+                  <button type="button" class="btn btn--outline" onClick="{{v.look}}">Consultar</button>
+                </section>
+              </aside>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{v.showFoot}}" hint-placeholder-val="{{ true }}">
+            <div class="p2-foot"><sc-if value="{{v.footContact}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.openContact}}">Falar com o suporte</button></sc-if><button type="button" class="btn btn--primary btn--lg" onClick="{{v.cont}}">Continuar a tarefa</button></div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- PUB16 · Escolher local e Perto de mim -->
+      <sc-if value="{{is.local}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Onde você treina?</h1><p class="pghead__sub">Escolher local</p></div></div>
+
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+          <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><p class="p2-note">A permissão de localização pode ser negada, revogada nas configurações do navegador ou expirar. Não pedimos de novo a cada visita: uma cidade escolhida por você vale até você trocar.</p></sc-if>
+
+          <section class="card onb-sec" aria-label="Escolher local">
+            <sc-if value="{{v.hasCurrent}}" hint-placeholder-val="{{ true }}"><p class="p2-note p2-note--ic"><i class="ic ic--sm i-pin" aria-hidden="true"></i><span>Local atual: {{v.current}}</span></p></sc-if>
+            <div class="field"><label class="field__label" for="p2-lc-q">Cidade, região ou país</label><div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input id="p2-lc-q" type="search" autocomplete="off" placeholder="Ex.: Londrina" aria-controls="p2-lc-list" value="{{v.q}}" onInput="{{v.setQ}}"></div></div>
+
+            <div class="p2-cities" id="p2-lc-list" role="group" aria-label="Sugestões de local">
+              <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><div role="status" aria-label="Carregando sugestões"><sc-for list="{{v.skel}}" as="s" hint-placeholder-count="3"><div class="p2-city p2-city--skel" aria-hidden="true"><span class="skel p2-city__ic"></span><span class="p2-skel__t"><span class="skel p2-skel__l"></span><span class="skel p2-skel__s"></span></span></div></sc-for></div></sc-if>
+              <sc-if value="{{v.hasSugg}}" hint-placeholder-val="{{ true }}"><sc-for list="{{v.sugg}}" as="c" hint-placeholder-count="2"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" aria-label="{{c.aria}}" onClick="{{c.pick}}"><span class="p2-city__ic" aria-hidden="true"><i class="ic ic--sm i-pin"></i></span><span class="p2-city__t"><b>{{c.title}}</b><span>{{c.sub}}</span></span><sc-if value="{{c.isOn}}" hint-placeholder-val="{{ false }}"><i class="ic ic--sm i-check" aria-hidden="true"></i></sc-if></button></sc-for></sc-if>
+              <sc-if value="{{v.noSugg}}" hint-placeholder-val="{{ false }}"><div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><b>Nenhuma cidade encontrada</b><span class="p2-emp__t">Não achamos “{{v.qLabel}}”. Confira a grafia ou digite só o começo do nome.</span></div></sc-if>
+              <sc-if value="{{v.typeMore}}" hint-placeholder-val="{{ false }}"><p class="p2-note">Digite pelo menos 2 letras para ver sugestões.</p></sc-if>
+              <button type="button" class="{{v.geoCls}}" aria-pressed="{{v.geoOn}}" onClick="{{v.useGeo}}"><span class="p2-city__ic" aria-hidden="true"><i class="ic ic--sm i-target"></i></span><span class="p2-city__t"><b>Usar minha localização</b><span>{{v.geoSub}}</span></span></button>
+            </div>
+
+            <div class="alert alert--info p2-alert"><i class="ic ic--sm i-info" aria-hidden="true"></i><div class="p2-alert__b"><b>Precisão</b><span>Usamos sua região aproximada, nunca o endereço. A posição não vai para links públicos.</span></div></div>
+
+            <sc-if value="{{v.hasSel}}" hint-placeholder-val="{{ false }}"><p class="p2-chosen" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i>Local escolhido: <b>{{v.selLabel}}</b><sc-if value="{{v.selGeo}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Localização aproximada</span></sc-if></p></sc-if>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+            <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.use}}">Usar este local</button><button type="button" class="btn btn--ghost" onClick="{{v.clear}}">Limpar local</button></div>
+          </section>
+
+          <section class="card onb-sec" aria-label="Treino online"><div class="p2-online"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-monitor"></i></span><div class="p2-online__t"><b>Treina online?</b><span>Treino online não depende de local e não aparece como “perto”.</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.online}}">Buscar online</button></div></section>
+        </div>
+      </sc-if>
+
+      <!-- PUB14 · Resultado em mapa -->
+      <sc-if value="{{is.mapa}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+          <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><p class="p2-note">{{v.whyText}}</p></sc-if>
+
+          <div class="pghead p2-pghead"><div class="pghead__txt"><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.sub}}</p></div><div class="pghead__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.changeLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Alterar local</button></div></div>
+
+          <sc-if value="{{v.showSeg}}" hint-placeholder-val="{{ true }}">
+            <div class="seg seg--fit p2-seg" role="group" aria-label="Ver resultados em"><button type="button" class="seg__it" aria-pressed="false" onClick="{{v.toList}}"><i class="ic ic--sm i-list" aria-hidden="true"></i>Lista</button><button type="button" class="seg__it is-on" aria-pressed="true"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Mapa</button></div>
+          </sc-if>
+
+          <div class="mod-grid2 p2-mapgrid">
+            <div class="mod-col">
+              <sc-if value="{{v.showMap}}" hint-placeholder-val="{{ true }}">
+                <div class="p2-map" role="region" aria-label="Mapa de Londrina com regiões aproximadas">
+                  <svg class="p2-map__svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                    <path class="p2-map__lake" d="M14,72 C22,66 30,70 36,64 C42,58 48,62 54,58 C58,55 62,57 66,54 L67,57 C62,61 58,60 54,63 C48,67 42,64 37,70 C31,75 23,72 15,76 Z"></path>
+                    <path class="p2-map__road" d="M0,47 C30,44 60,42 100,36"></path>
+                    <path class="p2-map__road" d="M47,0 C49,30 50,60 53,100"></path>
+                    <path class="p2-map__road p2-map__road--thin" d="M8,94 C30,70 60,30 92,6"></path>
+                    <path class="p2-map__road p2-map__road--thin" d="M0,20 C30,24 70,26 100,22"></path>
+                  </svg>
+                  <sc-for list="{{v.labels}}" as="l" hint-placeholder-count="6"><span class="p2-map__lbl" style="{{l.style}}">{{l.name}}</span></sc-for>
+                  <sc-for list="{{v.areas}}" as="ar" hint-placeholder-count="3"><span class="{{ar.cls}}" style="{{ar.style}}" aria-hidden="true"></span></sc-for>
+                  <sc-for list="{{v.pins}}" as="p" hint-placeholder-count="3"><button type="button" class="{{p.cls}}" style="{{p.style}}" aria-label="{{p.aria}}" aria-pressed="{{p.on}}" onClick="{{p.go}}">{{p.label}}</button></sc-for>
+                  <div class="p2-map__tools"><sc-if value="{{v.zoomed}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--white btn--sm" onClick="{{v.unzoom}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Toda Londrina</button></sc-if><button type="button" class="btn btn--white btn--sm" onClick="{{v.searchArea}}"><i class="ic ic--sm i-refresh" aria-hidden="true"></i>Buscar nesta área</button></div>
+                  <span class="p2-map__legal">Localização aproximada · sem endereço</span>
+                </div>
+                <sc-if value="{{v.hasSel}}" hint-placeholder-val="{{ true }}">
+                  <section class="card p2-selcard" aria-label="Selecionado no mapa">
+                    <span class="av av--md av--sq p2-av"><sc-if value="{{v.sel.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{v.sel.photo}}" alt=""></sc-if><sc-if value="{{v.sel.noPhoto}}" hint-placeholder-val="{{ false }}">{{v.sel.ini}}</sc-if></span>
+                    <div class="p2-selcard__t"><b>{{v.sel.name}}</b><span>{{v.sel.where}}</span><span class="p2-vcard__p">{{v.sel.pre}} <b>{{v.sel.price}}</b> {{v.sel.unit}}</span><sc-if value="{{v.sel.hasNote}}" hint-placeholder-val="{{ false }}"><span class="p2-selcard__n">{{v.sel.note}}</span></sc-if></div>
+                    <button type="button" class="btn btn--primary btn--sm" onClick="{{v.sel.open}}">Ver perfil</button>
+                  </section>
+                </sc-if>
+              </sc-if>
+              <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}">
+                <div class="p2-map p2-map--skel" role="status" aria-live="polite"><span class="p2-spin" aria-hidden="true"></span><b>Carregando mapa…</b><span>A lista ao lado já pode ser usada.</span></div>
+              </sc-if>
+              <sc-if value="{{v.broken}}" hint-placeholder-val="{{ false }}">
+                <div class="emp p2-map--empty" role="status"><span class="emp__ic"><i class="ic ic--sm i-pin" aria-hidden="true"></i></span><b>O mapa não carregou</b><span class="p2-emp__t">O fornecedor do mapa está indisponível. A lista funciona sem ele.</span><div class="mod-row p2-center"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button><button type="button" class="btn btn--primary btn--sm" onClick="{{v.toList}}">Ver na lista</button></div></div>
+              </sc-if>
+            </div>
+
+            <aside class="mod-col" aria-label="Resultados">
+              <div class="mod-between"><span class="p2-count" role="status">{{v.count}}</span><sc-if value="{{v.zoomed}}" hint-placeholder-val="{{ false }}"><button type="button" class="chip is-on p2-chip" onClick="{{v.unzoom}}">{{v.zoomName}}<i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if></div>
+              <sc-if value="{{v.hasList}}" hint-placeholder-val="{{ true }}">
+                <ul class="p2-mlist"><sc-for list="{{v.list}}" as="it" hint-placeholder-count="3"><li class="{{it.cls}}">
+                  <sc-if value="{{it.canPick}}" hint-placeholder-val="{{ true }}"><button type="button" class="p2-mrow__main" aria-pressed="{{it.on}}" onClick="{{it.pick}}"><span class="av av--md av--sq p2-av"><sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{it.photo}}" alt=""></sc-if><sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ false }}">{{it.ini}}</sc-if></span><span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.where}}</span><span class="p2-vcard__p">{{it.pre}} <b>{{it.price}}</b> {{it.unit}}</span></span></button></sc-if>
+                  <sc-if value="{{it.cantPick}}" hint-placeholder-val="{{ false }}"><div class="p2-mrow__main"><span class="av av--md av--sq p2-av"><sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{it.photo}}" alt=""></sc-if><sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ false }}">{{it.ini}}</sc-if></span><span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.where}}</span><span class="p2-vcard__p">{{it.pre}} <b>{{it.price}}</b> {{it.unit}}</span></span></div></sc-if>
+                  <button type="button" class="btn btn--ghost btn--sm p2-mrow__go" onClick="{{it.open}}">Ver perfil</button>
+                </li></sc-for></ul>
+              </sc-if>
+              <sc-if value="{{v.noList}}" hint-placeholder-val="{{ false }}">
+                <div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><b>Nenhum resultado nesta área</b><span class="p2-emp__t">Ninguém com localização aproximada aqui. Amplie a área ou troque o local.</span><div class="mod-row p2-center"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.widen}}">Ver toda Londrina</button><button type="button" class="btn btn--primary btn--sm" onClick="{{v.changeLoc}}">Alterar local</button></div></div>
+              </sc-if>
+              <sc-if value="{{v.hasNoLoc}}" hint-placeholder-val="{{ true }}">
+                <h2 class="p2-h3">Sem localização disponível</h2>
+                <ul class="p2-mlist"><sc-for list="{{v.noLoc}}" as="it" hint-placeholder-count="1"><li class="{{it.cls}}"><div class="p2-mrow__main"><span class="av av--md av--sq p2-av"><sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{it.photo}}" alt=""></sc-if><sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ false }}">{{it.ini}}</sc-if></span><span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.where}} · distância não informada</span><span class="p2-vcard__p">{{it.pre}} <b>{{it.price}}</b> {{it.unit}}</span></span></div><button type="button" class="btn btn--ghost btn--sm p2-mrow__go" onClick="{{it.open}}">Ver perfil</button></li></sc-for></ul>
+              </sc-if>
+              <sc-if value="{{v.hasOnl}}" hint-placeholder-val="{{ true }}">
+                <h2 class="p2-h3">Online</h2>
+                <ul class="p2-mlist"><sc-for list="{{v.onl}}" as="it" hint-placeholder-count="1"><li class="{{it.cls}}"><div class="p2-mrow__main"><span class="av av--md av--sq p2-av"><sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{it.photo}}" alt=""></sc-if><sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ true }}">{{it.ini}}</sc-if></span><span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.where}}</span><span class="p2-vcard__p">{{it.pre}} <b>{{it.price}}</b> {{it.unit}}</span></span></div><button type="button" class="btn btn--ghost btn--sm p2-mrow__go" onClick="{{it.open}}">Ver perfil</button></li></sc-for></ul>
+              </sc-if>
+            </aside>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ORG01 · Página de academia, consultoria e unidade -->
+      <sc-if value="{{is.org}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+          <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><p class="p2-note">{{v.whyText}}</p></sc-if>
+
+          <sc-if value="{{v.show}}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{v.hasCover}}" hint-placeholder-val="{{ true }}"><div class="p2-orgcover"><img src="{{v.cover}}" alt=""></div></sc-if>
+            <div class="pghead p2-pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Extensão posterior · página opcional</span><h1 class="pghead__title">{{v.o.name}}</h1><p class="pghead__sub">{{v.o.line}}</p></div><div class="pghead__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.owner}}">Sou responsável pela organização</button></div></div>
+
+            <div class="utabs p2-orgtabs" role="group" aria-label="Seções da página"><sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="3"><button type="button" class="{{t.cls}}" aria-pressed="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+            <div class="mod-grid2 {{v.panelCls}}">
+              <div class="mod-col">
+                <section class="card onb-sec p2-org__p p2-org__p--treinadores" aria-labelledby="p2-org-tr">
+                  <div class="mod-between"><h2 class="onb-h2" id="p2-org-tr">Treinadores desta unidade</h2></div>
+                  <div class="p2-chips" role="group" aria-label="Escolher unidade"><sc-for list="{{v.unitSeg}}" as="u" hint-placeholder-count="3"><button type="button" class="{{u.cls}}" aria-pressed="{{u.on}}" onClick="{{u.pick}}">{{u.label}}</button></sc-for></div>
+                  <sc-if value="{{v.hasTrainers}}" hint-placeholder-val="{{ true }}">
+                    <ul class="p2-mlist"><sc-for list="{{v.trainers}}" as="t" hint-placeholder-count="1"><li class="p2-mrow"><button type="button" class="p2-mrow__main" aria-label="{{t.label}}" onClick="{{t.go}}"><span class="av av--md p2-av p2-av--round"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ true }}">{{t.ini}}</sc-if></span><span class="p2-vcard__t"><b>{{t.name}}</b><span class="p2-vcard__m">{{t.role}} · {{t.unit}}</span><span class="badge badge--ok p2-badge">{{t.badge}} {{t.since}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></li></sc-for></ul>
+                  </sc-if>
+                  <sc-if value="{{v.noTrainersUnit}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-users" aria-hidden="true"></i></span><b>Nenhum treinador com afiliação confirmada nesta unidade</b><span class="p2-emp__t">Proximidade não prova afiliação: só aparece quem a academia e o treinador confirmaram.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.seeAll}}">Ver todas as unidades</button></div></sc-if>
+                  <sc-if value="{{v.noTrainers}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-users" aria-hidden="true"></i></span><b>Sem treinadores</b><span class="p2-emp__t">Enquanto não houver treinador com afiliação confirmada, esta página não aparece em buscadores.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{v.find}}">Buscar treinadores</button></div></sc-if>
+                  <sc-if value="{{v.pendingNote}}" hint-placeholder-val="{{ false }}"><p class="p2-note p2-note--ic"><i class="ic ic--sm i-clock" aria-hidden="true"></i><span>1 pedido de afiliação aguardando confirmação. A treinadora não aparece até confirmar.</span></p></sc-if>
+                  <p class="p2-note">Afiliação não dá à academia acesso a alunos, dados de saúde ou pagamentos do treinador.</p>
+                </section>
+                <section class="card onb-sec p2-org__p p2-org__p--treinadores" aria-label="Serviços">
+                  <h2 class="onb-h2">Serviços</h2>
+                  <ul class="p2-svc"><sc-for list="{{v.services}}" as="s" hint-placeholder-count="2"><li class="lrow"><span class="lrow__ic" aria-hidden="true"><i class="{{s.ic}}"></i></span><span class="lrow__t"><b>{{s.title}}</b><span class="p2-vcard__m">{{s.sub}}</span></span></li></sc-for></ul>
+                </section>
+              </div>
+              <aside class="mod-col">
+                <section class="card onb-sec p2-org__p p2-org__p--unidades" aria-labelledby="p2-org-un">
+                  <h2 class="onb-h2" id="p2-org-un">Unidades</h2>
+                  <ul class="p2-mlist"><sc-for list="{{v.units}}" as="u" hint-placeholder-count="2"><li><button type="button" class="{{u.cls}}" aria-pressed="{{u.on}}" onClick="{{u.pick}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-pin"></i></span><span class="p2-vcard__t"><b>{{u.name}}</b><span class="p2-vcard__m">{{u.addr}}</span><span class="p2-vcard__m">{{u.hours}} · {{u.count}}</span><sc-if value="{{u.inReview}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn p2-badge">Endereço em revisão</span></sc-if></span><span class="p2-unit__go">Ver unidade</span></button></li></sc-for></ul>
+                </section>
+                <section class="card onb-sec p2-org__p p2-org__p--sobre" aria-labelledby="p2-org-in">
+                  <h2 class="onb-h2" id="p2-org-in">Informações da organização</h2>
+                  <p class="p2-p">{{v.o.about}}</p>
+                  <div class="kv"><div class="kv__r"><span>Tipo</span><b>{{v.o.kind}}</b></div><div class="kv__r"><span>Cidade</span><b>{{v.o.city}}</b></div><div class="kv__r"><span>Unidades</span><b>{{v.o.units}}</b></div><div class="kv__r"><span>Informado pela organização</span><b>{{v.o.informed}}</b></div></div>
+                  <div class="onb-actions"><button type="button" class="btn btn--outline" onClick="{{v.fix}}">Corrigir informação</button><button type="button" class="btn btn--ghost" onClick="{{v.find}}">Buscar treinadores</button></div>
+                </section>
+              </aside>
+            </div>
+          </sc-if>
+          <sc-if value="{{v.hide}}" hint-placeholder-val="{{ false }}">
+            <div class="emp"><span class="emp__ic"><i class="ic ic--sm i-grid" aria-hidden="true"></i></span><b>Página da organização indisponível</b><span class="p2-emp__t">Enquanto isso, encontre os treinadores pela busca.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{v.find}}">Buscar treinadores</button></div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- PUB15 · Catálogo público de programas -->
+      <sc-if value="{{is.programas}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+          <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><p class="p2-note">Sem oferta publicada não há preço nem compra. O programa continua visível para você conhecer o conteúdo e o autor; preço desconhecido nunca aparece como grátis.</p></sc-if>
+
+          <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Programas</h1><p class="pghead__sub">Treinos prontos, sem acompanhamento individual</p></div></div>
+
+          <div class="p2-filters">
+            <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" placeholder="Encontre um programa" aria-label="Encontre um programa" value="{{v.q}}" onInput="{{v.setQ}}"></div>
+            <div class="p2-chips" role="group" aria-label="Modalidade"><sc-for list="{{v.mods}}" as="m" hint-placeholder-count="5"><button type="button" class="{{m.cls}}" aria-pressed="{{m.on}}" onClick="{{m.pick}}">{{m.label}}</button></sc-for></div>
+            <div class="p2-chips" role="group" aria-label="Duração do programa"><sc-for list="{{v.durs}}" as="d" hint-placeholder-count="3"><button type="button" class="{{d.cls}}" aria-pressed="{{d.on}}" onClick="{{d.pick}}">{{d.label}}</button></sc-for><sc-if value="{{v.filtered}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.clear}}">Limpar filtros</button></sc-if></div>
+          </div>
+
+          <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}">
+            <ul class="p2-pgrid" role="status" aria-label="Carregando programas"><sc-for list="{{v.skel}}" as="s" hint-placeholder-count="3"><li class="p2-prow p2-prow--skel" aria-hidden="true"><span class="skel p2-cover"></span><span class="p2-skel__t"><span class="skel p2-skel__l"></span><span class="skel p2-skel__s"></span></span></li></sc-for></ul>
+          </sc-if>
+
+          <sc-if value="{{v.hasList}}" hint-placeholder-val="{{ true }}">
+            <p class="p2-count" role="status">{{v.count}}</p>
+            <ul class="p2-pgrid"><sc-for list="{{v.list}}" as="it" hint-placeholder-count="4"><li class="p2-prow">
+              <button type="button" class="p2-prow__main" onClick="{{it.open}}">
+                <span class="p2-cover"><sc-if value="{{it.hasCover}}" hint-placeholder-val="{{ false }}"><img src="{{it.cover}}" alt=""></sc-if><sc-if value="{{it.noCover}}" hint-placeholder-val="{{ true }}"><i class="ic ic--sm i-book" aria-hidden="true"></i></sc-if></span>
+                <span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.meta}}</span><span class="badge badge--plain p2-badge">{{it.mod}}</span></span>
+                <span class="p2-price"><b>{{it.price}}</b><small>{{it.priceSub}}</small></span>
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm p2-prow__au" aria-label="{{it.authorLabel}}" onClick="{{it.openAuthor}}"><i class="ic ic--sm i-user" aria-hidden="true"></i>Ver autor</button>
+            </li></sc-for></ul>
+          </sc-if>
+
+          <sc-if value="{{v.noMod}}" hint-placeholder-val="{{ false }}">
+            <div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span><b>Sem programas de {{v.modName}}</b><span class="p2-emp__t">Ainda não há programas nesta modalidade. Veja outras:</span><div class="mod-row p2-center"><sc-for list="{{v.others}}" as="o" hint-placeholder-count="3"><button type="button" class="btn btn--outline btn--sm" onClick="{{o.go}}">{{o.label}}</button></sc-for></div></div>
+          </sc-if>
+          <sc-if value="{{v.noRes}}" hint-placeholder-val="{{ false }}">
+            <div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-search" aria-hidden="true"></i></span><b>Nenhum programa corresponde à busca</b><span class="p2-emp__t">Tente outras palavras ou tire algum filtro.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{v.clear}}">Limpar filtros</button></div>
+          </sc-if>
+
+          <div class="mod-row p2-links"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.mine}}"><i class="ic ic--sm i-dumbbell" aria-hidden="true"></i>Já comprou? Meus programas</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.findTrainer}}"><i class="ic ic--sm i-users" aria-hidden="true"></i>Prefere acompanhamento? Encontrar treinador</button></div>
+        </div>
+      </sc-if>
+
+      <!-- PUB12 · Correção ou retirada de perfil público -->
+      <sc-if value="{{is.retirada}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+
+          <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Corrigir ou retirar perfil</h1><p class="pghead__sub">Sem precisar criar conta</p></div></div>
+
+          <div class="mod-grid2">
+            <div class="mod-col">
+              <!-- formulário -->
+              <sc-if value="{{v.isForm}}" hint-placeholder-val="{{ true }}">
+                <section class="card onb-sec p2-src" aria-label="Perfil criado de fonte pública">
+                  <div class="p2-src__h"><span class="av av--md av--sq p2-av"><sc-if value="{{v.pic.hasImg}}" hint-placeholder-val="{{ true }}"><img src="{{v.pic.src}}" alt=""></sc-if><sc-if value="{{v.pic.noImg}}" hint-placeholder-val="{{ false }}">{{v.pic.ini}}</sc-if></span><div class="p2-src__t"><b>{{v.pf.name}}</b><span>{{v.pf.kind}} · {{v.pf.region}}</span></div></div>
+                  <div class="alert p2-alert"><i class="{{v.srcIc}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{v.srcTitle}}</b><span>{{v.srcText}}</span></div></div>
+                </section>
+
+                <section class="card onb-sec" aria-labelledby="p2-rt-q">
+                  <h2 class="onb-h2" id="p2-rt-q">O que você quer fazer?</h2>
+                  <div class="p2-opts" role="group" aria-labelledby="p2-rt-q"><sc-for list="{{v.kinds}}" as="k" hint-placeholder-count="3"><button type="button" class="{{k.cls}}" aria-pressed="{{k.on}}" onClick="{{k.pick}}"><span class="onb-secs__ic" aria-hidden="true"><i class="{{k.ic}}"></i></span><span class="p2-opt__t"><b>{{k.label}}</b><span>{{k.sub}}</span></span><span class="p2-radio__dot" aria-hidden="true"></span></button></sc-for></div>
+                  <sc-if value="{{v.hasErrKind}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errKind}}</span></sc-if>
+                  <sc-if value="{{v.noKind}}" hint-placeholder-val="{{ true }}"><p class="p2-note">Retirada, reivindicação e exclusão de conta são pedidos diferentes. Escolha um para continuar.</p></sc-if>
+                </section>
+
+                <sc-if value="{{v.canSend}}" hint-placeholder-val="{{ false }}">
+                  <section class="card onb-sec" aria-label="{{v.formTitle}}">
+                    <h2 class="onb-h2">{{v.formTitle}}</h2>
+                    <sc-if value="{{v.isFix}}" hint-placeholder-val="{{ false }}">
+                      <div class="field"><span class="field__label" id="p2-rt-campo">Qual informação está errada?</span><div class="p2-chips" role="group" aria-labelledby="p2-rt-campo"><sc-for list="{{v.fields}}" as="c" hint-placeholder-count="5"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div><sc-if value="{{v.hasErrField}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errField}}</span></sc-if></div>
+                      <div class="field"><label class="field__label" for="p2-rt-fix">Como deveria aparecer</label><div class="{{v.fixCls}}"><textarea id="p2-rt-fix" rows="3" onInput="{{v.setFix}}">{{v.fix}}</textarea></div><sc-if value="{{v.hasErrFix}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errFix}}</span></sc-if></div>
+                    </sc-if>
+                    <div class="field"><span class="field__label" id="p2-rt-rel">Sua relação com o perfil</span><div class="p2-radios" role="group" aria-labelledby="p2-rt-rel"><sc-for list="{{v.rels}}" as="r" hint-placeholder-count="3"><button type="button" class="{{r.cls}}" aria-pressed="{{r.on}}" onClick="{{r.pick}}"><span class="{{r.dot}}" aria-hidden="true"></span>{{r.label}}</button></sc-for></div><sc-if value="{{v.hasErrRel}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errRel}}</span></sc-if></div>
+                    <div class="field"><label class="field__label" for="p2-rt-email">Seu e-mail para acompanhar</label><div class="{{v.emailCls}}"><input id="p2-rt-email" type="email" autocomplete="email" placeholder="nome@email.com" value="{{v.email}}" onInput="{{v.setEmail}}"></div><span class="field__help">Seus dados de contato não serão publicados. Demonstração: não use dados reais.</span><sc-if value="{{v.hasErrEmail}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errEmail}}</span></sc-if></div>
+                    <sc-if value="{{v.isOut}}" hint-placeholder-val="{{ true }}">
+                      <div class="field"><label class="field__label" for="p2-rt-motivo">Motivo (opcional)</label><div class="input input--area"><textarea id="p2-rt-motivo" rows="3" placeholder="Não autorizei a publicação." onInput="{{v.setReason}}">{{v.reason}}</textarea></div></div>
+                      <p class="p2-note">Para retirar, confirmamos que você fala pela pessoa ou organização: enviamos um código para o e-mail ou pedimos uma mensagem pelo perfil de origem. Não pedimos documento logo de início. Excluir uma conta é outro pedido.</p>
+                    </sc-if>
+                    <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">Enviar solicitação</button></div>
+                  </section>
+                </sc-if>
+
+                <sc-if value="{{v.isClaim}}" hint-placeholder-val="{{ false }}">
+                  <section class="card onb-sec" aria-label="Reivindicar perfil">
+                    <h2 class="onb-h2">Reivindicar é outro caminho</h2>
+                    <p class="p2-p">Ao reivindicar, você assume o perfil, confirma a identidade e passa a editar as informações. Para isso é preciso criar uma conta de treinador. Se só quer corrigir ou retirar, não precisa de conta.</p>
+                    <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.claim}}">Reivindicar meu perfil</button></div>
+                  </section>
+                </sc-if>
+
+                <div class="mod-row"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.openTrack}}"><i class="ic ic--sm i-search" aria-hidden="true"></i>Já fez um pedido? Acompanhar solicitação</button></div>
+              </sc-if>
+
+              <!-- acompanhamento -->
+              <sc-if value="{{v.isTrack}}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{v.hasReq}}" hint-placeholder-val="{{ true }}">
+                  <section class="card onb-sec" aria-label="Pedido {{v.req.id}}">
+                    <sc-if value="{{v.justSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="p2-alert__b"><b>Pedido registrado</b><span>Guarde seu protocolo {{v.req.id}}. O prazo aparece aqui quando for definido.</span></div></div></sc-if>
+                    <h2 class="onb-h2">Acompanhar solicitação</h2>
+                    <div class="kv"><div class="kv__r"><span>Protocolo</span><b class="p2-mono">{{v.req.id}}</b></div><div class="kv__r"><span>Pedido</span><b>{{v.req.kind}}</b></div><div class="kv__r"><span>Aberto em</span><b>{{v.req.at}}</b></div><div class="kv__r"><span>Etapa atual</span><b><span class="badge badge--info">{{v.req.stage}}</span></b></div></div>
+                    <ol class="p2-steps" aria-label="Etapas do pedido"><sc-for list="{{v.stages}}" as="s" hint-placeholder-count="3"><li class="{{s.cls}}"><span class="p2-step__n" aria-hidden="true">{{s.n}}</span><span>{{s.label}}</span></li></sc-for></ol>
+                    <p class="p2-note">O perfil continua visível até a decisão. O que você enviar para confirmar identidade não fica público.</p>
+                  </section>
+                </sc-if>
+                <sc-if value="{{v.noReq}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-file" aria-hidden="true"></i></span><b>Nenhum pedido encontrado</b><span class="p2-emp__t">Consulte pelo protocolo ao lado.</span></div></sc-if>
+                <div class="mod-row"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.toForm}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Fazer outro pedido</button></div>
+              </sc-if>
+            </div>
+
+            <aside class="mod-col" aria-label="Origem do perfil">
+              <section class="card onb-sec" aria-label="Origem"><h2 class="onb-h2">Origem</h2>
+                <div class="kv"><sc-for list="{{v.origin}}" as="o" hint-placeholder-count="4"><div class="kv__r"><span>{{o.k}}</span><b>{{o.v}}</b></div></sc-for></div>
+                <div class="onb-actions"><button type="button" class="btn btn--outline" onClick="{{v.toData}}">Entender uso de dados</button><button type="button" class="btn btn--ghost" onClick="{{v.back}}">{{v.backLabel}}</button></div>
+              </section>
+              <sc-if value="{{v.isTrack}}" hint-placeholder-val="{{ false }}">
+                <section class="card onb-sec" aria-label="Consultar protocolo"><h2 class="onb-h2">Consultar outro protocolo</h2>
+                  <div class="field"><label class="field__label" for="p2-rt-prot">Protocolo</label><div class="input"><input id="p2-rt-prot" type="text" placeholder="99C-0000-0000" autocomplete="off" value="{{v.lookQ}}" onInput="{{v.setLook}}"></div><sc-if value="{{v.hasLookErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.lookErr}}</span></sc-if></div>
+                  <button type="button" class="btn btn--outline" onClick="{{v.look}}">Consultar</button>
+                </section>
+              </sc-if>
+            </aside>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PUB13 · Vistos recentemente -->
+      <sc-if value="{{is.vistos}}" hint-placeholder-val="{{ false }}">
+        <div class="p2">
+          <sc-for list="{{v.alerts}}" as="a" hint-placeholder-count="1"><div class="{{a.cls}}" role="status"><i class="{{a.ic}}" aria-hidden="true"></i><div class="p2-alert__b"><b>{{a.title}}</b><span>{{a.text}}</span><sc-if value="{{a.hasBtn}}" hint-placeholder-val="{{ true }}"><div class="p2-alert__act"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.act}}">{{a.btn}}</button><sc-if value="{{a.hasBtn2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.act2}}">{{a.btn2}}</button></sc-if></div></sc-if></div></div></sc-for>
+
+          <div class="pghead p2-pghead"><div class="pghead__txt"><h1 class="pghead__title">Vistos recentemente</h1><p class="pghead__sub">Neste aparelho · últimos 7 dias</p></div><sc-if value="{{v.canClear}}" hint-placeholder-val="{{ true }}"><div class="pghead__act"><button type="button" class="btn btn--ghost" onClick="{{v.clear}}">Limpar lista</button></div></sc-if></div>
+
+          <sc-if value="{{v.hasItems}}" hint-placeholder-val="{{ true }}">
+            <p class="p2-note p2-note--ic"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>Visitar não adiciona aos favoritos. {{v.count}} nesta lista.</span></p>
+            <ul class="p2-vgrid" aria-label="Vistos recentemente">
+              <sc-for list="{{v.items}}" as="it" hint-placeholder-count="3"><li class="{{it.cls}}">
+                <sc-if value="{{it.canOpen}}" hint-placeholder-val="{{ true }}"><button type="button" class="p2-vcard__open" onClick="{{it.open}}">
+                  <span class="av av--md av--sq p2-av"><sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{it.photo}}" alt=""></sc-if><sc-if value="{{it.isProg}}" hint-placeholder-val="{{ false }}"><i class="ic ic--sm i-book" aria-hidden="true"></i></sc-if><sc-if value="{{it.noPhoto}}" hint-placeholder-val="{{ false }}">{{it.ini}}</sc-if></span>
+                  <span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.kindLabel}}</span><span class="p2-vcard__m">{{it.seen}}</span><sc-if value="{{it.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="p2-vcard__p">{{it.pre}} <b>{{it.price}}</b> {{it.unit}}</span></sc-if></span>
+                </button></sc-if>
+                <sc-if value="{{it.cantOpen}}" hint-placeholder-val="{{ false }}"><div class="p2-vcard__open">
+                  <span class="av av--md av--sq p2-av"><i class="ic ic--sm i-eye" aria-hidden="true"></i></span>
+                  <span class="p2-vcard__t"><b>{{it.name}}</b><span class="p2-vcard__m">{{it.kindLabel}}</span><span class="p2-vcard__m">{{it.seen}}</span></span>
+                </div></sc-if>
+                <button type="button" class="p2-x" aria-label="{{it.removeLabel}}" onClick="{{it.remove}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button>
+              </li></sc-for>
+            </ul>
+          </sc-if>
+
+          <sc-if value="{{v.showEmpty}}" hint-placeholder-val="{{ false }}">
+            <div class="emp" role="status"><span class="emp__ic"><i class="ic ic--sm i-eye" aria-hidden="true"></i></span><b>{{v.emptyTitle}}</b><span class="p2-emp__t">{{v.emptyText}}</span><button type="button" class="btn btn--primary btn--sm" onClick="{{v.explore}}">Explorar</button></div>
+          </sc-if>
+
+          <sc-if value="{{v.showOff}}" hint-placeholder-val="{{ false }}">
+            <div class="emp"><span class="emp__ic"><i class="ic ic--sm i-lock" aria-hidden="true"></i></span><b>Este histórico está desativado</b><span class="p2-emp__t">Nada do que você abre fica guardado neste aparelho.</span></div>
+            <sc-if value="{{v.why}}" hint-placeholder-val="{{ false }}"><p class="p2-note">Guardar o que você viu entre visitas depende de uma política de retenção aprovada (prazo e limite de itens). Até lá, a seção fica oculta. Favoritos continuam em Salvos.</p></sc-if>
+          </sc-if>
+
+          <div class="mod-row p2-links"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.saved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Ver salvos</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.privacy}}"><i class="ic ic--sm i-settings" aria-hidden="true"></i>Configurar privacidade</button></div>
+        </div>
+      </sc-if>
+
+      </main>
+    </div>
+    <sc-if value="{{hasTabs}}" hint-placeholder-val="{{ true }}"><nav class="tabbar onb-tabbar" aria-label="{{navLabel}}"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button type="button" class="{{t.cls}}" aria-current="{{t.cur}}" onClick="{{t.go}}"><i class="{{t.ic}}" aria-hidden="true"></i><span>{{t.label}}</span></button></sc-for></nav></sc-if>
+  </div>
+
+  <sc-if value="{{sheetOn}}" hint-placeholder-val="{{ false }}">
+    <div class="mod-scrim" onClick="{{closeSheet}}"></div>
+    <div class="card mod-sheet" role="dialog" aria-modal="true" aria-labelledby="mod-sh">
+      <div class="mod-sheet__hd"><b id="mod-sh">{{shTitle}}</b><button type="button" class="icon-btn" aria-label="Fechar" onClick="{{closeSheet}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+      <div class="mod-sheet__bd">
+        <sc-if value="{{shHasText}}" hint-placeholder-val="{{ true }}"><p>{{shText}}</p></sc-if>
+        <sc-if value="{{shHasLines}}" hint-placeholder-val="{{ false }}"><ul class="mod-sheet__ul"><sc-for list="{{shLines}}" as="l" hint-placeholder-count="2"><li>{{l}}</li></sc-for></ul></sc-if>
+        <div class="mod-sheet__ft"><button type="button" class="{{shOkCls}}" onClick="{{shDoOk}}">{{shOk}}</button><sc-if value="{{shHasCancel}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost" onClick="{{closeSheet}}">{{shCancel}}</button></sc-if></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{toastOn}}" hint-placeholder-val="{{ false }}"><div class="toast onb-toast" role="status"><span>{{toastMsg}}</span><button type="button" class="btn btn--white btn--sm" onClick="{{closeToast}}">Ok</button></div></sc-if>
+</div>
