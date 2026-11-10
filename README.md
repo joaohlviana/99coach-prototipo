@@ -47,6 +47,8 @@ O app segue as diretrizes do 99Coach novo (`AGENTS.md` e `docs/` do repositório
   como revisada, monta o treino (exercícios do catálogo ou livres, séries, repetições, carga, descanso) e atribui uma
   versão. O aluno vê o treino, executa marcando cada série com repetições e carga reais (pode concluir parcialmente) e
   envia o registro. A evolução do aluno e os registros no painel do treinador vêm só desses registros confirmados.
+- **Mensagens (real):** aluno e treinador conversam pelo vínculo; a mensagem só aparece como enviada depois que o
+  servidor confirma, falha mantém o texto no campo, e a leitura é marcada ao abrir a conversa.
 - **Aluno sem treinador:** o app mostra como começar, sem treino, conversa ou evolução de exemplo.
 - **Conta:** cadastro e login no servidor real; ao entrar, o cadastro do treinador é retomado do servidor (vale para
   outro aparelho); "Retirar da busca" volta o perfil a rascunho; "Sair da conta" encerra a sessão e apaga do aparelho

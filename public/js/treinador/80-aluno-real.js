@@ -46,6 +46,7 @@ REG.screen({
     });
     var canBuild = L.prep === 'ready_to_assign' || L.prep === 'assigned' || !!L.workout;
     return {
+      chat: window.CHAT ? window.CHAT(ctx, lid, 'treinador', String(L.studentName).split(' ')[0]) : {},
       missing: false, has: true, name: L.studentName, ini: U.ini(L.studentName), since: L.since ? 'Vínculo desde ' + new Date(L.since).toLocaleDateString('pt-BR') : '', origin: L.origin === 'convite' ? 'por convite' : 'por pedido',
       prepTxt: PREP[L.prep] || 'Preparação', hasAnswers: answers.length > 0, answers: answers, needReview: L.prep === 'awaiting_review', review: review,
       waitingClient: L.prep === 'awaiting_client' && !L.workout, canBuild: canBuild,

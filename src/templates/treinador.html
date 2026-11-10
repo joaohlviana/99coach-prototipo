@@ -268,6 +268,14 @@
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.assign}}">{{v.assignLabel}}</button></div>
             </section>
           </sc-if>
+          <section class="card onb-sec" aria-labelledby="tr-chat"><h2 class="onb-h2" id="tr-chat">Conversa</h2>
+            <sc-if value="{{v.chat.noMsgs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma mensagem ainda. Mensagem não altera o acompanhamento nem o treino.</p></sc-if>
+            <sc-if value="{{v.chat.msgErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a conversa agora.</p></sc-if>
+            <sc-if value="{{v.chat.hasMsgs}}" hint-placeholder-val="{{ false }}"><ol class="rx-msgs" aria-live="polite"><sc-for list="{{v.chat.list}}" as="m" hint-placeholder-count="3"><li class="{{m.cls}}"><span class="rx-msg__who">{{m.who}} · {{m.when}}</span><p>{{m.body}}</p><span class="rx-msg__st">{{m.state}}</span></li></sc-for></ol></sc-if>
+            <div class="field"><label class="field__label" for="tr-chat-in">Mensagem</label><div class="input"><input id="tr-chat-in" type="text" maxlength="2000" value="{{v.chat.draft}}" onInput="{{v.chat.setDraft}}"></div></div>
+            <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
+          </section>
           <section class="card onb-sec" aria-labelledby="rx-reg"><h2 class="onb-h2" id="rx-reg">Registros do aluno</h2>
             <sc-if value="{{v.noLogs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma sessão registrada ainda. Aparecem aqui só registros confirmados pelo servidor.</p></sc-if>
             <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar os registros agora.</p></sc-if>

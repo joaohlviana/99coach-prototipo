@@ -154,6 +154,10 @@
     },
     submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
     sessions: function (link) { return db('GET', 'sessions?select=id,session_key,started_at,submitted_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name)&link_id=eq.' + encodeURIComponent(link)); },
+    // ---------- mensagens do vínculo ----------
+    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.asc&limit=500'); },
+    sendMessage: function (link, body) { var cid = 'cli_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: cid, p_session: null }); },
+    markRead: function (link) { return db('POST', 'rpc/mark_read', { p_link: link }); },
     cachedLinks: function () { try { return JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) { return []; } },
     // conta 18+ (regra de mercado): registrada no perfil
     confirmAdult: function () { return sess ? db('PATCH', 'profiles?id=eq.' + encodeURIComponent(sess.user.id), { adult_confirmed_at: new Date().toISOString() }) : Promise.resolve({ ok: false }); },

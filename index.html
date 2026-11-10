@@ -2405,6 +2405,14 @@
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.assign}}">{{v.assignLabel}}</button></div>
             </section>
           </sc-if>
+          <section class="card onb-sec" aria-labelledby="tr-chat"><h2 class="onb-h2" id="tr-chat">Conversa</h2>
+            <sc-if value="{{v.chat.noMsgs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma mensagem ainda. Mensagem não altera o acompanhamento nem o treino.</p></sc-if>
+            <sc-if value="{{v.chat.msgErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a conversa agora.</p></sc-if>
+            <sc-if value="{{v.chat.hasMsgs}}" hint-placeholder-val="{{ false }}"><ol class="rx-msgs" aria-live="polite"><sc-for list="{{v.chat.list}}" as="m" hint-placeholder-count="3"><li class="{{m.cls}}"><span class="rx-msg__who">{{m.who}} · {{m.when}}</span><p>{{m.body}}</p><span class="rx-msg__st">{{m.state}}</span></li></sc-for></ol></sc-if>
+            <div class="field"><label class="field__label" for="tr-chat-in">Mensagem</label><div class="input"><input id="tr-chat-in" type="text" maxlength="2000" value="{{v.chat.draft}}" onInput="{{v.chat.setDraft}}"></div></div>
+            <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
+          </section>
           <section class="card onb-sec" aria-labelledby="rx-reg"><h2 class="onb-h2" id="rx-reg">Registros do aluno</h2>
             <sc-if value="{{v.noLogs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma sessão registrada ainda. Aparecem aqui só registros confirmados pelo servidor.</p></sc-if>
             <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar os registros agora.</p></sc-if>
@@ -5884,7 +5892,8 @@
             <sc-if value="{{v.isReady}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Treino de hoje"><h2 class="onb-h2">Treino · {{v.estMin}}</h2>
               <ol class="onb-secs"><sc-for list="{{v.items}}" as="it" hint-placeholder-count="3"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-dumbbell"></i></span><span class="onb-secs__t"><b>{{it.name}}</b><span>{{it.rx}}</span></span></div></li></sc-for></ol>
               <sc-if value="{{v.hasHist}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.doneCount}} até agora.</p></sc-if>
-              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.start}}">Começar treino</button></div>
+              <sc-if value="{{v.doneNow}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Sessão desta versão registrada</b>Seu treinador vê o registro e ajusta o próximo treino.</div></div></sc-if>
+              <sc-if value="{{v.canStart}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.start}}">Começar treino</button></div></sc-if>
             </section></sc-if>
             <sc-if value="{{v.isExec}}" hint-placeholder-val="{{ false }}">
               <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="2"><section class="card onb-sec" aria-label="{{g.name}}"><h2 class="onb-h2">{{g.name}} · {{g.rx}}</h2>
@@ -5897,6 +5906,14 @@
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.finish}}">{{v.finishLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancel}}">Sair sem registrar</button></div>
             </sc-if>
           </sc-if>
+          <sc-if value="{{v.showMsg}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="al-chat"><h2 class="onb-h2" id="al-chat">Conversa</h2>
+            <sc-if value="{{v.chat.noMsgs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma mensagem ainda. Mensagem não altera o acompanhamento nem o treino.</p></sc-if>
+            <sc-if value="{{v.chat.msgErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a conversa agora.</p></sc-if>
+            <sc-if value="{{v.chat.hasMsgs}}" hint-placeholder-val="{{ false }}"><ol class="rx-msgs" aria-live="polite"><sc-for list="{{v.chat.list}}" as="m" hint-placeholder-count="3"><li class="{{m.cls}}"><span class="rx-msg__who">{{m.who}} · {{m.when}}</span><p>{{m.body}}</p><span class="rx-msg__st">{{m.state}}</span></li></sc-for></ol></sc-if>
+            <div class="field"><label class="field__label" for="al-chat-in">Mensagem</label><div class="input"><input id="al-chat-in" type="text" maxlength="2000" value="{{v.chat.draft}}" onInput="{{v.chat.setDraft}}"></div></div>
+            <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
+          </section></sc-if>
           <sc-if value="{{v.showEvo}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Registros"><h2 class="onb-h2">Registros confirmados</h2>
             <sc-if value="{{v.noHist}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhum treino registrado ainda.</p></sc-if>
             <sc-if value="{{v.hasHist}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.histCount}} · origem: seus registros no app, confirmados pelo servidor. Volume = repetições × carga.</p>
@@ -11107,6 +11124,7 @@
 <script src="js/real-data.js"></script>
 <script src="js/real.js"></script>
 <script src="js/conta.js"></script>
+<script src="js/chat.js"></script>
 <script src="js/ds-data.js"></script>
 <script src="js/ds-telas.js"></script>
 <script src="js/core.js"></script>

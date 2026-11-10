@@ -35,3 +35,10 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 #app .rx-table{width:100%;font:500 14px/1.4 "Inter",-apple-system,sans-serif}
 #app .rx-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px;padding:10px 6px;border-bottom:1px solid var(--line-2,#E4E4E7)}
 #app .rx-head{font:700 11px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2,#52525B)}
+
+/* Conversa do vínculo (tokens do DS) */
+#app .rx-msgs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto}
+#app .rx-msg{align-self:flex-start;max-width:80%;background:var(--paper-2,#F6F5F3);border-radius:var(--r-media,14px);padding:10px 12px;font:500 14px/1.45 "Inter",-apple-system,sans-serif}
+#app .rx-msg.is-me{align-self:flex-end;background:var(--ink,#121214);color:#fff}
+#app .rx-msg p{margin:2px 0}
+#app .rx-msg__who,#app .rx-msg__st{font:700 10px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7}

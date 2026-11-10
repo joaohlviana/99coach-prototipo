@@ -52,7 +52,7 @@ REG.screen({
       var logs = [];
       ex.grid.forEach(function (sets, i) { var it = s0.items[i]; sets.forEach(function (c, k) { if (c.done) logs.push({ item: i, set: k + 1, reps: Number(c.reps) || 0, loadKg: c.load === '' ? null : Number(String(c.load).replace(',', '.')), exerciseId: it.exerciseId, name: it.name, sub: false }); }); });
       if (!logs.length) return ctx.setUi({ err: 'Marque pelo menos uma série feita. Concluir parcialmente é permitido.' });
-      var key = link.id + '_v' + w.version + '_' + ex.started.replace(/[^0-9]/g, '').slice(0, 12);
+      var key = link.id + '_v' + w.version + '_' + s0.id;
       ctx.setUi({ busy: true, err: '' });
       C.submitSession(link.id, key, logs).then(function (r) {
         if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o registro não foi enviado. Suas marcações continuam aqui; tente de novo.' : 'O servidor não recebeu: ' + (r.msg || r.status) });
@@ -68,6 +68,8 @@ REG.screen({
     });
     var period = hist.length ? hist[0].when + ' a ' + hist[hist.length - 1].when : '';
 
+    var doneKey = w && s0 ? link.id + '_v' + w.version + '_' + s0.id : '';
+    var doneNow = !!doneKey && (ui.sess || []).some(function (s) { return s.session_key === doneKey; });
     var state = !w ? (link.prep === 'awaiting_client' ? 'prep' : 'wait') : (ex ? 'exec' : 'ready');
     var TT = {
       prep: ['Você e ' + tf + ' estão conectados', 'Antes do primeiro treino, ' + tf + ' precisa conhecer sua rotina. São 4 perguntas rápidas.'],
@@ -76,14 +78,14 @@ REG.screen({
       exec: [w ? w.title : '', 'Marque cada série feita. Ajuste repetições e carga ao que você fez de verdade.']
     };
     var showEvo = from === 'evolucao', showMsg = from === 'mensagens';
-    var t = showEvo ? ['Evolução', hist.length ? 'Registros confirmados com ' + tf + ' · ' + period : 'Sua evolução começa no primeiro treino registrado.'] : (showMsg ? ['Conversa com ' + tf, 'As mensagens com ' + tf + ' chegam na próxima etapa. Enquanto isso, combine pelo canal que vocês já usam.'] : TT[state]);
+    var t = showEvo ? ['Evolução', hist.length ? 'Registros confirmados com ' + tf + ' · ' + period : 'Sua evolução começa no primeiro treino registrado.'] : (showMsg ? ['Conversa com ' + tf, 'Fale sobre o treino, dúvidas ou mudanças de rotina. ' + tf + ' responde por aqui.'] : TT[state]);
     return Object.assign(base, {
-      title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo,
+      title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',
       qs: QS.map(function (q) { return { id: 'pq-' + q[0], q: q[1], ph: q[2], v: P[q[0]] || '', set: function (e) { var o = Object.assign({}, P); o[q[0]] = U.val(e); ctx.setUi({ prep: o, err: '' }); } }; }),
       sendPrep: sendPrep, sendLabel: ui.busy ? 'Enviando…' : 'Enviar respostas',
       items: s0 ? s0.items.map(function (it) { return { name: it.name, rx: it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') + ' · descanso ' + it.restS + ' s' }; }) : [],
-      estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start,
+      estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow,
       grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: it.sets + ' × ' + it.reps, sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
       finish: finish, finishLabel: ui.busy ? 'Enviando…' : 'Concluir sessão', cancel: function () { ctx.setUi({ exec: null, err: '' }); },
       err: ui.err || '', hasErr: !!ui.err,
