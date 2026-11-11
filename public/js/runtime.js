@@ -229,6 +229,18 @@
     entries[cur.key].scroll = window.scrollY || window.pageYOffset || 0;
     updateCtx(cur.name, st);
   }
+  // No produto (fora da demonstração) ninguém entra em área que não é sua:
+  // painéis pedem conta; administração, vitrine de telas e páginas de exemplo só existem na demonstração.
+  function guard(name, params) {
+    if (document.documentElement.classList.contains('demo')) return [name, params];
+    var area = window.ACCT ? window.ACCT.area() : null;
+    if (name === 'operacao' || name === 'telas' || name === 'servico') return ['home', {}];
+    if (name === 'treinador' && area !== 'treinador') return area === 'aluno' ? ['aluno', {}] : ['onboarding', { flow: 'entrar' }];
+    if (name === 'aluno' && !area) return ['onboarding', { flow: 'entrar' }];
+    if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir'].indexOf(params.s || '') < 0) return ['home', {}];
+    if (name === 'perfil' && area !== 'treinador' && !(window.REAL && window.REAL.has(params.id))) return ['home', {}];
+    return [name, params];
+  }
   function mount(name, props, state, key) {
     var P = PAGES[name];
     for (var k in PAGES) PAGES[k].css.media = k === name ? 'all' : 'not all';
@@ -258,6 +270,7 @@
     modOf: modOf,
     go: function (name, params, from, extra) {
       saveCurrent(extra);
+      var g = guard(name, params || {}); name = g[0]; params = g[1];
       var props = propsFor(name, params || {});
       var key = ++seq;
       order = order.slice(0, pos + 1); order.push(key); pos = order.length - 1;
@@ -337,11 +350,12 @@
     else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' }; }
     else if (hsh.indexOf('telas') === 0) { name = 'telas'; params = { id: hsh.split('-')[1] || '' }; }
     else if (hsh.indexOf('perfil') === 0) { name = 'perfil'; params = { id: hsh.slice(7) || 'rafael' }; }
+    var g0 = guard(name, params), moved = g0[0] !== name; name = g0[0]; params = g0[1];
     var props = propsFor(name, params);
     var key = ++seq;
     order = [key]; pos = 0;
     entries[key] = { name: name, props: props, state: null, scroll: 0 };
-    try { history.replaceState({ k: key }, ''); } catch (_) {}
+    try { if (moved) history.replaceState({ k: key }, '', '#' + token(name, props)); else history.replaceState({ k: key }, ''); } catch (_) {}
     mount(name, props, null, key);
   }
   window.__dcBoot = function () {
