@@ -82,7 +82,9 @@ await click(al, /Começar treino/); await al.waitForTimeout(300);
 await click(al, /Concluir sessão/); await al.waitForTimeout(200);
 console.log('  sem marcar série:', /Marque pelo menos uma série/.test(await txt(al)));
 const rows = await al.$$('#app .onb-checkrow'); await rows[0].click(); await rows[1].click(); await al.fill('#ex-r0-1', '8'); await rows[3].click();
-await click(al, /Concluir sessão/); await al.waitForTimeout(1200);
+await click(al, /Concluir sessão/); await al.waitForTimeout(300);
+console.log('  sessão incompleta pede confirmação:', /Encerrar com a sessão incompleta/.test(await txt(al)));
+await click(al, /Encerrar e enviar o que fiz/); await al.waitForTimeout(1200);
 console.log('  registrado no servidor:', srv.sessions.length, JSON.stringify(srv.sessions[0] && srv.sessions[0].set_logs.map((x) => [x.item, x.set_no, x.reps, x.load_kg])), '| key', srv.sessions[0] && srv.sessions[0].session_key);
 // 4. evolução do aluno e registros no treinador
 await al.evaluate(() => NAV.go('aluno', { s: 'evolucao' }, null)); await al.waitForTimeout(800);

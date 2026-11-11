@@ -2512,6 +2512,27 @@
 
       <!-- H03 · Hoje do treinador (base TRE01) -->
       <sc-if value="{{is.hoje}}" hint-placeholder-val="{{ false }}">
+        <!-- Conta real: o que precisa de você hoje, só com fatos do servidor -->
+        <sc-if value="{{v.real}}" hint-placeholder-val="{{ false }}">
+          <div class="t1-head">
+            <div class="t1-head__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">{{v.hello}}</h1><p class="pghead__sub">{{v.rSub}}</p></div>
+            <button type="button" class="btn btn--outline btn--sm" onClick="{{v.invite}}"><i class="ic ic--sm i-user-plus" aria-hidden="true"></i>Convidar aluno</button>
+          </div>
+          <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Próximo passo"><h2 class="onb-h2">{{v.next.t}}</h2><p class="mod-small mod-muted">{{v.next.x}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.next.go}}">{{v.next.act}}</button></div>
+            <p class="mod-small mod-muted">Esta página passa a mostrar o que precisa de você assim que houver um pedido ou um aluno conectado.</p></section></sc-if>
+          <sc-if value="{{v.hasMine}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-mine"><h2 class="onb-h2" id="hj-mine">Precisa de você</h2>
+            <ol class="onb-secs"><sc-for list="{{v.mine}}" as="m" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-user"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
+          <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Tudo em dia</b>Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</div></div></sc-if>
+          <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-theirs"><h2 class="onb-h2" id="hj-theirs">Aguardando o aluno</h2>
+            <ol class="onb-secs"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-clock"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
+          <sc-if value="{{v.hasCounts}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-ag"><h2 class="onb-h2" id="hj-ag">Agenda de hoje</h2>
+            <sc-if value="{{v.agErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a agenda agora. Isso não quer dizer que o dia está livre.</p></sc-if>
+            <sc-if value="{{v.noAg}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum horário marcado para hoje.</p></sc-if>
+            <sc-if value="{{v.hasAg}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.ag}}" as="a" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}}</b><span>{{a.who}}</span></span></div></li></sc-for></ol></sc-if>
+            <p class="mod-small mod-muted">{{v.counts}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAlunos}}">Ver alunos</button><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAgenda}}">Abrir agenda</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.refresh}}">Atualizar</button></div></section></sc-if>
+        </sc-if>
         <sc-if value="{{v.isNew}}" hint-placeholder-val="{{ false }}">
           <div class="pghead"><div class="pghead__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">Bem-vindo, Rafael</h1><p class="pghead__sub">Sua conta está pronta. Por onde quer começar?</p></div></div>
           <section class="card onb-sec" aria-label="Primeiros passos">
@@ -5922,6 +5943,10 @@
         <sc-if value="{{v.linked}}" hint-placeholder-val="{{ false }}">
           <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não enviado</b>{{v.err}}</div></div></sc-if>
           <sc-if value="{{v.showMain}}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{v.hasReceipt}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Registro recebido"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>{{v.rcTitle}}</b>{{v.rcTxt}}</div></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.goEvo}}">Ver evolução</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.goHoje}}">Voltar a Hoje</button></div></section></sc-if>
+            <sc-if value="{{v.hasDraft}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Sessão em andamento"><h2 class="onb-h2">{{v.draftTitle}}</h2><p class="mod-small mod-muted">{{v.draftTxt}}</p>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.resume}}">Continuar treino</button><button type="button" class="btn btn--ghost btn--lg mod-danger" onClick="{{v.discardDraft}}">Descartar marcações</button></div></section></sc-if>
             <sc-if value="{{v.isPrep}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Preparação"><h2 class="onb-h2">Preparação</h2>
               <sc-for list="{{v.qs}}" as="q" hint-placeholder-count="4"><div class="field"><label class="field__label" for="{{q.id}}">{{q.q}}</label><div class="input"><input id="{{q.id}}" type="text" placeholder="{{q.ph}}" value="{{q.v}}" onInput="{{q.set}}"></div></div></sc-for>
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.sendPrep}}">{{v.sendLabel}}</button></div>
@@ -5934,14 +5959,16 @@
               <sc-if value="{{v.canStart}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.start}}">Começar treino</button></div></sc-if>
             </section></sc-if>
             <sc-if value="{{v.isExec}}" hint-placeholder-val="{{ false }}">
-              <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="2"><section class="card onb-sec" aria-label="{{g.name}}"><h2 class="onb-h2">{{g.name}} · {{g.rx}}</h2>
+              <p class="mod-small mod-muted" role="status">{{v.progress}}</p>
+              <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="2"><section class="card onb-sec" aria-label="{{g.name}}"><h2 class="onb-h2">{{g.name}}</h2><p class="mod-small mod-muted">{{g.rx}} · {{g.last}}</p>
                 <ol class="onb-secs"><sc-for list="{{g.sets}}" as="c" hint-placeholder-count="3"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px; align-items: flex-end">
                   <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{c.doneOn}}" onClick="{{c.toggle}}"><span class="{{c.doneCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{c.n}} feita</span></button>
-                  <div class="field" style="flex: 0 1 110px"><label class="field__label" for="{{c.idR}}">Repetições</label><div class="input"><input id="{{c.idR}}" type="text" inputmode="numeric" value="{{c.reps}}" onInput="{{c.setReps}}"></div></div>
-                  <div class="field" style="flex: 0 1 110px"><label class="field__label" for="{{c.idL}}">Carga (kg)</label><div class="input"><input id="{{c.idL}}" type="text" inputmode="decimal" value="{{c.load}}" onInput="{{c.setLoad}}"></div></div>
+                  <div class="field" style="flex: 0 1 110px"><label class="field__label" for="{{c.idR}}">Repetições</label><div class="input"><input id="{{c.idR}}" type="text" inputmode="numeric" placeholder="{{c.phR}}" value="{{c.reps}}" onInput="{{c.setReps}}"></div></div>
+                  <div class="field" style="flex: 0 1 110px"><label class="field__label" for="{{c.idL}}">Carga (kg)</label><div class="input"><input id="{{c.idL}}" type="text" inputmode="decimal" placeholder="{{c.phL}}" value="{{c.load}}" onInput="{{c.setLoad}}"></div></div>
                 </div></li></sc-for></ol>
               </section></sc-for>
-              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.finish}}">{{v.finishLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancel}}">Sair sem registrar</button></div>
+              <sc-if value="{{v.isPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Encerrar com a sessão incompleta?</b>{{v.partialTxt}}</div></div></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.finish}}">{{v.finishLabel}}</button><sc-if value="{{v.isPartial}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.backPartial}}">Voltar ao treino</button></sc-if><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancel}}">Pausar e sair</button><button type="button" class="btn btn--ghost btn--lg mod-danger" onClick="{{v.discard}}">Descartar marcações</button></div>
             </sc-if>
             <section class="card onb-sec" aria-label="Agenda"><h2 class="onb-h2">Horários com {{v.tfName}}</h2>
               <sc-if value="{{v.hasAppts}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.appts}}" as="a" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}}</b><span>{{a.by}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{a.cancel}}">Cancelar</button></div></li></sc-for></ol></sc-if>
@@ -5959,7 +5986,15 @@
             <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
           </section></sc-if>
-          <sc-if value="{{v.showEvo}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Registros"><h2 class="onb-h2">Registros confirmados</h2>
+          <sc-if value="{{v.showEvo}}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não deu para carregar seus registros</b>Isso não quer dizer que você não treinou. Tente de novo em instantes.</div></div></sc-if>
+            <sc-if value="{{v.hasHist}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Minha semana"><h2 class="onb-h2">Minha semana</h2><p><b>{{v.weekTxt}}</b></p>
+              <div class="seg" role="group" aria-label="Período" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.weekOpts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+              <p class="mod-small mod-muted">{{v.periodTxt}}</p></section>
+            <section class="card onb-sec" aria-label="Exercícios que acompanho"><h2 class="onb-h2">Exercícios que acompanho</h2>
+              <sc-if value="{{v.fewData}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Ainda sem dados suficientes para comparar: a comparação aparece a partir do segundo registro do mesmo exercício.</p></sc-if>
+              <ol class="onb-secs"><sc-for list="{{v.tracked}}" as="x" hint-placeholder-count="3"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-dumbbell"></i></span><span class="onb-secs__t"><b>{{x.name}}</b><span>{{x.last}}</span><span>{{x.prev}}</span></span></div></li></sc-for></ol></section></sc-if>
+          <section class="card onb-sec" aria-label="Registros"><h2 class="onb-h2">Registros confirmados</h2>
             <sc-if value="{{v.noHist}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhum treino registrado ainda.</p></sc-if>
             <sc-if value="{{v.hasHist}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.histCount}} · origem: seus registros no app, confirmados pelo servidor. Volume = repetições × carga.</p>
               <div class="rx-table" role="table" aria-label="Registros confirmados"><div class="rx-row rx-head" role="row"><span role="columnheader">Data</span><span role="columnheader">Séries</span><span role="columnheader">Repetições</span><span role="columnheader">Volume (kg)</span></div>

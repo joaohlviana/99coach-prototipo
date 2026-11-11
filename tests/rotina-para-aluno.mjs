@@ -75,8 +75,22 @@ await click(al, /^Começar treino$/); await al.waitForTimeout(500);
 const boxes = await al.$$('#app input[type=checkbox], #app .onb-checkrow'); if (boxes[0]) await boxes[0].click({ force: true }); if (boxes[1]) await boxes[1].click({ force: true });
 await al.waitForTimeout(300);
 console.log('  botões na execução:', (await al.$$eval('#app button', (e) => e.map((x) => x.textContent.trim()).filter((x) => x.length < 30))).slice(-8).join(' | '));
-await click(al, /Concluir|Enviar registro|Finalizar/); await al.waitForTimeout(1300);
-console.log('5 registro enviado:', srv.sub && srv.sub.p_key, '| séries', srv.sub && srv.sub.p_logs.length, srv.sub && srv.sub.p_logs[0] && srv.sub.p_logs[0].name);
-t = await txt(al); console.log('  volta com B feita e A pendente:', /Treino B · superiores · feita/.test(t), '| abre na A:', /Agachamento/.test(t));
+t = await txt(al); console.log('  previsto como referência e progresso:', /previsto 4 × 8 · 40 kg/.test(t), /Sem registro anterior deste exercício/.test(t), /2 de 7 séries marcadas · guardado neste aparelho/.test(t));
+// pausar e sair guarda as marcações; recarregar a página não perde; "Continuar treino" retoma
+await click(al, /^Pausar e sair$/); await al.waitForTimeout(400);
+await al.reload({ waitUntil: 'load' }); await al.waitForTimeout(1500);
+await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(900);
+t = await txt(al); console.log('  rascunho sobrevive a recarregar:', /Continuar Treino B · superiores/.test(t), /2 de 7 séries marcadas · guardado só neste aparelho/.test(t));
+await click(al, /^Continuar treino$/); await al.waitForTimeout(500);
+console.log('  retomou com as marcações:', await al.$$eval('#app [role=checkbox][aria-checked=true]', (e) => e.length));
+// sessão incompleta: pede uma confirmação antes de enviar
+await click(al, /^Concluir sessão$/); await al.waitForTimeout(400);
+t = await txt(al); console.log('  confirma encerramento parcial:', /Encerrar com a sessão incompleta\?/.test(t), '| ainda não enviou:', !srv.sub);
+await click(al, /^Encerrar e enviar o que fiz$/); await al.waitForTimeout(1300);
+console.log('5 registro enviado:', srv.sub && srv.sub.p_key, '| séries', srv.sub && srv.sub.p_logs.length, srv.sub && srv.sub.p_logs[0] && srv.sub.p_logs[0].name, '| reps/carga do previsto:', srv.sub && srv.sub.p_logs[0].reps, srv.sub && srv.sub.p_logs[0].loadKg);
+t = await txt(al); console.log('  recibo na tela:', /Registro recebido pelo servidor às/.test(t), /2 de 7 séries registradas \(sessão parcial\)/.test(t), '| rascunho apagado:', await al.evaluate(() => Object.keys(localStorage).filter((k) => /sessaoTreino/.test(k)).length === 0));
+console.log('  volta com B feita e A pendente:', /Treino B · superiores · feita/.test(t), '| abre na A:', /Agachamento/.test(t));
+await click(al, /^Ver evolução$/); await al.waitForTimeout(900);
+t = await txt(al); console.log('6 evolução:', await al.evaluate(() => location.hash), /MINHA SEMANA|Minha semana/.test(t), /1 sessão registrada nos últimos 7 dias/.test(t), /1 parcial/.test(t), /Supino reto/.test(t), /Ainda sem dados suficientes/.test(t));
 console.log('errs', tr.errs, al.errs);
 await b.close();

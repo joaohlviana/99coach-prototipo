@@ -6,6 +6,44 @@ REG.screen({
   scens: [['novo', 'Primeiro uso · conta nova'], ['ausencia', 'Ausência confirmada · nada pendente'], ['parcial', 'Indisponibilidade parcial'], ['carregando', 'Carregando a fila'], ['falha', 'Fila não carregou'], ['ultimo', 'Consulta parcial · último dado confirmado'], ['semia', 'IA indisponível sem bloquear ações']],
   vals: function (ctx) {
     var T = window.T1, ui = ctx.ui, scn = ctx.scn, t = DB.trainer, prefs = DB.t1_prefs;
+    // ---------- conta real: fila de trabalho só com fatos do servidor (plano TRE01: trabalho antes de números) ----------
+    var C = window.CONTA;
+    if (C && C.session() && !document.documentElement.classList.contains('demo') && !scn.replace('novo', '')) {
+      var L = C.cachedLinks().filter(function (l) { return l.mine === 'treinador'; });
+      var R = (window.__myRequests || []).filter(function (r) { return r.mine === 'treinador' && r.status === 'pendente'; });
+      var fn = function (n) { return String(n || 'Aluno').split(' ')[0]; };
+      var dt = function (iso) { return iso ? new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : ''; };
+      var open = function (l) { return function () { GO('H05', { id: 'lk_' + l.id }); }; };
+      var mine = [], theirs = [];
+      R.forEach(function (r) { mine.push({ name: r.studentName || 'Aluno', why: 'Pediu acompanhamento' + (r.offer ? ' · ' + r.offer : ''), when: (r.at ? 'recebido em ' + dt(r.at) : '') + (r.due ? ' · vale até ' + dt(r.due) : ''), act: 'Responder pedido', go: function () { GO('REL06'); } }); });
+      L.forEach(function (l) {
+        if (l.status === 'pausado') return;
+        if (l.prep === 'awaiting_review') mine.push({ name: l.studentName, why: 'Respondeu a preparação', when: 'revise antes de montar o treino', act: 'Revisar respostas', go: open(l) });
+        else if (!l.workout && l.prep !== 'awaiting_client') mine.push({ name: l.studentName, why: 'Ainda sem treino atribuído', when: 'vínculo desde ' + dt(l.since), act: 'Montar treino', go: open(l) });
+        else if (!l.workout) theirs.push({ name: l.studentName, why: 'A preparação está com ' + fn(l.studentName), when: 'vínculo desde ' + dt(l.since), act: 'Abrir', go: open(l) });
+      });
+      var paused = L.filter(function (l) { return l.status === 'pausado'; }).length;
+      var ids = L.map(function (l) { return l.id; });
+      if (ids.length && !ui.apAsked) { ctx.setUi({ apAsked: true }); C.appointments(ids).then(function (r) { ctx.setUi({ appts: r.ok ? (r.data || []) : [], apErr: !r.ok }); }); }
+      var today = new Date().toDateString(), nameOf = {}; L.forEach(function (l) { nameOf[l.id] = l.studentName; });
+      var ag0 = (ui.appts || []).filter(function (a) { return new Date(a.starts_at).toDateString() === today; }).sort(function (a, b) { return String(a.starts_at).localeCompare(String(b.starts_at)); })
+        .map(function (a) { return { when: new Date(a.starts_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), who: nameOf[a.link_id] || 'Aluno' }; });
+      var st0 = (window.STORE && window.STORE.loadOnb('treinador')) || {};
+      var empty = !L.length && !R.length;
+      var next = !st0.published ? { t: 'Publicar seu perfil', x: 'Rascunho salvo não aparece na busca. Publicado é o que os alunos encontram.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
+        : { t: 'Convidar seu primeiro aluno', x: 'Ele aceita uma vez e o vínculo fica pronto. O convite vale 7 dias.', act: 'Convidar aluno', go: function () { GO('REL01'); } };
+      return {
+        isNew: false, notNew: false, real: true, date: window.TODAY(), hello: 'Olá, ' + fn(st0.name || t.first),
+        rSub: mine.length ? U.plural(mine.length, 'pendência sua', 'pendências suas') + ' agora' : (empty ? 'Sua conta está pronta.' : 'Tudo em dia: nada depende de você agora.'),
+        mine: mine, hasMine: mine.length > 0, allClear: !mine.length && !empty,
+        theirs: theirs, hasTheirs: theirs.length > 0,
+        empty: empty, next: next,
+        ag: ag0, hasAg: ag0.length > 0, noAg: !ag0.length && !ui.apErr && !!L.length, agErr: !!ui.apErr,
+        counts: U.plural(L.length - paused, 'aluno ativo', 'alunos ativos') + (paused ? ' · ' + U.plural(paused, 'pausado', 'pausados') : '') + ' · ' + U.plural(R.length, 'pedido aguardando', 'pedidos aguardando'), hasCounts: !empty,
+        invite: function () { ctx.go('REL01'); }, goAlunos: function () { ctx.go('H04'); }, goAgenda: function () { ctx.go('TRE20'); },
+        refresh: function () { ctx.setUi({ apAsked: false }); if (window.__refreshLinks) window.__refreshLinks(); ctx.toast('Atualizado às ' + U.now() + '.'); }
+      };
+    }
     var go = function (to, p) { return function () { ctx.go(to, p || {}); }; };
     var retry = function () { ctx.scenario(''); ctx.toast('Atualizado às ' + U.now() + '. Fila, agenda e mensagens em dia.'); };
 

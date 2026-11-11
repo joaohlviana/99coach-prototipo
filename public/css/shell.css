@@ -44,3 +44,6 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 #app .rx-msg.is-me{align-self:flex-end;background:var(--ink,#121214);color:#fff}
 #app .rx-msg p{margin:2px 0}
 #app .rx-msg__who,#app .rx-msg__st{font:700 10px/1.2 "Space Mono",ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+
+/* aviso fixo de onde o conteúdo da tela é salvo */
+.c99-onde{margin:0 0 16px}

@@ -374,6 +374,27 @@
 
       <!-- H03 · Hoje do treinador (base TRE01) -->
       <sc-if value="{{is.hoje}}" hint-placeholder-val="{{ false }}">
+        <!-- Conta real: o que precisa de você hoje, só com fatos do servidor -->
+        <sc-if value="{{v.real}}" hint-placeholder-val="{{ false }}">
+          <div class="t1-head">
+            <div class="t1-head__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">{{v.hello}}</h1><p class="pghead__sub">{{v.rSub}}</p></div>
+            <button type="button" class="btn btn--outline btn--sm" onClick="{{v.invite}}"><i class="ic ic--sm i-user-plus" aria-hidden="true"></i>Convidar aluno</button>
+          </div>
+          <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Próximo passo"><h2 class="onb-h2">{{v.next.t}}</h2><p class="mod-small mod-muted">{{v.next.x}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.next.go}}">{{v.next.act}}</button></div>
+            <p class="mod-small mod-muted">Esta página passa a mostrar o que precisa de você assim que houver um pedido ou um aluno conectado.</p></section></sc-if>
+          <sc-if value="{{v.hasMine}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-mine"><h2 class="onb-h2" id="hj-mine">Precisa de você</h2>
+            <ol class="onb-secs"><sc-for list="{{v.mine}}" as="m" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-user"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
+          <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Tudo em dia</b>Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</div></div></sc-if>
+          <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-theirs"><h2 class="onb-h2" id="hj-theirs">Aguardando o aluno</h2>
+            <ol class="onb-secs"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-clock"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
+          <sc-if value="{{v.hasCounts}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-ag"><h2 class="onb-h2" id="hj-ag">Agenda de hoje</h2>
+            <sc-if value="{{v.agErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a agenda agora. Isso não quer dizer que o dia está livre.</p></sc-if>
+            <sc-if value="{{v.noAg}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum horário marcado para hoje.</p></sc-if>
+            <sc-if value="{{v.hasAg}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.ag}}" as="a" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}}</b><span>{{a.who}}</span></span></div></li></sc-for></ol></sc-if>
+            <p class="mod-small mod-muted">{{v.counts}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAlunos}}">Ver alunos</button><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAgenda}}">Abrir agenda</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.refresh}}">Atualizar</button></div></section></sc-if>
+        </sc-if>
         <sc-if value="{{v.isNew}}" hint-placeholder-val="{{ false }}">
           <div class="pghead"><div class="pghead__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">Bem-vindo, Rafael</h1><p class="pghead__sub">Sua conta está pronta. Por onde quer começar?</p></div></div>
           <section class="card onb-sec" aria-label="Primeiros passos">

@@ -227,9 +227,34 @@
     }
   }
 
+  // Onde isto é salvo: telas que ainda guardam só no navegador dizem isso sempre, no produto (plano V08/V11).
+  var LOCAL = {
+    treinador: { conteudo: 1, editor: 1, exercicios: 1, exercicio: 1, exercicioNovo: 1, formularios: 1, formEditor: 1, historico: 1, ofertas: 1, cupons: 1, proposta: 1, programas: 1, programaEditor: 1, publicacao: 1, participantes: 1, notificacoes: 1, perfilEditar: 1, perfilPrevia: 1, credenciais: 1, disponibilidade: 1, calendario: 1, macro: 1 },
+    aluno: { contratacoes: 1 }, publico: { salvos: 1, vistos: 1 }
+  };
+  var LOCALTXT = {
+    mensagens: ['As conversas ficam na tela de cada aluno', 'Abra o aluno em Alunos para conversar: é lá que as mensagens são enviadas e recebidas de verdade.'],
+    recebimentos: ['Recebimentos ainda não estão ligados', 'Nenhuma venda é processada pela 99coach por enquanto, então não há valores a mostrar. Nada aqui é cobrado.'],
+    insights: ['Sem base ainda', 'Os números aparecem quando houver visitas, pedidos e alunos reais. Enquanto isso não mostramos zero nem percentual.'],
+    ft01: ['Recebimentos ainda não estão ligados', 'Este cadastro é só uma prévia: nenhum dado bancário é pedido nem guardado.'],
+    ft09: ['Recebimentos ainda não estão ligados', 'Esta tela é só uma prévia: nenhum dado bancário é pedido nem guardado.'],
+    ft11: ['Assinatura ainda não está à venda', 'Pro por R$ 99/mês ou R$ 990/ano é o preço decidido, mas nada é cobrado por enquanto. Sua conta segue no Essencial, grátis.']
+  };
+  function whereSaved(page, root) {
+    if (document.documentElement.classList.contains('demo') || !ACCT.area()) return;
+    var key = (location.hash || '').slice(1).split('-')[1] || '';
+    var txt = page === 'treinador' && LOCALTXT[key] ? LOCALTXT[key] : (LOCAL[page] && LOCAL[page][key] ? ['Salvo só neste aparelho', 'O que você cria ou muda aqui ainda não vai para o servidor: não aparece em outro aparelho e some se você limpar o navegador.'] : null);
+    var m = root.querySelector('#conteudo'); if (!txt || !m || m.querySelector('.c99-onde')) return;
+    var d = document.createElement('div'); d.className = 'alert alert--info c99-onde'; d.setAttribute('role', 'note');
+    var i = document.createElement('i'); i.className = 'ic ic--sm i-info'; i.setAttribute('aria-hidden', 'true');
+    var w = document.createElement('div'), b = document.createElement('b'); b.textContent = txt[0]; w.appendChild(b); w.appendChild(document.createTextNode(txt[1]));
+    d.appendChild(i); d.appendChild(w); m.insertBefore(d, m.firstChild);
+  }
+
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
     applyMe();
+    whereSaved(page, root);
     if (page === 'aluno') startAccount();
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {

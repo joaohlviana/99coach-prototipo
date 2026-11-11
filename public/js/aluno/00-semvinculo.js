@@ -48,22 +48,55 @@ REG.screen({
     };
 
     // ---------- execução (registro de séries) ----------
+    // A sessão em andamento fica guardada neste aparelho até ser enviada: fechar o app não perde as marcações.
+    var uid = (C && C.user() && C.user().id) || 'local';
+    var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
+    var dGet = function (x) { try { return JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) { return null; } };
+    var dPut = function (x, v) { try { if (v) window.localStorage.setItem(dKey(x), JSON.stringify(v)); else window.localStorage.removeItem(dKey(x)); } catch (_) {} };
+    var draftIdx = -1; SS.forEach(function (x, i) { if (draftIdx < 0 && !doneOf(x) && dGet(x)) draftIdx = i; });
+    var draft = draftIdx >= 0 ? dGet(SS[draftIdx]) : null;
+    var marked = function (g) { return g.reduce(function (n, sets) { return n + sets.filter(function (c) { return c.done; }).length; }, 0); };
+    var total = function (g) { return g.reduce(function (n, sets) { return n + sets.length; }, 0); };
+    // última execução confirmada de cada exercício (referência dentro da série; nunca conta como feita)
+    var lastOf = function (exId) {
+      var best = null;
+      (ui.sess || []).forEach(function (s) { var d = s.submitted_at || s.started_at; (s.set_logs || []).forEach(function (l) { if (l.exercise_id === exId && d && (!best || d > best.d || (d === best.d && (Number(l.load_kg) || 0) > (Number(best.l.load_kg) || 0)))) best = { d: d, l: l }; }); });
+      return best ? 'Última vez: ' + best.l.reps + ' rep' + (best.l.load_kg != null ? ' × ' + String(best.l.load_kg).replace('.', ',') + ' kg' : '') + ' em ' + new Date(best.d).toLocaleDateString('pt-BR') : 'Sem registro anterior deste exercício';
+    };
     var ex = ui.exec;
     var start = function () {
-      var grid = s0.items.map(function (it) { var a = []; for (var k = 0; k < it.sets; k++) a.push({ reps: String(parseInt(it.reps, 10) || ''), load: it.loadKg == null ? '' : String(it.loadKg), done: false }); return a; });
-      ctx.setUi({ exec: { grid: grid, started: new Date().toISOString() }, err: '' });
+      // realizado começa em branco: o previsto aparece como referência e só entra quando a série é marcada
+      var grid = s0.items.map(function (it) { var a = []; for (var k = 0; k < it.sets; k++) a.push({ reps: '', load: '', done: false }); return a; });
+      var e0 = { grid: grid, started: new Date().toISOString() };
+      dPut(s0, e0); ctx.setUi({ exec: e0, err: '', receipt: null, partial: false });
     };
-    var setCell = function (i, k, f) { return function (e) { var g = JSON.parse(JSON.stringify(ex.grid)); g[i][k][f] = f === 'done' ? !g[i][k].done : U.val(e); ctx.setUi({ exec: Object.assign({}, ex, { grid: g }) }); }; };
+    var setCell = function (i, k, f) { return function (e) {
+      var g = JSON.parse(JSON.stringify(ex.grid)), c = g[i][k], it = s0.items[i];
+      if (f === 'done') {
+        c.done = !c.done;
+        // marcar sem preencher = fiz o previsto; a pessoa ainda pode corrigir os números
+        if (c.done && c.reps === '') c.reps = String(parseInt(it.reps, 10) || '');
+        if (c.done && c.load === '' && it.loadKg != null) c.load = String(it.loadKg);
+      } else c[f] = U.val(e);
+      var e1 = Object.assign({}, ex, { grid: g }); dPut(s0, e1); ctx.setUi({ exec: e1, partial: false });
+    }; };
+    var resume = function () { if (draftIdx < 0) return; ctx.setUi({ sx: draftIdx, exec: draft, err: '', receipt: null, partial: false }); };
+    var discard = function () { if (draftIdx >= 0) dPut(SS[draftIdx], null); ctx.setUi({ exec: null, err: '', v: (ui.v || 0) + 1 }); };
     var finish = function () {
       if (ui.busy) return;
       var logs = [];
       ex.grid.forEach(function (sets, i) { var it = s0.items[i]; sets.forEach(function (c, k) { if (c.done) logs.push({ item: i, set: k + 1, reps: Number(c.reps) || 0, loadKg: c.load === '' ? null : Number(String(c.load).replace(',', '.')), exerciseId: it.exerciseId, name: it.name, sub: false }); }); });
       if (!logs.length) return ctx.setUi({ err: 'Marque pelo menos uma série feita. Concluir parcialmente é permitido.' });
+      // sessão incompleta: uma confirmação antes de enviar, dizendo o que fica registrado
+      if (logs.length < total(ex.grid) && !ui.partial) return ctx.setUi({ partial: true, err: '' });
       var key = link.id + '_v' + w.version + '_' + s0.id;
       ctx.setUi({ busy: true, err: '' });
       C.submitSession(link.id, key, logs).then(function (r) {
         if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o registro não foi enviado. Suas marcações continuam aqui; tente de novo.' : 'O servidor não recebeu: ' + (r.msg || r.status) });
-        ctx.setUi({ busy: false, exec: null, asked: false, sx: null }); ctx.toast('Registro recebido: ' + U.plural(logs.length, 'série', 'séries') + '. ' + tf + ' vê no painel.');
+        var tot = total(ex.grid);
+        dPut(s0, null);
+        // recibo que fica na tela (não é só um aviso que some): o que foi recebido pelo servidor
+        ctx.setUi({ busy: false, exec: null, asked: false, sx: null, partial: false, receipt: { title: s0.title || w.title, n: logs.length, tot: tot, at: U.now() } });
       });
     };
 
@@ -74,6 +107,19 @@ REG.screen({
       return { when: d ? new Date(d).toLocaleDateString('pt-BR') : '—', sets: String(sets.length), reps: String(sets.reduce(function (n, x) { return n + (Number(x.reps) || 0); }, 0)), vol: vol ? Math.round(vol).toLocaleString('pt-BR') : '—' };
     });
     var period = hist.length ? hist[0].when + ' a ' + hist[hist.length - 1].when : '';
+    // período escolhido (4 ou 12 semanas) e leitura da semana, só com o que foi confirmado
+    var weeks = ui.weeks || 4, since = Date.now() - weeks * 7 * 864e5, wk = Date.now() - 7 * 864e5;
+    var tsOf = function (s) { return new Date(s.submitted_at || s.started_at || 0).getTime(); };
+    var inP = sess.filter(function (s) { return tsOf(s) >= since; });
+    var weekN = sess.filter(function (s) { return tsOf(s) >= wk; }).length;
+    var fullOf = function (s) { var m = /_v(\d+)_(.+)$/.exec(s.session_key || ''); var x = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null; if (!x) return null; var t2 = x.items.reduce(function (n, it) { return n + it.sets; }, 0); return (s.set_logs || []).length >= t2; };
+    var partialN = inP.filter(function (s) { return fullOf(s) === false; }).length;
+    // exercícios acompanhados: os mais registrados, com o último resultado e o anterior compatível (mesmo exercício)
+    var byEx = {};
+    sess.forEach(function (s) { var d = s.submitted_at || s.started_at; (s.set_logs || []).forEach(function (l) { var k = l.exercise_id || l.exercise_name; if (!k) return; var o = byEx[k] || (byEx[k] = { name: l.exercise_name || k, days: {} }); var day = String(d).slice(0, 10); var b = o.days[day]; if (!b || (Number(l.load_kg) || 0) > (Number(b.load_kg) || 0) || ((Number(l.load_kg) || 0) === (Number(b.load_kg) || 0) && (Number(l.reps) || 0) > (Number(b.reps) || 0))) o.days[day] = l; }); });
+    var fmtSet = function (l) { return l.reps + ' rep' + (l.load_kg != null ? ' × ' + String(l.load_kg).replace('.', ',') + ' kg' : ''); };
+    var fmtDay = function (d) { return d.slice(8, 10) + '/' + d.slice(5, 7); };
+    var tracked = Object.keys(byEx).map(function (k) { var o = byEx[k], ds = Object.keys(o.days).sort(); return { name: o.name, n: ds.length, last: fmtSet(o.days[ds[ds.length - 1]]) + ' em ' + fmtDay(ds[ds.length - 1]), prev: ds.length > 1 ? 'Antes: ' + fmtSet(o.days[ds[ds.length - 2]]) + ' em ' + fmtDay(ds[ds.length - 2]) : 'Sem registro anterior para comparar' }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 3);
 
     var doneKey = w && s0 ? link.id + '_v' + w.version + '_' + s0.id : '';
     var doneNow = !!doneKey && (ui.sess || []).some(function (s) { return s.session_key === doneKey; });
@@ -111,10 +157,21 @@ REG.screen({
       wTitle: w ? w.title : '', sTitle: s0 ? (s0.title || '') : '', manySess: SS.length > 1 && !ex,
       sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
       estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow,
-      grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: it.sets + ' × ' + it.reps, sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
-      finish: finish, finishLabel: ui.busy ? 'Enviando…' : 'Concluir sessão', cancel: function () { ctx.setUi({ exec: null, err: '' }); },
+      grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : ''), last: lastOf(it.exerciseId), sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), phR: String(parseInt(it.reps, 10) || ''), phL: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
+      finish: finish, finishLabel: ui.busy ? 'Enviando…' : (ui.partial ? 'Encerrar e enviar o que fiz' : 'Concluir sessão'),
+      // pausar guarda as marcações neste aparelho; descartar apaga
+      cancel: function () { ctx.setUi({ exec: null, err: '', partial: false }); }, discard: function () { dPut(s0, null); ctx.setUi({ exec: null, err: '', partial: false }); },
+      isPartial: !!ui.partial && !!ex, partialTxt: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas. As não marcadas ficam sem registro; nada é inventado.' : '', backPartial: function () { ctx.setUi({ partial: false }); },
+      progress: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas · guardado neste aparelho até você enviar' : '',
+      hasDraft: !!draft && !ex && state !== 'exec', draftTitle: draft ? 'Continuar ' + (SS[draftIdx].title || 'treino') : '', draftTxt: draft ? marked(draft.grid) + ' de ' + total(draft.grid) + ' séries marcadas · guardado só neste aparelho, ainda não enviado' : '', resume: resume, discardDraft: discard,
+      hasReceipt: !!ui.receipt && !ex, rcTitle: ui.receipt ? 'Registro recebido pelo servidor às ' + ui.receipt.at : '', rcTxt: ui.receipt ? ui.receipt.title + ' · ' + (ui.receipt.n < ui.receipt.tot ? ui.receipt.n + ' de ' + ui.receipt.tot + ' séries registradas (sessão parcial)' : U.plural(ui.receipt.n, 'série registrada', 'séries registradas')) + '. ' + tf + ' vê no painel; isso não quer dizer que já revisou.' : '',
+      goEvo: function () { ctx.setUi({ receipt: null }); GO('H10E'); }, goHoje: function () { ctx.setUi({ receipt: null }); GO('H10'); },
       err: ui.err || '', hasErr: !!ui.err,
-      hist: hist, hasHist: hist.length > 0, noHist: !hist.length, histCount: U.plural(hist.length, 'sessão registrada', 'sessões registradas'), doneCount: hist.length ? U.plural(hist.length, 'sessão concluída', 'sessões concluídas') : ''
+      weekTxt: weekN ? U.plural(weekN, 'sessão registrada', 'sessões registradas') + ' nos últimos 7 dias' : 'Nenhuma sessão registrada nos últimos 7 dias',
+      periodTxt: U.plural(inP.length, 'sessão registrada', 'sessões registradas') + ' em ' + weeks + ' semanas' + (partialN ? ' · ' + U.plural(partialN, 'parcial', 'parciais') : '') + '. Sem meta combinada, não mostramos percentual.',
+      weekOpts: [4, 12].map(function (n) { return { label: n + ' semanas', on: String(weeks === n), cls: 'chip' + (weeks === n ? ' is-on' : ''), pick: function () { ctx.setUi({ weeks: n }); } }; }),
+      tracked: tracked, hasTracked: tracked.length > 0, fewData: hist.length === 1, sessErr: !!ui.sessErr,
+      hist: hist, hasHist: hist.length > 0, noHist: !hist.length && !ui.sessErr, histCount: U.plural(hist.length, 'sessão registrada', 'sessões registradas'), doneCount: hist.length ? U.plural(hist.length, 'sessão concluída', 'sessões concluídas') : ''
     });
   }
 });
