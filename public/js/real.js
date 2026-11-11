@@ -18,8 +18,8 @@
   function ui(sports) { var o = {}; (sports || []).forEach(function (s) { var id = window.SPORTS ? window.SPORTS.idOfSlug(s) : s; if (LABEL[id]) o[id] = 1; (ALIAS[s] || []).forEach(function (a) { o[a] = 1; }); }); return Object.keys(o); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
-    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: r[3] ? (/^https?:/.test(r[3]) ? r[3] : FOTOS + r[3]) : '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
-    return { id: r.slug, name: r.name, ini: r.initials || '', photo: r.photo || '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
+    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: '', /* perfil importado: sem foto até o titular enviar ou autorizar (avatar neutro com as iniciais) */ spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
+    return { id: r.slug, name: r.name, ini: r.initials || '', photo: r.imported === false ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
   }
   function setItems(rows) {
     items = []; byId = {}; cache = {};
