@@ -28,7 +28,8 @@ class Component extends DCLogic {
       { id: 'renata', name: 'Renata Lopes', ph: 'cdd8dbf615cdeed2e5c5bd489c64e674', spec: 'Corrida', mods: ['Corrida'], city: 'São Paulo, SP', fmts: ['Online'], langs: ['português'], avail: 'sim', ad: '24/10', rating: '4,9', reviews: 44, onl: ['Planilha de corrida com ajustes', 'R$ 99', '/ mês'], pub: '2023-09-01', rank: 3, trust: [['Titularidade confirmada', 'ok'], ['CREF informado, ainda não verificado', 'no']] }
     ];
     const T = (window.REAL && window.REAL.esporte()) || TD;
-    const MODS = ['Musculação', 'Funcional', 'CrossFit', 'Pilates', 'Yoga', 'Corrida', 'Lutas', 'Natação', 'Ciclismo', 'Dança'];
+    const SPL = window.SPORTS.ordered(window.REAL && window.REAL.sportCounts());
+    const MODS = SPL.map((x) => x.label);
     const NEAR = { 'Tamarana, PR': 'Londrina, PR' };
     const cityShort = (c) => (c || '').split(',')[0];
     const has = (a, x) => (a || []).indexOf(x) >= 0;
@@ -46,7 +47,7 @@ class Component extends DCLogic {
       if (s.area && !(has(t.fmts, 'Presencial') && t.area === s.area)) return false;
       return true;
     };
-    const countFor = (o) => T.filter((t) => match(t, Object.assign({}, st, o))).length;
+    const countFor = (o) => { const s2 = Object.assign({}, st, o); let k = 0; for (let i = 0; i < T.length; i++) if (match(T[i], s2)) k++; return k; };
     const pl = (k, a, b) => k + ' ' + (k === 1 ? a : b);
     let res = T.filter((t) => match(t, st));
     res = res.slice().sort((a, b) => st.sort === 'rec' ? (a.pub < b.pub ? 1 : -1) : a.rank - b.rank);
@@ -261,7 +262,7 @@ class Component extends DCLogic {
 
     const V3 = {
       scens, reset, seoOpen: st.seo, toggleSeo: () => set({ seo: !st.seo }), seoToggleLabel: st.seo ? ' · ocultar campos' : ' · ver campos', seoIndex: seoOk ? 'indexar' : 'não indexar', seoPillCls: 'e-pill ' + (seoOk ? 'e-pill--ok' : 'e-pill--no'), seoWhy, seoTitle, seoDesc, seoCrumb,
-      h1, lede, mod: st.mod, ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Escolha uma cidade'), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
+      h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? ' em ' + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Escolha uma cidade'), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
       cityPickCls: 'e-pick' + (!st.city && !online ? ' is-empty' : ''),
       crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? st.city : st.mod),
       fmtSeg, sortSeg, viewSeg, mapToggle, sortInfo: st.sortInfo, toggleSortInfo: () => set({ sortInfo: !st.sortInfo }),
@@ -290,14 +291,13 @@ class Component extends DCLogic {
     };
     // ---------- v4 · Design System ----------
     const TINTS = { forca: 'var(--sp-forca)', funcional: 'var(--sp-funcional)', corrida: 'var(--sp-corrida)', lutas: 'var(--sp-lutas)', mente: 'var(--sp-mente)', agua: 'var(--sp-agua)' };
-    const SPT = { 'Musculação': 'forca', 'CrossFit': 'forca', 'Funcional': 'funcional', 'Corrida': 'corrida', 'Ciclismo': 'corrida', 'Lutas': 'lutas', 'Yoga': 'mente', 'Pilates': 'mente', 'Dança': 'mente', 'Natação': 'agua' };
-    const SIMG = { 'Musculação': 'ddc2a85a675b6360b30e74c352a6a43a', 'CrossFit': '4f287f956509500f4c89225daef9c5c5', 'Funcional': '53bc58b2a2121cf553d701e2bbe3f479', 'Corrida': 'd7f58212b752ef1353285564cfe093c1', 'Ciclismo': 'd7f58212b752ef1353285564cfe093c1', 'Yoga': 'a8e3bd5a89dffa722591b85c65c3dc53', 'Pilates': 'a8e3bd5a89dffa722591b85c65c3dc53', 'Dança': 'a8e3bd5a89dffa722591b85c65c3dc53', 'Natação': 'd638b9405ce41661a674fe9a2b40e890', 'Lutas': 'f1d53560db4fc016d4604ed68cf1b86d' };
-    const RAILS = [['Musculação', 'a66078f9660d8d79f5a8a1fe1b5de471'], ['Funcional', '2192d01057d4de029869dacde99393d2'], ['CrossFit', 'c6cd81ed01305a02ed5ef0a7f77bcbc5'], ['Pilates', 'c918eae13ef6aa26251f45ae6865a413'], ['Yoga', 'c918eae13ef6aa26251f45ae6865a413'], ['Corrida', 'cdf7571519a4147819bcd43ee8e0f291'], ['Lutas', '24f804dcd864d949482e1959f3be9b7a'], ['Natação', 'e6ae683211af46b0c99b87c8fada6155'], ['Ciclismo', '9b6e43be870276dae4052e6f35d8c15d'], ['Dança', '86118c35a4cd36a985c797a7e3361928']];
+    const HERO = (m) => window.SPORTS.hero(m);
+    const RAILS = SPL.map((x) => [x.label, window.SPORTS.icon(x.id)]);
     const COACH = { 'Rafael Lima': 'bdc7ef1c8dbf05558c3bf8d575fc3a04', 'Larissa Nunes': 'eeb5e0340d20ffe1859010e8d3911dc0', 'Gabriel Santos': '4534df06b7d037ae994cb151849342b0', 'Marcos Almeida': '848c200425592389106d38549e36440a', 'Bruno Teixeira': '349006eab36388172034672605e15a49', 'Renata Lopes': 'cdd8dbf615cdeed2e5c5bd489c64e674' };
-    const tintOf = (m) => TINTS[SPT[m]] || TINTS.forca;
+    const tintOf = (m) => window.SPORTS.tint(m);
     const dd = st.dd || '';
     const tg = (k) => () => set({ dd: dd === k ? '' : k });
-    const sports4 = RAILS.map(([l, id]) => ({ label: l, icon: B(id), cls: 'rail__item' + (l === st.mod ? ' is-on' : ''), cur: l === st.mod ? 'page' : 'false', pick: () => change({ mod: l }) }));
+    const sports4 = RAILS.map(([l, id]) => ({ label: l, icon: id, cls: 'rail__item' + (l === st.mod ? ' is-on' : ''), cur: l === st.mod ? 'page' : 'false', pick: () => change({ mod: l }) }));
     const scens4 = scens.map((s) => Object.assign({}, s, { cls: 'chip' + (s.on === 'true' ? ' is-on' : '') }));
 
     // topo da modalidade: números só quando reais
@@ -353,7 +353,7 @@ class Component extends DCLogic {
     // painel de filtros
     const pFmt4 = pFmt.map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
     const pLang4 = pLang.map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
-    const modOpts4 = RAILS.map(([m, id]) => ({ label: m, icon: B(id), n: String(countFor({ mod: m })), cls: 'lrow v4-lrow' + (st.mod === m ? ' is-on' : ''), on: String(st.mod === m), pick: () => change({ mod: m, sheet: '' }) }));
+    const modOpts4 = RAILS.map(([m, id]) => ({ label: m, icon: id, n: String(countFor({ mod: m })), cls: 'lrow v4-lrow' + (st.mod === m ? ' is-on' : ''), on: String(st.mod === m), pick: () => change({ mod: m, sheet: '' }) }));
 
     // paginação, mapa, programas, conteúdo local
     const pages4 = pages.map((p) => ({ n: p.n, cur: p.cur, pick: p.pick, cls: p.cls.indexOf('is-on') >= 0 ? 'is-on' : '' }));
@@ -369,11 +369,11 @@ class Component extends DCLogic {
       facts4.push({ k: 'Unidade do preço', v: 'sempre com “/ mês” ou “/ sessão”' });
     } else facts4.push({ k: 'Publicados nesta modalidade', v: String(T.filter((t) => has(t.mods, st.mod)).length) + ' profissionais' });
     const faqs4 = faqs.map((q) => ({ q: q.q, a: q.a, open: q.open, toggle: q.toggle, rot: q.open ? 'transform: rotate(180deg)' : '' }));
-    const rel4 = R.map(([label, o]) => { const m = o.mod || st.mod; const k = countFor(Object.assign({ lang: 'Qualquer', avail: false, removed: false }, o)); return { label, k, n: pl(k, 'treinador', 'treinadores'), img: B(SIMG[m] || SIMG.CrossFit), tint: '--tint: ' + tintOf(m), pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) }; }).filter((r) => r.k > 0);
+    const rel4 = R.map(([label, o]) => { const m = o.mod || st.mod; const k = countFor(Object.assign({ lang: 'Qualquer', avail: false, removed: false }, o)); return { label, k, n: pl(k, 'treinador', 'treinadores'), img: HERO(m).img, cls: 'st vfe-st' + (HERO(m).art ? ' vfe-st--art' : ''), tint: '--tint: ' + tintOf(m), pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) }; }).filter((r) => r.k > 0).slice(0, 8);
     const alts4 = alts.map((a) => Object.assign({}, a, { icon: /idioma|vaga/.test(a.label) ? 'ic ic--sm i-x' : (/online/.test(a.label) ? 'ic ic--sm i-monitor' : (/cidade|Ver em/.test(a.label) ? 'ic ic--sm i-pin' : 'ic ic--sm i-search')) }));
     const pfTrust4 = pt ? pt.trust.map(([label, k]) => ({ label, cls: 'trust ' + (k === 'imp' ? 'trust--decl' : (/verificado/.test(label) && !/não verificado|ainda não/.test(label) ? 'trust--ver' : (/Titularidade/.test(label) ? 'trust--owner' : 'trust--decl'))) })) : [];
     const V4 = {
-      sports4, scens4, kpis, hasKpis: kpis.length > 0, bannerImg: B(SIMG[st.mod] || SIMG.CrossFit), tint4: '--tint: ' + tintOf(st.mod), eyebrow4,
+      sports4, scens4, kpis, hasKpis: kpis.length > 0, bannerImg: HERO(st.mod).img, heroCls: 'vfe-hero' + (HERO(st.mod).art ? ' vfe-hero--art' : ''), tint4: '--tint: ' + tintOf(st.mod), eyebrow4,
       cards4, countB, countT, hasCountB: !!countB,
       ddCity: dd === 'city', ddFmt: dd === 'fmt', ddLang: dd === 'lang', ddSort: dd === 'sort', ddSortC: dd === 'sortc', tgCity: tg('city'), tgFmt: tg('fmt'), tgLang: tg('lang'), tgSort: tg('sort'), tgSortC: tg('sortc'),
       cityMenu, fmtMenu, langMenu, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',
@@ -393,8 +393,11 @@ class Component extends DCLogic {
     if (st.toast && this.__tt !== st.toast) { this.__tt = st.toast; this.__ty = (typeof Component.__y === 'number' ? Component.__y : 160) + 56; }
     const sy = typeof this.__sy === 'number' ? this.__sy : 160;
     // foco declarado (sub-modalidade): só o que os perfis declaram na especialidade
-    const FOCOS = [];
-    T.filter((t) => has(t.mods, st.mod)).forEach((t) => t.spec.split(' e ').forEach((p) => { if (p !== st.mod && FOCOS.indexOf(p) < 0) FOCOS.push(p); }));
+    // com o catálogo completo há milhares de combinações: ficam os 12 focos mais declarados
+    const fq = {};
+    for (let i = 0; i < T.length; i++) { const t = T[i]; if (!has(t.mods, st.mod)) continue; t.spec.split(' e ').forEach((p) => { if (p && p !== st.mod) fq[p] = (fq[p] || 0) + 1; }); }
+    const FOCOS = Object.keys(fq).sort((a, b) => fq[b] - fq[a]).slice(0, 12);
+    if (st.foco && FOCOS.indexOf(st.foco) < 0) FOCOS.push(st.foco);
     const focoChips = [{ label: 'Todos', n: '', hasN: false, on: String(!st.foco), cls: 'chip' + (!st.foco ? ' is-on' : ''), pick: () => change({ foco: '' }) }]
       .concat(FOCOS.map((f) => { const k = countFor({ foco: f }); return { label: f, n: String(k), hasN: true, on: String(st.foco === f), cls: 'chip' + (st.foco === f ? ' is-on' : ''), pick: () => change({ foco: st.foco === f ? '' : f }), k }; }).filter((c) => c.k > 0 || c.on === 'true'));
     // bairro ou região (só quando há cidade e atendimento presencial)

@@ -175,7 +175,7 @@
 
   // ---------- navegação entre telas ----------
   var PAGES = null;
-  var SPORTS = [['crossfit', 'CrossFit'], ['musculacao', 'Musculação'], ['funcional', 'Funcional'], ['corrida', 'Corrida'], ['pilates', 'Pilates'], ['yoga', 'Yoga'], ['natacao', 'Natação'], ['lutas', 'Lutas'], ['ciclismo', 'Ciclismo'], ['danca', 'Dança'], ['jiujitsu', 'Jiu-Jitsu'], ['escalada', 'Escalada']];
+  var SPORTS = window.SPORTS.list.map(function (x) { return [x.id, x.label]; });
   var FMT = { presencial: 'Presencial', online: 'Online', qualquer: 'Qualquer' };
   // perfis completos montados no VFINAL e a situação que cada um demonstra
   var PROFILE = { thiago: 'novo', rafael: 'comparando', gabriel: 'semvaga', carolina: 'desconhecida', studio: 'importado', bruna: 'semoferta' };

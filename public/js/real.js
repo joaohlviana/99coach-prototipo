@@ -10,12 +10,12 @@
 
   // ---------- treinadores ----------
   var FOTOS = window.__REAL_FOTOS || '';
-  var LABEL = { crossfit: 'CrossFit', musculacao: 'Musculação', funcional: 'Funcional', corrida: 'Corrida', pilates: 'Pilates', yoga: 'Yoga', natacao: 'Natação', lutas: 'Lutas', ciclismo: 'Ciclismo', danca: 'Dança', jiujitsu: 'Jiu-Jitsu', escalada: 'Escalada' };
-  var ALIAS = { 'jiu-jitsu': ['jiujitsu', 'lutas'], boxe: ['lutas'], 'muay-thai': ['lutas'], judo: ['lutas'], karate: ['lutas'], taekwondo: ['lutas'], mma: ['lutas'], 'krav-maga': ['lutas'], capoeira: ['lutas'], ballet: ['danca'], triatlo: ['corrida', 'natacao', 'ciclismo'], hidroginastica: ['natacao'] };
+  var LABEL = {}; (window.SPORTS ? window.SPORTS.list : []).forEach(function (x) { LABEL[x.id] = x.label; });
+  var ALIAS = { 'jiu-jitsu': ['lutas'], boxe: ['lutas'], 'muay-thai': ['lutas'], judo: ['lutas'], karate: ['lutas'], taekwondo: ['lutas'], mma: ['lutas'], 'krav-maga': ['lutas'], capoeira: ['lutas'], ballet: ['danca'], triatlo: ['corrida', 'natacao', 'ciclismo'], hidroginastica: ['natacao'], esgrima: ['lutas'], futsal: ['futebol'], 'volei-de-praia': ['volei'] };
   var UF = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
   var items = [], byId = {}, cache = {};
   function fold(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
-  function ui(sports) { var o = {}; (sports || []).forEach(function (s) { if (LABEL[s]) o[s] = 1; (ALIAS[s] || []).forEach(function (a) { o[a] = 1; }); }); return Object.keys(o); }
+  function ui(sports) { var o = {}; (sports || []).forEach(function (s) { var id = window.SPORTS ? window.SPORTS.idOfSlug(s) : s; if (LABEL[id]) o[id] = 1; (ALIAS[s] || []).forEach(function (a) { o[a] = 1; }); }); return Object.keys(o); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
     if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: r[3] ? (/^https?:/.test(r[3]) ? r[3] : FOTOS + r[3]) : '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
@@ -42,6 +42,12 @@
         return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl || !t.city, sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
           cref: 'Perfil importado: credencial não confirmada', av: 'unknown', avLong: 'Não informada', more: 0 };
       })));
+    },
+    // quantos treinadores por esporte (id do app)
+    sportCounts: function () {
+      if (!items.length) return null;
+      if (!cache.cnt) { var n = {}; items.forEach(function (t) { t.sports.forEach(function (k) { n[k] = (n[k] || 0) + 1; }); }); cache.cnt = n; }
+      return cache.cnt;
     },
     // Esporte: mesmo formato da lista de resultados
     esporte: function () {

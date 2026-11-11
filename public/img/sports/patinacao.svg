@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.75 21.75H2.25" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M21.75 21.75H20.25" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5.25 23.25C6.07843 23.25 6.75 22.5784 6.75 21.75C6.75 20.9216 6.07843 20.25 5.25 20.25C4.42157 20.25 3.75 20.9216 3.75 21.75C3.75 22.5784 4.42157 23.25 5.25 23.25Z" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 23.25C12.8284 23.25 13.5 22.5784 13.5 21.75C13.5 20.9216 12.8284 20.25 12 20.25C11.1716 20.25 10.5 20.9216 10.5 21.75C10.5 22.5784 11.1716 23.25 12 23.25Z" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.75 23.25C19.5784 23.25 20.25 22.5784 20.25 21.75C20.25 20.9216 19.5784 20.25 18.75 20.25C17.9216 20.25 17.25 20.9216 17.25 21.75C17.25 22.5784 17.9216 23.25 18.75 23.25Z" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18.519 9.9C20.4546 10.1398 21.8689 11.8454 21.7462 13.7919C21.6236 15.7385 20.0064 17.253 18.056 17.248H5.25C3.59315 17.248 2.25 15.9049 2.25 14.248V2.248C2.2511 1.42035 2.92235 0.749999 3.75 0.75H9.75C10.5784 0.75 11.25 1.42157 11.25 2.25V7.675C11.2503 8.43168 11.8141 9.06968 12.565 9.163L18.519 9.9Z" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M6.75 21.75H10.5" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13.5 21.75H17.25" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.25 3.75H8.25" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M11.25 6.75H6.75" stroke="#5A626B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1348,3 +1348,13 @@ html,body{margin:0;background:var(--concrete)}
 .v4-sheet .field{gap:8px}
 .v4-sheet .btn--lg{height:52px;font-size:15px}
 @media (max-width:599px){.v4-sheet .btn--lg{height:48px}.v4-sheet .input input,.v4-sheet .input textarea{font-size:16px}}
+
+/* Hero próprio de esporte sem foto: cor do esporte + o ícone do esporte como arte */
+.vfe-hero--art{background:linear-gradient(120deg,color-mix(in srgb,var(--tint,var(--brand)) 46%,var(--ink)) 0%,color-mix(in srgb,var(--tint,var(--brand)) 14%,var(--ink)) 58%,var(--ink) 100%)}
+.vfe-hero--art .vfe-hero__img{inset:auto;right:32px;top:50%;width:auto;height:96%;aspect-ratio:1;transform:translateY(-50%) rotate(-6deg);object-fit:contain;filter:brightness(0) invert(1);opacity:.13}
+.vfe-hero--art .vfe-hero__tint{display:none}
+.vfe-hero--art::after{background:linear-gradient(to top,rgba(18,18,20,.5),rgba(18,18,20,0))}
+.vfe-st--art{background:linear-gradient(140deg,color-mix(in srgb,var(--tint,var(--brand)) 50%,var(--ink)),var(--ink))}
+.vfe-st--art>img{inset:auto;right:-8%;top:-6%;width:auto;height:78%;aspect-ratio:1;object-fit:contain;filter:brightness(0) invert(1);opacity:.2}
+.vfe-st--art::before{display:none}
+@media (max-width:599px){.vfe-hero--art{background:none}.vfe-hero--art .vfe-hero__img{display:none}.vfe-hero--art::after{display:none}}

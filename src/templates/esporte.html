@@ -30,7 +30,7 @@
         <button type="button" class="hdr__ico v4-menu" onClick="{{openMenu}}" aria-label="Abrir menu" aria-expanded="{{menuOpen}}"><i class="ic ic--sm i-menu"></i></button>
       </div>
     </div>
-    <div class="vfe-ios v4-only-m"><button type="button" class="vfe-ios__b" onClick="{{goHome}}" aria-label="Voltar para o início"><i class="ic ic--sm i-chev-l"></i></button><b class="vfe-ios__t">{{mod}} em {{cityLabelShort}}</b><button type="button" class="vfe-ios__b" onClick="{{openSaved}}" aria-label="Salvos, {{favCount}} profissionais"><i class="ic ic--sm i-heart"></i><sc-if value="{{hasFavs}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button></div>
+    <div class="vfe-ios v4-only-m"><button type="button" class="vfe-ios__b" onClick="{{goHome}}" aria-label="Voltar para o início"><i class="ic ic--sm i-chev-l"></i></button><b class="vfe-ios__t">{{iosTitle}}</b><button type="button" class="vfe-ios__b" onClick="{{openSaved}}" aria-label="Salvos, {{favCount}} profissionais"><i class="ic ic--sm i-heart"></i><sc-if value="{{hasFavs}}" hint-placeholder-val="{{ false }}"><span class="pip"></span></sc-if></button></div>
     <div class="wrap vfe-msearch v4-only-m"><button type="button" class="hdr__search vfe-msearch__b" onClick="{{openMod}}" aria-label="Busca atual: {{ctxLine}}. Alterar busca"><i class="ic ic--sm i-search"></i><span class="vf-hs"><b>{{mod}}</b> · {{ctxShort}}</span><span class="vfe-msearch__go"><i class="ic ic--xs i-filter"></i></span></button></div>
   </header>
   <!-- Barra de esportes (Componentes-5 G16) -->
@@ -48,7 +48,7 @@
     </nav>
 
     <!-- Topo da modalidade (G19): foto em P&B com a tinta do esporte, título, números reais -->
-    <section class="vfe-hero" aria-labelledby="h1" style="{{tint4}}">
+    <section class="{{heroCls}}" aria-labelledby="h1" style="{{tint4}}">
       <img class="vfe-hero__img" src="{{bannerImg}}" alt="">
       <span class="vfe-hero__tint" aria-hidden="true"></span>
       <div class="vfe-hero__t"><span class="eyebrow eyebrow--light">{{eyebrow4}}</span><h1 class="h-page" id="h1">{{h1}}</h1><p class="vfe-hero__lede">{{lede}}</p></div>
@@ -216,7 +216,7 @@
     <section class="vfe-sec" aria-labelledby="perto">
       <div class="sec-head"><div><h2 class="sec-title sec-title--nonum" id="perto">{{nearTitle}}</h2><p class="sec-sub">Só combinações com profissionais publicados.</p></div></div>
       <sc-if value="{{hasNear}}" hint-placeholder-val="{{ true }}"><div class="vfe-near" role="group" aria-label="Regiões da cidade"><sc-for list="{{nearChips}}" as="c" hint-placeholder-count="5"><button type="button" class="chip" onClick="{{c.pick}}">{{c.label}}<small class="vfe-n">{{c.n}}</small></button></sc-for></div></sc-if>
-      <sc-if value="{{hasRel4}}" hint-placeholder-val="{{ true }}"><div class="vfe-stgrid"><sc-for list="{{rel4}}" as="r" hint-placeholder-count="7"><button type="button" class="st vfe-st" style="{{r.tint}}" onClick="{{r.pick}}"><img src="{{r.img}}" alt=""><span><b>{{r.label}}</b><small>{{r.n}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r"></i></span></button></sc-for></div><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div></sc-if>
+      <sc-if value="{{hasRel4}}" hint-placeholder-val="{{ true }}"><div class="vfe-stgrid"><sc-for list="{{rel4}}" as="r" hint-placeholder-count="7"><button type="button" class="{{r.cls}}" style="{{r.tint}}" onClick="{{r.pick}}"><img src="{{r.img}}" alt=""><span><b>{{r.label}}</b><small>{{r.n}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r"></i></span></button></sc-for></div><div class="vfe-dots v4-only-m" aria-hidden="true"><i class="is-on"></i><i></i><i></i></div></sc-if>
       <sc-if value="{{isLondrina}}" hint-placeholder-val="{{ true }}"><div class="card card--flat vfe-empnote"><span class="lrow__ic"><i class="ic ic--sm i-search"></i></span><div class="vfe-empnote__t"><b>Quando não há ninguém na cidade</b><span>Em Tamarana ainda não há {{mod}} presencial publicado. A página mostra alternativas (Londrina, a 50 km, e o online) em vez de uma lista vazia, e não é indexada.</span></div><div class="v4-row"><button type="button" class="btn btn--outline btn--sm" onClick="{{seeEmpty}}">Ver como fica</button><button type="button" class="btn btn--primary btn--sm" onClick="{{seeOnline}}">Ver online</button></div></div></sc-if>
     </section>
   </main>

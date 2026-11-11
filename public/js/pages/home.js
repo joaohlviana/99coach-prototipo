@@ -34,13 +34,14 @@ class Component extends DCLogic {
     const scens = SC.map(([id, label]) => ({ label, cls: 'chip' + (S.scen === id ? ' is-on' : ''), on: S.scen === id ? 'true' : 'false', pick: () => this.setState(Component.init(id)) }));
     const scenName = (SC.find((x) => x[0] === S.scen) || SC[0])[1];
 
-    const SP = [['crossfit', 'CrossFit', 'c6cd81ed01305a02ed5ef0a7f77bcbc5'], ['musculacao', 'Musculação', 'a66078f9660d8d79f5a8a1fe1b5de471'], ['funcional', 'Funcional', '2192d01057d4de029869dacde99393d2'], ['corrida', 'Corrida', 'cdf7571519a4147819bcd43ee8e0f291'], ['pilates', 'Pilates', 'c918eae13ef6aa26251f45ae6865a413'], ['yoga', 'Yoga', 'c918eae13ef6aa26251f45ae6865a413'], ['natacao', 'Natação', 'e6ae683211af46b0c99b87c8fada6155'], ['lutas', 'Lutas', '24f804dcd864d949482e1959f3be9b7a'], ['ciclismo', 'Ciclismo', '9b6e43be870276dae4052e6f35d8c15d'], ['danca', 'Dança', '86118c35a4cd36a985c797a7e3361928'], ['jiujitsu', 'Jiu-Jitsu', 'c15e5abaf728b1580d2a723e8cf398b5'], ['escalada', 'Escalada', '7cb7d48a74408614131846f3206aa4e2']];
+    const SP = window.SPORTS.ordered(window.REAL && window.REAL.sportCounts()).map((x) => [x.id, x.label, window.SPORTS.icon(x.id)])
+    { const HO = ['crossfit', 'musculacao', 'funcional', 'corrida', 'pilates', 'yoga', 'natacao', 'lutas', 'ciclismo', 'danca']; const head = HO.map((id) => SP.find((x) => x[0] === id)); SP.splice(0, 10, ...head); }
     const sp = SP.find((x) => x[0] === S.sport) || SP[0];
     const sportLabel = sp[1];
     const pickSport = (id) => () => set({ sport: id, hidden: {}, sheet: null, toast: null });
-    const chips = SP.slice(0, 10).map(([id, label, ic]) => ({ label, icon: B(ic), cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: pickSport(id) }));
-    const allSports = SP.map(([id, label, ic]) => ({ label, icon: B(ic), cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: pickSport(id) }));
-    const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: B(ic), cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
+    const chips = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: pickSport(id) }));
+    const allSports = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: pickSport(id) }));
+    const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
     const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: pickSport(id) }));
 
     const CIT = (window.REAL && window.REAL.cities(S.city)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
