@@ -39,10 +39,12 @@ class Component extends DCLogic {
     const sp = SP.find((x) => x[0] === S.sport) || SP[0];
     const sportLabel = sp[1];
     const pickSport = (id) => () => set({ sport: id, hidden: {}, sheet: null, toast: null });
-    const chips = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: pickSport(id) }));
-    const allSports = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: pickSport(id) }));
+    // clicar em um esporte abre a página do esporte (com a cidade e o formato já escolhidos)
+    const goSport = (id) => () => { set({ sport: id, hidden: {}, sheet: null, toast: null }); window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this); };
+    const chips = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: goSport(id) }));
+    const allSports = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: goSport(id) }));
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
-    const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: pickSport(id) }));
+    const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: goSport(id) }));
 
     const CIT = (window.REAL && window.REAL.cities(S.city)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
     const cities = CIT.map(([c, n]) => ({ label: c, note: n, cls: 'opt' + (S.city === c ? ' is-on' : ''), pick: () => set({ city: c, hidden: {}, sheet: null, loc: 0 }), pick2: () => set({ city: c, hidden: {} }) }));
