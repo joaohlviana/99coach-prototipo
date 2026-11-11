@@ -43,6 +43,13 @@
           cref: 'Perfil importado: credencial não confirmada', av: 'unknown', avLong: 'Não informada', more: 0 };
       })));
     },
+    // outros profissionais reais do mesmo esporte (mesma cidade primeiro)
+    similar: function (id, max) {
+      var me = byId[id]; if (!me) return [];
+      var sp = me.sports[0], a = [], b2 = [];
+      for (var i = 0; i < items.length && a.length < (max || 4); i++) { var t = items[i]; if (t.id === id || (sp && t.sports.indexOf(sp) < 0)) continue; if (me.city && t.city === me.city) a.push(t); else if (b2.length < (max || 4)) b2.push(t); }
+      return a.concat(b2).slice(0, max || 4).map(function (t) { return { id: t.id, name: t.name, spec: t.spec, city: t.city, photo: t.photo, ini: t.ini, sport: LABEL[t.sports[0]] || '' }; });
+    },
     // quantos treinadores por esporte (id do app)
     sportCounts: function () {
       if (!items.length) return null;

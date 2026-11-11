@@ -61,7 +61,7 @@ REG.screen({
       source: e.own ? 'Autoria: você. Mídia enviada por você, visível só para seus alunos.' : 'Fonte: biblioteca 99Coach · mídia com direito de uso confirmado.',
       isVideo: isVideo, isImg: isImg, noMedia: noMedia, mFail: mFail, mDenied: mDenied,
       retryMedia: function () { set({ mediaOk: true, nt: '' }); },
-      play: function () { ctx.toast('Demonstração com legenda. No protótipo o vídeo não toca.'); },
+      play: function () { ctx.toast('O vídeo de demonstração deste exercício ainda não foi enviado.'); },
       cues: e.cues.map(function (c, i) { return { n: String(i + 1), text: c }; }), hasCues: e.cues.length > 0,
       equip: e.equip, group: e.group, level: e.level,
       units: units.map(function (u) { return { k: u[0], v: u[1] }; }),

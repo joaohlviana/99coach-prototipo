@@ -363,7 +363,7 @@ class Component extends DCLogic {
       paths: [
         { title: st.published ? 'Editar meu cadastro' : 'Completar meu cadastro', sub: cad.progress + (st.published ? ' · publicado' : ' · publique quando quiser'), ic: 'ic ic--sm i-user', go: go('cad'), meta: st.published ? 'No ar' : 'Rascunho' },
         { title: 'Convidar um aluno', sub: 'Ele aceita uma vez e pronto. Sem cartão, sem Pro.', ic: 'ic ic--sm i-user-plus', go: go('convidar'), meta: st.invCreated ? (st.invShared ? 'Enviado' : 'Criado') : '1 min' },
-        { title: 'Criar uma rotina', sub: 'Para usar com qualquer aluno', ic: 'ic ic--sm i-dumbbell', go: () => toast('A criação de rotinas fica fora desta versão do protótipo.'), meta: '' }
+        { title: 'Criar uma rotina', sub: 'Para usar com qualquer aluno', ic: 'ic ic--sm i-dumbbell', go: () => (window.GO ? window.GO('H06') : toast('Rotinas ainda não estão disponíveis.')), meta: '' }
       ]
     };
     const priceLine = st.services.length ? svcPrice(st.services[0]) : 'sem preço publicado';
@@ -775,7 +775,7 @@ class Component extends DCLogic {
     // destinos que vivem nas áreas interativas (treinador e aluno): abrem as telas pelo ID do DS
     const AREA = student ? { 'Treinos': 'ALU06', 'Evolução': 'H10E', 'Mensagens': 'ALU05' }
       : { 'Agenda': 'TRE20', 'Mensagens': 'TRE25', 'Rotinas': 'H06', 'Exercícios': 'TRE10', 'Formulários': 'TRE04', 'Ofertas': 'TRE29', 'Conteúdo': 'H06' };
-    const off = (l) => AREA[l] && window.GO ? () => window.GO(AREA[l]) : () => toast(l + ' fica fora desta versão do protótipo.');
+    const off = (l) => AREA[l] && window.GO ? () => window.GO(AREA[l]) : () => toast(l + ' ainda não está disponível.');
     const side = (student ? sSide : tSide).map((gp) => ({ sec: gp.sec, items: gp.items.map(([l, ic, to]) => { const on = !!to && ACTIVE[st.step] === to; return { label: l, ic: 'ic ic--sm i-' + ic, cls: 'v4-reset snav__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: to ? (SIDEGO[to] || go(to)) : off(l) }; }) }));
     const TT = student ? [['Hoje', 'home', 'alunoHoje'], ['Treinos', 'dumbbell', ''], ['Evolução', 'trend', ''], ['Mensagens', 'message', ''], ['Conta', 'user', 'acct']]
       : [['Hoje', 'home', 'hoje'], ['Alunos', 'users', 'convidar'], ['Conteúdo', 'dumbbell', ''], ['Mensagens', 'message', ''], ['Conta', 'user', 'acct']];
@@ -797,7 +797,7 @@ class Component extends DCLogic {
       goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => NAV && NAV.go('perfil', { id: 'thiago' }, this), goPub: go('pub'), goPublicado: go('publicado'), goConvidar: go('convidar'), goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
       prepLater: () => { set({ step: 'alunoHoje', toast: 'Tudo bem. A preparação fica salva em Hoje.' }); top(); },
       copy: () => toast('Copiado. (Demonstração: a área de transferência pode estar bloqueada nesta janela.)'),
-      msg: () => toast('Mensagens ficam fora desta versão do protótipo. Mensagem não altera o acompanhamento.'),
+      msg: () => (window.GO ? window.GO(student ? 'ALU05' : 'TRE25') : toast('Mensagens ainda não estão disponíveis.')),
       me: student ? { ini: stu.ini, name: stuName, role: 'Aluna · ' + inv.svc } : { ini: ini, name: st.name, role: 'Treinador · ' + (cityShort || 'sem cidade'), photo: st.photoUrl },
       navLabel: student ? 'Navegação do aluno' : 'Navegação do treinador', side, tabs,
       mtop: { title: MT[st.step] || '', hasBack: !!MB[st.step], noBack: !MB[st.step], back: MB[st.step] ? go(MB[st.step]) : null },

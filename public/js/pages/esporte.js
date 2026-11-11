@@ -190,7 +190,8 @@ class Component extends DCLogic {
       { title: 'Base de Corrida 5K', by: 'Renata Lopes', dur: '8 semanas de programação', n: 24, price: 'R$ 147', access: '12 meses de acesso', cover: B('d7f58212b752ef1353285564cfe093c1'), mods: ['Corrida'] },
       { title: 'Functional Fitness — Ciclo completo', by: 'Larissa Nunes', dur: '12 semanas de programação', n: 36, price: 'R$ 197', access: '12 meses de acesso', cover: B('53bc58b2a2121cf553d701e2bbe3f479'), mods: ['Funcional'] }
     ];
-    const progs = PG.filter((p) => has(p.mods, st.mod)).map((p, i) => Object.assign({}, p, { n: String(p.n), open: () => set({ prog: PG.indexOf(p), sheet: 'prog' }) }));
+    const PROD = !document.documentElement.classList.contains('demo'); // no produto não há programas publicados: os de exemplo não aparecem
+    const progs = (PROD ? [] : PG.filter((p) => has(p.mods, st.mod))).map((p, i) => Object.assign({}, p, { n: String(p.n), open: () => set({ prog: PG.indexOf(p), sheet: 'prog' }) }));
     const progFail = st.load === 'parcial';
     const pg = st.prog >= 0 ? Object.assign({}, PG[st.prog], { n: String(PG[st.prog].n) }) : PG[0];
 
@@ -256,7 +257,7 @@ class Component extends DCLogic {
     const toastTxt = tst && tt ? (tst.kind === 'add' ? tt.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : tt.name + ' removido dos salvos.') : '';
     const toastUndo = () => { if (!tst) return; const nf = Object.assign({}, favs); if (tst.kind === 'add') delete nf[tst.id]; else nf[tst.id] = true; set({ favs: nf, toast: null }); };
 
-    const INFO = { ordem: ['Por que esta ordem?', 'Em Relevância, combinamos a modalidade, a cidade e o formato que você escolheu com a completude do perfil. Em Mais recentes, vale a data de publicação. Plano pago, anúncio ou comissão não mudam a posição.'], ajuda: ['Central de ajuda', 'A central de ajuda fica fora deste protótipo. No site, este link abre as perguntas e o contato do suporte.'], termos: ['Termos de uso', 'Documento legal fora do escopo deste protótipo de design. No site, abre a versão vigente com data.'], priv: ['Privacidade', 'Documento legal fora do escopo deste protótipo. No site, abre a política vigente e as escolhas de coleta opcional.'], regiao: ['Idioma e região', 'Nesta versão comercial, Brasil e real (R$) são a base. Mudar o idioma da interface não habilita vendas em outro país. Por enquanto, a interface está só em português.'], home: ['Início', 'A home está no quadro Home canônica · VFINAL. A busca atual fica guardada: ' + ctxLine + '.'], progs: ['Programas', 'Os programas de ' + st.mod + ' estão logo abaixo dos resultados, em seção própria. A vitrine geral de programas fica fora desta versão do protótipo.'], pro: ['Você é treinador?', 'Crie seu perfil com uma conta mínima e complete aos poucos. Criar conta não ativa teste do plano Pro. '] };
+    const INFO = { ordem: ['Por que esta ordem?', 'Em Relevância, combinamos a modalidade, a cidade e o formato que você escolheu com a completude do perfil. Em Mais recentes, vale a data de publicação. Plano pago, anúncio ou comissão não mudam a posição.'], ajuda: ['Central de ajuda', 'A central de ajuda fica fora deste protótipo. No site, este link abre as perguntas e o contato do suporte.'], termos: ['Termos de uso', 'Documento legal fora do escopo deste protótipo de design. No site, abre a versão vigente com data.'], priv: ['Privacidade', 'Documento legal fora do escopo deste protótipo. No site, abre a política vigente e as escolhas de coleta opcional.'], regiao: ['Idioma e região', 'Nesta versão comercial, Brasil e real (R$) são a base. Mudar o idioma da interface não habilita vendas em outro país. Por enquanto, a interface está só em português.'], home: ['Início', 'A home está no quadro Home canônica · VFINAL. A busca atual fica guardada: ' + ctxLine + '.'], progs: ['Programas', PROD ? 'Ainda não há programas publicados na 99coach. Quando um treinador publicar um programa de ' + st.mod + ', ele aparece nesta página.' : 'Os programas de ' + st.mod + ' estão logo abaixo dos resultados, em seção própria.'], pro: ['Você é treinador?', 'Crie seu perfil com uma conta mínima e complete aos poucos. Criar conta não ativa teste do plano Pro. '] };
     const info = INFO[st.info] || ['', ''];
     const sheet = st.sheet;
 
@@ -286,7 +287,7 @@ class Component extends DCLogic {
       favList, noFavs: favList.length === 0, favCount: String(favList.length), hasFavs: favList.length > 0,
       toastOn: !!tst && !!tt && !sheet && !st.open, toastTxt, toastUndo, toastSaved: !!tst && tst.kind === 'add', toastClose: () => set({ toast: null }),
       authTitle: 'Entrar', authSub: 'Enviamos um código para o seu e-mail. Sem senha.', codeIdle: !st.codeSent, codeSent: st.codeSent, sendCode: () => set({ codeSent: true }),
-      infoTitle: info[0], infoBody: info[1], info_ajuda: () => set({ sheet: 'info', info: 'ajuda' }), info_termos: () => set({ sheet: 'info', info: 'termos' }), info_priv: () => set({ sheet: 'info', info: 'priv' }), info_regiao: () => set({ sheet: 'info', info: 'regiao' }),
+      infoTitle: info[0], infoBody: info[1], info_ajuda: () => window.GO('PUB11'), info_termos: () => window.GO('PUB11', { art: 'termos' }), info_priv: () => window.GO('PUB11', { art: 'privacidade' }), info_regiao: () => set({ sheet: 'info', info: 'regiao' }),
       pfOpen: !!pt, pf, closeProfile
     };
     // ---------- v4 · Design System ----------

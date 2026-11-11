@@ -186,6 +186,11 @@ class Component extends DCLogic {
 
     others.forEach((r) => { r.noPrice = !r.hasPrice; });
     if (others.length < 4) others.push({ name: 'Diego Moraes', role: 'Treinador de CrossFit e Lutas', hasPhoto: true, noPhoto: false, photo: B('348bafe032c42fc5274e3de9d8004df2'), ini: 'DM', avCls: 'vfp-avnone', avIc: '', avText: '', sport: 'CrossFit', verified: true, hasRating: true, noRating: false, avg: '4,8', n: 56, hasPrice: true, noPrice: false, pre: '', price: 'R$ 90', unit: '/ sessão', offName: 'Sessão presencial', open: open('outro') });
+    // perfil real: só profissionais reais do catálogo, cada um abre o próprio perfil
+    if (window.REAL && window.REAL.has(x.id)) {
+      others.length = 0;
+      window.REAL.similar(x.id, 4).forEach((t) => others.push({ name: t.name, role: t.spec + (t.city ? ' · ' + t.city : ''), hasPhoto: !!t.photo, noPhoto: !t.photo, photo: t.photo, ini: t.ini, avCls: 'vfp-avnone', avIc: '', avText: '', sport: t.sport, verified: false, hasRating: false, noRating: true, avg: '', n: 0, hasPrice: false, noPrice: true, pre: '', price: '', unit: '', offName: '', open: () => window.NAV.go('perfil', { id: t.id }, this) }));
+    }
     // ---------- folhas ----------
     const btn = (label, go, k) => ({ label: label, go: go, cls: 'btn btn--block btn--lg v4-wrapbtn ' + (k === 2 ? 'btn--outline' : k === 3 ? 'btn--ghost' : k === 4 ? 'btn--brand' : 'btn--primary') });
     const logged = !!st.user;
@@ -319,7 +324,7 @@ class Component extends DCLogic {
         { v: x.n ? String(x.n) : 'Nenhuma', k: 'avaliações' },
         { v: x.progs.length ? String(x.progs.length) : 'Nenhum', k: x.progs.length === 1 ? 'programa' : 'programas' }
       ],
-      openHome: () => window.NAV.go('home', {}, this), openLang: open('lang'), favDot: !!st.fav,
+      openHome: () => window.NAV.go('home', {}, this), goHelp: () => window.GO('PUB11'), goHelpPay: () => window.GO('PUB11', { art: 'pagamentos' }), goHelpPriv: () => window.GO('PUB11', { art: 'privacidade' }), goHelpTerms: () => window.GO('PUB11', { art: 'termos' }), goHelpCookies: () => window.GO('PUB11', { art: 'cookies' }), openLang: open('lang'), favDot: !!st.fav,
       skip: () => { try { const el = document.getElementById('conteudo'); if (el) { el.setAttribute('tabindex', '-1'); el.focus(); } } catch (_) {} }
     };
   }
