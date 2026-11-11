@@ -40,7 +40,7 @@
   // ---------- utilidades ----------
   var U = {
     now: function () { var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); },
-    today: 'segunda, 26 de outubro', todayShort: '26/10',
+    today: 'segunda, 26 de outubro', todayShort: '26/10', // data fixa só na demonstração; no produto vale a data de hoje (ver abaixo)
     val: function (e) { return e && e.target ? (e.target.type === 'checkbox' ? !!e.target.checked : e.target.value) : ''; },
     ini: function (name) { return String(name || '').split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase(); },
     money: function (n) { var v = Number(n) || 0; return 'R$ ' + v.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.').replace(',00', ''); },
@@ -176,12 +176,29 @@
     var keys = (scr.scens || []).map(function (x) { return x[0]; });
     return keys.indexOf('novo') >= 0 ? 'novo' : (keys.indexOf('primeiro') >= 0 ? 'primeiro' : '');
   }
+  // produto: a data é a de hoje (a demonstração mantém a data fixa dos exemplos)
+  (function () {
+    var real = function (short) { var d = new Date(); if (short) return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); try { return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).replace('-feira', ''); } catch (_) { return real(true); } };
+    var demo = function () { return document.documentElement.classList.contains('demo'); };
+    Object.defineProperty(U, 'today', { get: function () { return demo() ? 'segunda, 26 de outubro' : real(false); }, configurable: true });
+    Object.defineProperty(U, 'todayShort', { get: function () { return demo() ? '26/10' : real(true); }, configurable: true });
+  })();
+  window.TODAY = function () { var t = U.today; return t.charAt(0).toUpperCase() + t.slice(1); };
+  // telas que ainda só existem com dados de exemplo: no produto não abrem (nem digitando o endereço)
+  var DEMO_ONLY = {
+    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal' },
+    aluno: { fc01: 'contratacoes', fc02: 'contratacoes', fc03: 'contratacoes', fc04: 'contratacoes', fc05: 'contratacoes', fc06: 'contratacoes', fc08: 'contratacoes', fc09: 'contratacoes', fc10: 'contratacoes', pedir: 'semvinculo' }
+  };
   window.MODPAGE = function (page, role) {
     return {
       init: function (c) { c.state = { scn: c.props.scn || '', sheet: null, toast: '', v: 0, ui: {} }; },
       render: function (c) {
         var props = c.props, st = c.state;
         var scr = REG.get(page, props.s) || REG.first(page);
+        if (scr && DEMO_ONLY[page] && DEMO_ONLY[page][scr.key] && !document.documentElement.classList.contains('demo')) {
+          var alt = REG.get(page, DEMO_ONLY[page][scr.key]);
+          if (alt) { if (scr.key !== 'agenda' && !c.__blk) { c.__blk = 1; setTimeout(function () { NOTICE('Esta parte ainda não está disponível.'); }, 0); } scr = alt; }
+        }
         // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
         if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && (window.ACCT.area() || (window.ACCT.hasLink && window.ACCT.hasLink()))
           && scr && ['hoje', 'sessao', 'execucao', 'encerrar', 'evolucao', 'mensagens', 'programas', 'treinador', 'agenda', 'conteudo', 'formulario'].indexOf(scr.key) >= 0) {

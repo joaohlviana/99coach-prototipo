@@ -382,7 +382,7 @@ class Component extends DCLogic {
 
     // ---------- Hoje do treinador (TRE01) ----------
     const h = {
-      date: 'Segunda, 26 de outubro',
+      date: window.TODAY ? window.TODAY() : 'Segunda, 26 de outubro',
       title: 'Oi, ' + first, sub: st.published ? 'Seu perfil está no ar. Próximo passo natural: trazer os alunos que você já tem.' : 'Sua conta está pronta. Nada abaixo é obrigatório agora.',
       paths: [
         { title: st.published ? 'Editar meu cadastro' : 'Completar meu cadastro', sub: cad.progress + (st.published ? ' · publicado' : ' · publique quando quiser'), ic: 'ic ic--sm i-user', go: go('cad'), meta: st.published ? 'No ar' : 'Rascunho' },

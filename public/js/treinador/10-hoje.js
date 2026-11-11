@@ -96,7 +96,7 @@ REG.screen({
 
     return {
       isNew: scn === 'novo', notNew: scn !== 'novo',
-      date: 'Segunda, 26 de outubro', hello: 'Bom dia, ' + t.first,
+      date: window.TODAY(), hello: 'Bom dia, ' + t.first,
       sub: failQ || loading ? ag.length + ' compromissos na agenda de hoje' : (q.length ? U.plural(q.length, 'aluno precisa', 'alunos precisam') + ' de você hoje · ' + ag.length + ' compromissos na agenda' : 'Nenhuma pendência confirmada · ' + ag.length + ' compromissos na agenda'),
       invite: go('REL01'),
       q: ui.q || '', setQ: function (e) { ctx.setUi({ q: U.val(e) }); }, clearQ: function () { ctx.setUi({ q: '' }); },

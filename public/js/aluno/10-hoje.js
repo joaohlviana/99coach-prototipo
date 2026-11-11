@@ -86,7 +86,7 @@ REG.screen({
 
     return {
       flash: A1.flashVals(ctx), al: al,
-      hi: 'Oi, ' + ana.first, date: 'Segunda, 26 de outubro',
+      hi: 'Oi, ' + ana.first, date: window.TODAY(),
       isWelcome: scn === 'primeiro', notWelcome: scn !== 'primeiro',
       goPrep: function () { GO('REL07'); },
       isVarios: scn === 'varios',
