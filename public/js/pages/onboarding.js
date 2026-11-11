@@ -304,6 +304,30 @@ class Component extends DCLogic {
       review: () => set({ igStep: 'review' })
     };
 
+    // conta real fora da demonstração: convite, perfil e saída usam as telas e ações de verdade
+    const REALP = !!(window.CONTA && window.CONTA.session() && !st.scn && !document.documentElement.classList.contains('demo') && window.GO);
+    const goInvite = REALP ? () => window.GO('REL01') : () => { set({ step: 'convidar', toast: '' }); try { window.scrollTo(0, 0); } catch (_) {} };
+    // conta confirmada no servidor (e-mail e senha ou Google): grava o papel, retoma o cadastro salvo e segue
+    const finishReal = (role, email, login) => {
+      window.CONTA.setName(st.name);
+      const p = role ? window.CONTA.addRole(role) : Promise.resolve();
+      p.then(() => window.CONTA.syncRoles()).then((roles) => (login && (roles || []).indexOf('treinador') >= 0 ? window.CONTA.loadTrainer() : null)).then((srv) => {
+        if (srv && window.STORE) {
+          // cadastro de treinador guardado no servidor: retoma aqui, mesmo em outro aparelho
+          const base = this.base('treinador', '');
+          window.STORE.saveOnb(Object.assign(base, srv, { email: email, conta: true, real: true, step: 'hoje', scn: '' }));
+        }
+        set({ conta: true, real: true, pw: '', toast: '' });
+        let pend = ''; try { pend = localStorage.getItem('c99.conviteCode') || ''; } catch (_) {}
+        if (pend && window.NAV) return window.NAV.go('publico', { s: 'convite', id: pend }, this);
+        afterAuth();
+      });
+    };
+    if (!this.__oe) { this.__oe = true; let oe = ''; try { oe = localStorage.getItem('c99.oauthErro') || ''; localStorage.removeItem('c99.oauthErro'); } catch (_) {} if (oe) setTimeout(() => this.setState({ toast: 'O Google não concluiu o login: ' + oe }), 0); }
+    if (window.CONTA && window.CONTA.oauthBack && !this.__oa) {
+      const ob = window.CONTA.oauthBack();
+      if (ob) { this.__oa = true; setTimeout(() => { if (ob.name && !this.state.name) this.setState({ name: ob.name }); finishReal(ob.role, ob.email, !ob.role); }, 0); }
+    }
     const pay = {
       s: { intro: !st.payout, wait: st.payout === 'wait', ok: st.payout === 'ok' },
       types: [['pf', 'Pessoa física', 'Recebe no seu CPF', 'user'], ['pj', 'Pessoa jurídica', 'Recebe no CNPJ da empresa', 'bank']].map(([kk, t, s2, ic]) => ({ title: t, sub: s2, ic: 'ic ic--sm i-' + ic, on: String(st.payType === kk), cls: 'ocard onb-choice' + (st.payType === kk ? ' is-on' : ''), pick: () => set({ payType: kk }) })),
@@ -362,7 +386,7 @@ class Component extends DCLogic {
       title: 'Oi, ' + first, sub: st.published ? 'Seu perfil está no ar. Próximo passo natural: trazer os alunos que você já tem.' : 'Sua conta está pronta. Nada abaixo é obrigatório agora.',
       paths: [
         { title: st.published ? 'Editar meu cadastro' : 'Completar meu cadastro', sub: cad.progress + (st.published ? ' · publicado' : ' · publique quando quiser'), ic: 'ic ic--sm i-user', go: go('cad'), meta: st.published ? 'No ar' : 'Rascunho' },
-        { title: 'Convidar um aluno', sub: 'Ele aceita uma vez e pronto. Sem cartão, sem Pro.', ic: 'ic ic--sm i-user-plus', go: go('convidar'), meta: st.invCreated ? (st.invShared ? 'Enviado' : 'Criado') : '1 min' },
+        { title: 'Convidar um aluno', sub: 'Ele aceita uma vez e pronto. Sem cartão, sem Pro.', ic: 'ic ic--sm i-user-plus', go: goInvite, meta: st.invCreated ? (st.invShared ? 'Enviado' : 'Criado') : '1 min' },
         { title: 'Criar uma rotina', sub: 'Para usar com qualquer aluno', ic: 'ic ic--sm i-dumbbell', go: () => (window.GO ? window.GO('H06') : toast('Rotinas ainda não estão disponíveis.')), meta: '' }
       ]
     };
@@ -414,21 +438,7 @@ class Component extends DCLogic {
           if (email.indexOf('@') < 1) return toast('Informe um e-mail válido.');
           if (pw.length < 8) return set({ pwErr: true, toast: 'A senha precisa ter pelo menos 8 caracteres.' });
           const role = login ? '' : (st.intent === 'treinador' || st.flow === 'treinador' ? 'treinador' : 'aluno');
-          const done = () => {
-            window.CONTA.setName(st.name);
-            const p = role ? window.CONTA.addRole(role) : Promise.resolve();
-            p.then(() => window.CONTA.syncRoles()).then((roles) => (login && (roles || []).indexOf('treinador') >= 0 ? window.CONTA.loadTrainer() : null)).then((srv) => {
-              if (srv && window.STORE) {
-                // cadastro de treinador guardado no servidor: retoma aqui, mesmo em outro aparelho
-                const base = this.base('treinador', '');
-                window.STORE.saveOnb(Object.assign(base, srv, { email: email, conta: true, real: true, step: 'hoje', scn: '' }));
-              }
-              set({ conta: true, real: true, pw: '', toast: '' });
-              let pend = ''; try { pend = localStorage.getItem('c99.conviteCode') || ''; } catch (_) {}
-              if (pend && window.NAV) return window.NAV.go('publico', { s: 'convite', id: pend }, this);
-              afterAuth();
-            });
-          };
+          const done = () => finishReal(role, email, login);
           set({ busy: true, toast: login ? 'Entrando…' : 'Criando sua conta…' });
           const go = login ? window.CONTA.signIn(email, pw) : window.CONTA.signUp(email, pw, st.name);
           return go.then((r) => {
@@ -444,8 +454,13 @@ class Component extends DCLogic {
         }
         set({ step: 'codigo', toast: '' }); top();
       },
-      social: () => {
+      social: (e) => {
         if (conta.askTerms && !st.terms) return set({ termsErr: true });
+        // produto: login real com Google (o servidor devolve a pessoa já autenticada para esta página)
+        if (window.CONTA && !st.scn && !document.documentElement.classList.contains('demo')) {
+          if (/Apple/.test((e && e.target && e.target.textContent) || '')) return toast('Entrar com Apple ainda não está disponível. Use o Google ou e-mail e senha.');
+          return window.CONTA.oauth('google', { flow: st.flow, role: login ? '' : (st.intent === 'treinador' || st.flow === 'treinador' ? 'treinador' : 'aluno') });
+        }
         toast('Demonstração: nenhum login real com Google ou Apple. Seguimos como se a conta tivesse sido confirmada.');
         setTimeout(() => afterAuth(), 10);
       }
@@ -747,7 +762,7 @@ class Component extends DCLogic {
       email: st.email, role: studentRole ? 'Aluna' : 'Treinador', hasPhoto: !studentRole && !!st.photoUrl, noPhoto: studentRole || !st.photoUrl, photo: st.photoUrl,
       groups: (workRows.length ? [{ title: 'Trabalho', items: workRows }] : []).concat([{ title: 'Conta e preferências', items: accRows }]),
       roleSwitchLabel: studentRole ? 'Também quero ser treinador' : 'Usar como aluno', roleSwitch: () => toast(studentRole ? 'Mesma conta, novo papel: abriria “Sou treinador” sem mudar seu acompanhamento.' : 'A troca de papel é sempre explícita e não mistura dados de alunos com os seus treinos.'),
-      logout: () => toast('Demonstração: sair encerra esta sessão e apaga o que é privado neste aparelho.')
+      logout: () => (REALP && window.SIGN_OUT ? window.SIGN_OUT() : toast('Demonstração: sair encerra esta sessão e apaga o que é privado neste aparelho.'))
     };
 
     // ---------- casca e navegação ----------
@@ -772,6 +787,7 @@ class Component extends DCLogic {
     const sSide = [{ sec: 'Meu acompanhamento', items: [['Hoje', 'home', 'alunoHoje'], ['Treinos', 'dumbbell', ''], ['Evolução', 'trend', ''], ['Mensagens', 'message', ''], ['Conta', 'user', 'acct']] }];
     const ACTIVE = { hoje: 'hoje', convidar: 'convidar', cad: 'cad', sec: st.sec === 'recebimentos' ? 'pay' : (st.sec === 'plano' ? 'plano' : 'cad'), pub: 'cad', publicado: 'cad', alunoHoje: 'alunoHoje', acct: 'acct', cta: 'acct' };
     const SIDEGO = { pay: goSec('recebimentos'), plano: goSec('plano') };
+    if (REALP) SIDEGO.convidar = () => window.GO('H04'); // conta real: 'Alunos' abre a lista de alunos de verdade
     // destinos que vivem nas áreas interativas (treinador e aluno): abrem as telas pelo ID do DS
     const AREA = student ? { 'Treinos': 'ALU06', 'Evolução': 'H10E', 'Mensagens': 'ALU05' }
       : { 'Agenda': 'TRE20', 'Mensagens': 'TRE25', 'Rotinas': 'H06', 'Exercícios': 'TRE10', 'Formulários': 'TRE04', 'Ofertas': 'TRE29', 'Conteúdo': 'H06' };
@@ -779,7 +795,7 @@ class Component extends DCLogic {
     const side = (student ? sSide : tSide).map((gp) => ({ sec: gp.sec, items: gp.items.map(([l, ic, to]) => { const on = !!to && ACTIVE[st.step] === to; return { label: l, ic: 'ic ic--sm i-' + ic, cls: 'v4-reset snav__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: to ? (SIDEGO[to] || go(to)) : off(l) }; }) }));
     const TT = student ? [['Hoje', 'home', 'alunoHoje'], ['Treinos', 'dumbbell', ''], ['Evolução', 'trend', ''], ['Mensagens', 'message', ''], ['Conta', 'user', 'acct']]
       : [['Hoje', 'home', 'hoje'], ['Alunos', 'users', 'convidar'], ['Conteúdo', 'dumbbell', ''], ['Mensagens', 'message', ''], ['Conta', 'user', 'acct']];
-    const tabs = TT.map(([l, ic, to]) => { const on = !!to && ACTIVE[st.step] === to; return { label: l, ic: 'ic ic--sm i-' + ic, cls: 'v4-reset tabbar__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: to ? go(to) : off(l) }; });
+    const tabs = TT.map(([l, ic, to]) => { const on = !!to && ACTIVE[st.step] === to; return { label: l, ic: 'ic ic--sm i-' + ic, cls: 'v4-reset tabbar__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: to ? (SIDEGO[to] && to === 'convidar' ? SIDEGO[to] : go(to)) : off(l) }; });
     const MT = { hoje: 'Hoje', cad: 'Seu cadastro', sec: sx.title, pub: 'Publicar', publicado: 'Publicado', convidar: 'Convidar aluno', alunoHoje: 'Hoje', acct: 'Conta', cta: cx.title };
     const MB = { cad: 'hoje', sec: 'cad', pub: 'cad', publicado: 'hoje', convidar: 'hoje', cta: 'acct' };
 
@@ -794,7 +810,7 @@ class Component extends DCLogic {
       goHome: () => NAV && NAV.go('home', {}, this), goLogin: () => { set(this.base('entrar', '')); top(); },
       intents, intentErr: st.intentErr, continueIntent, conta, f, c, d, k, g, pb, h, iv, cv, p, a, inv, stu, cad, sx, b, ph, ap, at, sv, pg, av, pay, pro,
       pronto: PR,
-      goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => NAV && NAV.go('perfil', { id: 'thiago' }, this), goPub: go('pub'), goPublicado: go('publicado'), goConvidar: go('convidar'), goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
+      goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => (NAV && NAV.go('perfil', { id: 'thiago' }, this)), goPub: go('pub'), goPublicado: go('publicado'), goConvidar: goInvite, goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
       prepLater: () => { set({ step: 'alunoHoje', toast: 'Tudo bem. A preparação fica salva em Hoje.' }); top(); },
       copy: () => toast('Copiado. (Demonstração: a área de transferência pode estar bloqueada nesta janela.)'),
       msg: () => (window.GO ? window.GO(student ? 'ALU05' : 'TRE25') : toast('Mensagens ainda não estão disponíveis.')),

@@ -45,6 +45,24 @@
   var MOD = { crossfit: 'CrossFit', funcional: 'Funcional', lpo: 'LPO', corrida: 'Corrida', musculacao: 'Musculação', pilates: 'Pilates', yoga: 'Yoga', lutas: 'Lutas', natacao: 'Natação', ciclismo: 'Ciclismo', mobilidade: 'Mobilidade', calistenia: 'Calistenia', hiit: 'HIIT', danca: 'Dança', tenis: 'Tênis', beach: 'Beach tennis', escalada: 'Escalada', futebol: 'Futebol', volei: 'Vôlei', basquete: 'Basquete' };
   var on = function (o) { return Object.keys(o || {}).filter(function (k) { return o[k]; }); };
 
+  // volta do login com Google: o endereço traz a sessão; guarda e abre o cadastro para concluir
+  (function () {
+    var h = location.hash || '';
+    if (h.indexOf('access_token=') < 0 && h.indexOf('error_description=') < 0) return;
+    var q = {}; h.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) q[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); });
+    var o = {}; try { o = JSON.parse(LS.getItem('c99.oauth') || '{}'); LS.removeItem('c99.oauth'); } catch (_) {}
+    var flow = o.flow || 'entrar';
+    if (q.access_token) {
+      var pl = {}; try { pl = JSON.parse(decodeURIComponent(escape(atob(q.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (_) {}
+      if (pl.sub) {
+        keep({ access_token: q.access_token, refresh_token: q.refresh_token || '', user: { id: pl.sub, email: pl.email || '' } });
+        var md = pl.user_metadata || {};
+        try { LS.setItem('c99.oauthVolta', JSON.stringify({ role: o.role || '', email: pl.email || '', name: md.full_name || md.name || '' })); } catch (_) {}
+      }
+    } else { try { LS.setItem('c99.oauthErro', q.error_description || 'Não foi possível entrar com o Google.'); } catch (_) {} }
+    try { history.replaceState(null, '', location.pathname + location.search + '#onboarding-' + flow); } catch (_) { location.hash = '#onboarding-' + flow; }
+  })();
+
   var CONTA = {
     // grava o perfil do treinador no servidor (mesmas tabelas e campos do site): trainers, trainer_sports e a oferta principal
     saveTrainer: function (st) {
@@ -211,6 +229,16 @@
     // publica o perfil (passa a aparecer na busca do site)
     publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },
+    // login com Google: vai ao servidor de contas e volta para esta página já autenticado
+    oauth: function (provider, o) {
+      try { LS.setItem('c99.oauth', JSON.stringify(o || {})); } catch (_) {}
+      location.href = URL0 + '/auth/v1/authorize?provider=' + encodeURIComponent(provider) + '&redirect_to=' + encodeURIComponent(location.origin + location.pathname);
+    },
+    // chamado pelo cadastro ao abrir: se acabou de voltar do Google, devolve { role, email, name } uma única vez
+    oauthBack: function () {
+      var v = null; try { v = JSON.parse(LS.getItem('c99.oauthVolta') || 'null'); LS.removeItem('c99.oauthVolta'); } catch (_) {}
+      return sess ? v : null;
+    },
     user: function () { return sess && sess.user || null; },
     // cria a conta com e-mail e senha; o servidor confirma na hora e já devolve a sessão
     signUp: function (email, password, name) {
