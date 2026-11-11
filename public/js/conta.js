@@ -57,7 +57,9 @@
       if (pl.sub) {
         keep({ access_token: q.access_token, refresh_token: q.refresh_token || '', user: { id: pl.sub, email: pl.email || '' } });
         var md = pl.user_metadata || {};
-        try { LS.setItem('c99.oauthVolta', JSON.stringify({ role: o.role || '', email: pl.email || '', name: md.full_name || md.name || '' })); } catch (_) {}
+        // link de "esqueci a senha": entra só para criar a senha nova
+        if (q.type === 'recovery') { flow = 'entrar'; try { LS.setItem('c99.novaSenha', '1'); } catch (_) {} }
+        else { try { LS.setItem('c99.oauthVolta', JSON.stringify({ role: o.role || '', email: pl.email || '', name: md.full_name || md.name || '' })); } catch (_) {} }
       }
     } else { try { LS.setItem('c99.oauthErro', q.error_description || 'Não foi possível entrar com o Google.'); } catch (_) {} }
     try { history.replaceState(null, '', location.pathname + location.search + '#onboarding-' + flow); } catch (_) { location.hash = '#onboarding-' + flow; }
@@ -262,7 +264,11 @@
       });
     },
     // envia o e-mail para criar uma senha nova
-    recover: function (email) { return call('POST', '/auth/v1/recover', { email: String(email || '').trim().toLowerCase() }); },
+    recover: function (email) { return call('POST', '/auth/v1/recover?redirect_to=' + encodeURIComponent(location.origin + location.pathname), { email: String(email || '').trim().toLowerCase() }); },
+    // grava a senha nova de quem chegou pelo link do e-mail (já autenticado por ele)
+    setPassword: function (pw) { return sess ? call('PUT', '/auth/v1/user', { password: pw }, true) : Promise.resolve({ ok: false, nosession: true }); },
+    newPasswordPending: function () { try { return !!sess && LS.getItem('c99.novaSenha') === '1'; } catch (_) { return false; } },
+    newPasswordDone: function () { try { LS.removeItem('c99.novaSenha'); } catch (_) {} },
     // nome de exibição da conta
     setName: function (name) { return sess && name ? call('PATCH', '/rest/v1/profiles?id=eq.' + encodeURIComponent(sess.user.id), { display_name: name }, true) : Promise.resolve({ ok: false }); },
     // envia o código de 6 dígitos para o e-mail (cria a conta se ainda não existir)

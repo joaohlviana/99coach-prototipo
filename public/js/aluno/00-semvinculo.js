@@ -28,7 +28,11 @@ REG.screen({
 
     var tf = String(link.trainerName || 'seu treinador').split(' ')[0];
     if (C && !ui.asked) { ctx.setUi({ asked: true }); C.sessions(link.id).then(function (r) { ctx.setUi({ sess: r.ok && Array.isArray(r.data) ? r.data : [], sessErr: !r.ok }); }); }
-    var w = link.workout, s0 = w && w.sessions && w.sessions[0];
+    // rotina com várias sessões: o aluno escolhe qual vai fazer (a primeira ainda não registrada vem marcada)
+    var w = link.workout, SS = (w && w.sessions) || [];
+    var doneOf = function (x) { var k = link.id + '_v' + w.version + '_' + x.id; return (ui.sess || []).some(function (y) { return y.session_key === k; }); };
+    var sx = ui.sx != null && SS[ui.sx] ? ui.sx : Math.max(0, SS.map(function (x) { return doneOf(x); }).indexOf(false));
+    var s0 = SS[sx];
 
     // ---------- preparação (depois do vínculo) ----------
     var P = ui.prep || {};
@@ -59,7 +63,7 @@ REG.screen({
       ctx.setUi({ busy: true, err: '' });
       C.submitSession(link.id, key, logs).then(function (r) {
         if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o registro não foi enviado. Suas marcações continuam aqui; tente de novo.' : 'O servidor não recebeu: ' + (r.msg || r.status) });
-        ctx.setUi({ busy: false, exec: null, asked: false }); ctx.toast('Registro recebido: ' + U.plural(logs.length, 'série', 'séries') + '. ' + tf + ' vê no painel.');
+        ctx.setUi({ busy: false, exec: null, asked: false, sx: null }); ctx.toast('Registro recebido: ' + U.plural(logs.length, 'série', 'séries') + '. ' + tf + ' vê no painel.');
       });
     };
 
@@ -104,6 +108,8 @@ REG.screen({
       qs: QS.map(function (q) { return { id: 'pq-' + q[0], q: q[1], ph: q[2], v: P[q[0]] || '', set: function (e) { var o = Object.assign({}, P); o[q[0]] = U.val(e); ctx.setUi({ prep: o, err: '' }); } }; }),
       sendPrep: sendPrep, sendLabel: ui.busy ? 'Enviando…' : 'Enviar respostas',
       items: s0 ? s0.items.map(function (it) { return { name: it.name, rx: it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') + ' · descanso ' + it.restS + ' s' }; }) : [],
+      wTitle: w ? w.title : '', sTitle: s0 ? (s0.title || '') : '', manySess: SS.length > 1 && !ex,
+      sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
       estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow,
       grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: it.sets + ' × ' + it.reps, sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
       finish: finish, finishLabel: ui.busy ? 'Enviando…' : 'Concluir sessão', cancel: function () { ctx.setUi({ exec: null, err: '' }); },

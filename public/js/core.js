@@ -60,6 +60,14 @@
     if (!window.NAV) return;
     if (target === '@sair') return SIGN_OUT();
     if (target === 'H05' && /^lk_/.test(String(params.id || ''))) return window.NAV.go('treinador', { s: 'alunoreal', id: params.id }, null);
+    if (target === 'TRE15' && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area() === 'treinador' && window.CONTA && window.CONTA.session()) {
+      window.__rotinaPick = (params && params.rotina) || '';
+      if (/^lk_/.test(String((params && params.id) || ''))) return window.NAV.go('treinador', { s: 'alunoreal', id: params.id }, null);
+      var real = (DB.alunos || []).filter(function (a) { return a && a.server; });
+      if (real.length === 1) return window.NAV.go('treinador', { s: 'alunoreal', id: real[0].id }, null);
+      NOTICE(real.length ? 'Escolha o aluno: a rotina já vem selecionada na tela dele.' : 'Você ainda não tem alunos conectados. Convide um aluno para atribuir esta rotina.');
+      return window.NAV.go('treinador', { s: 'alunos' }, null);
+    }
     if (target === 'TRE20' && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area() === 'treinador' && window.CONTA && window.CONTA.session()) return window.NAV.go('treinador', { s: 'agendareal' }, null);
     // diretriz: IA só para o treinador e desligada até ser configurada e avaliada
     if (!document.documentElement.classList.contains('demo') && /^(IA\d|H15$)/.test(target || '')) return NOTICE('A assistência de IA está desligada até ser configurada e avaliada. Todo o trabalho manual continua disponível.');

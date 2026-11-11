@@ -421,15 +421,31 @@ class Component extends DCLogic {
       if (st.intent === 'treinador') return go('dados')();
       return go('pronto')();
     };
+    // chegou pelo link de "esqueci a senha": a tela de entrar vira "crie uma senha nova"
+    const np = !!(login && window.CONTA && window.CONTA.newPasswordPending && window.CONTA.newPasswordPending() && !st.scn);
+    const npEmail = np ? ((window.CONTA.user() || {}).email || '') : '';
+    if (np) Object.assign(conta, { eyebrow: 'Senha nova', title: 'Crie uma senha nova', sub: 'Você chegou pelo link que enviamos para ' + npEmail + '. Escolha a senha que vai usar daqui em diante.', cta: 'Salvar senha nova', askName: false, askTerms: false, fine: 'A senha antiga deixa de valer assim que você salvar.' });
     const f = {
-      name: st.name, email: st.email, setName: (e) => set({ name: val(e) }), setEmail: (e) => set({ email: val(e), emailExists: false }),
+      showSocial: !np, hideEmail: np,
+      name: st.name, email: np ? npEmail : st.email, setName: (e) => set({ name: val(e) }), setEmail: (e) => set({ email: val(e), emailExists: false }),
         askPw: !!window.CONTA && !st.scn, pw: st.pw || '', setPw: (e) => set({ pw: val(e), pwErr: false }), pwCls: 'input' + (st.pwErr ? ' is-err' : ''),
-        pwAuto: login ? 'current-password' : 'new-password', pwHelp: login ? 'A senha da sua conta 99Coach.' : 'Pelo menos 8 caracteres.', canForgot: login,
+        pwAuto: login && !np ? 'current-password' : 'new-password', pwHelp: login && !np ? 'A senha da sua conta 99Coach.' : 'Pelo menos 8 caracteres.', canForgot: login && !np,
         forgot: () => { const em = (st.email || '').trim(); if (em.indexOf('@') < 1) return toast('Informe o e-mail da conta primeiro.'); window.CONTA.recover(em).then((r) => toast(r.ok ? 'Se houver uma conta com ' + em + ', enviamos um link para criar uma senha nova.' : (r.offline ? 'Sem conexão com o servidor.' : 'Não foi possível enviar: ' + (r.msg || r.status)))); },
       emailCls: 'input' + (st.emailExists ? ' is-err' : ''), emailExists: st.emailExists, noExists: !st.emailExists,
       loginExisting: () => { set(window.CONTA ? { flow: 'entrar', scn: '', emailExists: false, step: 'conta', pw: '', toast: 'Digite a senha da sua conta.' } : { flow: 'entrar', scn: '', emailExists: false, step: 'codigo', toast: '' }); top(); },
       termsOn: String(!!st.terms), termsCls: 'check' + (st.terms ? ' is-on' : ''), termsErr: st.termsErr, toggleTerms: () => set({ terms: !st.terms, termsErr: false }),
       submit: () => {
+        if (np) {
+          const pw1 = st.pw || '';
+          if (pw1.length < 8) return set({ pwErr: true, toast: 'A senha precisa ter pelo menos 8 caracteres.' });
+          set({ busy: true, toast: 'Salvando a senha nova…' });
+          return window.CONTA.setPassword(pw1).then((r) => {
+            set({ busy: false });
+            if (!r.ok) return set({ toast: r.offline ? 'Sem conexão com o servidor. Tente de novo.' : 'O servidor não aceitou a senha: ' + (r.msg || ('erro ' + r.status)) });
+            window.CONTA.newPasswordDone(); set({ pw: '', toast: 'Senha nova salva.' });
+            finishReal('', npEmail, true);
+          });
+        }
         if (conta.askTerms && !st.terms) return set({ termsErr: true });
         if (!(st.email || '').trim()) return toast('Informe um e-mail ou celular.');
         // conta real: e-mail e senha no servidor da 99Coach (a conta é confirmada na hora)

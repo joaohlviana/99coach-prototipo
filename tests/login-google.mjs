@@ -1,0 +1,31 @@
+const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
+const b = await chromium.launch(); const log = [];
+const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
+await ctx.route('**/api/v1/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"items":[]}' }));
+let roles = [];
+await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
+  const rq = route.request(), u = new URL(rq.url());
+  const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' };
+  if (rq.method() === 'OPTIONS') return route.fulfill({ status: 200, headers: cors });
+  log.push(rq.method() + ' ' + u.pathname + ' ' + (rq.postData() || '').slice(0, 80));
+  if (u.pathname === '/auth/v1/authorize') return route.fulfill({ status: 200, contentType: 'text/html', body: 'GOOGLE ' + u.search });
+  if (u.pathname.endsWith('/profiles')) { if (rq.method() === 'PATCH') { const d = JSON.parse(rq.postData()); if (d.roles) roles = d.roles; } return route.fulfill({ status: 200, headers: cors, body: JSON.stringify([{ id: 'u9', roles, display_name: 'Ana Souza' }]) }); }
+  return route.fulfill({ status: 200, headers: cors, body: '[]' });
+});
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 150)));
+await p.goto('http://localhost:5173/?demo=0#onboarding', { waitUntil: 'load' }); await p.waitForTimeout(900);
+const press = async (t) => { for (const h of await p.$$('#app button')) if ((await h.textContent()).trim() === t) { await h.click(); return true; } return false; };
+await press('Continuar com Google'); await p.waitForTimeout(300);
+console.log('0 sem aceitar termos fica na página:', /localhost/.test(p.url()));
+await p.click('#app .onb-checkrow').catch(() => {});
+await press('Continuar com Apple'); await p.waitForTimeout(300);
+console.log('1 apple:', /Apple ainda não/.test(await p.evaluate(() => document.body.innerText)));
+await press('Continuar com Google'); await p.waitForTimeout(900);
+console.log('2 foi ao servidor:', p.url().slice(0, 150));
+const jwt = 'x.' + Buffer.from(JSON.stringify({ sub: 'u9', email: 'ana@x.com', user_metadata: { full_name: 'Ana Souza' } })).toString('base64url') + '.y';
+await p.goto('http://localhost:5173/?demo=0', { waitUntil: 'load' });
+console.log('  pedido guardado:', await p.evaluate(() => localStorage.getItem('c99.oauth')));
+await p.goto('about:blank'); await p.goto('http://localhost:5173/?demo=0#access_token=' + jwt + '&refresh_token=rr&token_type=bearer', { waitUntil: 'load' }); await p.waitForTimeout(1800);
+console.log('3 volta:', await p.evaluate(() => location.hash + ' | sessão ' + !!CONTA.session() + ' | papéis ' + JSON.stringify(CONTA.roles()) + ' | área ' + ACCT.area() + ' | ' + document.getElementById('app').innerText.replace(/\s+/g, ' ').slice(0, 160)));
+console.log(log.filter((l) => /profiles|authorize/.test(l)).slice(0, 8)); console.log('errs', errs);
+await b.close();

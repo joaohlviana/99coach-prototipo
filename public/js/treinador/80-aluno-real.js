@@ -21,8 +21,29 @@ REG.screen({
     var title = ui.title != null ? ui.title : (L.workout ? L.workout.title : 'Treino A');
     var upd = function (i, k) { return function (e) { var r = rows.map(function (x) { return Object.assign({}, x); }); r[i][k] = U.val(e); if (k === 'name') { var m = cat.filter(function (c) { return U.norm(c.name) === U.norm(r[i].name); })[0]; r[i].id = m ? m.id : ''; } ctx.setUi({ rows: r, err: '' }); }; };
     var valid = rows.filter(function (r) { return r.name.trim(); });
+    // rotinas criadas em Conteúdo: o treinador escolhe uma e o aluno recebe uma cópia desta versão
+    var rots = (DB.rotinas || []).filter(function (r) { return r && (r.sessions || []).some(function (x) { return (x.items || []).length; }); });
+    if (ui.rid == null && window.__rotinaPick) { var pk = window.__rotinaPick; window.__rotinaPick = ''; if (rots.some(function (r) { return r.id === pk; })) { ui.rid = pk; setTimeout(function () { ctx.setUi({ rid: pk }); }, 0); } }
+    var rot = ui.rid ? rots.filter(function (r) { return r.id === ui.rid; })[0] : null;
+    var exName = function (id) { var e = (DB.exercicios || []).filter(function (x) { return x.id === id; })[0]; return e ? e.name : String(id || 'Exercício'); };
+    var num = function (v) { var m = String(v == null ? '' : v).replace(',', '.').match(/[0-9]+(\.[0-9]+)?/); return m ? Number(m[0]) : null; };
+    var rotSessions = function () {
+      return rot.sessions.filter(function (x) { return (x.items || []).length; }).map(function (x, i) {
+        var items = x.items.map(function (it) { var nm = it.name || exName(it.ex); return { exerciseId: it.ex || ('livre-' + U.norm(nm).replace(/[^a-z0-9]+/g, '-')), name: nm, sets: Math.min(10, Math.max(1, Number(it.sets) || 1)), reps: String(it.reps || '').trim() || '1', loadKg: num(it.load), restS: num(it.rest) || 0, notes: it.note || it.notes || null }; });
+        return { id: 's' + (i + 1), title: x.name || ('Sessão ' + (i + 1)), goal: 'Prescrição do treinador', estMin: Math.max(10, Math.round(items.reduce(function (n, y) { return n + y.sets * (1 + y.restS / 60); }, 0))), items: items };
+      });
+    };
     var assign = function () {
       if (ui.busy) return;
+      if (rot) {
+        var rs = rotSessions();
+        ctx.setUi({ busy: true, err: '' });
+        return C.assignWorkout(lid, rot.name, rs, L.workout ? L.workout.version : 0).then(function (r) {
+          if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o treino não foi atribuído.' : 'O servidor não atribuiu: ' + (r.msg || ('erro ' + r.status)) });
+          rot.status = 'atribuída'; if (window.STORE) window.STORE.saveDb();
+          refresh('Rotina “' + rot.name + '” atribuída a ' + String(L.studentName).split(' ')[0] + '. Ele vê no app a partir de agora.');
+        });
+      }
       if (!title.trim()) return ctx.setUi({ err: 'Dê um nome ao treino.' });
       if (!valid.length) return ctx.setUi({ err: 'Inclua pelo menos um exercício.' });
       var bad = valid.filter(function (r) { var s = Number(r.sets); return !(s >= 1 && s <= 10) || !String(r.reps).trim(); })[0];
@@ -59,11 +80,16 @@ REG.screen({
       prepTxt: PREP[L.prep] || 'Preparação', hasAnswers: answers.length > 0, answers: answers, needReview: L.prep === 'awaiting_review', review: review,
       waitingClient: L.prep === 'awaiting_client' && !L.workout, canBuild: canBuild,
       hasWorkout: !!L.workout, wTitle: L.workout ? L.workout.title + ' · versão ' + L.workout.version : '', wWhen: L.workout && L.workout.assignedAt ? 'Atribuído em ' + new Date(L.workout.assignedAt).toLocaleDateString('pt-BR') : '',
+      hasRots: rots.length > 0, noRots: !rots.length, usingRot: !!rot, manual: !rot,
+      rotOpts: [{ label: 'Montar à mão', on: String(!rot), cls: 'chip' + (!rot ? ' is-on' : ''), pick: function () { ctx.setUi({ rid: '', err: '' }); } }].concat(rots.map(function (r) { var on = !!rot && rot.id === r.id; return { label: r.name, on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ rid: r.id, err: '' }); } }; })),
+      rotName: rot ? rot.name : '', rotSum: rot ? U.plural(rotSessions().length, 'sessão', 'sessões') + ' · ' + U.plural(rotSessions().reduce(function (n, x) { return n + x.items.length; }, 0), 'exercício', 'exercícios') + (rot.version ? ' · versão ' + rot.version + ' da rotina' : '') : '',
+      rotSess: rot ? rotSessions().map(function (x, i) { return { n: String(i + 1), name: x.title, items: x.items.map(function (y) { return y.name + ' ' + y.sets + '×' + y.reps + (y.loadKg != null ? ' · ' + String(y.loadKg).replace('.', ',') + ' kg' : ''); }).join(' · ') }; }) : [],
+      goRots: function () { ctx.go('H06'); }, editRot: function () { if (rot) ctx.go('TRE14', { id: rot.id }); },
       title: title, setTitle: function (e) { ctx.setUi({ title: U.val(e), err: '' }); },
       rows: rows.map(function (r, i) { return { n: String(i + 1), name: r.name, sets: r.sets, reps: r.reps, load: r.load, rest: r.rest, setName: upd(i, 'name'), setSets: upd(i, 'sets'), setReps: upd(i, 'reps'), setLoad: upd(i, 'load'), setRest: upd(i, 'rest'),
         rm: function () { var x = rows.slice(); x.splice(i, 1); ctx.setUi({ rows: x.length ? x : [{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }] }); }, idName: 'rx-n' + i, idSets: 'rx-s' + i, idReps: 'rx-r' + i, idLoad: 'rx-l' + i, idRest: 'rx-d' + i }; }),
       add: function () { ctx.setUi({ rows: rows.concat([{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }]) }); },
-      catalog: cat.slice(0, 200), assign: assign, assignLabel: ui.busy ? 'Atribuindo…' : (L.workout ? 'Atribuir nova versão' : 'Atribuir treino'),
+      catalog: cat.slice(0, 200), assign: assign, assignLabel: ui.busy ? 'Atribuindo…' : (rot ? 'Atribuir esta rotina' : (L.workout ? 'Atribuir nova versão' : 'Atribuir treino')),
       err: ui.err || '', hasErr: !!ui.err,
       hasLogs: logs.length > 0, noLogs: !logs.length && !ui.sessErr, logs: logs, sessErr: !!ui.sessErr, logsCount: U.plural(logs.length, 'sessão registrada', 'sessões registradas'),
       back: function () { ctx.go('H04'); }
