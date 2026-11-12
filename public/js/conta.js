@@ -87,6 +87,10 @@
         languages: on(st.langs).length ? on(st.langs) : ['pt'], specialty: mods.map(function (k) { return MOD[k] || k; }).join(' e '), cref: st.cref || null,
         initials: String(st.name || '').split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase() };
       row.area = row.regions[0] || null;
+      // apresentação e disponibilidade para novos alunos (com a data em que foi informada); só vai o que a pessoa preencheu
+      if (st.pitch != null) row.pitch = String(st.pitch || '').trim().slice(0, 300) || null;
+      if (st.bio != null) row.bio = String(st.bio || '').trim().slice(0, 4000) || null;
+      if (st.avail) { row.availability = st.avail === 'sim' ? 'aceita' : (st.avail === 'nao' ? 'sem_vaga' : 'desconhecida'); row.availability_informed_on = new Date().toISOString().slice(0, 10); }
       var tr = null;
       return (city ? db('GET', 'cities?select=id&slug=eq.' + encodeURIComponent(slugify(city))) : Promise.resolve({ ok: true, data: [] })).then(function (r) {
         if (r.offline) return r;
@@ -110,12 +114,20 @@
         return db('DELETE', 'trainer_sports?trainer_id=eq.' + encodeURIComponent(tr.id) + '&sport_slug=not.in.(' + (slugs.join(',') || 'nenhum') + ')').then(function () {
           return slugs.length ? db('POST', 'trainer_sports?on_conflict=trainer_id,sport_slug', slugs.map(function (k) { return { trainer_id: tr.id, sport_slug: k }; }), 'resolution=ignore-duplicates') : { ok: true };
         }).then(function () {
-          var s0 = (st.services || [])[0];
-          if (!s0) return { ok: true };
-          var mes = s0.kind === 'recorrente', price = Number(s0.price) > 0 && s0.kind !== 'consulta';
-          return db('POST', 'offers?on_conflict=trainer_id,key', Object.assign({ trainer_id: tr.id, key: 'principal', title: s0.title, kind: mes ? 'Recorrente mensal' : 'Avulso', includes: s0.inc || s0.title,
-            format: s0.fmt === 'online' ? 'online' : 'presencial', headline: true, status: 'publicada' },
-            price ? { flow: 'pedido', pricing_mode: mes ? 'recurring' : 'one_time', price_cents: Math.round(100 * Number(s0.price)), unit: mes ? 'mes' : 'sessao' } : { flow: 'consulta', pricing_mode: null, price_cents: null, unit: null }), 'resolution=merge-duplicates');
+          // todas as ofertas do cadastro (a primeira é a principal); as que saíram do cadastro são retiradas, não apagadas
+          var SV = (st.services || []).filter(function (x) { return x && String(x.title || '').trim(); }).slice(0, 12);
+          if (!SV.length) return { ok: true };
+          var rows = SV.map(function (s0, i) {
+            var mes = s0.kind === 'recorrente', price = Number(s0.price) > 0 && s0.kind !== 'consulta';
+            return Object.assign({ trainer_id: tr.id, key: i === 0 ? 'principal' : 'oferta_' + (i + 1), title: String(s0.title).trim(), kind: mes ? 'Recorrente mensal' : (s0.kind === 'consulta' ? 'Sob consulta' : 'Avulso'), includes: s0.inc || s0.title,
+              format: s0.fmt === 'online' ? 'online' : 'presencial', headline: i === 0, status: 'publicada', sort: i },
+              price ? { flow: 'pedido', pricing_mode: mes ? 'recurring' : 'one_time', price_cents: Math.round(100 * Number(s0.price)), unit: mes ? 'mes' : 'sessao' } : { flow: 'consulta', pricing_mode: 'one_time', price_cents: null, unit: null });
+          });
+          var keys = rows.map(function (x) { return x.key; });
+          return db('POST', 'offers?on_conflict=trainer_id,key', rows, 'resolution=merge-duplicates').then(function (x) {
+            if (!x.ok) return x;
+            return db('PATCH', 'offers?trainer_id=eq.' + encodeURIComponent(tr.id) + '&key=not.in.(' + keys.join(',') + ')&status=eq.publicada', { status: 'retirada' }).then(function () { return x; });
+          });
         }).then(function (x) { return { ok: true, slug: tr.slug, offer: x }; });
       });
     },
@@ -125,22 +137,23 @@
       var uid = sess.user.id, out = null;
       var BACK = {}; Object.keys(SPORT).forEach(function (k) { BACK[SPORT[k]] = k; });
       var REG_BACK = {}; Object.keys(REGIAO).forEach(function (k) { REG_BACK[REGIAO[k]] = k; });
-      return db('GET', 'trainers?select=id,slug,name,city_id,regions,formats,languages,specialty,cref,status&user_id=eq.' + encodeURIComponent(uid)).then(function (r) {
+      return db('GET', 'trainers?select=id,slug,name,city_id,regions,formats,languages,specialty,cref,status,pitch,bio,availability,availability_informed_on&user_id=eq.' + encodeURIComponent(uid)).then(function (r) {
         var t = r.ok && r.data && r.data[0]; if (!t) return null;
         out = { name: t.name || '', cref: t.cref || '', pres: (t.formats || []).indexOf('presencial') >= 0, onl: (t.formats || []).indexOf('online') >= 0,
-          regions: {}, langs: {}, sports: {}, published: t.status === 'publicado', dadosSaved: true, serverSlug: t.slug };
+          regions: {}, langs: {}, sports: {}, published: t.status === 'publicado', dadosSaved: true, serverSlug: t.slug, pubSlug: t.status === 'publicado' ? t.slug : '',
+          pitch: t.pitch || '', bio: t.bio || '', avail: t.availability === 'aceita' ? 'sim' : (t.availability === 'sem_vaga' ? 'nao' : (t.availability_informed_on ? 'nd' : '')), availOn: t.availability_informed_on || '' };
         (t.regions || []).forEach(function (x) { out.regions[REG_BACK[x] || x] = true; });
         (t.languages && t.languages.length ? t.languages : ['pt']).forEach(function (x) { out.langs[x] = true; });
         return Promise.all([
           t.city_id ? db('GET', 'cities?select=name,uf&id=eq.' + t.city_id) : Promise.resolve({ ok: false }),
           db('GET', 'trainer_sports?select=sport_slug&trainer_id=eq.' + t.id),
-          db('GET', 'offers?select=title,includes,format,price_cents,unit,pricing_mode,flow&key=eq.principal&trainer_id=eq.' + t.id)
+          db('GET', 'offers?select=title,includes,format,price_cents,unit,pricing_mode,flow,sort,key&status=eq.publicada&order=sort.asc&trainer_id=eq.' + t.id)
         ]).then(function (x) {
           var c = x[0].ok && x[0].data && x[0].data[0]; if (c) out.city = c.name + ', ' + c.uf;
           ((x[1].ok && x[1].data) || []).forEach(function (s) { out.sports[BACK[s.sport_slug] || s.sport_slug] = true; });
-          var o = x[2].ok && x[2].data && x[2].data[0];
-          if (o) out.services = [{ kind: o.flow === 'consulta' ? 'consulta' : (o.pricing_mode === 'recurring' ? 'recorrente' : 'avulsa'), title: o.title, inc: o.includes || o.title,
-            fmt: o.format === 'online' ? 'online' : 'presencial', acc: o.flow === 'pedido' ? 'aceite' : 'direta', price: o.price_cents ? String(Math.round(o.price_cents / 100)) : '' }];
+          var O = (x[2].ok && x[2].data) || [];
+          if (O.length) out.services = O.map(function (o) { return { kind: o.flow === 'consulta' ? 'consulta' : (o.pricing_mode === 'recurring' ? 'recorrente' : 'avulsa'), title: o.title, inc: o.includes || o.title,
+            fmt: o.format === 'online' ? 'online' : 'presencial', acc: o.flow === 'pedido' ? 'aceite' : 'direta', price: o.price_cents ? String(Math.round(o.price_cents / 100)) : '' }; });
           return out;
         });
       });

@@ -102,7 +102,7 @@
         var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
         return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
-          avail: 'desconhecida', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.credentials && d.credentials.length ? 'inf' : 'nao', avg: '', n: 0, ext: d.externalHandle || '',
+          avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: '', n: 0, ext: d.externalHandle || '',
           offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };
       }
@@ -298,7 +298,7 @@
     };
     // perfil vem do banco (99coach-v2); a API do site anterior só entra se o banco não responder
     if (!window.CONTA || !window.CONTA.pub) return legacy();
-    window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,area,regions,offers(title,price_cents,unit,status,headline,sort)&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
+    window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,availability_informed_on,area,regions,offers(title,price_cents,unit,status,headline,sort)&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
       if (!r.ok || !Array.isArray(r.data)) return legacy();
       var d = r.data.filter(function (x) { return x && x.slug === id; })[0] || null;
       // o banco respondeu e o perfil não está publicado (retirado ou nunca publicado): some daqui e do cache, sem voltar pela API antiga
@@ -306,7 +306,7 @@
       var offers = (d.offers || []).filter(function (o) { return o.status === 'publicada'; }).sort(function (a, b) { return (b.headline ? 1 : 0) - (a.headline ? 1 : 0) || (a.sort || 0) - (b.sort || 0); })
         .map(function (o) { return { title: o.title, priceCents: o.price_cents, unit: o.unit }; });
       keep({ role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',
-        receivesRequests: d.origin !== 'importado' && d.availability !== 'nao_aceita', offers: offers, credentials: d.cref && d.cref_status !== 'nao_informado' ? [{ kind: 'CREF', status: d.cref_status }] : [] });
+        receivesRequests: d.origin !== 'importado' && d.availability !== 'sem_vaga', availability: d.availability || 'desconhecida', availOn: d.availability_informed_on || '', crefStatus: d.cref_status || '', offers: offers, credentials: d.cref && d.cref_status !== 'nao_informado' ? [{ kind: 'CREF', status: d.cref_status }] : [] });
     });
   }
   function rerender() { if (window.__rerender) window.__rerender(); }
