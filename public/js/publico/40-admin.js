@@ -42,13 +42,14 @@
       // 3. filas
       var load = function () {
         ctx.setUi({ qBusy: true });
-        Promise.all([C().rpc('admin_removal_queue', {}), C().rpc('admin_claim_queue', {}), C().rpc('admin_cref_queue', {})]).then(function (rs) {
+        Promise.all([C().rpc('admin_removal_queue', {}), C().rpc('admin_claim_queue', {}), C().rpc('admin_cref_queue', {}), C().rpc('admin_report_queue', {})]).then(function (rs) {
           var bad = rs.filter(function (r) { return !r.ok; })[0];
-          ctx.setUi({ qBusy: false, q: { rem: rs[0].data || [], claim: rs[1].data || [], cref: rs[2].data || [] }, qErr: bad ? why(bad) : '', at: new Date().toTimeString().slice(0, 5) });
+          ctx.setUi({ qBusy: false, q: { rem: rs[0].data || [], claim: rs[1].data || [], cref: rs[2].data || [], rep: rs[3].data || [] }, qErr: bad ? why(bad) : '', at: new Date().toTimeString().slice(0, 5) });
         });
       };
       if (ui.isAdmin && aal2 && !ui.q && !ui.qBusy) setTimeout(load, 0);
-      var q = ui.q || { rem: [], claim: [], cref: [] };
+      var q = ui.q || { rem: [], claim: [], cref: [], rep: [] };
+      var RSN = { assedio: 'Assédio ou ameaça', conteudo_improprio: 'Conteúdo impróprio', golpe_ou_cobranca_por_fora: 'Golpe ou cobrança por fora', spam: 'Spam', outro: 'Outro' };
       var note = function (id) { return String((ui.notes || {})[id] || '').trim(); };
       var setNote = function (id) { return function (e) { var n = Object.assign({}, ui.notes || {}); n[id] = U.val(e); ctx.setUi({ notes: n, dErr: '' }); }; };
       var act = function (fn, args, okMsg) {
@@ -67,7 +68,15 @@
         code: ui.code || '', setCode: function (e) { ctx.setUi({ code: U.val(e).replace(/\D/g, '').slice(0, 6), mErr: '' }); }, verify: verify, verifyLabel: ui.busy ? 'Conferindo…' : 'Confirmar código',
         mErr: ui.mErr || '', hasMErr: !!ui.mErr,
         loading: !!ui.qBusy && !ui.q, at: ui.at || '', reload: function () { ctx.setUi({ q: null }); }, qErr: ui.qErr || '', hasQErr: !!ui.qErr, dErr: ui.dErr || '', hasDErr: !!ui.dErr,
-        nRem: q.rem.length, nClaim: q.claim.length, nCref: q.cref.length, emptyAll: !!ui.q && !q.rem.length && !q.claim.length && !q.cref.length,
+        nRem: q.rem.length, nClaim: q.claim.length, nCref: q.cref.length, emptyAll: !!ui.q && !q.rem.length && !q.claim.length && !q.cref.length && !(q.rep || []).length, nRep: (q.rep || []).length,
+        reps: (q.rep || []).map(function (r) {
+          var id = r.report_id, who = r.reported_name || 'conta sem nome';
+          return { title: (RSN[r.reason] || r.reason) + ' · denunciado: ' + who + (r.reported_blocked ? ' (já bloqueado)' : ''), meta: 'Denúncia de ' + (r.reporter_name || 'conta sem nome') + ' (' + r.reporter_side + ') em ' + when(r.created_at) + ' · ' + (r.status === 'em_revisao' ? 'em revisão' : 'recebida') + (r.open_reports_against ? ' · ' + U.plural(r.open_reports_against, 'outra denúncia aberta', 'outras denúncias abertas') + ' contra a mesma conta' : ''),
+            note: r.note || 'Sem detalhes.', msg: r.message_body ? 'Mensagem apontada: “' + r.message_body + '”' : '', hasMsg: !!r.message_body, idN: 'n-' + id, bnote: (ui.notes || {})[id] || '', setNote: setNote(id), canBlock: !r.reported_blocked && !!r.reported_user,
+            review: function () { act('admin_decide_report', { p_report: id, p_status: 'em_revisao', p_idem: idem('rp:' + id + ':revisao') }, 'Marcada em revisão'); },
+            close: function () { act('admin_decide_report', { p_report: id, p_status: 'encerrada', p_idem: idem('rp:' + id + ':encerrar') }, 'Denúncia encerrada'); },
+            block: function () { if (note(id).length < 5) return ctx.setUi({ dErr: 'Escreva o motivo do bloqueio: fica no registro da decisão.' }); ctx.ask({ title: 'Bloquear a conta de ' + who + '?', lines: ['A conta deixa de entrar e de enviar mensagens ou pedidos. Os acompanhamentos dela são encerrados pelo bloqueio.', 'Use só com evidência suficiente; dá para desbloquear depois.'], ok: 'Bloquear conta', onOk: function () { act('admin_set_block', { p_user: r.reported_user, p_blocked: true, p_reason: note(id), p_idem: idem('blk:' + r.reported_user + ':on') }, 'Conta bloqueada'); } }); } };
+        }),
         rem: q.rem.map(function (r) {
           var id = r.request_id;
           return { title: KIND[r.kind] + ' · ' + (r.trainer_name || r.trainer_slug), meta: 'Protocolo ' + r.protocol + ' · ' + (ST[r.status] || r.status) + ' · ' + when(r.created_at) + (r.contact_email ? ' · resposta para ' + r.contact_email : ' · sem e-mail para resposta'),

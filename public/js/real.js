@@ -187,13 +187,13 @@
   // vínculos reais: o treinador vê os alunos conectados na lista (sem dados inventados)
   function mergeLinks(L) {
     if (!window.DB || !Array.isArray(window.DB.alunos)) return;
-    var ended = {}; (L || []).forEach(function (l) { if (l.ended) ended['lk_' + l.id] = 1; });
-    window.DB.alunos = window.DB.alunos.filter(function (a) { return !ended[a.id]; });
-    (L || []).filter(function (l) { return l.mine === 'treinador' && !l.ended; }).forEach(function (l) {
+    // encerrados continuam na lista do treinador como "encerrado" (histórico), sem ocupar vaga
+    (L || []).filter(function (l) { return l.mine === 'treinador'; }).forEach(function (l) {
       var id = 'lk_' + l.id, cur = window.DB.alunos.filter(function (a) { return a.id === id; })[0];
-      if (cur) { cur.status = l.status === 'pausado' ? 'pausado' : 'ativo'; return; }
+      var stt = l.ended ? 'encerrado' : (l.status === 'pausado' ? 'pausado' : 'ativo');
+      if (cur) { cur.status = stt; if (l.ended) { cur.next = 'Encerrado · histórico disponível'; cur.flag = null; } return; }
       var since = l.since ? new Date(l.since) : null;
-      window.DB.alunos.push({ id: id, server: true, name: l.studentName, first: String(l.studentName).split(' ')[0], status: l.status === 'pausado' ? 'pausado' : 'ativo',
+      window.DB.alunos.push({ id: id, server: true, name: l.studentName, first: String(l.studentName).split(' ')[0], status: stt,
         svc: 'Acompanhamento · ' + (l.origin === 'convite' ? 'por convite' : 'por pedido'), since: since ? ('0' + (since.getMonth() + 1)).slice(-2) + '/' + since.getFullYear() : '',
         goal: '', city: '', age: null, program: '', week: null, adherence: null, lastCheckin: '', next: 'Preparação pendente', flag: null, tags: [], prepDone: false, payment: '', photo: '' });
     });

@@ -4,7 +4,8 @@ REG.screen({
   page: 'treinador', key: 'alunoreal', id: 'REL10', title: 'Aluno', nav: 'alunos', back: 'H04', wide: true,
   vals: function (ctx) {
     var C = window.CONTA, ui = ctx.ui, lid = String(ctx.id || '').replace(/^lk_/, '');
-    var L = (C ? C.cachedLinks() : []).filter(function (l) { return l.id === lid && l.mine === 'treinador'; })[0];
+    // inclui acompanhamento encerrado: o treinador continua vendo o histórico (só leitura)
+    var L = (C ? C.cachedLinks().concat(C.endedLinks()) : []).filter(function (l) { return l.id === lid && l.mine === 'treinador'; })[0];
     if (!L) return { missing: true, has: false, back: function () { ctx.go('H04'); } };
     if (C && !ui.asked) {
       ctx.setUi({ asked: true });
@@ -86,7 +87,7 @@ REG.screen({
       };
       return { when: d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—', sets: U.plural(sets.length, 'série', 'séries'), vol: vol ? Math.round(vol).toLocaleString('pt-BR') + ' kg' : '—',
         cms: cm.map(function (c) { return { who: c.side === 'treinador' ? 'Você' : String(L.studentName).split(' ')[0], body: c.body }; }), hasCms: cm.length > 0,
-        canAdj: !!L.workout && L.status === 'ativo', adjust: function () {
+        canAdj: !!L.workout && L.status === 'ativo', canCm: !ended, adjust: function () {
           // parte da prescrição atual; mostra ao lado o que o aluno fez neste registro
           var done = {}; sets.forEach(function (x) { var k = x.exercise_id || x.exercise_name; var b = done[k]; if (!b || (Number(x.load_kg) || 0) > (Number(b.load_kg) || 0)) done[k] = x; });
           var rows = []; (L.workout.sessions || []).forEach(function (ss, si) { (ss.items || []).forEach(function (it, ii) { var d0 = done[it.exerciseId] || done[it.name];
@@ -96,10 +97,12 @@ REG.screen({
         open: open, toggle: function () { ctx.setUi({ cmOpen: open ? '' : s.id, cmDraft: '', cmErr: '' }); }, toggleLabel: open ? 'Cancelar' : 'Comentar',
         idIn: 'cm-' + s.id, draft: open ? (ui.cmDraft || '') : '', setDraft: function (e) { ctx.setUi({ cmDraft: U.val(e), cmErr: '' }); }, post: post, postLabel: ui.cmBusy ? 'Enviando…' : 'Enviar comentário', err: open ? (ui.cmErr || '') : '', hasErr: open && !!ui.cmErr };
     });
-    var canBuild = L.prep === 'ready_to_assign' || L.prep === 'assigned' || !!L.workout;
+    var ended = L.status === 'encerrado';
+    var canBuild = !ended && (L.prep === 'ready_to_assign' || L.prep === 'assigned' || !!L.workout);
     return {
       chat: window.CHAT ? window.CHAT(ctx, lid, 'treinador', String(L.studentName).split(' ')[0]) : {},
-      linkTxt: L.status === 'pausado' ? 'Pausado: o vínculo continua ocupando a vaga; sessões novas não começam e o que já foi feito fica.' : 'Ativo. Pausar mantém a vaga e o histórico; encerrar é definitivo e nada é apagado.',
+      ended: ended, endedTxt: 'Acompanhamento encerrado. O histórico fica guardado para consulta; nada mais pode ser alterado. Para treinar de novo, é preciso um novo convite ou pedido.',
+      linkTxt: ended ? 'Encerrado.' : L.status === 'pausado' ? 'Pausado: o vínculo continua ocupando a vaga; sessões novas não começam e o que já foi feito fica.' : 'Ativo. Pausar mantém a vaga e o histórico; encerrar é definitivo e nada é apagado.',
       isActive: L.status === 'ativo', isPaused: L.status === 'pausado',
       chOpen: !!ui.ch, chClosed: !ui.ch,
       reasons: (ui.ch === 'encerrar' ? [['objetivo_concluido', 'Objetivo concluído'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['mudanca', 'Mudança'], ['insatisfacao', 'Insatisfação'], ['outro', 'Outro']] : [['ferias', 'Férias'], ['lesao', 'Lesão'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['outro', 'Outro']]).map(function (r) { var on = ui.reason === r[0]; return { label: r[1], cls: 'seg__it' + (on ? ' is-on' : ''), on: String(on), pick: function () { ctx.setUi({ reason: r[0] }); } }; }),
@@ -108,7 +111,7 @@ REG.screen({
       chConfirm: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, ui.ch, ui.reason).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } var end = ui.ch === 'encerrar'; ctx.setUi({ ch: '' }); refresh(end ? 'Vínculo encerrado. Os registros ficam guardados; o aluno continua vendo o histórico dele.' : 'Vínculo pausado.').then(function () { if (end) { DB.alunos = DB.alunos.filter(function (a) { return a.id !== 'lk_' + lid; }); ctx.go('H04'); } }); }); },
       resume: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, 'retomar', 'outro').then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } refresh('Vínculo retomado.'); }); },
       missing: false, has: true, name: L.studentName, ini: U.ini(L.studentName), since: L.since ? 'Vínculo desde ' + new Date(L.since).toLocaleDateString('pt-BR') : '', origin: L.origin === 'convite' ? 'por convite' : 'por pedido',
-      prepTxt: PREP[L.prep] || 'Preparação', hasAnswers: answers.length > 0, answers: answers, needReview: L.prep === 'awaiting_review', review: review,
+      prepTxt: ended ? 'Encerrado' : (PREP[L.prep] || 'Preparação'), hasAnswers: answers.length > 0, answers: answers, needReview: !ended && L.prep === 'awaiting_review', review: review,
       waitingClient: L.prep === 'awaiting_client' && !L.workout, canBuild: canBuild,
       hasWorkout: !!L.workout, wTitle: L.workout ? L.workout.title + ' · versão ' + L.workout.version : '', wWhen: L.workout && L.workout.assignedAt ? 'Atribuído em ' + new Date(L.workout.assignedAt).toLocaleDateString('pt-BR') : '',
       hasRots: rots.length > 0, noRots: !rots.length, usingRot: !!rot, manual: !rot,
