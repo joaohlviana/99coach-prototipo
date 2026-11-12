@@ -175,6 +175,7 @@
     if (done) return;
     // mantém o que veio do servidor (vínculos e pedidos reais); tira só o conteúdo de exemplo
     OWN.forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = window.DB[k].filter(function (x) { return x && x.server; }); });
+    if (Array.isArray(window.DB.exercicios)) window.DB.exercicios = window.DB.exercicios.filter(function (e) { return e && !e.own; });
     var c = STORE.loadOnb('treinador');
     if (c && window.DB.trainer) { window.DB.trainer.name = c.name || window.DB.trainer.name; window.DB.trainer.first = (c.name || '').split(' ')[0] || window.DB.trainer.first; if (c.city) window.DB.trainer.city = c.city; }
     if (window.DB.insights) Object.assign(window.DB.insights, { visits: 0, visitsPrev: 0, contacts: 0, contactsPrev: 0, sales: 0, salesPrev: 0, revenue: 0, offers: [] });
@@ -239,6 +240,7 @@
     treinador: { conteudo: 1, editor: 1, exercicios: 1, exercicio: 1, exercicioNovo: 1, formularios: 1, formEditor: 1, historico: 1, ofertas: 1, cupons: 1, proposta: 1, programas: 1, programaEditor: 1, publicacao: 1, participantes: 1, notificacoes: 1, perfilEditar: 1, perfilPrevia: 1, credenciais: 1, disponibilidade: 1, calendario: 1, macro: 1 },
     aluno: { contratacoes: 1 }, publico: { salvos: 1, vistos: 1 }
   };
+  var LIBKEYS = { conteudo: 1, editor: 1, exercicios: 1, exercicio: 1, exercicioNovo: 1, formularios: 1, formEditor: 1, historico: 1 };
   var LOCALTXT = {
     mensagens: ['As conversas ficam na tela de cada aluno', 'Abra o aluno em Alunos para conversar: é lá que as mensagens são enviadas e recebidas de verdade.'],
     recebimentos: ['Recebimentos ainda não estão ligados', 'Nenhuma venda é processada pela 99coach por enquanto, então não há valores a mostrar. Nada aqui é cobrado.'],
@@ -251,8 +253,14 @@
     if (document.documentElement.classList.contains('demo') || !ACCT.area()) return;
     var key = (location.hash || '').slice(1).split('-')[1] || '';
     var txt = page === 'treinador' && LOCALTXT[key] ? LOCALTXT[key] : (LOCAL[page] && LOCAL[page][key] ? ['Salvo só neste aparelho', 'O que você cria ou muda aqui ainda não vai para o servidor: não aparece em outro aparelho e some se você limpar o navegador.'] : null);
-    var m = root.querySelector('#conteudo'); if (!txt || !m || m.querySelector('.c99-onde')) return;
-    var d = document.createElement('div'); d.className = 'alert alert--info c99-onde'; d.setAttribute('role', 'note');
+    // a biblioteca (rotinas, exercícios, formulários, pastas) fica na conta: a tela diz o estado real da gravação
+    var inLib = page === 'treinador' && LIBKEYS[key] && window.LIB && window.LIB.active();
+    if (inLib) txt = window.LIB.notice();
+    var m = root.querySelector('#conteudo'); if (!m) return;
+    var old = m.querySelector('.c99-onde');
+    if (old && inLib) { if (txt && old.getAttribute('data-t') === txt[0] + txt[1]) return; old.parentNode.removeChild(old); old = null; }
+    if (!txt || old) return;
+    var d = document.createElement('div'); d.className = 'alert alert--' + (txt[2] || 'info') + ' c99-onde'; d.setAttribute('role', 'note'); d.setAttribute('data-t', txt[0] + txt[1]);
     var i = document.createElement('i'); i.className = 'ic ic--sm i-info'; i.setAttribute('aria-hidden', 'true');
     var w = document.createElement('div'), b = document.createElement('b'); b.textContent = txt[0]; w.appendChild(b); w.appendChild(document.createTextNode(txt[1]));
     d.appendChild(i); d.appendChild(w); m.insertBefore(d, m.firstChild);

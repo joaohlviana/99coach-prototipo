@@ -55,10 +55,10 @@ t = await txt(al);
 console.log('2 logado vê a conta e pode trocar:', /Você está como al@x.com/.test(t), /Usar outra conta/.test(t));
 await press(al, /18 anos/); srv.links = [lk()];
 await press(al, /^Aceitar convite$/); await al.waitForTimeout(800); t = await txt(al);
-console.log('  confirmação (REL04):', /Seu acompanhamento com Marina está confirmado/i.test(t), /Próximo passo: responder 4 perguntas/.test(t), /Responder a preparação/.test(t));
+console.log('  confirmação (REL04):', /Seu acompanhamento com Marina está confirmado/i.test(t), /Próximo passo: responder 3 perguntas/.test(t), /Responder a preparação/.test(t));
 srv.inv = Object.assign({}, srv.inv, { state: 'usado' });
 await al.goto('http://localhost:5173/app#publico-convite-ABCDEFGH', { waitUntil: 'load' }); await al.waitForTimeout(1500); t = await txt(al);
-console.log('  link de novo: já aceito por você:', /Convite já aceito por você/.test(t), /Abrir acompanhamento/.test(t), '| não diz "já foi usado":', !/já foi usado/.test(t));
+console.log('  link de novo: já aceito por você:', /já foi aceito por você/.test(t), /Abrir acompanhamento/.test(t), '| não diz "já foi usado":', !/já foi usado/.test(t));
 // 3. treinador pede complemento; aluno vê o pedido e as respostas anteriores
 srv.links = [lk({ prep: 'awaiting_review', answers: { objetivo: 'Força', dias: '3', local: 'Academia', limitacoes: 'nenhuma' } })];
 const tr = await mk('tr', 'treinador');

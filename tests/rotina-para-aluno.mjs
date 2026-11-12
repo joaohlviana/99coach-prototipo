@@ -92,6 +92,9 @@ await click(al, /^Continuar treino$/); await al.waitForTimeout(500);
 console.log('  retomou com as marcações:', await al.$$eval('#app [role=checkbox][aria-checked=true]', (e) => e.length));
 // sessão incompleta: pede uma confirmação antes de enviar
 await click(al, /^Concluir sessão$/); await al.waitForTimeout(400);
+t = await txt(al); console.log('  marcar não preenche sozinho (pede as repetições):', /Faltam as repetições de/.test(t), '| nada enviado:', !srv.sub);
+await click(al, /^Igual ao previsto$/); await al.waitForTimeout(400);
+await click(al, /^Concluir sessão$/); await al.waitForTimeout(400);
 t = await txt(al); console.log('  confirma encerramento parcial:', /Encerrar com a sessão incompleta\?/.test(t), '| ainda não enviou:', !srv.sub);
 await click(al, /^Encerrar e enviar o que fiz$/); await al.waitForTimeout(1300);
 console.log('5 registro enviado:', srv.sub && srv.sub.p_key, '| séries', srv.sub && srv.sub.p_logs.length, srv.sub && srv.sub.p_logs[0] && srv.sub.p_logs[0].name, '| reps/carga do previsto:', srv.sub && srv.sub.p_logs[0].reps, srv.sub && srv.sub.p_logs[0].loadKg);

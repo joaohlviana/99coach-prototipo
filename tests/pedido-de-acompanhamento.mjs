@@ -64,7 +64,7 @@ console.log('3 sem 18+:', /maiores de 18/.test(await txt(al)));
 await al.click('#app .onb-checkrow'); await click(al, /Enviar pedido/); await al.waitForTimeout(1200);
 t = await txt(al); console.log('  enviado:', /Pedido enviado a Marina/.test(t), '| no servidor:', srv.reqs.length, srv.reqs[0] && srv.reqs[0].message);
 await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(800);
-t = await txt(al); console.log('4 aluno vê pedido:', /Seus pedidos/.test(t), /Aguardando resposta/.test(t));
+t = await txt(al); console.log('4 aluno vê pedido:', /Seus acompanhamentos e pedidos/.test(t), /Aguardando resposta/.test(t));
 const tr = await mk('TR', 'tok-tr', 'tr', 'treinador');
 await tr.evaluate(() => NAV.go('treinador', { s: 'pedidos' }, null)); await tr.waitForTimeout(700);
 t = await txt(tr); console.log('5 treinador vê pedido:', /Caio Prado/.test(t), /Quero treinar 3x/.test(t), /R\$ 200/.test(t));

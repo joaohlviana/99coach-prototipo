@@ -264,7 +264,7 @@ REG.screen({
         C.sessions(link.id).then(function (r) {
           var row = r.ok ? (r.data || []).filter(function (x) { return x.session_key === ui.receipt.key && x.submitted_at; })[0] : null;
           if (!row) return ctx.setUi({ fbBusy: false, fbErr: 'Não encontramos o registro no servidor ainda. Tente de novo em instantes.' });
-          return C.rpc('student_session_feedback', { p_session: row.id, p_body: note || null, p_effort: ui.fbEff || null, p_idem: 'fb:' + row.id }).then(function (x) { if (!x.ok) return ctx.setUi({ fbBusy: false, fbErr: 'Não enviado: ' + (x.msg || x.status || 'sem conexão') + '.' }); ctx.setUi({ fbBusy: false, fbDone: true }); ctx.toast('Retorno enviado para ' + tf + '.'); });
+          return C.rpc('student_session_feedback', { p_session: row.id, p_body: note || null, p_effort: ui.fbEff || null, p_idem: 'retorno:' + row.id }).then(function (x) { if (!x.ok) return ctx.setUi({ fbBusy: false, fbErr: 'Não enviado: ' + (x.msg || x.status || 'sem conexão') + '.' }); ctx.setUi({ fbBusy: false, fbDone: true }); ctx.toast('Retorno enviado para ' + tf + '.'); });
         });
       },
       progress: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas · guardado neste aparelho até você enviar' : '',
