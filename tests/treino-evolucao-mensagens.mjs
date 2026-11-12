@@ -77,7 +77,7 @@ t = await txt(tr); console.log('  revisada → pode montar:', /Nome do treino/i.
 await tr.fill('#rx-title', 'Força A'); await tr.fill('#rx-n0', 'Agachamento livre'); await tr.fill('#rx-s0', '3'); await tr.fill('#rx-r0', '10'); await tr.fill('#rx-l0', '40');
 await click(tr, /Adicionar exercício/); await tr.waitForTimeout(150);
 await tr.fill('#rx-n1', 'Supino reto'); await tr.fill('#rx-s1', '2'); await tr.fill('#rx-r1', '8');
-await click(tr, /^Atribuir treino$/); await tr.waitForTimeout(1200);
+await click(tr, /^Atribuir treino$/); await tr.waitForTimeout(400); await tr.locator('.mod-sheet button', { hasText: /^Atribuir treino$/ }).click(); await tr.waitForTimeout(1200);
 console.log('  atribuído:', L1.workouts[0] && L1.workouts[0].title, 'v' + (L1.workouts[0] && L1.workouts[0].current_version), JSON.stringify(L1.workouts[0].workout_versions[0].sessions[0].items.map((i) => [i.exerciseId, i.sets, i.reps, i.loadKg])));
 // 3. aluno executa
 await al.evaluate(() => CONTA.links().then(() => NAV.go('aluno', {}, null))); await al.waitForTimeout(900);

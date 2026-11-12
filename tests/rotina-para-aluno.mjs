@@ -57,7 +57,9 @@ console.log('1 tela do aluno mostra origem do treino:', /De onde vem o treino/i.
 await click(tr, /^Força base$/); await tr.waitForTimeout(400);
 t = await txt(tr);
 console.log('  resumo:', /2 sessões · 4 exercícios/.test(t), /Treino A · inferiores/.test(t), /72,5 kg/.test(t), '| formulário manual escondido:', !(await tr.$('#rx-title')));
-await click(tr, /^Atribuir esta rotina$/); await tr.waitForTimeout(1300);
+await click(tr, /^Atribuir esta rotina$/); await tr.waitForTimeout(400);
+console.log('  revisão antes de atribuir:', /Revisar antes de atribuir/.test(await tr.evaluate(() => document.body.innerText)));
+await tr.locator('.mod-sheet button', { hasText: /^Atribuir treino$/ }).click(); await tr.waitForTimeout(1300);
 const a = srv.assign[0];
 console.log('2 servidor recebeu:', a && a.p_title, '| sessões', a && a.p_sessions.length, '| 1º item', a && JSON.stringify(a.p_sessions[0].items[0]));
 console.log('  prancha (reps em tempo, sem carga):', a && JSON.stringify(a.p_sessions[1].items[1]));
@@ -66,7 +68,7 @@ t = await txt(tr); console.log('  tela confirma:', /Força base · versão 1/.te
 await tr.evaluate(() => GO('TRE15', { rotina: 'rx1' })); await tr.waitForTimeout(1000);
 t = await txt(tr);
 console.log('3 pelo editor:', await tr.evaluate(() => location.hash), '| rotina já escolhida:', /Atribuir esta rotina/.test(t));
-await click(tr, /^Atribuir esta rotina$/); await tr.waitForTimeout(1200);
+await click(tr, /^Atribuir esta rotina$/); await tr.waitForTimeout(400); await tr.locator('.mod-sheet button', { hasText: /^Atribuir treino$/ }).click(); await tr.waitForTimeout(1200);
 console.log('  nova versão no servidor:', srv.assign.length, L1.workouts.length);
 // 4. aluno vê
 const al = await mk('AL', 'al');

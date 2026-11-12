@@ -18,7 +18,7 @@ REG.screen({
 
     // ---------- montar treino (rotina manual, uma sessão por vez) ----------
     var cat = (DB.exercicios || []).map(function (e) { return { id: e.id, name: e.name }; });
-    var rows = ui.rows || (L.workout && L.workout.sessions[0] ? L.workout.sessions[0].items.map(function (it) { return { id: it.exerciseId, name: it.name, sets: String(it.sets), reps: it.reps, load: it.loadKg == null ? '' : String(it.loadKg), rest: String(it.restS) }; }) : [{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }]);
+    var rows = ui.rows || (L.workout && L.workout.sessions[0] ? L.workout.sessions[0].items.map(function (it) { return { id: it.exerciseId, name: it.name, sets: String(it.sets), reps: it.reps, load: it.loadKg == null ? '' : String(it.loadKg), rest: String(it.restS), note: it.notes || '' }; }) : [{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }]);
     var title = ui.title != null ? ui.title : (L.workout ? L.workout.title : 'Treino A');
     var upd = function (i, k) { return function (e) { var r = rows.map(function (x) { return Object.assign({}, x); }); r[i][k] = U.val(e); if (k === 'name') { var m = cat.filter(function (c) { return U.norm(c.name) === U.norm(r[i].name); })[0]; r[i].id = m ? m.id : ''; } ctx.setUi({ rows: r, err: '' }); }; };
     var valid = rows.filter(function (r) { return r.name.trim(); });
@@ -38,6 +38,7 @@ REG.screen({
       if (ui.busy) return;
       if (rot) {
         var rs = rotSessions();
+        if (!window.__asgOk) return ctx.ask({ title: 'Revisar antes de atribuir', lines: ['Para: ' + L.studentName + '.', 'Rotina “' + rot.name + '”: ' + U.plural(rs.length, 'sessão', 'sessões') + ', ' + U.plural(rs.reduce(function (n, x) { return n + (x.items || []).length; }, 0), 'exercício', 'exercícios') + '.', L.workout ? 'Substitui a versão ' + L.workout.version + ' a partir de agora. Sessões já iniciadas ou registradas não mudam, e o histórico fica.' : 'É o primeiro treino deste acompanhamento: aparece no app assim que você confirmar.'], ok: 'Atribuir treino', cancel: 'Voltar e ajustar', onOk: function () { window.__asgOk = true; try { assign(); } finally { window.__asgOk = false; } } });
         ctx.setUi({ busy: true, err: '' });
         return C.assignWorkout(lid, rot.name, rs, L.workout ? L.workout.version : 0).then(function (r) {
           if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o treino não foi atribuído.' : 'O servidor não atribuiu: ' + (r.msg || ('erro ' + r.status)) });
@@ -51,10 +52,11 @@ REG.screen({
       if (bad) return ctx.setUi({ err: 'Séries de 1 a 10 e repetições preenchidas em todos os exercícios.' });
       // edição à mão mexe só na primeira sessão: as demais sessões da rotina e as notas de cada exercício são preservadas
       var old = (L.workout && L.workout.sessions) || [], old0 = old[0] || null, noteOf = {}; ((old0 && old0.items) || []).forEach(function (it) { if (it.notes) noteOf[it.exerciseId] = it.notes; });
-      var items = valid.map(function (r) { var eid = r.id || ('livre-' + U.norm(r.name).replace(/[^a-z0-9]+/g, '-')); return { exerciseId: eid, name: r.name.trim(), sets: Number(r.sets), reps: String(r.reps).trim(), loadKg: r.load === '' ? null : Number(String(r.load).replace(',', '.')), restS: Number(r.rest) || 0, notes: noteOf[eid] || null }; });
+      var items = valid.map(function (r) { var eid = r.id || ('livre-' + U.norm(r.name).replace(/[^a-z0-9]+/g, '-')); return { exerciseId: eid, name: r.name.trim(), sets: Number(r.sets), reps: String(r.reps).trim(), loadKg: r.load === '' ? null : Number(String(r.load).replace(',', '.')), restS: Number(r.rest) || 0, notes: r.note != null ? (String(r.note).trim().slice(0, 300) || null) : (noteOf[eid] || null) }; });
       var first = { id: old0 ? old0.id : 's1', title: old.length > 1 && old0 ? old0.title : title.trim(), goal: (old0 && old0.goal) || 'Prescrição do treinador', estMin: Math.max(10, Math.round(items.reduce(function (n, x) { return n + x.sets * (1 + x.restS / 60); }, 0))), items: items };
       var sessions = [first].concat(old.slice(1));
-      ctx.setUi({ busy: true, err: '' });
+      if (!window.__asgOk) return ctx.ask({ title: 'Revisar antes de atribuir', lines: ['Para: ' + L.studentName + '.', '“' + title.trim() + '”: ' + items.map(function (x) { return x.name + ' ' + x.sets + '×' + x.reps + (x.loadKg != null ? ' · ' + String(x.loadKg).replace('.', ',') + ' kg' : '') + (x.notes ? ' (com nota)' : ''); }).join('; ') + (sessions.length > 1 ? '. As outras ' + (sessions.length - 1) + ' sessões da rotina ficam como estão.' : '.'), L.workout ? 'Substitui a versão ' + L.workout.version + ' a partir de agora. Sessões já iniciadas ou registradas não mudam, e o histórico fica.' : 'É o primeiro treino deste acompanhamento: aparece no app assim que você confirmar.'], ok: 'Atribuir treino', cancel: 'Voltar e ajustar', onOk: function () { window.__asgOk = true; try { assign(); } finally { window.__asgOk = false; } } });
+        ctx.setUi({ busy: true, err: '' });
       C.assignWorkout(lid, title.trim(), sessions, L.workout ? L.workout.version : 0).then(function (r) {
         if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o treino não foi atribuído.' : 'O servidor não atribuiu: ' + (r.msg || ('erro ' + r.status)) });
         refresh('Treino atribuído a ' + String(L.studentName).split(' ')[0] + (sessions.length > 1 ? ' (' + sessions.length + ' sessões; as outras ficaram como estavam)' : '') + '. Aparece no app a partir de agora; sessões já iniciadas não mudam.');
@@ -73,6 +75,11 @@ REG.screen({
     var logs = sess.map(function (s) {
       var sets = s.set_logs || [], vol = sets.reduce(function (n, x) { return n + (Number(x.reps) || 0) * (Number(x.load_kg) || 0); }, 0);
       var d = s.submitted_at || s.started_at;
+      var mm = /_v(\d+)_(.+)$/.exec(s.session_key || ''), sv = mm && L.workout && String(L.workout.version) === mm[1] ? (L.workout.sessions || []).filter(function (y) { return y.id === mm[2]; })[0] : null, byEx = {};
+      sets.forEach(function (x) { var k = x.exercise_name || x.exercise_id; (byEx[k] = byEx[k] || []).push(x); });
+      var detail = Object.keys(byEx).map(function (k) { var it = sv ? (sv.items || []).filter(function (y) { return y.exerciseId === byEx[k][0].exercise_id || y.name === k; })[0] : null;
+        return { t: k + ' — ' + (it ? 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') : 'previsto: versão anterior') + ' · feito ' + byEx[k].sort(function (a, b) { return a.set_no - b.set_no; }).map(function (l) { return l.reps + (l.load_kg != null ? '×' + String(l.load_kg).replace('.', ',') + 'kg' : ' rep'); }).join(' · ') }; });
+      var dOpen = ui.dtOpen === s.id;
       var cm = (s.session_comments || []).slice().sort(function (a, b) { return String(a.created_at).localeCompare(String(b.created_at)); });
       var open = ui.cmOpen === s.id;
       var post = function () {
@@ -86,6 +93,7 @@ REG.screen({
         });
       };
       return { when: d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—', sets: U.plural(sets.length, 'série', 'séries'), vol: vol ? Math.round(vol).toLocaleString('pt-BR') + ' kg' : '—',
+        detail: detail, dOpen: dOpen, dToggle: function () { ctx.setUi({ dtOpen: dOpen ? '' : s.id }); }, dLabel: dOpen ? 'Fechar' : 'Ver séries', sessName: sv ? sv.title : '',
         cms: cm.map(function (c) { return { who: c.side === 'treinador' ? 'Você' : String(L.studentName).split(' ')[0], body: c.body }; }), hasCms: cm.length > 0,
         canAdj: !!L.workout && L.status === 'ativo', canCm: !ended, adjust: function () {
           // parte da prescrição atual; mostra ao lado o que o aluno fez neste registro
@@ -120,7 +128,7 @@ REG.screen({
       rotSess: rot ? rotSessions().map(function (x, i) { return { n: String(i + 1), name: x.title, items: x.items.map(function (y) { return y.name + ' ' + y.sets + '×' + y.reps + (y.loadKg != null ? ' · ' + String(y.loadKg).replace('.', ',') + ' kg' : ''); }).join(' · ') }; }) : [],
       goRots: function () { ctx.go('H06'); }, editRot: function () { if (rot) ctx.go('TRE14', { id: rot.id }); },
       title: title, setTitle: function (e) { ctx.setUi({ title: U.val(e), err: '' }); },
-      rows: rows.map(function (r, i) { return { n: String(i + 1), name: r.name, sets: r.sets, reps: r.reps, load: r.load, rest: r.rest, setName: upd(i, 'name'), setSets: upd(i, 'sets'), setReps: upd(i, 'reps'), setLoad: upd(i, 'load'), setRest: upd(i, 'rest'),
+      rows: rows.map(function (r, i) { return { note: r.note || '', setNote: upd(i, 'note'), idNote: 'rw-note-' + i, n: String(i + 1), name: r.name, sets: r.sets, reps: r.reps, load: r.load, rest: r.rest, setName: upd(i, 'name'), setSets: upd(i, 'sets'), setReps: upd(i, 'reps'), setLoad: upd(i, 'load'), setRest: upd(i, 'rest'),
         rm: function () { var x = rows.slice(); x.splice(i, 1); ctx.setUi({ rows: x.length ? x : [{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }] }); }, idName: 'rx-n' + i, idSets: 'rx-s' + i, idReps: 'rx-r' + i, idLoad: 'rx-l' + i, idRest: 'rx-d' + i }; }),
       add: function () { ctx.setUi({ rows: rows.concat([{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }]) }); },
       catalog: cat.slice(0, 200), assign: assign, assignLabel: ui.busy ? 'Atribuindo…' : (rot ? 'Atribuir esta rotina' : (L.workout ? 'Atribuir nova versão' : 'Atribuir treino')),
