@@ -26,7 +26,8 @@ export function Rodape() {
   );
 }
 
-export default function Shell({ route, children }) {
+// soServidor: página que fica só com o HTML do servidor (leve, sem carregar o app); os links levam às páginas interativas
+export default function Shell({ route, children, soServidor }) {
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';';
   return (
     <>
@@ -38,9 +39,11 @@ export default function Shell({ route, children }) {
         <Rodape />
       </div>
       {/* o app interativo monta aqui; o React não mexe no que estiver dentro */}
-      <div id="app" lang="pt-BR" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: '' }} />
-      <script dangerouslySetInnerHTML={{ __html: boot }} />
-      <script src="/next-loader.js" defer />
+      {soServidor ? null : <>
+        <div id="app" lang="pt-BR" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: '' }} />
+        <script dangerouslySetInnerHTML={{ __html: boot }} />
+        <script src="/next-loader.js" defer />
+      </>}
     </>
   );
 }

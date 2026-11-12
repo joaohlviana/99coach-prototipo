@@ -48,4 +48,14 @@ s = await abrir('/#esporte'); console.log('7 endereço antigo /#esporte ->', s.u
 const quebradas = await p.evaluate(() => [...document.querySelectorAll('#app img')].filter((i) => i.complete && i.naturalWidth === 0 && i.getAttribute('src')).map((i) => i.getAttribute('src')).slice(0, 3));
 console.log('8 imagens quebradas:', quebradas.length, quebradas.join(' '));
 console.log('errs', errs);
+// paginação em HTML (sem JavaScript), página além do fim, página só da cidade
+const get = async (u) => { const r = await fetch('http://localhost:5173' + u); return { st: r.status, h: await r.text(), csp: r.headers.get('content-security-policy') || '' }; };
+let g = await get('/treinadores/musculacao/pagina/2');
+console.log('paginação HTML:', g.st === 200, /rel="prev" href="\/treinadores\/musculacao"/.test(g.h), /rel="next" href="\/treinadores\/musculacao\/pagina\/3"/.test(g.h), /canonical" href="[^"]*\/treinadores\/musculacao\/pagina\/2"/.test(g.h), '| leve (sem o app):', !g.h.includes('<script src="/next-loader.js"'));
+console.log('além do fim é 404:', (await get('/treinadores/musculacao/pagina/9999')).st === 404, (await get('/treinadores/musculacao/pagina/1')).st === 404, (await get('/treinadores/musculacao/pagina/abc')).st === 404);
+g = await get('/treinadores/musculacao/sao-paulo-sp');
+console.log('título com presencial:', /<h1>Treinadores de Musculação presencial em São Paulo<\/h1>/.test(g.h), '| cabeçalhos de segurança:', /frame-ancestors 'none'/.test(g.csp));
+g = await get('/cidade/sao-paulo-sp');
+console.log('página da cidade:', g.st === 200, /Treinadores em/.test(g.h), /href="\/treinadores\/musculacao\/sao-paulo-sp"/.test(g.h), '| cidade sem ninguém é 404:', (await get('/cidade/nao-existe-xx')).st === 404);
+g = await get('/sitemap.xml'); console.log('sitemap tem cidades:', /\/cidade\/sao-paulo-sp</.test(g.h));
 await b.close();

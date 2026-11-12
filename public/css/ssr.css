@@ -41,3 +41,5 @@ html.app-on #ssr{display:none}
 .ssr-foot{display:flex;gap:20px;flex-wrap:wrap;align-items:center;border-top:1px solid rgba(18,18,20,.1);padding-top:20px;font-size:14px;color:var(--text-2,#52525B)}
 .ssr-foot a{min-height:44px;display:inline-flex;align-items:center}
 @media (max-width:599px){.ssr-hero{padding:24px 20px;border-radius:20px}.ssr-top{padding-bottom:16px}.ssr-top nav a{padding:8px 10px;font-size:14px}}
+
+.ssr-pag { margin-top: 16px; } .ssr-pag a { font-weight: 600; text-decoration: underline; }
