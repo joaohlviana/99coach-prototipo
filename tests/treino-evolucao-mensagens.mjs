@@ -14,10 +14,14 @@ async function mk(who, tok, uid) {
     const j = (s, d) => route.fulfill({ status: s, headers: cors, body: d == null ? '' : JSON.stringify(d) });
     const body = rq.postData() ? JSON.parse(rq.postData()) : {};
     const path = u.pathname.replace('/rest/v1/', '');
+    // mesmas regras do banco real (conferidas em 12/11): coluna inexistente, convite individual sem e-mail e chave de repetição curta são recusados
+    if (path === 'sessions' && /submitted_at/.test(decodeURIComponent(u.search)) && !/submitted_at:received_at/.test(decodeURIComponent(u.search))) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'column sessions.submitted_at does not exist' }) });
+    if (path === 'invites' && rq.method() === 'POST') { const bb = JSON.parse(rq.postData() || '{}'); if (bb.kind === 'individual' && !bb.recipient_email) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'new row for relation "invites" violates check constraint "invites_check"' }) }); }
+    if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
     srv.log.push(who + ' ' + rq.method() + ' ' + path + ' ' + (rq.postData() || '').slice(0, 110));
     if (path === 'links') return j(200, [L1]);
     if (path === 'profiles') return j(200, /id=in/.test(u.search) ? [{ id: 'al', display_name: 'Caio Prado' }] : [{ id: uid, roles: [uid === 'tr' ? 'treinador' : 'aluno'] }]);
-    if (path === 'rpc/answer_prep') { L1.answers[body.p_key] = body.p_value; if (body.p_done) L1.prep = 'awaiting_review'; return j(200, { ok: true }); }
+    if (path === 'rpc/answer_prep') { if (['objetivo', 'dias', 'local'].indexOf(body.p_key) < 0 || String(body.p_value).length > 120) return j(400, { message: 'resposta inválida' }); L1.answers[body.p_key] = body.p_value; if (body.p_done) L1.prep = 'awaiting_review'; return j(200, { ok: true }); }
     if (path === 'rpc/review_prep') { L1.prep = 'ready_to_assign'; return j(200, { ok: true }); }
     if (path === 'rpc/assign_workout') {
       const w = L1.workouts[0] || { template_id: body.p_template, title: body.p_title, current_version: 0, workout_versions: [] };
@@ -59,7 +63,7 @@ await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(500)
 console.log('1 aluno:', head(await txt(al)));
 await click(al, /Enviar respostas/); await al.waitForTimeout(200);
 console.log('  sem responder:', /Responda:/.test(await txt(al)));
-for (const [id, v] of [['#pq-objetivo', 'Ganhar força'], ['#pq-dias', '3 dias'], ['#pq-local', 'Academia'], ['#pq-limitacoes', 'nenhuma']]) await al.fill(id, v);
+for (const [id, v] of [['#pq-objetivo', 'Ganhar força'], ['#pq-dias', '3 dias'], ['#pq-local', 'Academia']]) await al.fill(id, v);
 await click(al, /Enviar respostas/); await al.waitForTimeout(1200);
 console.log('  depois de enviar:', head(await txt(al)), '| prep no servidor:', L1.prep);
 // 2. treinador revisa e monta
@@ -85,6 +89,8 @@ console.log('  sem marcar série:', /Marque pelo menos uma série/.test(await tx
 const row = async (n) => { await al.locator('#app .onb-checkrow').nth(n).click(); await al.waitForTimeout(200); };
 await row(0); await row(1); await al.fill('#ex-r0-1', '8'); await row(3);
 await click(al, /Concluir sessão/); await al.waitForTimeout(300);
+console.log('  marcar sem digitar não vira realizado:', /Faltam as repetições/.test(await txt(al)));
+await click(al, /^Igual ao previsto$/); await al.waitForTimeout(200); await click(al, /Concluir sessão/); await al.waitForTimeout(300);
 console.log('  sessão incompleta pede confirmação:', /Encerrar com a sessão incompleta/.test(await txt(al)));
 await click(al, /Encerrar e enviar o que fiz/); await al.waitForTimeout(1200);
 console.log('  registrado no servidor:', srv.sessions.length, JSON.stringify(srv.sessions[0] && srv.sessions[0].set_logs.map((x) => [x.item, x.set_no, x.reps, x.load_kg])), '| key', srv.sessions[0] && srv.sessions[0].session_key);
@@ -97,7 +103,7 @@ t = await txt(tr); console.log('  treinador vê registro:', t.slice(t.indexOf('R
 // 5. mensagens
 await al.evaluate(() => NAV.go('aluno', { s: 'mensagens' }, null)); await al.waitForTimeout(700);
 await al.fill('#al-chat-in', 'Posso trocar o treino de quinta para sexta?'); await click(al, /^Enviar$/); await al.waitForTimeout(800);
-t = await txt(al); console.log('5 aluno enviou:', srv.msgs.length, /Posso trocar/.test(t), /Entregue/i.test(t));
+t = await txt(al); console.log('5 aluno enviou:', srv.msgs.length, /Posso trocar/.test(t), /Enviada/i.test(t));
 await tr.evaluate(() => { NAV.go('treinador', { s: 'alunos' }, null); }); await tr.waitForTimeout(200);
 await tr.evaluate(() => GO('H05', { id: 'lk_L1' })); await tr.waitForTimeout(800);
 t = await txt(tr); console.log('  treinador vê:', /Posso trocar/.test(t));

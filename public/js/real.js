@@ -204,10 +204,11 @@
     (R || []).filter(function (x) { return x.mine === 'treinador'; }).forEach(function (x) {
       var id = 'rq_' + x.id, cur = window.DB.t1_pedidos.filter(function (p) { return p.id === id; })[0];
       var st = x.status === 'pendente' ? 'pendente' : (x.status === 'aceito' ? 'aceito' : 'recusado');
-      if (cur) { cur.status = st; return; }
+      var RES = { cancelado: 'Cancelado pela pessoa', expirado: 'Venceu sem resposta', recusado: 'Recusado', aceito: 'Aceito' };
+      if (cur) { cur.status = st; if (st !== 'pendente') cur.result = RES[x.status] || cur.result; return; }
       var d = new Date(x.at), due = x.due ? new Date(x.due) : null;
       window.DB.t1_pedidos.unshift({ id: id, server: x.id, aluno: '', name: x.studentName, origin: 'Perfil', offer: '', offerTxt: x.offer, msg: x.message || '(sem mensagem)',
-        at: d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }), due: due ? 'responder até ' + due.toLocaleDateString('pt-BR') : '', goal: '', city: '', status: st, result: st === 'aceito' ? 'Aceito' : (st === 'recusado' ? 'Recusado' : '') });
+        at: d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }), due: due ? 'responder até ' + due.toLocaleDateString('pt-BR') : '', goal: '', city: '', status: st, result: st === 'pendente' ? '' : (RES[x.status] || '') });
     });
   }
   function refreshLinks() {

@@ -19,8 +19,9 @@ REG.screen({
       if (ui.busy) return;
       var kind = ui.kind || 'corrigir', reason = String(ui.reason || '').trim(), contact = String(ui.contact || '').trim();
       if (reason.length < 10) return ctx.setUi({ err: ERR.relato_curto });
-      var k = key();
-      ctx.setUi({ busy: true, err: '' });
+      // a mesma chave enquanto a pessoa tenta o MESMO pedido (resposta perdida não cria pedido em dobro)
+      var k = ui.pendKey && ui.pendFor === kind + reason ? ui.pendKey : key();
+      ctx.setUi({ busy: true, err: '', pendKey: k, pendFor: kind + reason });
       C.rpc('submit_removal_request', { p_slug: slug, p_kind: kind, p_reason: reason, p_contact: contact || null, p_key: k }).then(function (r) {
         var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
         if (!r.ok || !d || !d.protocol) return ctx.setUi({ busy: false, err: why(r) });
@@ -42,7 +43,7 @@ REG.screen({
       var note = String(ui.proof || '').trim();
       if (note.length < 10) return ctx.setUi({ cerr: ERR.prova_curta });
       ctx.setUi({ cbusy: true, cerr: '' });
-      C.confirmAdult().then(function () { return C.rpc('request_claim', { p_slug: slug, p_note: note, p_idem: 'claim:' + slug }); }).then(function (r) {
+      C.confirmAdult().then(function () { var ck = 'claim:' + slug; return C.rpc('request_claim', { p_slug: slug, p_note: note, p_idem: C.intent(ck) }).then(C.settle(ck)); }).then(function (r) {
         var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
         if (!r.ok || !d) return ctx.setUi({ cbusy: false, cerr: why(r) });
         ctx.setUi({ cbusy: false, claimed: d.status === 'ja_tem_titular' ? 'Este perfil já tem titular. Se ele é seu, peça revisão pela Ajuda.' : 'Pedido enviado' + (d.protocol ? ' · protocolo ' + d.protocol : '') + '. A equipe revisa as provas antes de transferir o perfil; você recebe a resposta na sua conta.' });

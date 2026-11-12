@@ -12,7 +12,7 @@ REG.screen({
     }
     var refresh = function (msg) { return C.links().then(function () { if (window.__refreshLinks) window.__refreshLinks(); ctx.setUi({ busy: false }); if (msg) ctx.toast(msg); }); };
     var PREP = { awaiting_client: 'Aguardando o aluno responder a preparação', awaiting_review: 'Preparação respondida · revise antes de montar o treino', ready_to_assign: 'Preparação revisada · pronto para montar o treino', assigned: 'Treino atribuído' };
-    var Q = { objetivo: 'Objetivo', dias: 'Dias por semana', local: 'Onde treina', limitacoes: 'Dores ou limitações' };
+    var Q = { objetivo: 'Objetivo', dias: 'Dias por semana', local: 'Onde treina' };
     var answers = Object.keys(L.answers || {}).map(function (k) { return { k: Q[k] || k, v: String(L.answers[k]) }; });
 
     // ---------- montar treino (rotina manual, uma sessão por vez) ----------
@@ -48,12 +48,15 @@ REG.screen({
       if (!valid.length) return ctx.setUi({ err: 'Inclua pelo menos um exercício.' });
       var bad = valid.filter(function (r) { var s = Number(r.sets); return !(s >= 1 && s <= 10) || !String(r.reps).trim(); })[0];
       if (bad) return ctx.setUi({ err: 'Séries de 1 a 10 e repetições preenchidas em todos os exercícios.' });
-      var items = valid.map(function (r) { return { exerciseId: r.id || ('livre-' + U.norm(r.name).replace(/[^a-z0-9]+/g, '-')), name: r.name.trim(), sets: Number(r.sets), reps: String(r.reps).trim(), loadKg: r.load === '' ? null : Number(String(r.load).replace(',', '.')), restS: Number(r.rest) || 0, notes: null }; });
-      var sessions = [{ id: 's1', title: title.trim(), goal: 'Prescrição do treinador', estMin: Math.max(10, Math.round(items.reduce(function (n, x) { return n + x.sets * (1 + x.restS / 60); }, 0))), items: items }];
+      // edição à mão mexe só na primeira sessão: as demais sessões da rotina e as notas de cada exercício são preservadas
+      var old = (L.workout && L.workout.sessions) || [], old0 = old[0] || null, noteOf = {}; ((old0 && old0.items) || []).forEach(function (it) { if (it.notes) noteOf[it.exerciseId] = it.notes; });
+      var items = valid.map(function (r) { var eid = r.id || ('livre-' + U.norm(r.name).replace(/[^a-z0-9]+/g, '-')); return { exerciseId: eid, name: r.name.trim(), sets: Number(r.sets), reps: String(r.reps).trim(), loadKg: r.load === '' ? null : Number(String(r.load).replace(',', '.')), restS: Number(r.rest) || 0, notes: noteOf[eid] || null }; });
+      var first = { id: old0 ? old0.id : 's1', title: old.length > 1 && old0 ? old0.title : title.trim(), goal: (old0 && old0.goal) || 'Prescrição do treinador', estMin: Math.max(10, Math.round(items.reduce(function (n, x) { return n + x.sets * (1 + x.restS / 60); }, 0))), items: items };
+      var sessions = [first].concat(old.slice(1));
       ctx.setUi({ busy: true, err: '' });
       C.assignWorkout(lid, title.trim(), sessions, L.workout ? L.workout.version : 0).then(function (r) {
         if (!r.ok) return ctx.setUi({ busy: false, err: r.offline ? 'Sem conexão: o treino não foi atribuído.' : 'O servidor não atribuiu: ' + (r.msg || ('erro ' + r.status)) });
-        refresh('Treino atribuído a ' + String(L.studentName).split(' ')[0] + '. Ele vê no app a partir de agora.');
+        refresh('Treino atribuído a ' + String(L.studentName).split(' ')[0] + (sessions.length > 1 ? ' (' + sessions.length + ' sessões; as outras ficaram como estavam)' : '') + '. Aparece no app a partir de agora; sessões já iniciadas não mudam.');
       });
     };
     var askMore = function () {
@@ -102,7 +105,7 @@ REG.screen({
       reasons: (ui.ch === 'encerrar' ? [['objetivo_concluido', 'Objetivo concluído'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['mudanca', 'Mudança'], ['insatisfacao', 'Insatisfação'], ['outro', 'Outro']] : [['ferias', 'Férias'], ['lesao', 'Lesão'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['outro', 'Outro']]).map(function (r) { var on = ui.reason === r[0]; return { label: r[1], cls: 'seg__it' + (on ? ' is-on' : ''), on: String(on), pick: function () { ctx.setUi({ reason: r[0] }); } }; }),
       openPause: function () { ctx.setUi({ ch: 'pausar', reason: 'ferias' }); }, openEnd: function () { ctx.setUi({ ch: 'encerrar', reason: 'objetivo_concluido' }); }, chCancel: function () { ctx.setUi({ ch: '' }); },
       chLabel: ui.busy ? 'Salvando…' : (ui.ch === 'encerrar' ? 'Encerrar vínculo' : 'Pausar vínculo'),
-      chConfirm: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, ui.ch, ui.reason).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } var end = ui.ch === 'encerrar'; ctx.setUi({ ch: '' }); refresh(end ? 'Vínculo encerrado. O histórico continua disponível para os dois.' : 'Vínculo pausado.').then(function () { if (end) { DB.alunos = DB.alunos.filter(function (a) { return a.id !== 'lk_' + lid; }); ctx.go('H04'); } }); }); },
+      chConfirm: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, ui.ch, ui.reason).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } var end = ui.ch === 'encerrar'; ctx.setUi({ ch: '' }); refresh(end ? 'Vínculo encerrado. Os registros ficam guardados; o aluno continua vendo o histórico dele.' : 'Vínculo pausado.').then(function () { if (end) { DB.alunos = DB.alunos.filter(function (a) { return a.id !== 'lk_' + lid; }); ctx.go('H04'); } }); }); },
       resume: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(lid, 'retomar', 'outro').then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status)); } refresh('Vínculo retomado.'); }); },
       missing: false, has: true, name: L.studentName, ini: U.ini(L.studentName), since: L.since ? 'Vínculo desde ' + new Date(L.since).toLocaleDateString('pt-BR') : '', origin: L.origin === 'convite' ? 'por convite' : 'por pedido',
       prepTxt: PREP[L.prep] || 'Preparação', hasAnswers: answers.length > 0, answers: answers, needReview: L.prep === 'awaiting_review', review: review,

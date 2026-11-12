@@ -555,15 +555,19 @@
           </sc-if>
           <sc-if value="{{v.logged}}" hint-placeholder-val="{{ false }}">
             <p class="mod-small mod-muted">Você está como {{v.email}}. <button type="button" class="btn btn--ghost btn--sm" onClick="{{v.useOther}}">Usar outra conta</button></p>
-            <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.adultOn}}" onClick="{{v.toggleAdult}}"><span class="{{v.adultCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais.</span></button>
+            <sc-if value="{{v.needAdult}}" hint-placeholder-val="{{ false }}"><button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.adultOn}}" onClick="{{v.toggleAdult}}"><span class="{{v.adultCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais.</span></button></sc-if>
             <sc-if value="{{v.adultErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">A 99Coach atende só maiores de 18 anos.</span></sc-if>
             <sc-if value="{{v.hasOut}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Convite não aceito</b>{{v.outMsg}}</div><sc-if value="{{v.wrongAcct}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.useOther}}">Usar outra conta</button></sc-if></div></sc-if>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.accept}}">{{v.acceptLabel}}</button></div>
+            <sc-if value="{{v.needEmail}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="cv-em"><h2 class="onb-h2" id="cv-em">Confirme seu e-mail</h2><p class="mod-small mod-muted">Enviamos um código de 6 números para {{v.email}}. É só desta vez.</p>
+              <div class="field" style="max-width: 220px"><label class="field__label" for="cv-code">Código</label><div class="input"><input id="cv-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{v.cCode}}" onInput="{{v.setCCode}}"></div></div>
+              <sc-if value="{{v.hasCErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.cErr}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.checkCode}}">{{v.cLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.resend}}">Enviar outro código</button></div></section></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.accept}}">{{v.acceptLabel}}</button></div><p class="mod-small mod-muted">{{v.fine}}</p>
           </sc-if>
         </sc-if>
         <sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec onb-receipt" aria-labelledby="cv-ok"><div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-check"></i></span><b id="cv-ok">{{v.doneTitle}}</b><span>{{v.doneNext}}</span></div></section>
           <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openApp}}">Responder a preparação</button></div></sc-if>
-        <sc-if value="{{v.mine}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Convite já aceito por você</b>Seu acompanhamento com {{v.tName}} está na sua conta.</div></div><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openApp}}">Abrir acompanhamento</button></div></sc-if>
+        <sc-if value="{{v.mine}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Você já está conectado a {{v.tName}}.</b>Este convite já foi aceito por você.</div></div><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openApp}}">Abrir acompanhamento</button></div></sc-if>
       </sc-if>
 
       <sc-if value="{{is.salvos}}" hint-placeholder-val="{{ false }}">

@@ -55,7 +55,8 @@
         if (ui.dBusy) return; ctx.setUi({ dBusy: true, dErr: '' });
         C().rpc(fn, args).then(function (r) { if (!r.ok) return ctx.setUi({ dBusy: false, dErr: why(r) }); ctx.setUi({ dBusy: false, q: null }); ctx.toast(okMsg + ' às ' + U.now() + '.'); });
       };
-      var idem = function (k) { return k + ':' + Date.now(); };
+      // chave estável por decisão (pedido + ação): repetir depois de queda não decide duas vezes
+      var idem = function (k) { return k; };
       var KIND = { corrigir: 'Corrigir dados', retirar: 'Retirar perfil' }, ST = { recebido: 'Recebido', em_analise: 'Em análise', precisa_complemento: 'Precisa de complemento' };
       return {
         anon: false, checking: ui.isAdmin == null, denied: ui.isAdmin === false,
@@ -71,25 +72,25 @@
           var id = r.request_id;
           return { title: KIND[r.kind] + ' · ' + (r.trainer_name || r.trainer_slug), meta: 'Protocolo ' + r.protocol + ' · ' + (ST[r.status] || r.status) + ' · ' + when(r.created_at) + (r.contact_email ? ' · resposta para ' + r.contact_email : ' · sem e-mail para resposta'),
             reason: r.reason, open: function () { window.open('/treinador/' + encodeURIComponent(r.trainer_slug), '_blank', 'noopener'); }, idN: 'n-' + id, note: (ui.notes || {})[id] || '', setNote: setNote(id),
-            analyze: function () { act('admin_decide_removal', { p_request: id, p_status: 'em_analise', p_idem: idem('rm:' + id) }, 'Marcado em análise'); },
-            more: function () { act('admin_decide_removal', { p_request: id, p_status: 'precisa_complemento', p_note: note(id), p_idem: idem('rm:' + id) }, 'Complemento pedido'); },
-            retire: function () { ctx.ask({ title: 'Retirar o perfil de ' + (r.trainer_name || r.trainer_slug) + '?', lines: ['O perfil sai da busca e do endereço público. A retirada fica registrada e vale mesmo depois de restaurar uma cópia do banco.'], ok: 'Retirar perfil', onOk: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'perfil_retirado', p_note: note(id), p_idem: idem('rm:' + id) }, 'Perfil retirado'); } }); },
-            fixed: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'dados_corrigidos', p_note: note(id), p_idem: idem('rm:' + id) }, 'Pedido concluído'); },
-            refuse: function () { act('admin_decide_removal', { p_request: id, p_status: 'recusado', p_note: note(id), p_idem: idem('rm:' + id) }, 'Pedido recusado'); },
+            analyze: function () { act('admin_decide_removal', { p_request: id, p_status: 'em_analise', p_idem: idem('rm:' + id + ':analise') }, 'Marcado em análise'); },
+            more: function () { act('admin_decide_removal', { p_request: id, p_status: 'precisa_complemento', p_note: note(id), p_idem: idem('rm:' + id + ':compl:' + note(id).length) }, 'Complemento pedido'); },
+            retire: function () { ctx.ask({ title: 'Retirar o perfil de ' + (r.trainer_name || r.trainer_slug) + '?', lines: ['O perfil sai da busca e do endereço público. A retirada fica registrada e vale mesmo depois de restaurar uma cópia do banco.'], ok: 'Retirar perfil', onOk: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'perfil_retirado', p_note: note(id), p_idem: idem('rm:' + id + ':retirar') }, 'Perfil retirado'); } }); },
+            fixed: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'dados_corrigidos', p_note: note(id), p_idem: idem('rm:' + id + ':corrigido') }, 'Pedido concluído'); },
+            refuse: function () { act('admin_decide_removal', { p_request: id, p_status: 'recusado', p_note: note(id), p_idem: idem('rm:' + id + ':recusar') }, 'Pedido recusado'); },
             isRetire: r.kind === 'retirar', isFix: r.kind !== 'retirar' };
         }),
         claims: q.claim.map(function (r) {
           var id = r.request_id;
           return { title: (r.trainer_name || r.trainer_slug) + ' · protocolo ' + r.protocol, meta: 'Pedido por ' + (r.requester_email || 'conta sem e-mail') + ' em ' + when(r.requested_at) + (r.competing ? ' · ' + U.plural(r.competing, 'outro pedido', 'outros pedidos') + ' para o mesmo perfil' : ''),
             proof: r.proof_note, open: function () { window.open('/treinador/' + encodeURIComponent(r.trainer_slug), '_blank', 'noopener'); }, idN: 'n-' + id, note: (ui.notes || {})[id] || '', setNote: setNote(id),
-            approve: function () { ctx.ask({ title: 'Transferir o perfil?', lines: ['A conta que pediu passa a ser titular do perfil de ' + (r.trainer_name || r.trainer_slug) + '.', r.competing ? 'Os outros pedidos para este perfil serão recusados.' : 'Confira as provas antes.'], ok: 'Aprovar', onOk: function () { act('admin_decide_claim', { p_request: id, p_decision: 'aprovado', p_note: note(id) || null, p_idem: idem('cl:' + id) }, 'Reivindicação aprovada'); } }); },
-            refuse: function () { act('admin_decide_claim', { p_request: id, p_decision: 'recusado', p_note: note(id), p_idem: idem('cl:' + id) }, 'Reivindicação recusada'); } };
+            approve: function () { ctx.ask({ title: 'Transferir o perfil?', lines: ['A conta que pediu passa a ser titular do perfil de ' + (r.trainer_name || r.trainer_slug) + '.', r.competing ? 'Os outros pedidos para este perfil serão recusados.' : 'Confira as provas antes.'], ok: 'Aprovar', onOk: function () { act('admin_decide_claim', { p_request: id, p_decision: 'aprovado', p_note: note(id) || null, p_idem: idem('cl:' + id + ':aprovar') }, 'Reivindicação aprovada'); } }); },
+            refuse: function () { act('admin_decide_claim', { p_request: id, p_decision: 'recusado', p_note: note(id), p_idem: idem('cl:' + id + ':recusar') }, 'Reivindicação recusada'); } };
         }),
         crefs: q.cref.map(function (r) {
           var id = r.review_id;
           return { title: (r.trainer_name || r.trainer_slug) + ' · CREF ' + r.cref, meta: 'Pedido em ' + when(r.requested_at), ev: r.evidence_note || 'Sem observação do treinador.', idN: 'n-' + id, note: (ui.notes || {})[id] || '', setNote: setNote(id),
-            ok: function () { act('admin_decide_cref', { p_review: id, p_decision: 'conferido', p_note: note(id) || null, p_idem: idem('cr:' + id) }, 'CREF conferido'); },
-            bad: function () { act('admin_decide_cref', { p_review: id, p_decision: 'insuficiente', p_note: note(id), p_idem: idem('cr:' + id) }, 'Conferência recusada'); } };
+            ok: function () { act('admin_decide_cref', { p_review: id, p_decision: 'conferido', p_note: note(id) || null, p_idem: idem('cr:' + id + ':ok') }, 'CREF conferido'); },
+            bad: function () { act('admin_decide_cref', { p_review: id, p_decision: 'insuficiente', p_note: note(id), p_idem: idem('cr:' + id + ':nao') }, 'Conferência recusada'); } };
         }),
         back: function () { GO('@home'); }
       };

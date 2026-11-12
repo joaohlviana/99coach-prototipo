@@ -28,7 +28,7 @@ REG.screen({
         var idl = L.map(function (l) { return l.id; }).join(',');
         Promise.all([
           idl ? C.db('GET', 'messages?select=link_id&side=eq.aluno&read_at=is.null&link_id=in.(' + idl + ')&limit=500') : Promise.resolve({ ok: true, data: [] }),
-          idl ? C.db('GET', 'sessions?select=id,link_id,submitted_at,session_comments(side)&link_id=in.(' + idl + ')&submitted_at=gte.' + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString()) + '&order=submitted_at.desc&limit=200') : Promise.resolve({ ok: true, data: [] }),
+          idl ? C.db('GET', 'sessions?select=id,link_id,submitted_at:received_at,session_comments(side)&link_id=in.(' + idl + ')&received_at=gte.' + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString()) + '&order=received_at.desc&limit=200') : Promise.resolve({ ok: true, data: [] }),
           C.myInvites()
         ]).then(function (x) { ctx.setUi({ wk: { unread: x[0].ok ? x[0].data || [] : null, regs: x[1].ok ? x[1].data || [] : null, inv: x[2].ok ? x[2].data || [] : null } }); });
       }

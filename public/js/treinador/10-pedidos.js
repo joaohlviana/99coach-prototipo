@@ -25,6 +25,12 @@ REG.screen({
       (decision === 'recusado' ? window.CONTA.declineRequest(real.server, why) : window.CONTA.decideRequest(real.server, decision)).then(function (r) {
         if (r.ok && r.data && r.data.capacity === 'esgotada') { ctx.setUi({ busy: '' }); ctx.toast('Sem vagas: você já usa todas as ' + r.data.limit + ' vagas do seu plano. Encerre um acompanhamento para aceitar.'); return; }
         if (!r.ok) { ctx.setUi({ busy: '', acceptFail: real.id }); ctx.toast(r.offline ? 'Sem conexão: nada mudou. Tente de novo.' : 'O servidor não registrou: ' + (r.msg || r.status)); return; }
+        var dd = r.data && (Array.isArray(r.data) ? r.data[0] : r.data) || {};
+        if (dd.changed === false && dd.status && dd.status !== decision) {
+          var WHY = { expirado: 'Este pedido venceu sem resposta e não pode mais ser aceito.', cancelado: 'A pessoa cancelou este pedido.', aceito: 'Este pedido já tinha sido aceito.', recusado: 'Este pedido já tinha sido recusado.' };
+          real.status = dd.status === 'aceito' ? 'aceito' : 'recusado'; real.result = ({ expirado: 'Venceu sem resposta', cancelado: 'Cancelado pela pessoa', aceito: 'Aceito', recusado: 'Recusado' })[dd.status] || dd.status;
+          ctx.setUi({ busy: '', open: '', mode: '' }); ctx.toast(WHY[dd.status] || 'O pedido não está mais pendente.'); if (window.__refreshLinks) window.__refreshLinks(); return;
+        }
         real.status = decision; real.result = (decision === 'aceito' ? 'Aceito hoje às ' : 'Recusado hoje às ') + U.now();
         ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(okMsg);
         if (window.__refreshLinks) window.__refreshLinks();

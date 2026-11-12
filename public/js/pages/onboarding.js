@@ -389,6 +389,7 @@ class Component extends DCLogic {
           set({ pubBusy: true, toast: 'Publicando…' });
           const C = window.CONTA;
           return C.saveTrainer(st).then((r) => (r.ok ? C.publish() : r)).then((r) => {
+            if (!r.ok && /email_nao_confirmado/.test(r.msg || '')) { const em = (C.user() || {}).email || st.email; return C.sendCode(em, st.name).then(() => { set({ pubBusy: false, email: em, step: 'codigo', code: '', real: true, afterVerify: 'pub', toast: 'Para publicar, confirme seu e-mail: enviamos um código para ' + em + '.' }); top(); }); }
             if (!r.ok) { set({ pubBusy: false, pubUnknown: !!r.offline, toast: r.offline ? 'Sem resposta do servidor: vamos consultar antes de tentar de novo, para não publicar duas vezes.' : 'O servidor não publicou: ' + (r.msg || 'erro ' + r.status) + '. Nada mudou na busca.' }); return; }
             return C.db('GET', 'trainers?select=slug,status&user_id=eq.' + encodeURIComponent(C.user().id)).then((q) => {
               const x = q.ok && q.data && q.data[0];
@@ -514,6 +515,7 @@ class Component extends DCLogic {
         if (window.CONTA && st.real && !st.scn) {
           return window.CONTA.verify(st.email, st.code).then((r) => {
             if (!r.ok) return set(r.offline ? { toast: 'Sem conexão com o servidor. Tente de novo.' } : { codeErr: true, codeExp: /expir/i.test(r.msg || '') });
+            if (st.afterVerify === 'pub') { set({ afterVerify: '', codeExp: false, conta: true, step: 'pub', toast: 'E-mail confirmado. Agora é só publicar.' }); return top(); }
             const role = st.flow === 'entrar' ? '' : (st.intent === 'treinador' ? 'treinador' : 'aluno');
             if (role) window.CONTA.addRole(role);
             set({ codeExp: false, conta: true });

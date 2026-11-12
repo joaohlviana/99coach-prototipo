@@ -11,7 +11,7 @@ REG.screen({
     var set = function (k) { return function (e) { var o = {}; o[k] = U.val(e); o.showErr = false; o.fail = false; ctx.setUi(o); }; };
     var first = (f.nome.trim().split(' ')[0]) || 'aluno';
     var nameErr = f.showErr && !f.nome.trim() ? 'Informe o nome do aluno.' : '';
-    var contactErr = f.showErr && !T.contactOk(f.contato) ? 'Destinatário inválido: use um e-mail (nome@dominio.com) ou celular com DDD.' : '';
+    var contactErr = f.showErr && ui.needMail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.contato.trim()) ? 'Informe o e-mail do aluno: o convite vale só para a conta desse e-mail.' : (f.showErr && !T.contactOk(f.contato) ? 'Destinatário inválido: use um e-mail (nome@dominio.com) ou celular com DDD.' : '');
     var dup = f.nome.trim() ? DB.alunos.filter(function (a) { return U.norm(a.name) === U.norm(f.nome) && a.status !== 'encerrado'; })[0] : null;
 
     var doCreate = function () {
@@ -41,6 +41,8 @@ REG.screen({
     };
     var create = function () {
       if (!f.nome.trim() || !T.contactOk(f.contato)) { ctx.setUi({ showErr: true }); return; }
+      // o convite é individual: vale só para a conta do e-mail convidado (o servidor exige o e-mail)
+      if (realAcct && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.contato.trim())) { ctx.setUi({ showErr: true, needMail: true }); return; }
       if (realAcct) return createReal();
       if (scn === 'naocriou' && !ui.tried) { ctx.setUi({ fail: true, tried: true }); return; }
       if (scn === 'desconhecido' && !ui.tried) { ctx.setUi({ unknown: true, tried: true }); return; }

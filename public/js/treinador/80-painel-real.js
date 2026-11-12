@@ -73,7 +73,7 @@
       var st = t.cref_status || (cref ? 'informado' : 'nao_informado');
       var ask = function () {
         if (ui.busy) return; ctx.setUi({ busy: true, err: '' });
-        C().rpc('request_cref_review', { p_note: String(ui.note || '').trim() || null, p_idem: 'cref:' + uid + ':' + cref }).then(function (r) {
+        var ik = 'cref:' + uid + ':' + cref; C().rpc('request_cref_review', { p_note: String(ui.note || '').trim() || null, p_idem: C().intent(ik) }).then(function (r) { if (r.ok) C().settle(ik)(r);
           var d = one(r);
           if (!r.ok || !d) return ctx.setUi({ busy: false, err: /cref_nao_informado/.test(r.msg || '') ? 'Informe o número do CREF no perfil antes de pedir a conferência.' : 'Não foi possível pedir agora: ' + (r.msg || r.status || 'sem conexão') + '.' });
           ctx.setUi({ busy: false, t: Object.assign({}, t, { cref_status: d.status }) }); ctx.toast(d.status === 'verificado' ? 'Seu CREF já está verificado.' : 'Pedido de conferência enviado às ' + U.now() + '.');
@@ -82,7 +82,7 @@
       var retire = function () {
         ctx.ask({ title: 'Retirar seu perfil?', lines: ['Seu perfil sai da busca e do endereço público. Novos pedidos deixam de chegar.', 'Seus alunos atuais e o histórico continuam. Para voltar a aparecer, publique de novo pelo perfil.'], ok: 'Retirar perfil', onOk: function () {
           ctx.setUi({ rbusy: true });
-          C().rpc('retire_my_profile', { p_idem: 'retire:' + uid + ':' + Date.now() }).then(function (r) {
+          var rk = 'retire:' + uid; C().rpc('retire_my_profile', { p_idem: C().intent(rk) }).then(C().settle(rk)).then(function (r) {
             var d = one(r);
             ctx.setUi({ rbusy: false, t: r.ok && d ? Object.assign({}, t, { status: d.status }) : t, rerr: r.ok ? '' : 'Não foi possível retirar agora: ' + (r.msg || r.status || 'sem conexão') + '.' });
             if (r.ok) ctx.toast('Perfil retirado da busca às ' + U.now() + '.');

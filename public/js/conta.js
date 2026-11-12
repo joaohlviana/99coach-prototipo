@@ -69,6 +69,8 @@
       var pl = {}; try { pl = JSON.parse(decodeURIComponent(escape(atob(q.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))))); } catch (_) {}
       if (pl.sub) {
         keep({ access_token: q.access_token, refresh_token: q.refresh_token || '', user: { id: pl.sub, email: pl.email || '' } });
+        // entrou pelo Google ou pelo link do e-mail: o servidor registra o e-mail como verificado (ele confere pelo próprio login)
+        setTimeout(function () { db('POST', 'rpc/mark_email_verified', {}); }, 0);
         var md = pl.user_metadata || {};
         // link de "esqueci a senha": entra só para criar a senha nova
         if (q.type === 'recovery') { flow = 'entrar'; try { LS.setItem('c99.novaSenha', '1'); } catch (_) {} }
@@ -174,7 +176,10 @@
     myInvites: function () { return db('GET', 'invites?select=code,recipient_name,recipient_email,service,status,created_at,expires_at,accepted_at,generation&order=created_at.desc&limit=200'); },
     inviteLink: function (code) { return location.origin + '/app#publico-convite-' + String(code).replace('-', ''); },
     invitePreview: function (code) { return db('POST', 'rpc/invite_preview', { p_code: code }); },
-    acceptInvite: function (code) { return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: 'accept:' + String(code).toUpperCase() }); },
+    acceptInvite: function (code) { var k = 'accept:' + String(code).toUpperCase(); return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: intent(k) }).then(function (r) {
+      // só o aceite concluído encerra a intenção; qualquer outro resultado (idade, e-mail, vagas) pode ser tentado de novo com chave nova
+      var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; delete pend[k]; return r; }); },
+    markEmailVerified: function () { return db('POST', 'rpc/mark_email_verified', {}); },
     // vínculos em que esta conta é aluno ou treinador
     links: function () {
       if (!sess) return Promise.resolve([]);
@@ -198,13 +203,13 @@
     },
     // ---------- preparação, treino e registro (mesmas funções do site) ----------
     answerPrep: function (link, key, value, done) { return db('POST', 'rpc/answer_prep', { p_link: link, p_key: key, p_value: value, p_done: !!done, p_idem: 'prep:' + link + ':' + key + ':' + hash(value) + ':' + (done ? 1 : 0) }); },
-    reviewPrep: function (link) { return db('POST', 'rpc/review_prep', { p_link: link, p_idem: 'review:' + link }); },
+    reviewPrep: function (link) { var k = 'review:' + link; return db('POST', 'rpc/review_prep', { p_link: link, p_idem: intent(k) }).then(function (r) { delete pend[k]; return r; }); },
     assignWorkout: function (link, title, sessions, version) {
       var body = { p_link: link, p_title: title, p_template: 'manual', p_sessions: sessions, p_schedule: null, p_idem: 'assign:' + link + ':v' + (version || 0) + ':' + hash(JSON.stringify([title, sessions])) };
       return db('POST', 'rpc/assign_workout', body);
     },
     submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
-    sessions: function (link) { return db('GET', 'sessions?select=id,session_key,started_at,submitted_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
+    sessions: function (link) { return db('GET', 'sessions?select=id,session_key,status,started_at,submitted_at:received_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
     // ---------- pedidos de acompanhamento (pedido não é vínculo; o treinador decide) ----------
     createRequest: function (slug, message, search) {
       if (!sess) return Promise.resolve({ ok: false, nosession: true });
@@ -256,7 +261,7 @@
     cancelAppointment: function (id, reason) { return db('POST', 'rpc/cancel_appointment', { p_id: id, p_reason: reason || null }); },
     appointments: function (linkIds) { return linkIds.length ? db('GET', 'appointments?select=id,link_id,starts_at,ends_at,tz,status,booked_by&link_id=in.(' + linkIds.join(',') + ')&status=eq.marcado&ends_at=gte.' + encodeURIComponent(new Date(Date.now() - 36e5).toISOString()) + '&order=starts_at.asc') : Promise.resolve({ ok: true, data: [] }); },
     // ---------- mensagens do vínculo ----------
-    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.asc&limit=500'); },
+    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.desc&limit=300').then(function (r) { if (r.ok && Array.isArray(r.data)) r.data.reverse(); return r; }); },
     sendMessage: function (link, body) { var k = 'msg:' + link + ':' + hash(body); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: intent(k), p_session: null }).then(settle(k)); },
     intent: intent, settle: settle,
     markRead: function (link) { return db('POST', 'rpc/mark_read', { p_link: link }); },
@@ -338,7 +343,7 @@
     // confere o código e abre a sessão
     verify: function (email, token) {
       return call('POST', '/auth/v1/verify', { type: 'email', email: String(email || '').trim().toLowerCase(), token: token }).then(function (r) {
-        if (r.ok && r.data && r.data.access_token) keep({ access_token: r.data.access_token, refresh_token: r.data.refresh_token, user: { id: r.data.user && r.data.user.id, email: r.data.user && r.data.user.email } });
+        if (r.ok && r.data && r.data.access_token) { keep({ access_token: r.data.access_token, refresh_token: r.data.refresh_token, user: { id: r.data.user && r.data.user.id, email: r.data.user && r.data.user.email } }); return db('POST', 'rpc/mark_email_verified', {}).then(function () { return r; }, function () { return r; }); }
         return r;
       });
     },

@@ -12,6 +12,10 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   if (rq.method() === 'OPTIONS') return route.fulfill({ status: 200, headers: cors });
   if (u.pathname.startsWith('/storage/')) return route.abort();
   const path = u.pathname.replace('/rest/v1/', '');
+    // mesmas regras do banco real (conferidas em 12/11): coluna inexistente, convite individual sem e-mail e chave de repetição curta são recusados
+    if (path === 'sessions' && /submitted_at/.test(decodeURIComponent(u.search)) && !/submitted_at:received_at/.test(decodeURIComponent(u.search))) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'column sessions.submitted_at does not exist' }) });
+    if (path === 'invites' && rq.method() === 'POST') { const bb = JSON.parse(rq.postData() || '{}'); if (bb.kind === 'individual' && !bb.recipient_email) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'new row for relation "invites" violates check constraint "invites_check"' }) }); }
+    if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
   if (path === 'profiles') return route.fulfill({ status: 200, headers: cors, body: JSON.stringify([{ id: 'u1', roles: [who] }]) });
   if (path === 'trainers') return route.fulfill({ status: 200, headers: cors, body: JSON.stringify([{ id: 'T1' }]) });
   return route.fulfill({ status: 200, headers: cors, body: '[]' });
