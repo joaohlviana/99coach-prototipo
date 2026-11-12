@@ -20,9 +20,10 @@ REG.screen({
       outro: ['Outro motivo', 'Oi {n}! Obrigado pelo interesse. Agora não consigo assumir o seu acompanhamento.']
     };
 
-    var decideServer = function (real, decision, fst, okMsg) {
+    var decideServer = function (real, decision, fst, okMsg, why) {
       ctx.setUi({ busy: real.id });
-      window.CONTA.decideRequest(real.server, decision).then(function (r) {
+      (decision === 'recusado' ? window.CONTA.declineRequest(real.server, why) : window.CONTA.decideRequest(real.server, decision)).then(function (r) {
+        if (r.ok && r.data && r.data.capacity === 'esgotada') { ctx.setUi({ busy: '' }); ctx.toast('Sem vagas: você já usa todas as ' + r.data.limit + ' vagas do seu plano. Encerre um acompanhamento para aceitar.'); return; }
         if (!r.ok) { ctx.setUi({ busy: '', acceptFail: real.id }); ctx.toast(r.offline ? 'Sem conexão: nada mudou. Tente de novo.' : 'O servidor não registrou: ' + (r.msg || r.status)); return; }
         real.status = decision; real.result = (decision === 'aceito' ? 'Aceito hoje às ' : 'Recusado hoje às ') + U.now();
         ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(okMsg);
@@ -82,7 +83,7 @@ REG.screen({
         reasons: Object.keys(REASONS).map(function (k) { var on = reason === k; return { label: REASONS[k][0], cls: 'chip' + (on ? ' is-on' : ''), on: String(on), pick: function () { ctx.setUi({ reason: k }); } }; }),
         rmsg: msg, setRmsg: function (e) { ctx.setUi({ msg: U.val(e), msgFor: p.id + reason }); },
         refuse: function () {
-          if (real.server) return decideServer(real, 'recusado', fst, 'Pedido de ' + fst + ' recusado.');
+          if (real.server) return decideServer(real, 'recusado', fst, 'Pedido de ' + fst + ' recusado. ' + fst + ' vê a sua mensagem.', String(msg || '').trim() || REASONS[reason][0]);
           real.status = 'recusado'; real.result = 'Recusado hoje: ' + REASONS[reason][0].toLowerCase();
           var a = real.aluno ? DB.find('alunos', real.aluno) : null;
           if (a && a.status === 'pedido') { a.status = 'encerrado'; a.flag = null; a.svc = 'Pedido recusado em 26/10'; a.next = 'Sem vínculo'; }

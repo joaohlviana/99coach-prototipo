@@ -165,7 +165,7 @@
     // vínculos em que esta conta é aluno ou treinador
     links: function () {
       if (!sess) return Promise.resolve([]);
-      return db('GET', 'links?select=id,status,origin,prep,answers,created_at,student_id,trainers(slug,name,user_id),workouts(template_id,title,current_version,workout_versions(version,sessions,schedule,created_at,change_note))&status=in.(ativo,pausado,encerrado)&order=created_at.desc').then(function (r) {
+      return db('GET', 'links?select=id,status,origin,prep,prep_request_note,answers,created_at,student_id,trainers(slug,name,user_id),workouts(template_id,title,current_version,workout_versions(version,sessions,schedule,created_at,change_note))&status=in.(ativo,pausado,encerrado)&order=created_at.desc').then(function (r) {
         // falha de leitura NÃO vira "sem vínculo": mantém o que já se sabia e marca como desatualizado
         if (!r.ok || !Array.isArray(r.data)) { linksFailed = true; var prev = []; try { prev = JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) {} return prev; }
         linksFailed = false;
@@ -175,7 +175,7 @@
           var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
           var out = L.map(function (l) {
             var w = (l.workouts || [])[0], v = w ? (w.workout_versions || []).filter(function (x) { return x.version === w.current_version; })[0] : null;
-            return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, answers: l.answers || {}, since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
+            return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, answers: l.answers || {}, prepNote: l.prep_request_note || '', since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
             workout: w && v ? { title: w.title, version: w.current_version, sessions: v.sessions || [], schedule: v.schedule || null, assignedAt: v.created_at, changeNote: v.change_note || null } : null,
             trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador', ended: l.status === 'encerrado' }; });
           try { LS.setItem('c99.vinculos', JSON.stringify(out)); } catch (_) {}
@@ -206,19 +206,22 @@
     },
     requests: function () {
       if (!sess) return Promise.resolve([]);
-      return db('GET', 'requests?select=id,status,message,created_at,expires_at,student_id,trainers(slug,name,user_id),offers(key,title,price_cents,unit)&order=created_at.desc&limit=100').then(function (r) {
+      return db('GET', 'requests?select=id,status,message,decline_reason,created_at,expires_at,student_id,trainers(slug,name,user_id),offers(key,title,price_cents,unit)&order=created_at.desc&limit=100').then(function (r) {
         if (!r.ok || !Array.isArray(r.data)) { reqsFailed = true; return lastReqs; }
         reqsFailed = false;
         var L = r.data;
         var ids = L.map(function (x) { return x.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i && v !== sess.user.id; });
         return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
           var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
-          return (lastReqs = L.map(function (x) { return { id: x.id, status: x.status, message: x.message || '', at: x.created_at, due: x.expires_at, mine: x.student_id === sess.user.id ? 'aluno' : 'treinador',
+          return (lastReqs = L.map(function (x) { return { id: x.id, status: x.status, message: x.message || '', reason: x.decline_reason || '', at: x.created_at, due: x.expires_at, mine: x.student_id === sess.user.id ? 'aluno' : 'treinador',
             studentName: N[x.student_id] || 'Aluno', trainerName: x.trainers && x.trainers.name, trainerSlug: x.trainers && x.trainers.slug,
             offer: x.offers ? x.offers.title + ' · ' + (x.offers.price_cents != null && x.offers.unit ? 'R$ ' + (x.offers.price_cents / 100).toLocaleString('pt-BR') + ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[x.offers.unit] || x.offers.unit) : 'Sob consulta') : '' }; }));
         });
       });
     },
+    cancelRequest: function (id) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: 'cancelado', p_idem: 'cancel:' + id }); },
+    declineRequest: function (id, reason) { return db('POST', 'rpc/decline_request', { p_id: id, p_reason: reason, p_idem: 'decide:' + id + ':recusado' }); },
+    prepMore: function (link, note) { return db('POST', 'rpc/request_prep_more', { p_link: link, p_note: note }); },
     decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }); },
     // ---------- vínculo: pausar, retomar, encerrar (com motivo; nada é apagado) ----------
     changeLink: function (link, action, reason, note) {

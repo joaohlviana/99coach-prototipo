@@ -3,7 +3,10 @@
 REG.screen({
   page: 'publico', key: 'convite', id: 'REL03', title: 'Convite', nav: 'explorar',
   vals: function (ctx) {
-    var raw = String(ctx.id || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    var stored = ''; try { stored = localStorage.getItem('c99.conviteCode') || ''; } catch (_) {}
+    var raw = String(ctx.id || stored || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    // o código não fica no endereço depois de aberto (fica guardado só neste aparelho até o aceite)
+    if (ctx.id && raw.length === 8) { try { localStorage.setItem('c99.conviteCode', raw); history.replaceState(history.state, '', location.pathname + '#publico-convite'); } catch (_) {} }
     var code = raw.length === 8 ? raw.slice(0, 4) + '-' + raw.slice(4) : '';
     var ui = ctx.ui, C = window.CONTA, logged = !!(C && C.session());
     if (code && C && !ui.asked) {
@@ -23,7 +26,7 @@ REG.screen({
     };
     var OUT = {
       vinculo_ativo: 'Pronto: vocês estão conectados.', ja_ativo: 'Vocês já estavam conectados.',
-      conta_incompativel: 'Este convite foi feito para outra pessoa. Entre com a conta do e-mail convidado.',
+      conta_incompativel: 'Este convite foi feito para outra conta. Use a conta do e-mail que recebeu o convite.',
       vencido: MSG.vencido[1], usado: MSG.usado[1], revogado: MSG.revogado[1], treinador_indisponivel: MSG.treinador_indisponivel[1],
       idade_nao_confirmada: 'Confirme que você tem 18 anos ou mais para aceitar.', capacidade_esgotada: 'O treinador está sem vagas agora. Fale com ele antes de tentar de novo.'
     };
@@ -39,13 +42,17 @@ REG.screen({
           try { localStorage.removeItem('c99.conviteCode'); } catch (_) {}
           return C.addRole('aluno').then(function () { return C.syncRoles(); }).then(function () { return C.links(); }).then(function () { ctx.setUi({ busy: false, done: true, outMsg: OUT[out] }); });
         }
-        ctx.setUi({ busy: false, outMsg: OUT[out] || ('Resultado: ' + (out || 'desconhecido')) });
+        ctx.setUi({ busy: false, outMsg: OUT[out] || 'Não foi possível confirmar o aceite agora. Tente de novo.', wrongAcct: out === 'conta_incompativel' });
       });
     };
+    var myL = window.ACCT && window.ACCT.myTrainer ? window.ACCT.myTrainer() : null;
+    var mine = st === 'usado' && logged && myL && trainer && myL.trainerName === trainer.name;
+    var first = trainer ? String(trainer.name).split(' ')[0] : '';
+    var useOther = function () { remember(); window.SIGN_OUT(['c99.conviteCode'], location.pathname + '#onboarding-entrar'); };
     var expires = p && p.expiresAt ? new Date(p.expiresAt).toLocaleDateString('pt-BR') : '';
     return {
       noCode: !code, loading: !!ui.loading, offline: !!ui.offline, err: ui.err || '', hasErr: !!ui.err,
-      valid: st === 'valido' && !ui.done, closed: !!(st && st !== 'valido' && MSG[st]), closedT: st && MSG[st] ? MSG[st][0] : '', closedX: st && MSG[st] ? MSG[st][1] : '',
+      valid: st === 'valido' && !ui.done, closed: !!(st && st !== 'valido' && MSG[st]) && !mine, closedT: st && MSG[st] ? MSG[st][0] : '', closedX: st && MSG[st] ? MSG[st][1] : '',
       tName: trainer ? trainer.name : '', tMeta: [trainer && trainer.city, trainer && trainer.credential].filter(Boolean).join(' · '), svc: p && p.service ? p.service : 'Acompanhamento',
       tIni: trainer ? U.ini(trainer.name) : '', tPhoto: trainer && trainer.photo ? trainer.photo : '', hasPhoto: !!(trainer && trainer.photo), noPhoto: !(trainer && trainer.photo),
       expires: expires ? 'Vale até ' + expires : '', logged: logged, anon: !logged,
@@ -54,7 +61,11 @@ REG.screen({
       outMsg: ui.outMsg || '', hasOut: !!ui.outMsg && !ui.done, done: !!ui.done, doneMsg: ui.outMsg || '',
       signup: function () { remember(); GO('@onboarding', { flow: 'aluno' }); },
       login: function () { remember(); GO('@onboarding', { flow: 'entrar' }); },
-      openApp: function () { GO('@aluno'); }, home: function () { GO('@home'); }
+      openApp: function () { GO('@aluno'); }, home: function () { GO('@home'); },
+      title: trainer ? 'Treine com ' + trainer.name : 'Convite para treinar', sub: trainer ? first + ' convidou você para treinar com acompanhamento. Aceitar cria o vínculo; nada é cobrado aqui.' : 'Aceitar cria o vínculo com o treinador. Nada é cobrado aqui.',
+      email: logged && C.user() ? C.user().email : '', useOther: useOther, wrongAcct: !!ui.wrongAcct,
+      mine: !!mine, closedOther: !!(st && st !== 'valido' && MSG[st]) && !mine,
+      doneTitle: 'Seu acompanhamento com ' + (first || 'o treinador') + ' está confirmado', doneNext: first ? 'Próximo passo: responder 4 perguntas para ' + first + ' montar seu treino.' : 'Próximo passo: responder a preparação.'
     };
   }
 });

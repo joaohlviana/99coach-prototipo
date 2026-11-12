@@ -93,11 +93,14 @@
   window.NOTICE = NOTICE;
 
   // sair: encerra a sessão no servidor e apaga deste aparelho os dados da conta (outra pessoa não herda nada)
-  function SIGN_OUT() {
+  function SIGN_OUT(keep, next) {
     window.__signingOut = true;
+    // keep: intenção que sobrevive à troca de conta (ex.: o código do convite que a pessoa ainda vai aceitar)
+    var saved = {}; (keep || []).forEach(function (k) { try { var v = window.localStorage.getItem(k); if (v != null) saved[k] = v; } catch (_) {} });
     var done = function () {
       try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\./.test(k) && !/^c99\.(demo|semdemo)$/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
-      location.hash = ''; location.reload();
+      try { Object.keys(saved).forEach(function (k) { window.localStorage.setItem(k, saved[k]); }); } catch (_) {}
+      if (next) location.href = next; else { location.hash = ''; location.reload(); }
     };
     if (window.CONTA) window.CONTA.signOut().then(done, done); else done();
   }

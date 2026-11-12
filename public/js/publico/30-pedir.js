@@ -26,7 +26,9 @@ REG.screen({
       msg: ui.msg || '', setMsg: function (e) { ctx.setUi({ msg: U.val(e), err: '' }); },
       adultOn: String(!!ui.adult), adultCls: 'check' + (ui.adult ? ' is-on' : ''), adultErr: !!ui.adultErr, toggleAdult: function () { ctx.setUi({ adult: !ui.adult, adultErr: false }); },
       send: send, sendLabel: ui.busy ? 'Enviando…' : 'Enviar pedido', err: ui.err || '', hasErr: !!ui.err,
-      signup: function () { GO('@onboarding', { flow: 'aluno' }); }, login: function () { GO('@onboarding', { flow: 'entrar' }); },
+      // a intenção (este treinador) sobrevive a entrar ou criar conta: volta para este pedido depois
+      signup: function () { try { localStorage.setItem('c99.depoisEntrar', '#publico-pedir-' + slug); localStorage.setItem('c99.depoisEntrarAte', String(Date.now() + 864e5)); } catch (_) {} GO('@onboarding', { flow: 'aluno' }); },
+      login: function () { try { localStorage.setItem('c99.depoisEntrar', '#publico-pedir-' + slug); localStorage.setItem('c99.depoisEntrarAte', String(Date.now() + 864e5)); } catch (_) {} GO('@onboarding', { flow: 'entrar' }); },
       back: function () { GO('@perfil', { id: slug }); }, openApp: function () { GO('@aluno'); }
     };
   }

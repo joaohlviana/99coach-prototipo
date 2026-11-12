@@ -29,8 +29,9 @@ REG.screen({
         T0 = [from === 'evolucao' ? 'Seu histórico' : 'Acompanhamento encerrado', 'O acompanhamento com ' + (ended[0].trainerName || 'seu treinador') + ' foi encerrado. Seus registros continuam aqui; para treinar de novo, procure um treinador ou aceite um convite.'];
         if (!ui.endAsked) { ctx.setUi({ endAsked: true }); Promise.all(ended.map(function (l) { return C.sessions(l.id); })).then(function (rs) { var n = {}; rs.forEach(function (r, i) { n[ended[i].id] = r.ok ? (r.data || []).filter(function (x) { return x.submitted_at; }).length : null; }); ctx.setUi({ endN: n }); }); }
       }
-      var endItems = ended.map(function (l) { var n = (ui.endN || {})[l.id]; return { t: l.trainerName || 'Treinador', x: 'Encerrado · começou em ' + new Date(l.since).toLocaleDateString('pt-BR') + (n == null ? '' : ' · ' + U.plural(n, 'treino registrado', 'treinos registrados')) + (l.workout ? ' · último treino: ' + l.workout.title : '') }; });
-      var reqItems = reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') }; });
+      var endItems = ended.map(function (l) { var n = (ui.endN || {})[l.id]; return { canCancel: false, t: l.trainerName || 'Treinador', x: 'Encerrado · começou em ' + new Date(l.since).toLocaleDateString('pt-BR') + (n == null ? '' : ' · ' + U.plural(n, 'treino registrado', 'treinos registrados')) + (l.workout ? ' · último treino: ' + l.workout.title : '') }; });
+      var reqItems = reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') + (r.status === 'recusado' && r.reason ? ' · motivo: “' + r.reason + '”' : ''),
+        canCancel: r.status === 'pendente', cancel: function () { ctx.ask({ title: 'Cancelar o pedido?', lines: ['O pedido para ' + (r.trainerName || 'o treinador') + ' deixa de valer. Você pode pedir de novo depois.'], ok: 'Cancelar pedido', cancel: 'Manter pedido', onOk: function () { C.cancelRequest(r.id).then(function (x) { if (!x.ok) return ctx.toast('Não foi possível cancelar: ' + (x.msg || x.status || 'sem conexão') + '.'); ctx.toast('Pedido cancelado.'); if (window.__refreshLinks) window.__refreshLinks(); setTimeout(function () { ctx.setUi({ v: (ui.v || 0) + 1 }); }, 700); }); } }); } }; });
       return Object.assign(base, { title: T0[0], text: T0[1], hasReqs: reqItems.length + endItems.length > 0, reqs: endItems.concat(reqItems),
         failed: !!(C && C.syncFailed && C.syncFailed()), retry: function () { if (window.__refreshLinks) window.__refreshLinks(); C.links().then(function () { ctx.setUi({ v: (ui.v || 0) + 1 }); }); } });
     }
@@ -48,7 +49,7 @@ REG.screen({
     var s0 = SS[sx];
 
     // ---------- preparação (depois do vínculo) ----------
-    var P = ui.prep || {};
+    var P = ui.prep || Object.assign({}, link.answers || {});
     var QS = [['objetivo', 'Qual é seu objetivo agora?', 'Ex.: ganhar força sem dor no ombro'], ['dias', 'Quantos dias por semana você consegue treinar?', 'Ex.: 3 dias'], ['local', 'Onde você vai treinar?', 'Ex.: academia perto de casa'], ['limitacoes', 'Alguma dor, lesão ou limitação?', 'Se não tiver, escreva “nenhuma”']];
     var sendPrep = function () {
       if (ui.busy) return;
@@ -154,7 +155,7 @@ REG.screen({
     if (C && !ui.msgAsked) { ctx.setUi({ msgAsked: true }); C.messages(link.id).then(function (r) { ctx.setUi({ msgs: r.ok ? (r.data || []) : null }); }); }
     var note = null; (ui.msgs || []).forEach(function (m) { if (m.side === 'treinador' && !m.read_at) note = m; });
     var TT = {
-      prep: ['Você e ' + tf + ' estão conectados', 'Antes do primeiro treino, ' + tf + ' precisa conhecer sua rotina. São 4 perguntas rápidas.'],
+      prep: [link.prepNote ? tf + ' pediu um complemento' : 'Você e ' + tf + ' estão conectados', link.prepNote ? '“' + link.prepNote + '” Ajuste suas respostas e envie de novo.' : 'Antes do primeiro treino, ' + tf + ' precisa conhecer sua rotina. São 4 perguntas rápidas.'],
       wait: ['Treino em preparação', tf + ' recebeu suas respostas e está montando seu treino. Ele aparece aqui quando for atribuído.'],
       ready: [w ? w.title : '', paused ? 'Acompanhamento pausado por ' + tf + ' ou por você. O treino e o histórico continuam aqui; sessões novas voltam quando o acompanhamento for retomado.' : w ? 'Versão ' + w.version + ' · atribuído por ' + tf + (w.assignedAt ? ' em ' + new Date(w.assignedAt).toLocaleDateString('pt-BR') : '') : ''],
       exec: [w ? w.title : '', 'Marque cada série feita. Ajuste repetições e carga ao que você fez de verdade.']
@@ -193,7 +194,15 @@ REG.screen({
       // meu treinador: situação do vínculo e o que muda ao encerrar
       trainerLine: (link.trainerName || 'Seu treinador') + ' · ' + (paused ? 'acompanhamento pausado' : 'acompanhamento ativo') + ' desde ' + new Date(link.since).toLocaleDateString('pt-BR') + ' · ' + (link.origin === 'convite' ? 'por convite' : 'por pedido'),
       endInfo: ['Encerrar é definitivo: o acompanhamento com ' + tf + ' termina e a vaga dele é liberada.', 'Seu histórico de treinos e as mensagens continuam visíveis para você.', 'O treino atribuído deixa de receber novas versões.', 'Para voltar a treinar com ' + tf + ', é preciso um novo pedido ou convite.'].map(function (x) { return { x: x }; }),
-      showEnd: !!ui.endOpen, toggleEnd: function () { ctx.setUi({ endOpen: !ui.endOpen }); }, openProfile: function () { if (link.trainerSlug && window.NAV) window.NAV.go('perfil', { id: link.trainerSlug }, null); },
+      showEnd: !!ui.endOpen, toggleEnd: function () { ctx.setUi({ endOpen: !ui.endOpen, chAct: '' }); },
+      // o aluno também pausa, retoma e encerra (sem precisar pedir ao treinador)
+      pauseInfo: ['Pausar mantém o treino, o histórico e a conversa.', 'Sessões novas não começam até retomar.', tf + ' é avisado e a vaga continua sua.'].map(function (x) { return { x: x }; }),
+      isActive: link.status === 'ativo', isPausedL: link.status === 'pausado', chOpen: !!ui.chAct, chPause: ui.chAct === 'pausar', chEnd: ui.chAct === 'encerrar',
+      openPause: function () { ctx.setUi({ chAct: 'pausar', chWhy: 'ferias' }); }, openEndL: function () { ctx.setUi({ chAct: 'encerrar', chWhy: 'objetivo_concluido' }); }, chCancel: function () { ctx.setUi({ chAct: '' }); },
+      chReasons: (ui.chAct === 'encerrar' ? [['objetivo_concluido', 'Objetivo concluído'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['mudanca', 'Mudança'], ['insatisfacao', 'Insatisfação'], ['outro', 'Outro']] : [['ferias', 'Férias'], ['lesao', 'Lesão'], ['agenda', 'Agenda'], ['financeiro', 'Financeiro'], ['outro', 'Outro']]).map(function (r) { var on = ui.chWhy === r[0]; return { label: r[1], on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ chWhy: r[0] }); } }; }),
+      chLabel: ui.busy ? 'Salvando…' : (ui.chAct === 'encerrar' ? 'Encerrar acompanhamento' : 'Pausar acompanhamento'),
+      chGo: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(link.id, ui.chAct, ui.chWhy).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status || 'sem conexão') + '. Nada mudou.'); } var end = ui.chAct === 'encerrar'; ctx.setUi({ chAct: '', endOpen: false }); if (window.__refreshLinks) window.__refreshLinks(); refresh(end ? 'Acompanhamento encerrado. Seu histórico continua aqui.' : 'Acompanhamento pausado. Retome quando quiser.'); }); },
+      resumeL: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(link.id, 'retomar', 'outro').then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status || 'sem conexão') + '.'); } refresh('Acompanhamento retomado.'); }); }, openProfile: function () { if (link.trainerSlug && window.NAV) window.NAV.go('perfil', { id: link.trainerSlug }, null); },
       canProfile: !!(link.trainerSlug && window.REAL && window.REAL.has(link.trainerSlug)),
       grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : ''), last: lastOf(it.exerciseId), sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), phR: String(parseInt(it.reps, 10) || ''), phL: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
       finish: finish, finishLabel: ui.busy ? 'Enviando…' : (ui.partial ? 'Encerrar e enviar o que fiz' : 'Concluir sessão'),

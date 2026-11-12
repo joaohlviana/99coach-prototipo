@@ -305,7 +305,8 @@
           <section class="card onb-sec" aria-labelledby="rx-prep"><h2 class="onb-h2" id="rx-prep">Preparação</h2>
             <sc-if value="{{v.waitingClient}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">O aluno ainda não respondeu. Você pode montar o treino depois da revisão.</p></sc-if>
             <sc-if value="{{v.hasAnswers}}" hint-placeholder-val="{{ false }}"><div class="kv"><sc-for list="{{v.answers}}" as="a" hint-placeholder-count="3"><div class="kv__r"><span>{{a.k}}</span><b>{{a.v}}</b></div></sc-for></div></sc-if>
-            <sc-if value="{{v.needReview}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.review}}">Marcar como revisada</button></div></sc-if>
+            <sc-if value="{{v.needReview}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.review}}">Marcar como revisada</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.openMore}}">Pedir complemento</button></div>
+              <sc-if value="{{v.moreOpen}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="tr-more">O que falta (o aluno vê)</label><div class="input"><textarea id="tr-more" rows="2" maxlength="500" onInput="{{v.setMoreNote}}">{{v.moreNote}}</textarea></div></div><sc-if value="{{v.hasMoreErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.moreErr}}</span></sc-if><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.askMore}}">Enviar pedido de complemento</button></div></sc-if></sc-if>
           </section>
           <sc-if value="{{v.canBuild}}" hint-placeholder-val="{{ false }}">
             <section class="card onb-sec" aria-labelledby="rx-tr"><h2 class="onb-h2" id="rx-tr">Treino</h2>

@@ -56,6 +56,12 @@ REG.screen({
         refresh('Treino atribuído a ' + String(L.studentName).split(' ')[0] + '. Ele vê no app a partir de agora.');
       });
     };
+    var askMore = function () {
+      var note = String(ui.moreNote || '').trim();
+      if (note.length < 3) return ctx.setUi({ moreErr: 'Escreva o que falta: o aluno vê esse texto.' });
+      if (ui.busy) return; ctx.setUi({ busy: true, moreErr: '' });
+      C.prepMore(lid, note).then(function (r) { if (!r.ok) return ctx.setUi({ busy: false, moreErr: 'Não enviado: ' + (r.msg || r.status || 'sem conexão') + '.' }); ctx.setUi({ moreOpen: false, moreNote: '' }); refresh('Pedido de complemento enviado. ' + String(L.studentName).split(' ')[0] + ' responde de novo a preparação.'); });
+    };
     var review = function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.reviewPrep(lid).then(function (r) { if (!r.ok) return ctx.setUi({ busy: false, err: 'Não foi possível marcar: ' + (r.msg || r.status) }); refresh('Preparação revisada.'); }); };
 
     // ---------- registros do aluno (só confirmados no servidor) ----------
@@ -134,6 +140,8 @@ REG.screen({
           ctx.setUi({ adjBusy: false, adj: null }); refresh('Treino ajustado' + (v ? ': versão ' + v : '') + '. ' + String(L.studentName).split(' ')[0] + ' vê a nova versão e o motivo.');
         });
       },
+      moreOpen: !!ui.moreOpen, openMore: function () { ctx.setUi({ moreOpen: !ui.moreOpen, moreErr: '' }); }, moreNote: ui.moreNote || '', setMoreNote: function (e) { ctx.setUi({ moreNote: U.val(e), moreErr: '' }); },
+      askMore: askMore, moreErr: ui.moreErr || '', hasMoreErr: !!ui.moreErr,
       hasLogs: logs.length > 0, noLogs: !logs.length && !ui.sessErr, logs: logs, sessErr: !!ui.sessErr, logsCount: U.plural(logs.length, 'sessão registrada', 'sessões registradas'),
       back: function () { ctx.go('H04'); }
     };
