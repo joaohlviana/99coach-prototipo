@@ -25,3 +25,10 @@ pedir exclusão → desistir → retirar perfil (some do público) → pedido de
 5. Chave de repetição precisa ter de 8 a 200 letras.
 
 Os simuladores dos roteiros agora recusam os itens 1, 3 e 5, como o banco.
+
+
+## Fase 7 — biblioteca do treinador (12/11)
+Transação desfeita, agindo como o treinador de teste e depois como o aluno:
+- primeira gravação cria a versão 1; gravação com a versão certa vira versão 2
+- gravação com versão velha **não grava** e devolve o conteúdo atual (o app junta e regrava)
+- o treinador lê só a própria biblioteca; o aluno enxerga 0 linhas
