@@ -22,7 +22,7 @@ async function mk(who, tok, uid, wantRole) {
     if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
   if (path === 'trainers' && ehCatalogo(u)) return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify([linha(LIVE, { role: 'Treinadora de CrossFit', pitch: 'Treino adultos iniciantes.', offers: [{ title: 'Acompanhamento online', priceCents: 20000, unit: 'mes' }] })]) });
     srv.log.push(who + ' ' + rq.method() + ' ' + path + u.search.slice(0, 60) + ' ' + (rq.postData() || '').slice(0, 100));
-    if (path === 'trainers') return j(200, [{ id: 'T1', offers: [{ id: 'OF1', key: 'principal' }] }]);
+    if (path === 'trainers') return j(200, [Object.assign({ id: 'T1', offers: [{ id: 'OF1', key: 'principal' }] }, uid === 'tr' ? { slug: LIVE.slug } : {})]);
     if (path === 'requests' && rq.method() === 'POST') {
       if (srv.reqs.some((r) => r.status === 'pendente')) return j(409, { message: 'duplicate key value violates unique constraint "requests_one_pending"' });
       srv.reqs.push({ id: 'R1', status: 'pendente', message: body.message, created_at: '2026-11-10T21:00:00Z', expires_at: '2026-11-12T21:00:00Z', student_id: 'al', trainers: { slug: LIVE.slug, name: 'Marina Duarte', user_id: 'tr' }, offers: { key: 'principal', title: 'Acompanhamento online', price_cents: 20000, unit: 'mes' } });
@@ -80,6 +80,9 @@ console.log('  Caio na lista:', /Caio Prado/.test(await txt(tr)));
 await al.evaluate(() => { window.__refreshLinks(); }); await al.waitForTimeout(900);
 await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(500);
 t = await txt(al); console.log('6 aluno conectado:', /VOCÊ E MARINA ESTÃO CONECTADOS/.test(t));
+// o dono do perfil não vê "Pedir acompanhamento" para si mesmo
+await tr.evaluate(() => NAV.go('perfil', { id: 'marina-duarte-teste' }, null)); await tr.waitForTimeout(1500);
+t = await txt(tr); console.log('7 dono vê o próprio perfil:', /Este é o seu perfil público/.test(t), /Editar perfil/.test(t), '| sem pedir para si:', !/Pedir acompanhamento/.test(t));
 console.log(srv.log.filter((l) => /requests|decide/.test(l)).map((l) => l.slice(0, 140)));
 console.log('errs', al.errs, tr.errs);
 await b.close();

@@ -67,6 +67,8 @@
     return r;
   }
   function hash(t) { var h = 0x811c9dc5; t = String(t); for (var i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 0x1000193); return (h >>> 0).toString(36); }
+  var slugAsked = false;
+  function keepSlug(v) { try { if (v) LS.setItem('c99.meuSlug', v); } catch (_) {} }
   function slugify(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   var SPORT = { jiujitsu: 'jiu-jitsu', beach: 'beach-tennis' };
   var REAL_SPORTS = 'musculacao funcional crossfit pilates yoga corrida lutas natacao ciclismo danca jiu-jitsu calistenia tenis futebol volei basquete escalada beach-tennis lpo'.split(' ');
@@ -116,11 +118,11 @@
         return db('GET', 'trainers?select=id,slug&user_id=eq.' + encodeURIComponent(uid));
       }).then(function (r) {
         if (!r.ok) return r;
-        if (r.data && r.data[0]) { tr = r.data[0]; return db('PATCH', 'trainers?id=eq.' + encodeURIComponent(tr.id), row); }
+        if (r.data && r.data[0]) { tr = r.data[0]; keepSlug(tr.slug); return db('PATCH', 'trainers?id=eq.' + encodeURIComponent(tr.id), row); }
         var base = slugify(st.name) || 'treinador', n = 0;
         var tryInsert = function (slug) {
           return db('POST', 'trainers?select=id,slug', Object.assign({}, row, { slug: slug, user_id: uid, origin: 'cadastro', status: 'rascunho' }), 'return=representation').then(function (x) {
-            if (x.ok && x.data && x.data[0]) { tr = x.data[0]; return x; }
+            if (x.ok && x.data && x.data[0]) { tr = x.data[0]; keepSlug(tr.slug); return x; }
             if (!x.ok && /duplicate|unique/i.test(x.raw || x.msg || '') && ++n < 3) return tryInsert(base + '-' + Math.random().toString(36).slice(2, 6));
             return x;
           });
@@ -157,6 +159,7 @@
       var REG_BACK = {}; Object.keys(REGIAO).forEach(function (k) { REG_BACK[REGIAO[k]] = k; });
       return db('GET', 'trainers?select=id,slug,name,city_id,regions,formats,languages,specialty,cref,status,pitch,bio,availability,availability_informed_on&user_id=eq.' + encodeURIComponent(uid)).then(function (r) {
         var t = r.ok && r.data && r.data[0]; if (!t) return null;
+        keepSlug(t.slug);
         out = { name: t.name || '', cref: t.cref || '', pres: (t.formats || []).indexOf('presencial') >= 0, onl: (t.formats || []).indexOf('online') >= 0,
           regions: {}, langs: {}, sports: {}, published: t.status === 'publicado', dadosSaved: true, serverSlug: t.slug, pubSlug: t.status === 'publicado' ? t.slug : '',
           pitch: t.pitch || '', bio: t.bio || '', avail: t.availability === 'aceita' ? 'sim' : (t.availability === 'sem_vaga' ? 'nao' : (t.availability_informed_on ? 'nd' : '')), availOn: t.availability_informed_on || '' };
@@ -374,6 +377,15 @@
       });
     },
     // papéis da conta no servidor, guardados no aparelho (para saber qual área abrir)
+    // endereço do perfil do próprio treinador (para o perfil público reconhecer o dono); busca uma vez se ainda não souber
+    mySlug: function () {
+      var v = ''; try { v = LS.getItem('c99.meuSlug') || ''; } catch (_) {}
+      if (!v && sess && !slugAsked && (CONTA.roles().indexOf('treinador') >= 0 || (window.ACCT && window.ACCT.area() === 'treinador'))) {
+        slugAsked = true;
+        db('GET', 'trainers?select=slug&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) { var t = r.ok && r.data && r.data[0]; if (t && t.slug) { keepSlug(t.slug); if (window.__rerender) window.__rerender(); } });
+      }
+      return v;
+    },
     roles: function () { try { return JSON.parse(LS.getItem('c99.papeis') || '[]'); } catch (_) { return []; } },
     syncRoles: function () {
       return CONTA.me().then(function (r) { var roles = r.ok && r.data && r.data[0] && r.data[0].roles || null; if (roles) { try { LS.setItem('c99.papeis', JSON.stringify(roles)); } catch (_) {} } return roles || CONTA.roles(); });

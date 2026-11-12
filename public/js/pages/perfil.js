@@ -119,9 +119,12 @@ class Component extends DCLogic {
     const faqs = (x.id === 'rafael' ? FAQ_R : FAQ_G).map((f, i) => ({ q: f[0], a: f[1], who: f[2], open: st.faq === i, exp: String(st.faq === i), rot: st.faq === i ? 'transform: rotate(180deg)' : '', pick: () => set({ faq: st.faq === i ? -1 : i }) }));
     const ownLine = x.imported ? 'Perfil importado de dados públicos · ninguém confirmou a titularidade' : 'Titularidade confirmada em ' + x.own + ' pelo método oficial de verificação';
     const msgTopic = x.id === 'rafael' ? 'servico' : x.avail === 'desconhecida' ? 'disp' : x.avail === 'nao' ? 'vaga' : 'geral';
+    // produto: o dono do perfil não vê "Pedir acompanhamento" para si mesmo
+    const ownReal = !!x.realLive && !document.documentElement.classList.contains('demo') && !!window.CONTA && !!window.CONTA.session() && window.CONTA.mySlug() === x.id;
     // ---------- ação principal por situação ----------
     let A = null;
     if (removed) A = null;
+    else if (ownReal) A = { title: 'Seu perfil público', line: 'É assim que visitantes veem', sub: 'Para mudar algo, edite o cadastro: o que você salvar aparece aqui.', label: 'Editar perfil', go: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), label2: 'Abrir meu painel', go2: () => window.NAV.go('treinador', {}, this) };
     else if (x.realLive && window.ACCT && window.ACCT.myTrainer && window.ACCT.myTrainer() && window.ACCT.myTrainer().trainerSlug === x.id) A = { title: 'Seu acompanhamento', line: 'Você e ' + x.first + ' estão conectados', sub: 'Treino, registro e conversa ficam na sua área.', label: 'Abrir acompanhamento', go: () => window.NAV.go('aluno', {}, this), label2: 'Voltar para a busca', go2: () => window.NAV.toSearch(this), noBar: true, fine: '' };
     else if (x.realLive && (window.__myRequests || []).some((r) => r.mine === 'aluno' && r.status === 'pendente' && r.trainerSlug === x.id)) A = { title: 'Pedido enviado', line: 'Aguardando a resposta de ' + x.first, sub: 'Pedido não é vínculo: nada começa nem é cobrado até ' + x.first + ' aceitar.', label: 'Acompanhar pedido', go: () => window.NAV.go('aluno', {}, this), label2: 'Voltar para a busca', go2: () => window.NAV.toSearch(this), noBar: true, fine: 'Um pedido por vez para o mesmo treinador.' };
     else if (x.realLive) A = { title: 'Acompanhamento', line: x.offerTxt, sub: 'Pedido não é vínculo: ' + x.first + ' responde e, se aceitar, o acompanhamento começa. Nada é cobrado no pedido.', label: x.receives === false ? 'Voltar para a busca' : 'Pedir acompanhamento', go: x.receives === false ? () => window.NAV.toSearch(this) : () => GO('@publico', { s: 'pedir', id: x.id }), label2: 'Voltar para a busca', go2: () => window.NAV.toSearch(this), noBar: true, fine: x.receives === false ? x.first + ' não está recebendo pedidos agora.' : 'Você acompanha a resposta em Minha área.' };
@@ -283,7 +286,8 @@ class Component extends DCLogic {
 
     // ---------- avisos de contexto ----------
     let note = { on: false };
-    if (own && !preview) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-user', title: 'Este é o seu perfil público', sub: 'Você está conectado como Rafael Lima. Abaixo, o que visitantes veem.', hasBtn: true, btn: 'Ver como visitante', go: () => set({ preview: true }) };
+    if (ownReal) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-user', title: 'Este é o seu perfil público', sub: 'Abaixo, o que visitantes veem. Pedidos de acompanhamento chegam no seu painel.', hasBtn: true, btn: 'Editar perfil', go: () => window.NAV.go('onboarding', { flow: 'treinador' }, this) };
+    else if (own && !preview) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-user', title: 'Este é o seu perfil público', sub: 'Você está conectado como Rafael Lima. Abaixo, o que visitantes veem.', hasBtn: true, btn: 'Ver como visitante', go: () => set({ preview: true }) };
     else if (preview) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-eye', title: 'Prévia como visitante', sub: 'Nada foi alterado ou publicado. As ações ficam desativadas na prévia.', hasBtn: true, btn: 'Sair da prévia', go: () => set({ preview: false }) };
     else if (st.user === 'ana') note = { on: true, cls: 'alert alert--ok', ic: 'ic ic--sm i-check', title: 'Você acompanha com o Rafael desde 02/09/2026', sub: 'Acompanhamento online · próxima cobrança em 02/11/2026.', hasBtn: false };
 
