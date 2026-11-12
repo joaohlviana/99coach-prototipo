@@ -94,6 +94,14 @@
             <div class="field"><label class="field__label" for="al-chat-in">Mensagem</label><div class="input"><input id="al-chat-in" type="text" maxlength="2000" value="{{v.chat.draft}}" onInput="{{v.chat.setDraft}}"></div></div>
             <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
+            <sc-if value="{{v.chat.blocked}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.chat.blockTxt}}</div></div></sc-if>
+            <sc-if value="{{v.chat.hasRepDone}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status">{{v.chat.repDone}}</p></sc-if>
+            <div class="onb-actions onb-actions--row"><sc-if value="{{v.chat.canToggle}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.chat.toggleBlock}}">{{v.chat.blockLabel}}</button></sc-if><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.chat.openReport}}">Denunciar</button></div>
+            <sc-if value="{{v.chat.repOpen}}" hint-placeholder-val="{{ false }}"><div class="card onb-sec"><b>Denunciar esta conversa</b>
+              <div class="seg" role="group" aria-label="Motivo" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.chat.reasons}}" as="o" hint-placeholder-count="5"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+              <div class="field"><label class="field__label" for="al-rep">Detalhes (opcional)</label><div class="input"><textarea id="al-rep" rows="2" maxlength="1000" onInput="{{v.chat.setRepNote}}">{{v.chat.repNote}}</textarea></div></div>
+              <sc-if value="{{v.chat.hasRepErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.repErr}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.sendReport}}">{{v.chat.repLabel}}</button></div></div></sc-if>
           </section></sc-if>
           <sc-if value="{{v.showEvo}}" hint-placeholder-val="{{ false }}">
             <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não deu para carregar seus registros</b>Isso não quer dizer que você não treinou. Tente de novo em instantes.</div></div></sc-if>
@@ -110,6 +118,7 @@
             <sc-if value="{{v.hasHist}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.histCount}} · origem: seus registros no app, confirmados pelo servidor. Volume = repetições × carga.</p>
               <div class="rx-table" role="table" aria-label="Registros confirmados"><div class="rx-row rx-head" role="row"><span role="columnheader">Data</span><span role="columnheader">Séries</span><span role="columnheader">Repetições</span><span role="columnheader">Volume (kg)</span></div>
               <sc-for list="{{v.hist}}" as="h" hint-placeholder-count="3"><div class="rx-row" role="row"><span role="cell">{{h.when}}</span><span role="cell">{{h.sets}}</span><span role="cell">{{h.reps}}</span><span role="cell">{{h.vol}}</span></div></sc-for></div></sc-if>
+            <sc-if value="{{v.hasTrCm}}" hint-placeholder-val="{{ false }}"><section aria-label="Comentários do treinador"><b>Comentários do treinador</b><ul><sc-for list="{{v.trCms}}" as="c" hint-placeholder-count="1"><li class="mod-small"><b>{{c.when}}:</b> {{c.cm}}</li></sc-for></ul></section></sc-if>
           </section></sc-if>
         </sc-if>
       </sc-if>

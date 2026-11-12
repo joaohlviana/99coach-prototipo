@@ -27,7 +27,11 @@ REG.screen({
     }
 
     var tf = String(link.trainerName || 'seu treinador').split(' ')[0];
-    if (C && !ui.asked) { ctx.setUi({ asked: true }); C.sessions(link.id).then(function (r) { ctx.setUi({ sess: r.ok && Array.isArray(r.data) ? r.data : [], sessErr: !r.ok }); }); }
+    if (C && !ui.asked) { ctx.setUi({ asked: true }); C.sessions(link.id).then(function (r) {
+      // só registros enviados contam como feitos; os em andamento são rascunhos salvos no servidor
+      var all = r.ok && Array.isArray(r.data) ? r.data : [], drafts = {};
+      all.forEach(function (x) { if (!x.submitted_at && x.app_state && x.app_state.grid) drafts[x.session_key] = x.app_state; });
+      ctx.setUi({ sess: all.filter(function (x) { return !!x.submitted_at; }), srvDrafts: drafts, sessErr: !r.ok }); }); }
     // rotina com várias sessões: o aluno escolhe qual vai fazer (a primeira ainda não registrada vem marcada)
     var w = link.workout, SS = (w && w.sessions) || [];
     var doneOf = function (x) { var k = link.id + '_v' + w.version + '_' + x.id; return (ui.sess || []).some(function (y) { return y.session_key === k; }); };
@@ -51,8 +55,14 @@ REG.screen({
     // A sessão em andamento fica guardada neste aparelho até ser enviada: fechar o app não perde as marcações.
     var uid = (C && C.user() && C.user().id) || 'local';
     var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
-    var dGet = function (x) { try { return JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) { return null; } };
-    var dPut = function (x, v) { try { if (v) window.localStorage.setItem(dKey(x), JSON.stringify(v)); else window.localStorage.removeItem(dKey(x)); } catch (_) {} };
+    // e também no servidor (save_session), para continuar em outro aparelho; o aparelho vale primeiro
+    var sKey = function (x) { return link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
+    var dGet = function (x) { var v = null; try { v = JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) {} return v || ((ui.srvDrafts || {})[sKey(x)] || null); };
+    var dPut = function (x, v) {
+      try { if (v) window.localStorage.setItem(dKey(x), JSON.stringify(v)); else window.localStorage.removeItem(dKey(x)); } catch (_) {}
+      if (!v || !C || !w) return;
+      var k = sKey(x); clearTimeout(window.__svT); window.__svT = setTimeout(function () { C.rpc('save_session', { p_link: link.id, p_key: k, p_version: w.version, p_state: v }); }, 1200);
+    };
     var draftIdx = -1; SS.forEach(function (x, i) { if (draftIdx < 0 && !doneOf(x) && dGet(x)) draftIdx = i; });
     var draft = draftIdx >= 0 ? dGet(SS[draftIdx]) : null;
     var marked = function (g) { return g.reduce(function (n, sets) { return n + sets.filter(function (c) { return c.done; }).length; }, 0); };
@@ -83,7 +93,9 @@ REG.screen({
       ctx.setUi({ exec: e1, partial: false, rest: f === 'done' && c.done && it.restS ? { until: Date.now() + it.restS * 1000, name: it.name } : (f === 'done' ? null : ui.rest) });
     }; };
     var resume = function () { if (draftIdx < 0) return; ctx.setUi({ sx: draftIdx, exec: draft, err: '', receipt: null, partial: false }); };
-    var discard = function () { if (draftIdx >= 0) dPut(SS[draftIdx], null); ctx.setUi({ exec: null, err: '', v: (ui.v || 0) + 1 }); };
+    var discard = function () {
+      if (draftIdx >= 0) { var x = SS[draftIdx], k = sKey(x), sd = Object.assign({}, ui.srvDrafts || {}); delete sd[k]; dPut(x, null); if (C && w) { clearTimeout(window.__svT); C.rpc('save_session', { p_link: link.id, p_key: k, p_version: w.version, p_state: { descartado: true } }); } ctx.setUi({ srvDrafts: sd }); }
+      ctx.setUi({ exec: null, err: '', v: (ui.v || 0) + 1 }); };
     var finish = function () {
       if (ui.busy) return;
       var logs = [];
@@ -106,7 +118,8 @@ REG.screen({
     var sess = (ui.sess || []).slice().sort(function (a, b) { return String(a.submitted_at || a.started_at).localeCompare(String(b.submitted_at || b.started_at)); });
     var hist = sess.map(function (s) {
       var sets = s.set_logs || [], vol = sets.reduce(function (n, x) { return n + (Number(x.reps) || 0) * (Number(x.load_kg) || 0); }, 0), d = s.submitted_at || s.started_at;
-      return { when: d ? new Date(d).toLocaleDateString('pt-BR') : '—', sets: String(sets.length), reps: String(sets.reduce(function (n, x) { return n + (Number(x.reps) || 0); }, 0)), vol: vol ? Math.round(vol).toLocaleString('pt-BR') : '—' };
+      var cm = (s.session_comments || []).filter(function (c) { return c.side === 'treinador'; }).map(function (c) { return c.body; }).join(' · ');
+      return { cm: cm, hasCm: !!cm, when: d ? new Date(d).toLocaleDateString('pt-BR') : '—', sets: String(sets.length), reps: String(sets.reduce(function (n, x) { return n + (Number(x.reps) || 0); }, 0)), vol: vol ? Math.round(vol).toLocaleString('pt-BR') : '—' };
     });
     var period = hist.length ? hist[0].when + ' a ' + hist[hist.length - 1].when : '';
     // período escolhido (4 ou 12 semanas) e leitura da semana, só com o que foi confirmado
@@ -195,6 +208,7 @@ REG.screen({
       })(),
       tracked: tracked, hasTracked: tracked.length > 0,
       get hasBars() { return this.bars.length > 0; }, get barsAria() { return 'Volume por sessão: ' + this.bars.map(function (b) { return b.day + ' ' + b.val + ' kg'; }).join(', '); }, fewData: hist.length === 1, sessErr: !!ui.sessErr,
+      trCms: hist.filter(function (h) { return h.hasCm; }).reverse(), hasTrCm: hist.some(function (h) { return h.hasCm; }),
       hist: hist, hasHist: hist.length > 0, noHist: !hist.length && !ui.sessErr, histCount: U.plural(hist.length, 'sessão registrada', 'sessões registradas'), doneCount: hist.length ? U.plural(hist.length, 'sessão concluída', 'sessões concluídas') : ''
     });
   }

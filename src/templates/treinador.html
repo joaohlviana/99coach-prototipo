@@ -240,6 +240,44 @@
 
       <!-- REL01 · Criar convite individual -->
       <!-- TRE20R · Agenda real -->
+      <!-- H08R · Insights com dados do servidor -->
+      <sc-if value="{{is.insightsreal}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Insights</h1><p class="pghead__sub">Calculado pelo servidor a partir dos seus pedidos, alunos e treinos. Com pouca base, mostramos "Sem base" em vez de um número enganoso.</p></div></div>
+        <div class="seg" role="group" aria-label="Período" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.pers}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+        <sc-if value="{{v.capOk}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="ir-cap"><h2 class="onb-h2" id="ir-cap">{{v.capTxt}}</h2><p class="mod-small mod-muted">{{v.capSub}}</p>
+          <sc-if value="{{v.capFull}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Vagas esgotadas</b>Encerre um acompanhamento ou mude de plano para aceitar alguém novo.</div></div></sc-if></section></sc-if>
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Calculando…</p></sc-if>
+        <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Indicadores indisponíveis</b>{{v.err}}</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.hasCards}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Período: {{v.range}}</p>
+          <div class="onb-secs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px"><sc-for list="{{v.cards}}" as="k" hint-placeholder-count="4"><section class="card onb-sec" style="margin: 0"><span class="mod-small mod-muted">{{k.l}}</span><b style="font-size: 1.6rem; display: block">{{k.n}}</b><span class="mod-small">{{k.base}}</span><sc-if value="{{k.hasExtra}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{k.extra}}</p></sc-if><button type="button" class="btn btn--ghost btn--sm" onClick="{{k.def}}">Como é calculado</button></section></sc-for></div></sc-if>
+        <sc-if value="{{v.hasNosrc}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Ainda sem fonte confiável, por isso não mostramos: {{v.nosrc}}.</p></sc-if>
+      </sc-if>
+
+      <!-- ACC10R · Credenciais (CREF) e retirar perfil, dados do servidor -->
+      <sc-if value="{{is.credreal}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Credenciais</h1><p class="pghead__sub">O CREF aparece no perfil como informado por você até a equipe conferir no conselho.</p></div></div>
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando…</p></sc-if>
+        <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Sua conta ainda não tem perfil de treinador salvo.</p></sc-if>
+        <sc-if value="{{v.has}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-labelledby="cr-h"><h2 class="onb-h2" id="cr-h">CREF {{v.cref}}</h2><p><span class="{{v.stCls}}">{{v.st}}</span></p>
+            <sc-if value="{{v.hasNote}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{v.note}}</p></sc-if>
+            <sc-if value="{{v.noCref}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.edit}}">Informar CREF no perfil</button></div></sc-if>
+            <sc-if value="{{v.waiting}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">A equipe confere no site do conselho. Enquanto isso, o perfil mostra "informado por você".</p></sc-if>
+            <sc-if value="{{v.canAsk}}" hint-placeholder-val="{{ false }}">
+              <div class="field"><label class="field__label" for="cr-ev">Algo que ajude a conferir (opcional)</label><div class="input"><textarea id="cr-ev" rows="2" maxlength="500" placeholder="Ex.: registro ativo desde 2019, CREF9/PR" onInput="{{v.setEv}}">{{v.ev}}</textarea></div></div>
+              <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.ask}}">{{v.askLabel}}</button></div>
+            </sc-if>
+          </section>
+          <section class="card onb-sec" aria-labelledby="cr-r"><h2 class="onb-h2" id="cr-r">Perfil na busca</h2>
+            <sc-if value="{{v.retired}}" hint-placeholder-val="{{ false }}"><p class="mod-small">Seu perfil está retirado da busca. Para voltar, publique de novo pelo perfil.</p></sc-if>
+            <sc-if value="{{v.live}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Retirar tira o perfil da busca e do endereço público. Alunos atuais e histórico continuam.</p>
+              <sc-if value="{{v.hasRerr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.rerr}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.retire}}">{{v.retireLabel}}</button></div></sc-if>
+          </section>
+        </sc-if>
+      </sc-if>
+
       <sc-if value="{{is.agendareal}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Agenda</h1><p class="pghead__sub">{{v.tz}}. Horário livre não é vaga para aluno novo: só quem já tem vínculo com você pode marcar.</p></div></div>
         <section class="card onb-sec" aria-labelledby="av-h"><h2 class="onb-h2" id="av-h">Horários marcados</h2>
@@ -302,11 +340,21 @@
             <div class="field"><label class="field__label" for="tr-chat-in">Mensagem</label><div class="input"><input id="tr-chat-in" type="text" maxlength="2000" value="{{v.chat.draft}}" onInput="{{v.chat.setDraft}}"></div></div>
             <sc-if value="{{v.chat.hasSendErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.sendErr}}</span></sc-if>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.send}}">{{v.chat.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.chat.reload}}">Atualizar</button></div>
+            <sc-if value="{{v.chat.blocked}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.chat.blockTxt}}</div></div></sc-if>
+            <sc-if value="{{v.chat.hasRepDone}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status">{{v.chat.repDone}}</p></sc-if>
+            <div class="onb-actions onb-actions--row"><sc-if value="{{v.chat.canToggle}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.chat.toggleBlock}}">{{v.chat.blockLabel}}</button></sc-if><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.chat.openReport}}">Denunciar</button></div>
+            <sc-if value="{{v.chat.repOpen}}" hint-placeholder-val="{{ false }}"><div class="card onb-sec"><b>Denunciar esta conversa</b>
+              <div class="seg" role="group" aria-label="Motivo" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.chat.reasons}}" as="o" hint-placeholder-count="5"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+              <div class="field"><label class="field__label" for="tr-rep">Detalhes (opcional)</label><div class="input"><textarea id="tr-rep" rows="2" maxlength="1000" onInput="{{v.chat.setRepNote}}">{{v.chat.repNote}}</textarea></div></div>
+              <sc-if value="{{v.chat.hasRepErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.chat.repErr}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.chat.sendReport}}">{{v.chat.repLabel}}</button></div></div></sc-if>
           </section>
           <section class="card onb-sec" aria-labelledby="rx-reg"><h2 class="onb-h2" id="rx-reg">Registros do aluno</h2>
             <sc-if value="{{v.noLogs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma sessão registrada ainda. Aparecem aqui só registros confirmados pelo servidor.</p></sc-if>
             <sc-if value="{{v.sessErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar os registros agora.</p></sc-if>
-            <sc-if value="{{v.hasLogs}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.logsCount}}</p><div class="kv"><sc-for list="{{v.logs}}" as="l" hint-placeholder-count="3"><div class="kv__r"><span>{{l.when}} · {{l.sets}}</span><b>{{l.vol}}</b></div></sc-for></div></sc-if>
+            <sc-if value="{{v.hasLogs}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.logsCount}}</p><div class="kv"><sc-for list="{{v.logs}}" as="l" hint-placeholder-count="3"><div class="kv__r" style="flex-wrap: wrap"><span>{{l.when}} · {{l.sets}}</span><b>{{l.vol}}</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{l.toggle}}">{{l.toggleLabel}}</button>
+              <sc-if value="{{l.hasCms}}" hint-placeholder-val="{{ false }}"><ul style="flex-basis: 100%; margin: 4px 0 0"><sc-for list="{{l.cms}}" as="c" hint-placeholder-count="1"><li class="mod-small"><b>{{c.who}}:</b> {{c.body}}</li></sc-for></ul></sc-if>
+              <sc-if value="{{l.open}}" hint-placeholder-val="{{ false }}"><div style="flex-basis: 100%"><div class="field"><label class="field__label" for="{{l.idIn}}">Comentário sobre este treino</label><div class="input"><textarea id="{{l.idIn}}" rows="2" maxlength="2000" onInput="{{l.setDraft}}">{{l.draft}}</textarea></div></div><sc-if value="{{l.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{l.err}}</span></sc-if><button type="button" class="btn btn--primary btn--sm" onClick="{{l.post}}">{{l.postLabel}}</button></div></sc-if></div></sc-for></div></sc-if>
           </section>
           <section class="card onb-sec" aria-labelledby="rx-vin"><h2 class="onb-h2" id="rx-vin">Vínculo</h2>
             <p class="mod-small mod-muted">{{v.linkTxt}}</p>

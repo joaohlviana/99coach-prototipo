@@ -8,7 +8,7 @@ REG.screen({
     if (!L) return { missing: true, has: false, back: function () { ctx.go('H04'); } };
     if (C && !ui.asked) {
       ctx.setUi({ asked: true });
-      C.sessions(lid).then(function (r) { ctx.setUi({ sess: r.ok && Array.isArray(r.data) ? r.data : [], sessErr: !r.ok }); });
+      C.sessions(lid).then(function (r) { ctx.setUi({ sess: r.ok && Array.isArray(r.data) ? r.data.filter(function (x) { return !!x.submitted_at; }) : [], sessErr: !r.ok }); });
     }
     var refresh = function (msg) { return C.links().then(function () { if (window.__refreshLinks) window.__refreshLinks(); ctx.setUi({ busy: false }); if (msg) ctx.toast(msg); }); };
     var PREP = { awaiting_client: 'Aguardando o aluno responder a preparação', awaiting_review: 'Preparação respondida · revise antes de montar o treino', ready_to_assign: 'Preparação revisada · pronto para montar o treino', assigned: 'Treino atribuído' };
@@ -63,7 +63,22 @@ REG.screen({
     var logs = sess.map(function (s) {
       var sets = s.set_logs || [], vol = sets.reduce(function (n, x) { return n + (Number(x.reps) || 0) * (Number(x.load_kg) || 0); }, 0);
       var d = s.submitted_at || s.started_at;
-      return { when: d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—', sets: U.plural(sets.length, 'série', 'séries'), vol: vol ? Math.round(vol).toLocaleString('pt-BR') + ' kg' : '—' };
+      var cm = (s.session_comments || []).slice().sort(function (a, b) { return String(a.created_at).localeCompare(String(b.created_at)); });
+      var open = ui.cmOpen === s.id;
+      var post = function () {
+        var body = String(ui.cmDraft || '').trim();
+        if (body.length < 2) return ctx.setUi({ cmErr: 'Escreva o comentário.' });
+        if (ui.cmBusy) return; ctx.setUi({ cmBusy: true, cmErr: '' });
+        C.rpc('comment_session', { p_session: s.id, p_body: body.slice(0, 2000), p_idem: 'cm:' + s.id + ':' + body.length + ':' + body.slice(0, 12) }).then(function (r) {
+          if (!r.ok) return ctx.setUi({ cmBusy: false, cmErr: 'Não enviado: ' + (r.msg || r.status || 'sem conexão') + '. O texto continua no campo.' });
+          ctx.setUi({ cmBusy: false, cmOpen: '', cmDraft: '' }); ctx.toast('Comentário enviado. ' + String(L.studentName).split(' ')[0] + ' vê no registro do treino.');
+          C.sessions(lid).then(function (r2) { if (r2.ok) ctx.setUi({ sess: (r2.data || []).filter(function (x) { return !!x.submitted_at; }) }); });
+        });
+      };
+      return { when: d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—', sets: U.plural(sets.length, 'série', 'séries'), vol: vol ? Math.round(vol).toLocaleString('pt-BR') + ' kg' : '—',
+        cms: cm.map(function (c) { return { who: c.side === 'treinador' ? 'Você' : String(L.studentName).split(' ')[0], body: c.body }; }), hasCms: cm.length > 0,
+        open: open, toggle: function () { ctx.setUi({ cmOpen: open ? '' : s.id, cmDraft: '', cmErr: '' }); }, toggleLabel: open ? 'Cancelar' : 'Comentar',
+        idIn: 'cm-' + s.id, draft: open ? (ui.cmDraft || '') : '', setDraft: function (e) { ctx.setUi({ cmDraft: U.val(e), cmErr: '' }); }, post: post, postLabel: ui.cmBusy ? 'Enviando…' : 'Enviar comentário', err: open ? (ui.cmErr || '') : '', hasErr: open && !!ui.cmErr };
     });
     var canBuild = L.prep === 'ready_to_assign' || L.prep === 'assigned' || !!L.workout;
     return {
