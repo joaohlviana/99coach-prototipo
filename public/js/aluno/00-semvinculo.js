@@ -2,7 +2,7 @@
    vínculo; treino exibido é o atribuído pelo treinador; registro confirmado pelo servidor; evolução só de registros
    confirmados, com origem e período (tabela acessível). Nada de treino, conversa ou evolução inventados. */
 REG.screen({
-  page: 'aluno', key: 'semvinculo', id: 'ALU00', title: 'Meu acompanhamento', mtitle: 'Hoje',
+  page: 'aluno', key: 'semvinculo', id: 'ALU00', title: 'Meu acompanhamento', mtitle: function (ctx) { return ({ hoje: 'Hoje', treinos: 'Treinos', evolucao: 'Evolução', mensagens: 'Mensagens' })[ctx.props.navFrom || 'hoje'] || 'Hoje'; },
   nav: function (ctx) { return ctx.props.navFrom || 'hoje'; },
   vals: function (ctx) {
     var C = window.CONTA, ui = ctx.ui, from = ctx.props.navFrom || 'hoje';
@@ -114,6 +114,7 @@ REG.screen({
     var tsOf = function (s) { return new Date(s.submitted_at || s.started_at || 0).getTime(); };
     var inP = sess.filter(function (s) { return tsOf(s) >= since; });
     var weekN = sess.filter(function (s) { return tsOf(s) >= wk; }).length;
+    var weekTxt0 = weekN ? U.plural(weekN, 'sessão registrada', 'sessões registradas') + ' nos últimos 7 dias' : 'Nenhuma sessão registrada nos últimos 7 dias';
     var fullOf = function (s) { var m = /_v(\d+)_(.+)$/.exec(s.session_key || ''); var x = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null; if (!x) return null; var t2 = x.items.reduce(function (n, it) { return n + it.sets; }, 0); return (s.set_logs || []).length >= t2; };
     var partialN = inP.filter(function (s) { return fullOf(s) === false; }).length;
     // exercícios acompanhados: os mais registrados, com o último resultado e o anterior compatível (mesmo exercício)
@@ -126,10 +127,14 @@ REG.screen({
     var doneKey = w && s0 ? link.id + '_v' + w.version + '_' + s0.id : '';
     var doneNow = !!doneKey && (ui.sess || []).some(function (s) { return s.session_key === doneKey; });
     var state = !w ? (link.prep === 'awaiting_client' ? 'prep' : 'wait') : (ex ? 'exec' : 'ready');
+    var paused = link.status === 'pausado';
+    // recado do treinador: última mensagem dele ainda não lida (só o que o servidor devolveu)
+    if (C && !ui.msgAsked) { ctx.setUi({ msgAsked: true }); C.messages(link.id).then(function (r) { ctx.setUi({ msgs: r.ok ? (r.data || []) : null }); }); }
+    var note = null; (ui.msgs || []).forEach(function (m) { if (m.side === 'treinador' && !m.read_at) note = m; });
     var TT = {
       prep: ['Você e ' + tf + ' estão conectados', 'Antes do primeiro treino, ' + tf + ' precisa conhecer sua rotina. São 4 perguntas rápidas.'],
       wait: ['Treino em preparação', tf + ' recebeu suas respostas e está montando seu treino. Ele aparece aqui quando for atribuído.'],
-      ready: [w ? w.title : '', w ? 'Versão ' + w.version + ' · atribuído por ' + tf + (w.assignedAt ? ' em ' + new Date(w.assignedAt).toLocaleDateString('pt-BR') : '') : ''],
+      ready: [w ? w.title : '', paused ? 'Acompanhamento pausado por ' + tf + ' ou por você. O treino e o histórico continuam aqui; sessões novas voltam quando o acompanhamento for retomado.' : w ? 'Versão ' + w.version + ' · atribuído por ' + tf + (w.assignedAt ? ' em ' + new Date(w.assignedAt).toLocaleDateString('pt-BR') : '') : ''],
       exec: [w ? w.title : '', 'Marque cada série feita. Ajuste repetições e carga ao que você fez de verdade.']
     };
     // ---------- agenda: horários livres do treinador (só com vínculo ativo) ----------
@@ -158,7 +163,16 @@ REG.screen({
       items: s0 ? s0.items.map(function (it) { return { name: it.name, rx: it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') + ' · descanso ' + it.restS + ' s' }; }) : [],
       wTitle: w ? w.title : '', sTitle: s0 ? (s0.title || '') : '', manySess: SS.length > 1 && !ex,
       sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
-      estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow,
+      estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow && !paused,
+      isPaused: paused && !ex,
+      hasNote: !!note && !ex && !showEvo && !showMsg, noteFrom: 'Recado de ' + tf, noteTxt: note ? String(note.body).slice(0, 220) : '', noteWhen: note ? new Date(note.created_at).toLocaleDateString('pt-BR') : '', openChat: function () { GO('ALU05'); },
+      // semana no Hoje: só contagem confirmada, sem meta inventada
+      weekLine: hist.length ? weekTxt0 : '', hasWeekLine: hist.length > 0 && !ex,
+      // meu treinador: situação do vínculo e o que muda ao encerrar
+      trainerLine: (link.trainerName || 'Seu treinador') + ' · ' + (paused ? 'acompanhamento pausado' : 'acompanhamento ativo') + ' desde ' + new Date(link.since).toLocaleDateString('pt-BR') + ' · ' + (link.origin === 'convite' ? 'por convite' : 'por pedido'),
+      endInfo: ['Encerrar é definitivo: o acompanhamento com ' + tf + ' termina e a vaga dele é liberada.', 'Seu histórico de treinos e as mensagens continuam visíveis para você.', 'O treino atribuído deixa de receber novas versões.', 'Para voltar a treinar com ' + tf + ', é preciso um novo pedido ou convite.'].map(function (x) { return { x: x }; }),
+      showEnd: !!ui.endOpen, toggleEnd: function () { ctx.setUi({ endOpen: !ui.endOpen }); }, openProfile: function () { if (link.trainerSlug && window.NAV) window.NAV.go('perfil', { id: link.trainerSlug }, null); },
+      canProfile: !!(link.trainerSlug && window.REAL && window.REAL.has(link.trainerSlug)),
       grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : ''), last: lastOf(it.exerciseId), sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), phR: String(parseInt(it.reps, 10) || ''), phL: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
       finish: finish, finishLabel: ui.busy ? 'Enviando…' : (ui.partial ? 'Encerrar e enviar o que fiz' : 'Concluir sessão'),
       // pausar guarda as marcações neste aparelho; descartar apaga
@@ -173,7 +187,14 @@ REG.screen({
       weekTxt: weekN ? U.plural(weekN, 'sessão registrada', 'sessões registradas') + ' nos últimos 7 dias' : 'Nenhuma sessão registrada nos últimos 7 dias',
       periodTxt: U.plural(inP.length, 'sessão registrada', 'sessões registradas') + ' em ' + weeks + ' semanas' + (partialN ? ' · ' + U.plural(partialN, 'parcial', 'parciais') : '') + '. Sem meta combinada, não mostramos percentual.',
       weekOpts: [4, 12].map(function (n) { return { label: n + ' semanas', on: String(weeks === n), cls: 'chip' + (weeks === n ? ' is-on' : ''), pick: function () { ctx.setUi({ weeks: n }); } }; }),
-      tracked: tracked, hasTracked: tracked.length > 0, fewData: hist.length === 1, sessErr: !!ui.sessErr,
+      // gráfico só com registros confirmados do período; os mesmos números ficam na tabela (alternativa acessível)
+      bars: (function () {
+        var pts = inP.map(function (s) { var d = s.submitted_at || s.started_at; return { d: d, v: (s.set_logs || []).reduce(function (n, x) { return n + (Number(x.reps) || 0) * (Number(x.load_kg) || 0); }, 0) }; }).filter(function (x) { return x.v > 0; });
+        var max = pts.reduce(function (m, x) { return Math.max(m, x.v); }, 0);
+        return pts.length >= 2 ? pts.slice(-12).map(function (x) { return { h: 'height: ' + Math.max(6, Math.round(x.v / max * 100)) + '%', day: new Date(x.d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), val: Math.round(x.v).toLocaleString('pt-BR') }; }) : [];
+      })(),
+      tracked: tracked, hasTracked: tracked.length > 0,
+      get hasBars() { return this.bars.length > 0; }, get barsAria() { return 'Volume por sessão: ' + this.bars.map(function (b) { return b.day + ' ' + b.val + ' kg'; }).join(', '); }, fewData: hist.length === 1, sessErr: !!ui.sessErr,
       hist: hist, hasHist: hist.length > 0, noHist: !hist.length && !ui.sessErr, histCount: U.plural(hist.length, 'sessão registrada', 'sessões registradas'), doneCount: hist.length ? U.plural(hist.length, 'sessão concluída', 'sessões concluídas') : ''
     });
   }

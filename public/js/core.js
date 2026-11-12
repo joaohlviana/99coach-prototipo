@@ -272,7 +272,7 @@
           side: side, tabs: tabs, hasTabs: tabs.length > 0, top: top, hasTop: top.length > 0, navLabel: R ? R.label : '', me: me,
           goHome: function () { GO('@home'); },
           skipTo: function () { try { var el = document.getElementById('conteudo'); if (el) { el.setAttribute('tabindex', '-1'); el.focus(); } } catch (_) {} },
-          mtop: { title: scr ? (scr.mtitle || scr.title) : '', hasBack: !!back, noBack: !back, back: function () { if (back === 'history') ctx.back(); else GO(back, scr.backParams ? scr.backParams(ctx) : {}); } },
+          mtop: { title: scr ? (typeof scr.mtitle === 'function' ? scr.mtitle(ctx) : (scr.mtitle || scr.title)) : '', hasBack: !!back, noBack: !back, back: function () { if (back === 'history') ctx.back(); else GO(back, scr.backParams ? scr.backParams(ctx) : {}); } },
           // menu rotulado da operação no celular
           opsMenu: (R && R.side && role === 'operacao') ? [].concat.apply([], R.side.map(function (g) { return g.items.map(function (it) { return { label: g.sec + ' · ' + it[0], on: String(it[3] === navKey), cls: 'mod-om__it' + (it[3] === navKey ? ' is-on' : ''), go: function () { c.setState({ ui: Object.assign({}, c.state.ui, { __om: false }) }); GO(it[2]); } }; }); })) : [],
           omOpen: !!ui.__om, toggleOm: function () { c.setState({ ui: Object.assign({}, c.state.ui, { __om: !ui.__om }) }); },

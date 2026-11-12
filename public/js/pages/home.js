@@ -270,7 +270,9 @@ class Component extends DCLogic {
       sxClear: () => set({ sxq: '', sxIa: false, sx: S.sx ? 'on' : null }),
       sxIaOn: String(!!S.sxIa), sxIaCls: 'sx-ia' + (S.sxIa ? ' is-on' : ''), sxIaQc: 'qchip sx-iaq' + (S.sxIa ? ' is-on' : ''),
       sxToggleIa: () => set({ sxIa: !S.sxIa }), sxIaOpen: (e) => set(Object.assign({ sx: 'on', sxIa: !S.sxIa, sheet: null }, sxAnchor(e))),
-      sxHasRec: sxRecL.length > 0, sxRec: sxRecL, sxRecClear: () => set({ sxR1: false, sxR2: false }), sxHot,
+      sxHasRec: !PRODH && sxRecL.length > 0, sxRec: sxRecL,
+      // produto: sem contagem de buscas, não chamamos de 'em alta' nem inventamos buscas recentes
+      sxHotTitle: PRODH ? 'Sugestões para explorar' : 'Em alta em Londrina', sxHotNote: PRODH ? 'Sugestões fixas para começar. Nada aqui é patrocinado.' : 'Buscas mais feitas na cidade nos últimos 7 dias, somadas sem identificar ninguém. Nada aqui é patrocinado.', sxRecClear: () => set({ sxR1: false, sxR2: false }), sxHot,
       sxMods: chips.slice(0, 6).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })),
       sxModIcon: sxCf.icon, sxModGo: sxDo(() => window.NAV.go('esporte', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }, this)),
       sxTr, sxPr, sxPr1: sxPr.slice(0, 1), sxCount: sxCountT, sxAllLabel: S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver todos os resultados',

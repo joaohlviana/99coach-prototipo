@@ -396,9 +396,9 @@
         <sc-if value="{{sxEmpty}}" hint-placeholder-val="{{ true }}">
           <sc-if value="{{sxHasRec}}" hint-placeholder-val="{{ true }}"><div class="sx-sec"><span class="label">Buscas recentes</span><button type="button" class="link-arrow sx-lnk" onClick="{{sxRecClear}}">Limpar</button></div>
             <sc-for list="{{sxRec}}" as="c" hint-placeholder-count="2"><div class="sx-rec"><i class="ic ic--sm i-clock" aria-hidden="true"></i><button type="button" class="sx-recgo" onClick="{{c.go}}"><b>{{c.t}}</b>{{c.s}}</button><button type="button" class="sx-x" onClick="{{c.rm}}" aria-label="Remover {{c.t}} das buscas recentes"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div></sc-for></sc-if>
-          <div class="sx-sec"><span class="label">Em alta em Londrina</span></div>
+          <div class="sx-sec"><span class="label">{{sxHotTitle}}</span></div>
           <div class="sx-chips"><sc-for list="{{sxHot}}" as="c" hint-placeholder-count="5"><button type="button" class="qchip" onClick="{{c.go}}"><i class="ic ic--xs i-trend" aria-hidden="true"></i>{{c.label}}</button></sc-for></div>
-          <p class="sx-note">Buscas mais feitas na cidade nos últimos 7 dias, somadas sem identificar ninguém. Nada aqui é patrocinado.</p>
+          <p class="sx-note">{{sxHotNote}}</p>
           <div class="sx-sec"><span class="label">Modalidades</span></div>
           <div class="sx-chips"><sc-for list="{{sxMods}}" as="c" hint-placeholder-count="6"><button type="button" class="qchip" onClick="{{c.pick}}"><img src="{{c.icon}}" alt="" class="sx-spi sx-spi--sm">{{c.label}}</button></sc-for></div>
         </sc-if>

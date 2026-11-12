@@ -264,6 +264,8 @@
     if (!window.STORE) return;
     applyMe();
     whereSaved(page, root); tickRest();
+    // título da aba acompanha a página (plano SEO: título descreve o que a pessoa está vendo)
+    try { var h1 = root.querySelector('h1'); var tt = h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : ''; document.title = page === 'home' || !tt ? '99coach — encontre seu treinador' : tt + ' | 99coach'; } catch (_) {}
     if (page === 'aluno') startAccount();
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {
