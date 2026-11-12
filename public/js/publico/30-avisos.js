@@ -46,6 +46,12 @@ REG.screen({
       canSeen: newN > 0, seen: function () { setPrefs(null, true, 'Avisos marcados como vistos.'); },
       prefs: KINDS.map(function (k) { var off = muted.indexOf(k[0]) >= 0; return { label: k[1], on: String(!off), state: off ? 'Silenciado' : 'Ligado', cls: 'chip' + (off ? '' : ' is-on'),
         toggle: function () { var m = off ? muted.filter(function (x) { return x !== k[0]; }) : muted.concat([k[0]]); setPrefs(m, false, off ? k[1] + ': avisos ligados.' : k[1] + ': avisos silenciados. O conteúdo continua no app.'); } }; }),
+      // e-mail: desligado por padrão; a pessoa liga e pode definir horário de silêncio (horário de Brasília)
+      emailOn: !!d.email_on, emailLabel: d.email_on ? 'Desligar avisos por e-mail' : 'Ligar avisos por e-mail',
+      emailTxt: d.email_on ? 'Ligado. Você recebe no e-mail da conta, no máximo um a cada 30 minutos, só com o tipo do aviso e o nome de quem gerou.' : 'Desligado. Se ligar, o e-mail leva só o tipo do aviso e o nome de quem gerou; o conteúdo fica no app.',
+      toggleEmail: function () { if (ui.busy) return; ctx.setUi({ busy: true, err: '' }); C.rpc('set_notice_email', { p_on: !d.email_on, p_quiet_from: d.quiet_from == null ? null : d.quiet_from, p_quiet_to: d.quiet_to == null ? null : d.quiet_to }).then(function (r) { ctx.setUi({ busy: false, err: r.ok ? '' : 'Não foi possível salvar agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); if (r.ok) { ctx.toast(d.email_on ? 'Avisos por e-mail desligados.' : 'Avisos por e-mail ligados.'); load(); } }); },
+      quietOpts: [['', 'Sem silêncio'], ['22-7', '22h às 7h'], ['21-8', '21h às 8h'], ['20-9', '20h às 9h']].map(function (o) { var cur = d.quiet_from == null ? '' : d.quiet_from + '-' + d.quiet_to, on = cur === o[0]; return { label: o[1], on: String(on), cls: 'chip' + (on ? ' is-on' : ''),
+        pick: function () { if (ui.busy || on) return; var p = o[0] ? o[0].split('-').map(Number) : [null, null]; ctx.setUi({ busy: true, err: '' }); C.rpc('set_notice_email', { p_on: !!d.email_on, p_quiet_from: p[0], p_quiet_to: p[1] }).then(function (r) { ctx.setUi({ busy: false, err: r.ok ? '' : 'Não foi possível salvar agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); if (r.ok) { ctx.toast(o[0] ? 'Sem e-mail das ' + o[1] + ' (horário de Brasília).' : 'Horário de silêncio removido.'); load(); } }); } }; }),
       err: ui.err || '', hasErr: !!ui.err,
       back: function () { var a = window.ACCT && window.ACCT.area(); if (a) window.NAV.go(a, {}, null); else window.NAV.go('home', {}, null); }
     };

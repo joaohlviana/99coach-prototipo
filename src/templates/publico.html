@@ -511,7 +511,12 @@
             <p class="mod-small mod-muted">Toque para silenciar ou ligar um tipo. Silenciar só tira o aviso desta lista: a mensagem, o treino ou o formulário continuam no app.</p>
             <ul class="onb-secs"><sc-for list="{{v.prefs}}" as="k" hint-placeholder-count="7"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><div style="flex: 1 1 200px"><b>{{k.label}}</b></div><button type="button" class="{{k.cls}}" aria-pressed="{{k.on}}" onClick="{{k.toggle}}">{{k.state}}</button></div></li></sc-for></ul>
             <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
-            <p class="mod-small mod-muted">Por enquanto os avisos aparecem só aqui dentro do app. Aviso por e-mail ou no celular ainda não existe; quando existir, horário de silêncio será configurado nesta tela.</p>
+          </section>
+          <section class="card onb-sec" aria-labelledby="av-e"><h2 class="onb-h2" id="av-e">Avisos por e-mail</h2>
+            <p class="mod-small mod-muted">{{v.emailTxt}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.toggleEmail}}">{{v.emailLabel}}</button></div>
+            <sc-if value="{{v.emailOn}}" hint-placeholder-val="{{ false }}"><div class="field"><span class="field__label">Horário de silêncio (horário de Brasília)</span><div class="seg" role="group" aria-label="Horário de silêncio" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.quietOpts}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">No silêncio nenhum e-mail sai; o que acontecer nesse período chega junto depois. Os tipos silenciados acima também não vão por e-mail.</span></div></sc-if>
+            <p class="mod-small mod-muted">Aviso no celular (notificação do aparelho) ainda não existe.</p>
           </section>
         </sc-if>
       </sc-if>

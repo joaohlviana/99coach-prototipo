@@ -50,3 +50,11 @@ Transação desfeita:
 - silenciar um tipo tira da lista; marcar como visto tira o "novo"
 - treinador vê o formulário respondido; uma terceira conta não vê nada nem lê preferências alheias
 - não conferido nesta rodada: avisos de pedido, treino, registro, comentário e horário (mesma consulta, sem dados de teste)
+
+
+## Fase 7 — avisos por e-mail (12/11)
+Transação desfeita:
+- aluno liga o e-mail; conta comum não tem permissão para ler a fila de envio
+- com um formulário novo, a fila traz o aluno com o aviso (tipo e nome, sem texto)
+- depois de marcar como enviado, a fila fica vazia; em horário de silêncio, também
+- não conferido: envio de verdade pelo Resend (falta a chave nos segredos do Supabase)

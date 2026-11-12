@@ -24,8 +24,9 @@ async function mk(who, uid) {
     if (path === 'rpc/my_notices') { const pf = srv.prefs[uid] || { muted: [], seen: false }; const mine = uid === 'tr' ? 'treinador' : 'aluno';
       const items = srv.forms.filter((f) => (mine === 'aluno' ? f.status === 'enviado' : f.status === 'respondido')).map((f) => ({ kind: 'formulario', link: 'L1', mine, who: mine === 'aluno' ? 'Marina Duarte' : 'Caio Prado', at: mine === 'aluno' ? f.sent_at : f.answered_at, n: 1, extra: f.status, new: !pf.seen }))
         .concat(mine === 'aluno' ? [{ kind: 'mensagem', link: 'L1', mine, who: 'Marina Duarte', at: '2026-11-12T11:00:00Z', n: 2, extra: null, new: !pf.seen }] : []).filter((n) => pf.muted.indexOf(n.kind) < 0);
-      return j(200, { items, muted: pf.muted, seen_at: pf.seen ? '2026-11-12T15:00:00Z' : null }); }
+      return j(200, { items, muted: pf.muted, seen_at: pf.seen ? '2026-11-12T15:00:00Z' : null, email_on: !!pf.email_on, quiet_from: pf.qf == null ? null : pf.qf, quiet_to: pf.qt == null ? null : pf.qt }); }
     if (path === 'rpc/set_notice_prefs') { const pf = srv.prefs[uid] || (srv.prefs[uid] = { muted: [], seen: false }); if (body.p_muted) { if (body.p_muted.some((k) => ['mensagem', 'pedido', 'treino', 'registro', 'comentario', 'formulario', 'horario'].indexOf(k) < 0)) return j(400, { message: 'tipo_invalido' }); pf.muted = body.p_muted; } if (body.p_seen) pf.seen = true; return j(200, { muted: pf.muted }); }
+    if (path === 'rpc/set_notice_email') { const pf = srv.prefs[uid] || (srv.prefs[uid] = { muted: [], seen: false }); if ((body.p_quiet_from == null) !== (body.p_quiet_to == null)) return j(400, { message: 'silencio_incompleto' }); pf.email_on = !!body.p_on; pf.qf = body.p_quiet_from; pf.qt = body.p_quiet_to; return j(200, { email_on: pf.email_on }); }
     if (path === 'rpc/send_form') {
       if (uid !== 'tr') return j(403, { message: 'acompanhamento não encontrado' });
       if (srv.idem[body.p_idem]) return j(200, srv.idem[body.p_idem]);
@@ -94,7 +95,11 @@ await click(al, /^Marcar todos como vistos$/); await al.waitForTimeout(1200); t 
 console.log('  marcar como vistos:', srv.prefs.al.seen === true, /Nada novo desde a última vez/.test(t));
 await al.evaluate(() => { const b = [...document.querySelectorAll('#app button.chip')].find((e) => e.closest('li').textContent.includes('Mensagens')); b.click(); });
 await al.waitForTimeout(1200); t = await txt(al);
-console.log('  silenciar mensagens:', JSON.stringify(srv.prefs.al.muted), !/mensagens não lidas de Marina/.test(t), /Silenciado/.test(t), /Aviso por e-mail ou no celular ainda não existe/.test(t));
+console.log('  silenciar mensagens:', JSON.stringify(srv.prefs.al.muted), !/mensagens não lidas de Marina/.test(t), /Silenciado/.test(t));
+console.log('  e-mail começa desligado:', /Avisos por e-mail Desligado/i.test(t), !/Horário de silêncio \(/i.test(t));
+await click(al, /^Ligar avisos por e-mail$/); await al.waitForTimeout(1200);
+await click(al, /^22h às 7h$/); await al.waitForTimeout(1200); t = await txt(al);
+console.log('  liga e-mail e silêncio:', srv.prefs.al.email_on === true, srv.prefs.al.qf === 22 && srv.prefs.al.qt === 7, /Desligar avisos por e-mail/.test(t));
 await click(al, /^Responder$/); await al.waitForTimeout(1200);
 console.log('  aviso leva ao formulário:', /Como foi a sua semana de treino\?/.test(await txt(al)));
 const ids = await al.$$eval('#app textarea[id^=fm-]', (e) => e.map((x) => x.id));
