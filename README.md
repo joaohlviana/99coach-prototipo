@@ -1,13 +1,35 @@
 # 99coach
 
-App 99coach completo, rodando 100% local, no design system **coach99 v4 (Editorial esportivo)**:
+App 99coach completo, no design system **coach99 v4 (Editorial esportivo)**:
 Anton + Inter + Space Mono, tokens, componentes e ícones do DS.
+
+O site é feito em **Next.js** por causa do SEO: as páginas públicas saem prontas do servidor
+(título, descrição, endereço canônico, dados estruturados, sitemap) e o app interativo assume por cima.
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # gera dist/ (site estático, abre em qualquer servidor)
+npm run dev      # http://localhost:5173 (modo de desenvolvimento)
+npm run build    # gera o site para produção
+npm start        # serve o site gerado em http://localhost:5173
+npm test         # roteiros de teste (com o site rodando)
 ```
+
+## Endereços
+
+| Endereço | Página | Indexável |
+|---|---|---|
+| `/` | Home | sim |
+| `/treinadores/<esporte>` | esporte em todas as cidades e online | sim |
+| `/treinadores/<esporte>/<cidade>` | esporte presencial na cidade (ex.: `/treinadores/crossfit/londrina-pr`) | sim |
+| `/treinadores/<esporte>/online` | esporte online | sim |
+| `/treinador/<id>` | perfil do treinador | sim |
+| `/app#<tela>` | áreas com conta (painel, aluno, cadastro, ajuda) | não |
+| `/sitemap.xml`, `/robots.txt` | só páginas que existem; sem treinador a página dá 404 | — |
+
+Enquanto o site for de homologação ele não é indexado. Em produção, defina `INDEXAR=1` e `SITE_URL` (endereço final).
+
+Estrutura: `app/` (rotas Next), `components/` e `lib/catalogo.js` (o que o servidor monta), `public/js` e `src/templates`
+(o app interativo, empacotado por `scripts/build-shell.mjs` em `public/shell/`).
 
 ## Dados reais
 

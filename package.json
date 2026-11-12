@@ -4,16 +4,17 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "index": "node scripts/build-index.mjs",
-    "dev": "npm run index && vite",
-    "build": "npm run index && vite build",
-    "preview": "vite preview",
+    "shell": "node scripts/build-shell.mjs",
+    "dev": "npm run shell && next dev -p 5173",
+    "build": "npm run shell && next build",
+    "start": "next start -p 5173",
     "sync": "node scripts/sync-dados.mjs",
-    "single": "npm run index && node scripts/build-single.mjs",
     "vercel-build": "(test \"$SYNC\" = \"1\" && node scripts/sync-dados.mjs || true) && npm run build",
     "test": "bash tests/run.sh"
   },
-  "devDependencies": {
-    "vite": "^5.4.11"
+  "dependencies": {
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }

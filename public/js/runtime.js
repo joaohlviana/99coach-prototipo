@@ -221,6 +221,23 @@
   }
   function token(name, props) { return name === 'perfil' ? 'perfil-' + props.id : (name === 'onboarding' ? 'onboarding-' + props.flow : (name === 'servico' ? 'servico-' + props.offer : (name === 'telas' ? 'telas' + (props.id ? '-' + props.id : '') : (MODP[name] ? name + (props.s ? '-' + props.s + (props.id ? '-' + props.id : '') : '') : name)))); }
 
+  // Endereços de verdade para as páginas públicas (o servidor entrega a mesma página pronta, para o Google):
+  //   /                                   Home
+  //   /treinadores/<esporte>[/<cidade>|/online]   Esporte
+  //   /treinador/<id>                     Perfil
+  // As áreas com conta ficam em /app#<tela> e não são indexadas.
+  function slug(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+  function sportSlug(mod) { var s = window.SPORTS && window.SPORTS.get(mod); return s ? s.slug : slug(mod); }
+  function urlFor(name, props, st) {
+    if (!window.__NEXT) return '#' + token(name, props);
+    if (name === 'home') return '/';
+    if (name === 'esporte') {
+      var e = st || (props && props.init) || {};
+      return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (e.city ? '/' + slug(e.city) : ''));
+    }
+    if (name === 'perfil' && props && props.rid) return '/treinador/' + encodeURIComponent(props.rid);
+    return '/app#' + token(name, props);
+  }
   var entries = {}, order = [], pos = -1, seq = 0, pushOk = true;
   function saveCurrent(extra) {
     if (!cur) return;
@@ -268,6 +285,14 @@
       return C.draft(st);
     },
     modOf: modOf,
+    // mantém o endereço igual ao que a página de esporte está mostrando (trocar de esporte, cidade ou formato)
+    syncUrl: function () {
+      if (!window.__NEXT || !cur || cur.name !== 'esporte' || !cur.comp || !cur.comp.state) return;
+      var u = urlFor('esporte', (entries[cur.key] || {}).props, cur.comp.state);
+      if (u !== location.pathname) { try { history.replaceState(history.state, '', u); } catch (_) {} }
+      // mesmo título que o servidor entrega para este endereço
+      var e = cur.comp.state; document.title = (e.fmt === 'Online' ? e.mod + ' online — Treinadores' : (e.city ? e.mod + ' presencial em ' + e.city + ' — Treinadores' : e.mod + ' — Treinadores por cidade e online')) + ' | 99coach';
+    },
     go: function (name, params, from, extra) {
       saveCurrent(extra);
       var g = guard(name, params || {}); name = g[0]; params = g[1];
@@ -275,7 +300,7 @@
       var key = ++seq;
       order = order.slice(0, pos + 1); order.push(key); pos = order.length - 1;
       entries[key] = { name: name, props: props, state: null, scroll: 0 };
-      try { history.pushState({ k: key }, '', '#' + token(name, props)); } catch (_) { pushOk = false; }
+      try { history.pushState({ k: key }, '', urlFor(name, props)); } catch (_) { pushOk = false; }
       mount(name, props, null, key);
       scrollLater(0);
     },
@@ -344,6 +369,10 @@
   function start() {
     var hsh = (location.hash || '').slice(1);
     var name = 'home', params = {};
+    // página entregue pronta pelo servidor: ele diz qual tela abrir (um # no endereço, quando existe, tem prioridade)
+    var RT = !hsh && window.__ROUTE ? window.__ROUTE : null;
+    if (RT) { name = RT.name; params = RT.params || {}; }
+    else
     if (hsh === 'esporte') name = 'esporte';
     else if (hsh.indexOf('servico') === 0) { name = 'servico'; params = { offer: hsh.split('-')[1] || 'online' }; }
     else if (hsh.indexOf('onboarding') === 0) { name = 'onboarding'; params = { flow: hsh.split('-')[1] || 'treinador', scn: hsh.split('-')[2] || '' }; }
@@ -355,7 +384,7 @@
     var key = ++seq;
     order = [key]; pos = 0;
     entries[key] = { name: name, props: props, state: null, scroll: 0 };
-    try { if (moved) history.replaceState({ k: key }, '', '#' + token(name, props)); else history.replaceState({ k: key }, ''); } catch (_) {}
+    try { if (moved || (window.__NEXT && !RT)) history.replaceState({ k: key }, '', urlFor(name, props)); else history.replaceState({ k: key }, ''); } catch (_) {}
     mount(name, props, null, key);
   }
   window.__dcBoot = function () {

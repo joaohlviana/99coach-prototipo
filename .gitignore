@@ -1,5 +1,5 @@
-node_modules
-dist
-*.tsbuildinfo
-dist-single
+node_modules/
+.next/
+public/shell/
 docs/
+dist/

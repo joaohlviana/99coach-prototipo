@@ -1,0 +1,43 @@
+/* Conteúdo entregue pronto pelo servidor (o que aparece antes de o app ligar e o que os buscadores leem).
+   Usa as cores e fontes do design system; some quando o app assume a tela. */
+html.app-on #ssr{display:none}
+.ssr{max-width:1200px;margin:0 auto;padding:16px 16px 64px;color:var(--fg,#121214);font-family:var(--font,Inter,system-ui,sans-serif);line-height:1.5}
+.ssr a{color:inherit}
+.ssr-skip{position:absolute;left:-9999px}
+.ssr-skip:focus{left:16px;top:16px;background:#fff;padding:8px 12px;border-radius:8px;z-index:10}
+.ssr-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:12px 0 24px}
+.ssr-logo{font-weight:800;font-size:28px;letter-spacing:-.02em;color:var(--brand,#E30B3D)!important;text-decoration:none}
+.ssr-top nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.ssr-top nav a{padding:10px 14px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+.ssr-top nav a.ssr-btn{background:var(--ink,#121214);color:#fff!important}
+.ssr-crumb{font-size:13px;color:var(--text-2,#52525B);margin-bottom:12px}
+.ssr-hero{background:var(--ink,#121214);color:#fff;border-radius:28px;padding:40px;margin-bottom:32px}
+.ssr-hero h1{font-family:var(--font-display,Anton,Impact,sans-serif);font-weight:400;text-transform:uppercase;font-size:clamp(30px,5vw,56px);line-height:1;margin:0 0 12px}
+.ssr-hero p{max-width:68ch;margin:0 0 8px;color:rgba(255,255,255,.82);font-size:16px}
+.ssr-hero a{color:#fff}
+.ssr-eyebrow{font-family:var(--font-mono,'Space Mono',monospace);text-transform:uppercase;letter-spacing:.18em;font-size:12px!important}
+.ssr-note{font-size:14px!important}
+.ssr-perfil{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.ssr section{margin-bottom:32px}
+.ssr h2{font-size:22px;line-height:1.2;margin:0 0 16px;font-weight:700}
+.ssr-chips,.ssr-list,.ssr-steps{list-style:none;margin:0;padding:0}
+.ssr-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ssr-chips a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px;border-radius:999px;background:#fff;border:1px solid rgba(18,18,20,.1);text-decoration:none;font-weight:600;font-size:15px}
+.ssr-chips small{font-weight:500;color:var(--text-2,#52525B)}
+.ssr-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.ssr-card{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:20px;padding:16px;border:1px solid rgba(18,18,20,.06)}
+.ssr-card div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ssr-card a{text-decoration:none;font-size:16px;min-height:32px;display:inline-flex;align-items:center}
+.ssr-card span{font-size:14px;color:var(--text-2,#52525B)}
+.ssr-card small{font-size:12px;color:var(--text-2,#52525B)}
+.ssr-av{flex:none;width:48px;height:48px;border-radius:50%;background:#E4E4E7;color:#3F3F46;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.ssr-av--lg{width:88px;height:88px;font-size:28px}
+.ssr-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;counter-reset:p}
+.ssr-steps li{background:#fff;border-radius:20px;padding:20px;border:1px solid rgba(18,18,20,.06);counter-increment:p}
+.ssr-steps li::before{content:counter(p);display:block;font-family:var(--font-display,Anton,Impact,sans-serif);font-size:28px;color:var(--brand,#E30B3D)}
+.ssr-aviso{background:#FFF7E0;border-radius:20px;padding:20px}
+.ssr-aviso h2{font-size:17px;margin-bottom:8px}
+.ssr-aviso p{margin:0 0 8px;font-size:15px}
+.ssr-foot{display:flex;gap:20px;flex-wrap:wrap;align-items:center;border-top:1px solid rgba(18,18,20,.1);padding-top:20px;font-size:14px;color:var(--text-2,#52525B)}
+.ssr-foot a{min-height:44px;display:inline-flex;align-items:center}
+@media (max-width:599px){.ssr-hero{padding:24px 20px;border-radius:20px}.ssr-top{padding-bottom:16px}.ssr-top nav a{padding:8px 10px;font-size:14px}}
