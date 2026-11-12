@@ -33,7 +33,8 @@
       <sc-if value="{{is.semvinculo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.text}}</p></div></div>
         <sc-if value="{{v.notLinked}}" hint-placeholder-val="{{ true }}">
-          <sc-if value="{{v.hasReqs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Seus pedidos"><h2 class="onb-h2">Seus pedidos</h2>
+          <sc-if value="{{v.failed}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.retry}}">Tentar de novo</button></div></sc-if>
+          <sc-if value="{{v.hasReqs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Seus acompanhamentos e pedidos"><h2 class="onb-h2">Seus acompanhamentos e pedidos</h2>
             <ol class="onb-secs"><sc-for list="{{v.reqs}}" as="r" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-clock"></i></span><span class="onb-secs__t"><b>{{r.t}}</b><span>{{r.x}}</span></span></div></li></sc-for></ol>
           </section></sc-if>
           <section class="card onb-sec" aria-label="Como começar"><h2 class="onb-h2">Como começar</h2>
@@ -42,7 +43,7 @@
           <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.find}}">Encontrar treinador</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.account}}">Minha conta</button></div>
         </sc-if>
         <sc-if value="{{v.linked}}" hint-placeholder-val="{{ false }}">
-          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não enviado</b>{{v.err}}</div></div></sc-if>
+          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não enviado</b>{{v.err}}</div><sc-if value="{{v.fillPlan}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.usePlan}}">Igual ao previsto</button></sc-if></div></sc-if>
           <sc-if value="{{v.showMain}}" hint-placeholder-val="{{ true }}">
             <sc-if value="{{v.isPaused}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-pause" aria-hidden="true"></i><div><b>Acompanhamento pausado</b>Sessões novas não começam durante a pausa. Isso não é falta nem descanso: o que você já fez continua registrado.</div></div></sc-if>
             <sc-if value="{{v.hasNote}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Recado do treinador"><h2 class="onb-h2">{{v.noteFrom}}</h2><p>{{v.noteTxt}}</p><p class="mod-small mod-muted">Enviado em {{v.noteWhen}}. Mensagem não altera o treino.</p>

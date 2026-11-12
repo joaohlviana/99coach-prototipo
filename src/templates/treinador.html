@@ -407,6 +407,17 @@
       </sc-if>
 
       <!-- REL02 · Gerenciar convites -->
+      <!-- REL02R · Convites do servidor -->
+      <sc-if value="{{is.convitesreal}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Convites</h1><p class="pghead__sub">Estado vindo do servidor. Revogar desliga o link na hora; reemitir cria um link novo.</p></div><div class="pghead__act"><button type="button" class="btn btn--primary btn--md" onClick="{{v.invite}}">Convidar aluno</button></div></div>
+        <div class="seg" role="group" aria-label="Filtro" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.tabs}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando…</p></sc-if>
+        <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.err}}</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.noneTxt}}</p></sc-if>
+        <ol class="onb-secs"><sc-for list="{{v.items}}" as="c" hint-placeholder-count="2"><li><div class="card onb-sec"><b>{{c.name}}</b> <span class="{{c.stCls}}">{{c.st}}</span><p class="mod-small mod-muted">{{c.sub}}</p>
+          <div class="onb-actions onb-actions--row" style="flex-wrap: wrap"><sc-if value="{{c.isOpen}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{c.copy}}">Copiar link</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{c.revoke}}">Revogar</button></sc-if><sc-if value="{{c.canReissue}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{c.reissue}}">Reemitir</button></sc-if></div></div></li></sc-for></ol>
+      </sc-if>
+
       <sc-if value="{{is.convites}}" hint-placeholder-val="{{ false }}">
         <div class="t1-head">
           <div class="t1-head__txt"><h1 class="pghead__title">Convites</h1><p class="pghead__sub">{{v.sub}}</p></div>

@@ -138,14 +138,23 @@
       ],
       tabs: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos'], ['Conteúdo', 'book', 'H06', 'rotinas'], ['Mensagens', 'message', 'TRE25', 'mensagens'], ['Conta', 'user', 'tmenu', 'conta']],
       // no celular, "Conteúdo" e "Conta" agrupam os destinos que estão no menu lateral
-      tabOf: { exercicios: 'rotinas', formularios: 'rotinas', agenda: 'conta', programas: 'conta', ofertas: 'conta', recebimentos: 'conta', insights: 'conta', ia: 'conta' }
+      tabOf: { exercicios: 'rotinas', formularios: 'rotinas', agenda: 'conta', programas: 'conta', ofertas: 'conta', recebimentos: 'conta', insights: 'conta', ia: 'conta' },
+      // produto: só destinos com dados reais
+      sideReal: [
+        { sec: 'Trabalho', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Agenda', 'calendar', 'TRE20', 'agenda']] },
+        { sec: 'Conteúdo', items: [['Rotinas', 'clipboard', 'H06', 'rotinas'], ['Exercícios', 'dumbbell', 'TRE10', 'exercicios']] },
+        { sec: 'Negócio', items: [['Insights', 'chart', 'H08', 'insights']] },
+        { sec: 'Conta', items: [['Conta e perfil', 'user', 'tmenu', 'conta']] }
+      ]
     },
     aluno: {
       label: 'Navegação do aluno', me: { name: 'Ana Carolina Souza', role: 'Aluna · Acompanhamento online', photo: '' },
       side: [{ sec: 'Meu acompanhamento', items: [['Hoje', 'home', 'H10', 'hoje'], ['Treinos', 'dumbbell', 'ALU06', 'treinos'], ['Evolução', 'trend', 'H10E', 'evolucao'], ['Mensagens', 'message', 'ALU05', 'mensagens', 'amsg']] },
         { sec: 'Conta', items: [['Minhas contratações', 'card', 'H11', 'contratacoes'], ['Encontrar treinador', 'search', '@home', 'buscar'], ['Conta e preferências', 'user', 'amenu', 'conta']] }],
       tabs: [['Hoje', 'home', 'H10', 'hoje'], ['Treinos', 'dumbbell', 'ALU06', 'treinos'], ['Evolução', 'trend', 'H10E', 'evolucao'], ['Mensagens', 'message', 'ALU05', 'mensagens'], ['Conta', 'user', 'amenu', 'conta']],
-      tabOf: { contratacoes: 'conta', buscar: 'conta' }
+      tabOf: { contratacoes: 'conta', buscar: 'conta' },
+      sideReal: [{ sec: 'Meu acompanhamento', items: [['Hoje', 'home', 'H10', 'hoje'], ['Treinos', 'dumbbell', 'ALU06', 'treinos'], ['Evolução', 'trend', 'H10E', 'evolucao'], ['Mensagens', 'message', 'ALU05', 'mensagens', 'amsg']] },
+        { sec: 'Conta', items: [['Encontrar treinador', 'search', '@home', 'buscar'], ['Favoritos', 'heart', 'PUB07', 'salvos'], ['Conta', 'user', 'amenu', 'conta']] }]
     },
     publico: {
       label: 'Navegação pública', me: null,
@@ -194,8 +203,10 @@
   window.TODAY = function () { var t = U.today; return t.charAt(0).toUpperCase() + t.slice(1); };
   // telas que ainda só existem com dados de exemplo: no produto não abrem (nem digitando o endereço)
   var DEMO_ONLY = {
-    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', mensagens: 'alunos', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal', insights: 'insightsreal', credenciais: 'credreal' },
-    aluno: { fc01: 'contratacoes', fc02: 'contratacoes', fc03: 'contratacoes', fc04: 'contratacoes', fc05: 'contratacoes', fc06: 'contratacoes', fc08: 'contratacoes', fc09: 'contratacoes', fc10: 'contratacoes', pedir: 'semvinculo' }
+    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', mensagens: 'alunos', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal', insights: 'insightsreal', credenciais: 'credreal', convites: 'convitesreal',
+      // ainda sem dados reais no servidor: no produto não abrem com conteúdo de exemplo
+      formularios: 'hoje', formEditor: 'hoje', respostas: 'hoje', avaliacoes: 'hoje', arquivos: 'hoje', notas: 'hoje', calendario: 'hoje', macro: 'hoje', programas: 'hoje', programaEditor: 'hoje', publicacao: 'hoje', participantes: 'hoje', notificacoes: 'hoje', ofertas: 'hoje', cupons: 'hoje', proposta: 'hoje', reivindicar: 'credreal', denunciar: 'hoje' },
+    aluno: { fc01: 'semvinculo', fc02: 'semvinculo', fc03: 'semvinculo', fc04: 'semvinculo', fc05: 'semvinculo', fc06: 'semvinculo', fc08: 'semvinculo', fc09: 'semvinculo', fc10: 'semvinculo', pedir: 'semvinculo', contratacoes: 'semvinculo' }
   };
   window.MODPAGE = function (page, role) {
     return {
@@ -205,7 +216,7 @@
         var scr = REG.get(page, props.s) || REG.first(page);
         if (scr && DEMO_ONLY[page] && DEMO_ONLY[page][scr.key] && !document.documentElement.classList.contains('demo')) {
           var alt = REG.get(page, DEMO_ONLY[page][scr.key]);
-          if (alt) { if (['agenda', 'insights', 'credenciais'].indexOf(scr.key) < 0 && !c.__blk) { c.__blk = 1; var why = scr.key === 'mensagens' ? 'As conversas ficam na tela de cada aluno: abra o aluno para conversar.' : 'Esta parte ainda não está disponível.'; setTimeout(function () { NOTICE(why); }, 0); } scr = alt; }
+          if (alt) { if (['agenda', 'insights', 'credenciais', 'convites'].indexOf(scr.key) < 0 && !c.__blk) { c.__blk = 1; var why = scr.key === 'mensagens' ? 'As conversas ficam na tela de cada aluno: abra o aluno para conversar.' : 'Esta parte ainda não está disponível.'; setTimeout(function () { NOTICE(why); }, 0); } scr = alt; }
         }
         // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
         if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && (window.ACCT.area() || (window.ACCT.hasLink && window.ACCT.hasLink()))
@@ -252,7 +263,7 @@
         });
         var demoOn = document.documentElement.classList.contains('demo');
         var allowed = function (it) { return demoOn || it[2] !== 'H15'; };
-        var side = (R && R.side || []).map(function (g) { return { sec: g.sec, items: g.items.filter(allowed).map(mk) }; });
+        var side = ((R && !document.documentElement.classList.contains('demo') && R.sideReal) || (R && R.side) || []).map(function (g) { return { sec: g.sec, items: g.items.filter(allowed).map(mk) }; });
         var top = (R && R.top || []).map(function (it) { var on = it[2] === navKey; return { label: it[0], cls: 'v4-reset mod-top__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: function () { GO(it[1]); } }; });
         var scens = scr ? [['', scr.normal || 'Uso normal']].concat(scr.scens).map(function (sc) {
           var on = (st.scn || '') === sc[0];

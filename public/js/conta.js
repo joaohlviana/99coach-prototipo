@@ -6,6 +6,12 @@
   var URL0 = 'https://rycaxboqkkiopjdecgld.supabase.co';
   var KEY = 'sb_publishable_dPQ0596gx0ok94wUE4POtw_T-QjY8Cq';
   var LS = (function () { try { return window.localStorage; } catch (_) { return null; } })();
+  var linksFailed = false, reqsFailed = false, lastReqs = [];
+  // chave de intenção: a mesma enquanto a pessoa tenta a MESMA ação (resposta perdida, novo toque); nova depois do sucesso.
+  // Assim repetir depois de uma queda não duplica a ação no servidor.
+  var pend = {};
+  function intent(k) { if (!pend[k]) { var r = new Uint32Array(2); try { window.crypto.getRandomValues(r); } catch (_) { r[0] = Date.now(); r[1] = Math.random() * 1e9; } pend[k] = k + ':' + r[0].toString(36) + r[1].toString(36); } return pend[k]; }
+  function settle(k) { return function (r) { if (r && r.ok) delete pend[k]; return r; }; }
   var sess = (function () { try { return JSON.parse(LS.getItem('c99.sessao') || 'null'); } catch (_) { return null; } })();
   function keep(s) { sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} }
   // resposta: { ok, data, offline, msg }
@@ -148,17 +154,22 @@
       return db('GET', 'trainers?select=id&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) {
         var t = r.ok && r.data && r.data[0];
         if (!t) return { ok: false, msg: 'Publique ou salve seu perfil de treinador antes de convidar.' };
-        return db('POST', 'invites', { code: code, trainer_id: t.id, kind: 'individual', recipient_name: o.name || null, recipient_email: o.email || null, service: o.service || null, message: o.message || null }).then(function (x) { x.code = code; return x; });
+        return db('POST', 'invites', { code: code, trainer_id: t.id, kind: 'individual', recipient_name: o.name || null, recipient_email: o.email || null, service: o.service || null, message: o.message || null }, 'return=representation').then(function (x) { x.code = code; x.expiresAt = x.ok && x.data && x.data[0] ? x.data[0].expires_at : null; return x; });
       });
     },
     revokeInvite: function (code) { return db('POST', 'rpc/revoke_invite', { p_code: code }); },
+    myInvites: function () { return db('GET', 'invites?select=code,recipient_name,recipient_email,service,status,created_at,expires_at,accepted_at,generation&order=created_at.desc&limit=200'); },
+    inviteLink: function (code) { return location.origin + '/app#publico-convite-' + String(code).replace('-', ''); },
     invitePreview: function (code) { return db('POST', 'rpc/invite_preview', { p_code: code }); },
     acceptInvite: function (code) { return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: 'accept:' + String(code).toUpperCase() }); },
     // vínculos em que esta conta é aluno ou treinador
     links: function () {
       if (!sess) return Promise.resolve([]);
-      return db('GET', 'links?select=id,status,origin,prep,answers,created_at,student_id,trainers(slug,name,user_id),workouts(template_id,title,current_version,workout_versions(version,sessions,schedule,created_at,change_note))&status=in.(ativo,pausado)').then(function (r) {
-        var L = r.ok && Array.isArray(r.data) ? r.data : [];
+      return db('GET', 'links?select=id,status,origin,prep,answers,created_at,student_id,trainers(slug,name,user_id),workouts(template_id,title,current_version,workout_versions(version,sessions,schedule,created_at,change_note))&status=in.(ativo,pausado,encerrado)&order=created_at.desc').then(function (r) {
+        // falha de leitura NÃO vira "sem vínculo": mantém o que já se sabia e marca como desatualizado
+        if (!r.ok || !Array.isArray(r.data)) { linksFailed = true; var prev = []; try { prev = JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) {} return prev; }
+        linksFailed = false;
+        var L = r.data;
         var ids = L.map(function (l) { return l.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i; });
         return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
           var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
@@ -166,7 +177,7 @@
             var w = (l.workouts || [])[0], v = w ? (w.workout_versions || []).filter(function (x) { return x.version === w.current_version; })[0] : null;
             return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, answers: l.answers || {}, since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
             workout: w && v ? { title: w.title, version: w.current_version, sessions: v.sessions || [], schedule: v.schedule || null, assignedAt: v.created_at, changeNote: v.change_note || null } : null,
-            trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador' }; });
+            trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador', ended: l.status === 'encerrado' }; });
           try { LS.setItem('c99.vinculos', JSON.stringify(out)); } catch (_) {}
           return out;
         });
@@ -196,20 +207,22 @@
     requests: function () {
       if (!sess) return Promise.resolve([]);
       return db('GET', 'requests?select=id,status,message,created_at,expires_at,student_id,trainers(slug,name,user_id),offers(key,title,price_cents,unit)&order=created_at.desc&limit=100').then(function (r) {
-        var L = r.ok && Array.isArray(r.data) ? r.data : [];
+        if (!r.ok || !Array.isArray(r.data)) { reqsFailed = true; return lastReqs; }
+        reqsFailed = false;
+        var L = r.data;
         var ids = L.map(function (x) { return x.student_id; }).filter(function (v, i, a) { return v && a.indexOf(v) === i && v !== sess.user.id; });
         return (ids.length ? db('GET', 'profiles?select=id,display_name&id=in.(' + ids.join(',') + ')') : Promise.resolve({ ok: true, data: [] })).then(function (p) {
           var N = {}; ((p.ok && p.data) || []).forEach(function (x) { N[x.id] = x.display_name; });
-          return L.map(function (x) { return { id: x.id, status: x.status, message: x.message || '', at: x.created_at, due: x.expires_at, mine: x.student_id === sess.user.id ? 'aluno' : 'treinador',
+          return (lastReqs = L.map(function (x) { return { id: x.id, status: x.status, message: x.message || '', at: x.created_at, due: x.expires_at, mine: x.student_id === sess.user.id ? 'aluno' : 'treinador',
             studentName: N[x.student_id] || 'Aluno', trainerName: x.trainers && x.trainers.name, trainerSlug: x.trainers && x.trainers.slug,
-            offer: x.offers ? x.offers.title + ' · ' + (x.offers.price_cents != null && x.offers.unit ? 'R$ ' + (x.offers.price_cents / 100).toLocaleString('pt-BR') + ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[x.offers.unit] || x.offers.unit) : 'Sob consulta') : '' }; });
+            offer: x.offers ? x.offers.title + ' · ' + (x.offers.price_cents != null && x.offers.unit ? 'R$ ' + (x.offers.price_cents / 100).toLocaleString('pt-BR') + ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[x.offers.unit] || x.offers.unit) : 'Sob consulta') : '' }; }));
         });
       });
     },
     decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }); },
     // ---------- vínculo: pausar, retomar, encerrar (com motivo; nada é apagado) ----------
     changeLink: function (link, action, reason, note) {
-      var go = function (a) { return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: 'link:' + link + ':' + Date.now().toString(36) + ':' + a }); };
+      var go = function (a) { var k = 'link:' + link + ':' + a; return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: intent(k) }).then(settle(k)); };
       var ALT = { pausar: 'pausado', retomar: 'retomado', encerrar: 'encerrado' };
       return go(action).then(function (r) { return (!r.ok && !r.offline && ALT[action] && /action|ação|acao|invalid|inválid/i.test(r.msg || '')) ? go(ALT[action]) : r; });
     },
@@ -223,14 +236,18 @@
     },
     setAvailability: function (rules, tz) { return db('POST', 'rpc/set_availability', { p_rules: rules, p_tz: tz }); },
     freeSlots: function (link, days) { return db('POST', 'rpc/free_slots', { p_link: link, p_days: days || 14 }); },
-    bookSlot: function (link, startsAt) { return db('POST', 'rpc/book_slot', { p_link: link, p_starts_at: startsAt, p_idem: 'book:' + link + ':' + startsAt + ':' + Date.now().toString(36) }); },
+    bookSlot: function (link, startsAt) { var k = 'book:' + link + ':' + startsAt; return db('POST', 'rpc/book_slot', { p_link: link, p_starts_at: startsAt, p_idem: intent(k) }).then(settle(k)); },
     cancelAppointment: function (id, reason) { return db('POST', 'rpc/cancel_appointment', { p_id: id, p_reason: reason || null }); },
     appointments: function (linkIds) { return linkIds.length ? db('GET', 'appointments?select=id,link_id,starts_at,ends_at,tz,status,booked_by&link_id=in.(' + linkIds.join(',') + ')&status=eq.marcado&ends_at=gte.' + encodeURIComponent(new Date(Date.now() - 36e5).toISOString()) + '&order=starts_at.asc') : Promise.resolve({ ok: true, data: [] }); },
     // ---------- mensagens do vínculo ----------
     messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.asc&limit=500'); },
-    sendMessage: function (link, body) { var cid = 'cli_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: cid, p_session: null }); },
+    sendMessage: function (link, body) { var k = 'msg:' + link + ':' + hash(body); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: intent(k), p_session: null }).then(settle(k)); },
+    intent: intent, settle: settle,
     markRead: function (link) { return db('POST', 'rpc/mark_read', { p_link: link }); },
-    cachedLinks: function () { try { return JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) { return []; } },
+    // vínculos em andamento (ativo/pausado); encerrados ficam em endedLinks, só para histórico
+    cachedLinks: function () { var L = []; try { L = JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) {} return L.filter(function (l) { return !l.ended; }); },
+    endedLinks: function () { var L = []; try { L = JSON.parse(LS.getItem('c99.vinculos') || '[]'); } catch (_) {} return L.filter(function (l) { return l.ended; }); },
+    syncFailed: function () { return linksFailed || reqsFailed; },
     // conta 18+ (regra de mercado): registrada no perfil
     confirmAdult: function () { return sess ? db('PATCH', 'profiles?id=eq.' + encodeURIComponent(sess.user.id), { adult_confirmed_at: new Date().toISOString() }) : Promise.resolve({ ok: false }); },
     // retira o perfil da busca (volta a rascunho; nada é apagado)

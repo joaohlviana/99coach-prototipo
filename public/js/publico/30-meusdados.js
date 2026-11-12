@@ -49,7 +49,7 @@ REG.screen({
     // exclusão de conta pelo banco: pedir → confirmar (encerra vínculos, retira perfil, bloqueia a entrada) → concluir (apaga identidade)
     if (logged && !ui.delAsked0) { ctx.setUi({ delAsked0: true }); C.db('GET', 'account_deletions?select=id,status,requested_at,completed_at&order=requested_at.desc&limit=1').then(function (r) { ctx.setUi({ del: r.ok && r.data && r.data[0] ? r.data[0] : null, delLoadErr: !r.ok }); }); }
     var del = ui.del && ui.del.status !== 'cancelado' ? ui.del : null;
-    var rpc = function (fn, then) { if (ui.dbusy) return; ctx.setUi({ dbusy: true, delErr: '' }); C.db('POST', 'rpc/' + fn, { p_idem: fn + ':' + (C.user() || {}).id + ':' + Date.now() }).then(function (r) {
+    var rpc = function (fn, then) { if (ui.dbusy) return; ctx.setUi({ dbusy: true, delErr: '' }); var ik = fn + ':' + (C.user() || {}).id + ':' + ((ui.del && ui.del.status) || 'novo'); C.db('POST', 'rpc/' + fn, { p_idem: C.intent(ik) }).then(C.settle(ik)).then(function (r) {
       var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
       if (!r.ok) return ctx.setUi({ dbusy: false, delErr: r.offline ? 'Sem conexão: nada foi alterado.' : 'O servidor não aceitou: ' + (r.msg || r.status) + '. Nada foi apagado.' });
       ctx.setUi({ dbusy: false, del: d && d.status ? { status: d.status } : null }); if (then) then(d);

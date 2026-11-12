@@ -22,8 +22,17 @@ REG.screen({
         mensagens: ['Nenhuma conversa ainda', 'A conversa com o treinador abre quando o acompanhamento começa.'] })[from] || ['Ainda sem treinador', 'Esta parte aparece depois que você tiver um treinador.'];
       var reqs = (window.__myRequests || []).filter(function (r) { return r.mine === 'aluno'; });
       var RS = { pendente: 'Aguardando resposta', recusado: 'Recusado', expirado: 'Expirou sem resposta', cancelado: 'Cancelado', aceito: 'Aceito' };
-      return Object.assign(base, { title: T0[0], text: T0[1], hasReqs: reqs.length > 0,
-        reqs: reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') }; }) });
+      // falha de leitura não é "sem treinador"; acompanhamento encerrado continua visível como histórico
+      if (C && C.syncFailed && C.syncFailed()) T0 = ['Não foi possível carregar seu acompanhamento', 'A conexão com o servidor falhou. Isso não quer dizer que você está sem treinador: tente de novo em instantes.'];
+      var ended = C && C.endedLinks ? C.endedLinks().filter(function (l) { return l.mine === 'aluno'; }) : [];
+      if (ended.length && !(C.syncFailed && C.syncFailed())) {
+        T0 = [from === 'evolucao' ? 'Seu histórico' : 'Acompanhamento encerrado', 'O acompanhamento com ' + (ended[0].trainerName || 'seu treinador') + ' foi encerrado. Seus registros continuam aqui; para treinar de novo, procure um treinador ou aceite um convite.'];
+        if (!ui.endAsked) { ctx.setUi({ endAsked: true }); Promise.all(ended.map(function (l) { return C.sessions(l.id); })).then(function (rs) { var n = {}; rs.forEach(function (r, i) { n[ended[i].id] = r.ok ? (r.data || []).filter(function (x) { return x.submitted_at; }).length : null; }); ctx.setUi({ endN: n }); }); }
+      }
+      var endItems = ended.map(function (l) { var n = (ui.endN || {})[l.id]; return { t: l.trainerName || 'Treinador', x: 'Encerrado · começou em ' + new Date(l.since).toLocaleDateString('pt-BR') + (n == null ? '' : ' · ' + U.plural(n, 'treino registrado', 'treinos registrados')) + (l.workout ? ' · último treino: ' + l.workout.title : '') }; });
+      var reqItems = reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') }; });
+      return Object.assign(base, { title: T0[0], text: T0[1], hasReqs: reqItems.length + endItems.length > 0, reqs: endItems.concat(reqItems),
+        failed: !!(C && C.syncFailed && C.syncFailed()), retry: function () { if (window.__refreshLinks) window.__refreshLinks(); C.links().then(function () { ctx.setUi({ v: (ui.v || 0) + 1 }); }); } });
     }
 
     var tf = String(link.trainerName || 'seu treinador').split(' ')[0];
@@ -84,9 +93,7 @@ REG.screen({
       var g = JSON.parse(JSON.stringify(ex.grid)), c = g[i][k], it = s0.items[i];
       if (f === 'done') {
         c.done = !c.done;
-        // marcar sem preencher = fiz o previsto; a pessoa ainda pode corrigir os números
-        if (c.done && c.reps === '') c.reps = String(parseInt(it.reps, 10) || '');
-        if (c.done && c.load === '' && it.loadKg != null) c.load = String(it.loadKg);
+        // marcar não preenche nada: o previsto só vira realizado se a pessoa digitar ou tocar em "Igual ao previsto"
       } else c[f] = U.val(e);
       var e1 = Object.assign({}, ex, { grid: g }); dPut(s0, e1);
       // descanso conta pelo relógio (não trava a tela nem depende de ficar com o app aberto)
@@ -98,7 +105,9 @@ REG.screen({
       ctx.setUi({ exec: null, err: '', v: (ui.v || 0) + 1 }); };
     var finish = function () {
       if (ui.busy) return;
-      var logs = [];
+      var logs = [], miss = [];
+      ex.grid.forEach(function (sets, i) { sets.forEach(function (c, k) { if (c.done && String(c.reps).trim() === '') miss.push(s0.items[i].name + ' (série ' + (k + 1) + ')'); }); });
+      if (miss.length) return ctx.setUi({ err: 'Faltam as repetições de ' + miss.join(', ') + '. Digite o que você fez, ou toque em "Igual ao previsto" se foi exatamente o previsto.', fillPlan: true });
       ex.grid.forEach(function (sets, i) { var it = s0.items[i]; sets.forEach(function (c, k) { if (c.done) logs.push({ item: i, set: k + 1, reps: Number(c.reps) || 0, loadKg: c.load === '' ? null : Number(String(c.load).replace(',', '.')), exerciseId: it.exerciseId, name: it.name, sub: false }); }); });
       if (!logs.length) return ctx.setUi({ err: 'Marque pelo menos uma série feita. Concluir parcialmente é permitido.' });
       // sessão incompleta: uma confirmação antes de enviar, dizendo o que fica registrado
@@ -196,7 +205,8 @@ REG.screen({
       hasDraft: !!draft && !ex && state !== 'exec', draftTitle: draft ? 'Continuar ' + (SS[draftIdx].title || 'treino') : '', draftTxt: draft ? marked(draft.grid) + ' de ' + total(draft.grid) + ' séries marcadas · guardado só neste aparelho, ainda não enviado' : '', resume: resume, discardDraft: discard,
       hasReceipt: !!ui.receipt && !ex, rcTitle: ui.receipt ? 'Registro recebido pelo servidor às ' + ui.receipt.at : '', rcTxt: ui.receipt ? ui.receipt.title + ' · ' + (ui.receipt.n < ui.receipt.tot ? ui.receipt.n + ' de ' + ui.receipt.tot + ' séries registradas (sessão parcial)' : U.plural(ui.receipt.n, 'série registrada', 'séries registradas')) + '. ' + tf + ' vê no painel; isso não quer dizer que já revisou.' : '',
       goEvo: function () { ctx.setUi({ receipt: null }); GO('H10E'); }, goHoje: function () { ctx.setUi({ receipt: null }); GO('H10'); },
-      err: ui.err || '', hasErr: !!ui.err,
+      err: ui.err || '', hasErr: !!ui.err, fillPlan: !!ui.fillPlan && !!ex,
+      usePlan: function () { if (!ex) return; var g = JSON.parse(JSON.stringify(ex.grid)); g.forEach(function (sets, i) { var it = s0.items[i]; sets.forEach(function (c) { if (c.done && String(c.reps).trim() === '') { c.reps = String(parseInt(it.reps, 10) || ''); if (c.load === '' && it.loadKg != null) c.load = String(it.loadKg); } }); }); var e1 = Object.assign({}, ex, { grid: g }); dPut(s0, e1); ctx.setUi({ exec: e1, err: '', fillPlan: false }); },
       weekTxt: weekN ? U.plural(weekN, 'sessão registrada', 'sessões registradas') + ' nos últimos 7 dias' : 'Nenhuma sessão registrada nos últimos 7 dias',
       periodTxt: U.plural(inP.length, 'sessão registrada', 'sessões registradas') + ' em ' + weeks + ' semanas' + (partialN ? ' · ' + U.plural(partialN, 'parcial', 'parciais') : '') + '. Sem meta combinada, não mostramos percentual.',
       weekOpts: [4, 12].map(function (n) { return { label: n + ' semanas', on: String(weeks === n), cls: 'chip' + (weeks === n ? ' is-on' : ''), pick: function () { ctx.setUi({ weeks: n }); } }; }),

@@ -361,7 +361,7 @@ class Component extends DCLogic {
 
     // ---------- publicação (ACC07) ----------
     const crefState = st.crefDoc ? 'doc' : (st.cref ? 'inf' : 'none');
-    const meTrust = [{ cls: 'trust trust--owner', ic: 'ic ic--xs i-user', label: 'Titularidade confirmada' }].concat(crefState !== 'none' ? [{ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', label: 'CREF informado' }] : []);
+    const meTrust = [{ cls: 'trust trust--owner', ic: 'ic ic--xs i-user', label: 'Criado pelo próprio profissional' }].concat(crefState !== 'none' ? [{ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', label: 'CREF informado' }] : []);
     const ck = (kk, opt, label, sub) => { const ok = STAT[kk][1] === 'ok'; return { label: label, sub: sub, cls: 'onb-check__i' + (ok ? ' is-ok' : (opt ? ' is-opt' : ' is-todo')), mark: 'check' + (ok ? ' is-on' : ''), hasGo: !ok, go: goSec(kk), goLabel: 'Completar' }; };
     const firstPrice = st.services.length ? svcPrice(st.services[0]) : 'Enviar mensagem';
     const pb = {
@@ -377,11 +377,26 @@ class Component extends DCLogic {
       ],
       line: sportTxt + ' · ' + cityShort + ' · ' + fmtTxt, trust: meTrust, price: firstPrice,
       trustLine: meTrust.map((t) => t.label).join(' · '), svcLine: st.services.length ? st.services.map((s) => s.title + ' · ' + svcPrice(s)).join(' · ') : 'Nenhum', payLine: st.payout === 'ok' ? 'Habilitados' : (st.payout === 'wait' ? 'Em verificação · publicar não depende disso' : 'Ainda não habilitados · publicar não habilita vendas'),
+      pubWhen: st.pubAt || '26/10 às 09:18', pubLink: st.pubSlug ? location.origin + '/treinador/' + st.pubSlug : '99coach.com.br/thiago-pereira',
       missing: !minOk, unknown: st.pubUnknown, cta: st.pubUnknown ? 'Consultar publicação' : (st.published ? 'Publicar alterações' : 'Publicar perfil'),
       go: () => {
         if (!minOk) return set({ toast: 'Falta o mínimo para publicar: modalidade, cidade e formato.' });
-        if (st.pubUnknown) { set({ step: 'publicado', published: true, pubUnknown: false, version: st.version + 1, toast: 'Consultamos: o perfil foi publicado uma vez, às 09:18.' }); return top(); }
-        sync(st, true);
+        if (st.pubUnknown && !(window.CONTA && window.CONTA.session() && !st.scn)) { set({ step: 'publicado', published: true, pubUnknown: false, version: st.version + 1, toast: 'Consultamos: o perfil foi publicado uma vez, às 09:18.' }); return top(); }
+        // conta real: o recibo só aparece depois que o servidor confirma, com a hora e o endereço reais
+        if (window.CONTA && window.CONTA.session() && !st.scn) {
+          if (st.pubBusy) return;
+          set({ pubBusy: true, toast: 'Publicando…' });
+          const C = window.CONTA;
+          return C.saveTrainer(st).then((r) => (r.ok ? C.publish() : r)).then((r) => {
+            if (!r.ok) { set({ pubBusy: false, pubUnknown: !!r.offline, toast: r.offline ? 'Sem resposta do servidor: vamos consultar antes de tentar de novo, para não publicar duas vezes.' : 'O servidor não publicou: ' + (r.msg || 'erro ' + r.status) + '. Nada mudou na busca.' }); return; }
+            return C.db('GET', 'trainers?select=slug,status&user_id=eq.' + encodeURIComponent(C.user().id)).then((q) => {
+              const x = q.ok && q.data && q.data[0];
+              if (!x || x.status !== 'publicado') { set({ pubBusy: false, pubUnknown: true, toast: 'O servidor ainda não confirmou a publicação. Consulte de novo.' }); return; }
+              const d = new Date();
+              set({ pubBusy: false, step: 'publicado', published: true, version: st.version + 1, pubAt: d.toLocaleDateString('pt-BR') + ' às ' + d.toTimeString().slice(0, 5), pubSlug: x.slug, toast: '' }); top();
+            });
+          });
+        }
         set({ step: 'publicado', published: true, version: st.version + 1, toast: '' }); top();
       }
     };
@@ -832,9 +847,9 @@ class Component extends DCLogic {
       goHome: () => NAV && NAV.go('home', {}, this), goLogin: () => { set(this.base('entrar', '')); top(); },
       intents, intentErr: st.intentErr, continueIntent, conta, f, c, d, k, g, pb, h, iv, cv, p, a, inv, stu, cad, sx, b, ph, ap, at, sv, pg, av, pay, pro,
       pronto: PR,
-      goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => (NAV && NAV.go('perfil', { id: 'thiago' }, this)), goPub: go('pub'), goPublicado: go('publicado'), goConvidar: goInvite, goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
+      goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => { if (st.pubSlug) { location.href = '/treinador/' + encodeURIComponent(st.pubSlug); return; } NAV && NAV.go('perfil', { id: 'thiago' }, this); }, goPub: go('pub'), goPublicado: go('publicado'), goConvidar: goInvite, goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
       prepLater: () => { set({ step: 'alunoHoje', toast: 'Tudo bem. A preparação fica salva em Hoje.' }); top(); },
-      copy: () => toast('Copiado. (Demonstração: a área de transferência pode estar bloqueada nesta janela.)'),
+      copy: () => { if (st.pubSlug) { try { navigator.clipboard.writeText(location.origin + '/treinador/' + st.pubSlug).catch(() => {}); } catch (_) {} return toast('Link do perfil copiado.'); } toast('Copiado. (Demonstração: a área de transferência pode estar bloqueada nesta janela.)'); },
       msg: () => (window.GO ? window.GO(student ? 'ALU05' : 'TRE25') : toast('Mensagens ainda não estão disponíveis.')),
       me: student ? { ini: stu.ini, name: stuName, role: 'Aluna · ' + inv.svc } : { ini: ini, name: st.name, role: 'Treinador · ' + (cityShort || 'sem cidade'), photo: st.photoUrl },
       navLabel: student ? 'Navegação do aluno' : 'Navegação do treinador', side, tabs,

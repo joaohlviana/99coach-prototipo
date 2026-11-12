@@ -29,13 +29,14 @@ REG.screen({
       var ag0 = (ui.appts || []).filter(function (a) { return new Date(a.starts_at).toDateString() === today; }).sort(function (a, b) { return String(a.starts_at).localeCompare(String(b.starts_at)); })
         .map(function (a) { return { when: new Date(a.starts_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), who: nameOf[a.link_id] || 'Aluno' }; });
       var st0 = (window.STORE && window.STORE.loadOnb('treinador')) || {};
-      var empty = !L.length && !R.length;
+      var failed = !!(C.syncFailed && C.syncFailed());
+      var empty = !L.length && !R.length && !failed;
       var next = !st0.published ? { t: 'Publicar seu perfil', x: 'Rascunho salvo não aparece na busca. Publicado é o que os alunos encontram.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
         : { t: 'Convidar seu primeiro aluno', x: 'Ele aceita uma vez e o vínculo fica pronto. O convite vale 7 dias.', act: 'Convidar aluno', go: function () { GO('REL01'); } };
       return {
         isNew: false, notNew: false, real: true, date: window.TODAY(), hello: 'Olá, ' + fn(st0.name || t.first),
-        rSub: mine.length ? U.plural(mine.length, 'pendência sua', 'pendências suas') + ' agora' : (empty ? 'Sua conta está pronta.' : 'Tudo em dia: nada depende de você agora.'),
-        mine: mine, hasMine: mine.length > 0, allClear: !mine.length && !empty,
+        rSub: failed ? 'Não foi possível atualizar agora. A lista abaixo pode estar desatualizada.' : (mine.length ? U.plural(mine.length, 'pendência sua', 'pendências suas') + ' agora' : (empty ? 'Sua conta está pronta.' : 'Tudo em dia: nada depende de você agora.')),
+        mine: mine, hasMine: mine.length > 0, allClear: !mine.length && !empty && !failed,
         theirs: theirs, hasTheirs: theirs.length > 0,
         empty: empty, next: next,
         ag: ag0, hasAg: ag0.length > 0, noAg: !ag0.length && !ui.apErr && !!L.length, agErr: !!ui.apErr,

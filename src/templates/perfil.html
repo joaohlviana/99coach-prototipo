@@ -84,12 +84,12 @@
                 <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><span>Ainda sem avaliações</span></sc-if></li>
                 <sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><li><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></li></sc-if>
                 <li><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</li>
-                <li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li>
+                <sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li></sc-if>
               </ul>
             </div>
           </div>
               <ul class="vfp-mstats" aria-label="Números do perfil"><sc-for list="{{mstats}}" as="d" hint-placeholder-count="3"><li><b>{{d.v}}</b><span>{{d.k}}</span></li></sc-for></ul>
-          <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></sc-if><span><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></div>
+          <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></sc-if><span><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></sc-if></div>
           <nav class="vfp-tabs no-sb" aria-label="Seções do perfil"><div class="seg seg--fit seg--sm"><sc-for list="{{anchors}}" as="a" hint-placeholder-count="6"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></div></nav>
         </section>
 

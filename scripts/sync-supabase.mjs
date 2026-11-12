@@ -32,7 +32,7 @@ try {
       // foto só de quem publicou o próprio perfil; importado usa avatar com iniciais (regra do plano)
       const photo = t.origin === 'importado' ? '' : (t.photo_url || '');
       rows.push([t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
-        f + ((t.formats || []).includes('online') || !city ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '']);
+        f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '']);
     });
     process.stdout.write(`\r${rows.length}${total ? ' de ' + total : ''} perfis`);
     if (p.rows.length < PAGE) break;

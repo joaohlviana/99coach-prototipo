@@ -32,7 +32,10 @@ REG.screen({
       window.CONTA.createInvite({ name: f.nome.trim(), email: email, service: o ? o.name : null, message: f.msg || null }).then(function (r) {
         if (!r.ok) { ctx.setUi({ busy: false, fail: true }); ctx.toast(r.offline ? 'Sem conexão: o convite não foi criado. Tente de novo.' : 'O servidor não criou o convite: ' + (r.msg || ('erro ' + r.status))); return; }
         doCreate();
-        var cv0 = DB.t1_convites[0]; cv0.code = r.code; cv0.server = true; cv0.expires = U.dateShort ? U.dateShort(7) : cv0.expires;
+        var cv0 = DB.t1_convites[0]; cv0.code = r.code; cv0.server = true;
+        cv0.expires = r.expiresAt ? new Date(r.expiresAt).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : (U.dateShort ? U.dateShort(7) : cv0.expires);
+        // a lista de convites vem do servidor (Convites); nada de convite local na lista de alunos
+        DB.alunos = DB.alunos.filter(function (a) { return a.id !== cv0.aluno; });
         ctx.setUi({ busy: false, createdId: cv0.id });
       });
     };
@@ -67,19 +70,19 @@ REG.screen({
       unknown: !!ui.unknown, consult: function () { doCreate(); ctx.toast('Consultamos: o convite foi criado uma vez só.'); },
       create: create,
       // depois de criar
-      cvName: cv ? cv.name : '', cvFirst: cvFirst, cvLink: cv ? (cv.server ? location.origin + location.pathname + '#publico-convite-' + cv.code.replace('-', '') : '99coach.com.br/c/' + cv.code) : '', cvSvc: o ? o.name + ' · ' + U.money(o.price) + '/' + o.unit : 'Sem serviço definido',
+      cvName: cv ? cv.name : '', cvFirst: cvFirst, cvLink: cv ? (cv.server ? window.CONTA.inviteLink(cv.code) : '99coach.com.br/c/' + cv.code) : '', cvSvc: o ? o.name + ' · ' + U.money(o.price) + '/' + o.unit : 'Sem serviço definido',
       cvContact: cv ? cv.contact : '', cvExp: cv ? '7 dias · até ' + cv.expires : '', cvState: cv && cv.status === 'pendente' ? 'Compartilhado (' + cv.shared + ') · aguardando aceite' : 'Criado · ainda não enviado',
       cvShared: !!cv && cv.status === 'pendente', cvNotShared: !cv || cv.status !== 'pendente',
       shareFail: !!ui.shareFail,
       copy: function () {
-        var link = cv ? (cv.server ? location.origin + location.pathname + '#publico-convite-' + cv.code.replace('-', '') : '99coach.com.br/c/' + cv.code) : '';
+        var link = cv ? (cv.server ? window.CONTA.inviteLink(cv.code) : '99coach.com.br/c/' + cv.code) : '';
         try { if (navigator.clipboard) navigator.clipboard.writeText(link).catch(function () {}); } catch (_) {}
         markShared('link copiado'); ctx.toast('Convite copiado. Copiar não é enviar: cole na conversa com ' + cvFirst + '.');
       },
       whats: function () {
         if (scn === 'falha') { ctx.setUi({ shareFail: true }); return; }
         if (cv && cv.server) {
-          var link = location.origin + location.pathname + '#publico-convite-' + cv.code.replace('-', '');
+          var link = window.CONTA.inviteLink(cv.code);
           var txt = 'Oi ' + cvFirst + '! Te convidei para treinar comigo na 99Coach: ' + link;
           window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
           markShared('WhatsApp aberto'); ctx.toast('Abrimos o WhatsApp com a mensagem pronta. Confirme o envio por lá.'); return;

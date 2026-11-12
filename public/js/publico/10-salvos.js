@@ -5,6 +5,22 @@ REG.screen({
   scens: [['salvando', 'Salvando'], ['naosalvou', 'Não salvou'], ['vazio', 'Nenhum favorito'], ['vazioconf', 'Vazio confirmado'], ['carregando', 'Carregando'], ['falha', 'Falha da lista'], ['removendo', 'Removendo'], ['expirada', 'Sessão expirada']],
   vals: function (ctx) {
     var P = window.P1, ui = ctx.ui, scn = ctx.scn;
+    // produto: favoritos reais (na conta ou neste aparelho), sem itens de exemplo
+    if (!document.documentElement.classList.contains('demo') && window.FAV) {
+      var ids = Object.keys(window.FAV.map()), R = window.REAL;
+      var its = ids.map(function (id) {
+        var t = R && R.get(id), name = t ? t.name : 'Perfil indisponível';
+        return { name: name, isT: true, isP: false, gone: !t, ok: !!t, sub: t ? [t.spec, t.city || (t.onl ? 'Online' : '')].filter(Boolean).join(' · ') : 'Este perfil saiu do catálogo.',
+          price: '', hasPrice: false, hasRating: false, rating: '', at: 'Salvo ' + window.FAV.where(), photo: t && t.photo || '', hasPhoto: !!(t && t.photo), noPhoto: !(t && t.photo), ini: t ? t.ini : '?',
+          busy: false, busyText: '', idle: true, openLabel: 'Ver perfil', open: function () { if (t) window.NAV.go('perfil', { id: id }, null); },
+          remove: function () { window.FAV.set(id, false); ctx.setUi({ undo: { id: id, name: name } }); }, removeLabel: 'Remover dos favoritos: ' + name };
+      });
+      var u0 = ui.undo || null;
+      return { loading: false, failed: false, expired: false, saving: false, notSaved: false, showList: its.length > 0, items: its, hasItems: its.length > 0, noItemsFilter: false,
+        tabs: [], empty: !its.length, emptyConf: false, confAt: '', hasUndo: !!u0, undoText: u0 ? u0.name + ' saiu dos favoritos.' : '',
+        undo: function () { if (!u0) return; window.FAV.set(u0.id, true); ctx.setUi({ undo: null }); ctx.toast('Voltou para os favoritos'); }, closeUndo: function () { ctx.setUi({ undo: null }); },
+        retrySave: function () {}, retryList: function () {}, entrar: function () { GO('@onboarding', { flow: 'entrar' }); }, encontrar: function () { GO('@home'); }, continuar: function () { GO('@home'); }, skel: [] };
+    }
     var hidden = scn === 'carregando' || scn === 'falha' || scn === 'expirada';
     var list = (scn === 'vazio' || scn === 'vazioconf') ? [] : DB.p1_salvos.slice();
     var filter = ui.f || 'todos';

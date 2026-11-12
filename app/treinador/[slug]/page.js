@@ -3,17 +3,17 @@
 // preço ou disponibilidade inventados, e com caminho para corrigir ou retirar sem precisar de conta.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
-import { treinador, esportesDe, lista, slug as slugify, curta, SITE } from '../../../lib/catalogo.js';
+import { treinador, esportesDe, lista, slug as slugify, curta, SITE, publicadoAgora, treinadorAgora } from '../../../lib/catalogo.js';
 
-export const revalidate = 86400;
+export const revalidate = 300;
 export const dynamicParams = true;
 export async function generateStaticParams() { return []; }
 
-function carregar(id) { const t = treinador(decodeURIComponent(id)); return t ? { t, esp: esportesDe(t) } : null; }
+async function carregar(id) { const k = decodeURIComponent(id); const t = treinador(k) || (await treinadorAgora(k)); return t ? { t, esp: esportesDe(t) } : null; }
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params; const d = carregar(slug);
-  if (!d) return { title: 'Perfil não encontrado', robots: { index: false } };
+  const { slug } = await params; const d = await carregar(slug);
+  if (!d || (await publicadoAgora(d.t.id)) === false) return { title: 'Perfil não encontrado', robots: { index: false } };
   const { t, esp } = d;
   const oque = t.spec || (esp[0] ? esp[0].label : 'Treinador');
   const onde = t.pres ? ' em ' + t.city : (t.onl ? ' online' : '');
@@ -23,8 +23,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { slug } = await params; const d = carregar(slug);
+  const { slug } = await params; const d = await carregar(slug);
   if (!d) notFound();
+  // retirado depois do build: some na hora
+  if ((await publicadoAgora(d.t.id)) === false) notFound();
   const { t, esp } = d;
   const principal = esp[0];
   const cid = t.pres ? slugify(t.city) : '';
@@ -45,7 +47,7 @@ export default async function Page({ params }) {
         <div>
           <h1>{t.name}</h1>
           {t.spec ? <p>{t.spec}</p> : null}
-          <p>{[t.pres ? 'Atende presencialmente em ' + t.city : '', t.onl ? 'Atende online' : ''].filter(Boolean).join(' · ')}</p>
+          <p>{[t.pres ? 'Atende presencialmente em ' + t.city : '', t.onl ? 'Atende online' : ''].filter(Boolean).join(' · ') || 'Local de atendimento não informado'}</p>
         </div>
       </section>
       {t.importado ? (
@@ -65,7 +67,7 @@ export default async function Page({ params }) {
         <ul className="ssr-chips">{esp.map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + (cid ? '/' + cid : '')}>{s.label}{cid ? ' em ' + curta(t.city) : ''}</a></li>)}</ul></section> : null}
       {parecidos.length ? <section aria-labelledby="h-par"><h2 id="h-par">Outros profissionais{principal ? ' de ' + principal.label : ''}{cid ? ' em ' + curta(t.city) : ''}</h2>
         <ul className="ssr-list">{parecidos.map((x) => <Cartao key={x.id} t={x} />)}</ul></section> : null}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
+      {t.importado ? null : <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />}
     </Shell>
   );
 }

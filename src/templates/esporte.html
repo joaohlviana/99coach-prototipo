@@ -21,7 +21,7 @@
       <nav class="hdr__nav" aria-label="Principal">
         <button type="button" class="hdr__link is-on" aria-current="page">Treinadores</button>
         <button type="button" class="hdr__link" onClick="{{openMod}}">Esportes</button>
-        <button type="button" class="hdr__link" onClick="{{goProgs}}">Programas</button>
+        <sc-if value="{{demoProgs}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__link" onClick="{{goProgs}}">Programas</button></sc-if>
         <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
       </nav>
       <div class="hdr__tools">
@@ -59,7 +59,7 @@
     <sc-if value="{{hasFoco}}" hint-placeholder-val="{{ true }}"><div class="vfe-foco no-sb" role="group" aria-label="Foco declarado pelos profissionais"><span class="label">Foco</span><sc-for list="{{focoChips}}" as="c" hint-placeholder-count="6"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}<sc-if value="{{c.hasN}}" hint-placeholder-val="{{ true }}"><small class="vfe-n">{{c.n}}</small></sc-if></button></sc-for></div></sc-if>
 
     <!-- Celular: abas sublinhadas fixas (G05 · utabs) -->
-    <nav class="utabs vfe-mtabs v4-only-m no-sb" aria-label="Seções da página"><a class="utab is-on" href="#lista" aria-current="true">Treinadores <small>{{countB}}</small></a><a class="utab" href="#custa">Preços</a><a class="utab" href="#programas">Programas</a><a class="utab" href="#faq">Perguntas</a></nav>
+    <nav class="utabs vfe-mtabs v4-only-m no-sb" aria-label="Seções da página"><a class="utab is-on" href="#lista" aria-current="true">Treinadores <small>{{countB}}</small></a><a class="utab" href="#custa">Preços</a><sc-if value="{{demoProgs}}" hint-placeholder-val="{{ false }}"><a class="utab" href="#programas">Programas</a></sc-if><a class="utab" href="#faq">Perguntas</a></nav>
     <!-- Celular: barra única de chips (Escolhas/Chip + Filtros) — o resto fica na folha de filtros -->
     <div class="vfe-mbar v4-only-m no-sb" role="group" aria-label="Filtros">
       <button type="button" class="vfe-mchip vfe-mchip--ink" onClick="{{openFilters}}"><i class="ic ic--xs i-filter"></i>Filtros<sc-if value="{{hasExtra}}" hint-placeholder-val="{{ false }}"><span class="fbtn__n">{{extraCount}}</span></sc-if></button>
@@ -261,7 +261,7 @@
   <sc-if value="{{sh_menu}}" hint-placeholder-val="{{ false }}"><div class="v4-scrim" onClick="{{closeSheet}}"></div><section class="card v4-sheet" role="dialog" aria-modal="true" aria-labelledby="mnh" style="top: {{sheetTop}}"><div class="v4-sheet__hd"><h2 id="mnh" class="sec-title sec-title--sm">Menu</h2><button type="button" class="icon-btn" onClick="{{closeSheet}}" aria-label="Fechar"><i class="ic ic--sm i-x"></i></button></div><div class="v4-sheet__bd"><div class="v4-list">
     <button type="button" class="lrow v4-lrow is-on" onClick="{{closeSheet}}" aria-current="page"><span class="lrow__ic"><i class="ic ic--sm i-users"></i></span><span class="lrow__t"><b>Treinadores</b></span></button>
     <button type="button" class="lrow v4-lrow" onClick="{{openMod}}"><span class="lrow__ic"><i class="ic ic--sm i-target"></i></span><span class="lrow__t"><b>Esportes</b></span></button>
-    <button type="button" class="lrow v4-lrow" onClick="{{goProgs}}"><span class="lrow__ic"><i class="ic ic--sm i-book"></i></span><span class="lrow__t"><b>Programas</b></span></button>
+    <sc-if value="{{demoProgs}}" hint-placeholder-val="{{ false }}"><button type="button" class="lrow v4-lrow" onClick="{{goProgs}}"><span class="lrow__ic"><i class="ic ic--sm i-book"></i></span><span class="lrow__t"><b>Programas</b></span></button></sc-if>
     <button type="button" class="lrow v4-lrow" onClick="{{openSaved}}"><span class="lrow__ic"><i class="ic ic--sm i-heart"></i></span><span class="lrow__t"><b>Salvos</b></span><span class="lrow__meta">{{favCount}}</span></button>
     <button type="button" class="lrow v4-lrow" onClick="{{openLogin}}"><span class="lrow__ic"><i class="ic ic--sm i-user"></i></span><span class="lrow__t"><b>Entrar</b></span></button>
     <button type="button" class="lrow v4-lrow" onClick="{{openPro}}"><span class="lrow__ic"><i class="ic ic--sm i-user-plus"></i></span><span class="lrow__t"><b>Sou treinador</b><span>Criar perfil com conta mínima</span></span></button>

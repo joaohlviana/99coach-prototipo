@@ -81,7 +81,7 @@ class Component extends DCLogic {
 
     const card = (t, ctx) => {
       const off = t.imp ? null : offerFor(t, ctx), on = !!S.favs[t.id];
-      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.city ? 'Atende online · ' + t.city : 'Atende online'));
+      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || 'Local não informado')));
       const reason = t.imp ? 'Perfil importado: ainda não confirmado pelo profissional' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + S.city + ' · presencial';
       return {
         name: t.name, spec: t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
@@ -295,7 +295,7 @@ class Component extends DCLogic {
       rootCls: 'w v4' + (S.sheet ? ' has-sheet' : '') + (S.sx ? ' sx-on' : ''), ...SXR, goTop: () => { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (_) {} }, openAccount: visitor ? () => window.NAV.go('onboarding', { flow: 'entrar' }, this) : open('menu'), scens, scenName, scenDesc: DESC[S.scen], reset: () => this.setState(Component.init(S.scen)),
       hasFav: favN > 0, skip: () => { try { const el = document.getElementById('conteudo'); if (el) { el.setAttribute('tabindex', '-1'); el.focus(); } } catch (_) {} }, visitor, logged, mineLabel: S.scen === 'pendente' ? 'Meu pedido' : 'Meu acompanhamento', favN: String(favN),
       menuOpen: sh === 'menu' ? 'true' : 'false', openMenu: open('menu'), openMine: S.scen === 'pendente' ? open('pedido') : lk.go,
-      goTrainers: () => window.NAV.go('esporte', {}, this), goPrograms: info('Programas', ['Ainda não há programas publicados na 99coach.', 'Quando um treinador publicar um programa, ele aparece aqui e na página do esporte.']),
+      goTrainers: () => window.NAV.go('esporte', {}, this), demoProgs: document.documentElement.classList.contains('demo'), goPrograms: info('Programas', ['Ainda não há programas publicados na 99coach.', 'Quando um treinador publicar um programa, ele aparece aqui e na página do esporte.']),
       openSports: open('sport'), openSport: open('sport'), openCity: open('city'), openSaved: open('saved'),
       openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), __openLogin0: authOpen('Use o e-mail ou celular da sua conta.'), openLoginSaved: authOpen('Para guardar seus salvos na conta e ver em outro aparelho.', 'Entrar', 'Entrar', 'Pronto. Seus ' + favN + ' salvos foram para a sua conta.'),
       openPro: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), __openPro0: authOpen('Comece no Essencial: grátis, até 3 alunos ativos. O teste do Pro é opcional e só começa se você ativar, depois de ver preço, ciclo e data da primeira cobrança.', 'Criar meu perfil de treinador', 'Criar perfil', 'Conta criada. Próximo passo: completar o mínimo do perfil.'),

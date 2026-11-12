@@ -172,7 +172,7 @@
       <nav class="hdr__nav" aria-label="Principal">
         <button type="button" class="hdr__link is-on" aria-current="page" onClick="{{goTrainers}}">Treinadores</button>
         <button type="button" class="hdr__link" onClick="{{openSports}}">Esportes</button>
-        <button type="button" class="hdr__link" onClick="{{goPrograms}}">Programas</button>
+        <sc-if value="{{demoProgs}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__link" onClick="{{goPrograms}}">Programas</button></sc-if>
         <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
       </nav>
       <div class="hdr__tools">

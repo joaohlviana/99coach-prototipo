@@ -526,8 +526,8 @@
       <!-- Publicado (recibo) -->
       <sc-if value="{{is.publicado}}" hint-placeholder-val="{{ false }}">
         <div class="card onb-sec onb-receipt">
-          <div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-check"></i></span><b>Perfil publicado</b><span>Publicado em 26/10 às 09:18 · versão {{cad.version}}. Aparece na busca em instantes; a indexação no Google é outra etapa.</span></div>
-          <div class="onb-codeline onb-codeline--wide"><span class="mono">99coach.com.br/thiago-pereira</span><button type="button" class="btn btn--outline btn--sm" onClick="{{copy}}">Copiar link</button></div>
+          <div class="state onb-state"><span class="state__ic onb-ok" aria-hidden="true"><i class="ic i-check"></i></span><b>Perfil publicado</b><span>Publicado em {{pb.pubWhen}} · versão {{cad.version}}. Seu perfil já abre pelo endereço abaixo; a busca do site é atualizada em até 1 dia e a indexação no Google é outra etapa.</span></div>
+          <div class="onb-codeline onb-codeline--wide"><span class="mono">{{pb.pubLink}}</span><button type="button" class="btn btn--outline btn--sm" onClick="{{copy}}">Copiar link</button></div>
           <div class="kv"><div class="kv__r"><span>Selos</span><b>{{pb.trustLine}}</b></div><div class="kv__r"><span>Serviços</span><b>{{pb.svcLine}}</b></div><div class="kv__r"><span>Recebimentos</span><b>{{pb.payLine}}</b></div></div>
         </div>
         <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg btn--arrow" onClick="{{goConvidar}}">Convidar primeiro aluno<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button><button type="button" class="btn btn--outline btn--lg" onClick="{{viewProfile}}">Ver meu perfil público</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{goHoje}}">Ir para Hoje</button></div>

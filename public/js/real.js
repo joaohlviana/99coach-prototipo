@@ -95,18 +95,18 @@
       var d = details[id] || {}, first = t.name.split(' ')[0];
       var fm = t.pres && t.onl ? 'Presencial e online' : (t.pres ? 'Presencial' : 'Online');
       var where = (d.serviceArea || []).map(function (w) { return [w.label, w.value]; });
-      if (!where.length) { if (t.pres && t.city) where.push(['Presencial', t.city]); if (t.onl || !t.city) where.push(['Online', 'Todo o Brasil']); where.push(['Idioma', 'Português']); }
+      if (!where.length) { if (t.pres && t.city) where.push(['Presencial', t.city]); if (t.onl) where.push(['Online', 'Informado no perfil']); if (!where.length) where.push(['Local', 'Não informado']); }
       if (d.externalHandle) where.push(['Contato público', 'Instagram ' + d.externalHandle + ' (abre fora da 99Coach)']);
       if (!details[id]) fetchDetail(id);
       if (live[id] || d.imported === false) {
         var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
-        return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || 'Atende online', formats: fm, lang: 'Atende em português',
+        return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
           avail: 'desconhecida', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.credentials && d.credentials.length ? 'inf' : 'nao', avg: '', n: 0, ext: d.externalHandle || '',
           offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };
       }
-      return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Profissional de atividade física') + ' · dados públicos importados', city: t.city || 'Atende online', formats: fm + ' (informação pública)', lang: 'Atende em português',
+      return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Profissional de atividade física') + ' · dados públicos importados', city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm + ' (informação pública)', lang: '',
         avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: d.externalHandle || '',
         pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '',
         offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };
@@ -158,7 +158,7 @@
   }, true);
 
   // conta nova começa vazia: sem os alunos, mensagens, vendas e conteúdos de exemplo
-  var OWN = 'alunos respostas avaliacoes arquivos notas participantes agenda conversas notificacoes t4_propostas t6_envios t6_repasses t6_casos t6_relatorios t7_jobs t7_insights t2_envios t2_respostas t2_notasHist t2_arquivos t1_convites t1_pedidos t1_encerrados t1_resolvidas t1_recibos t8_contatos t8_denuncias t8_bloqueios programas ofertas cupons rotinas'.split(' ');
+  var OWN = 'alunos respostas avaliacoes arquivos notas participantes agenda conversas notificacoes t4_propostas t6_envios t6_repasses t6_casos t6_relatorios t7_jobs t7_insights t2_envios t2_respostas t2_notasHist t2_arquivos t1_convites t1_pedidos t1_encerrados t1_resolvidas t1_recibos t8_contatos t8_denuncias t8_bloqueios programas ofertas cupons rotinas formularios t3_modelos'.split(' ');
   function startAccount() {
     if (!ACCT.area() || !window.DB) return;
     var doneA = false; try { doneA = LS.getItem('c99.contaAlunoIniciada') === '1'; } catch (_) {}
@@ -184,8 +184,11 @@
   // vínculos reais: o treinador vê os alunos conectados na lista (sem dados inventados)
   function mergeLinks(L) {
     if (!window.DB || !Array.isArray(window.DB.alunos)) return;
-    (L || []).filter(function (l) { return l.mine === 'treinador'; }).forEach(function (l) {
-      var id = 'lk_' + l.id; if (window.DB.alunos.some(function (a) { return a.id === id; })) return;
+    var ended = {}; (L || []).forEach(function (l) { if (l.ended) ended['lk_' + l.id] = 1; });
+    window.DB.alunos = window.DB.alunos.filter(function (a) { return !ended[a.id]; });
+    (L || []).filter(function (l) { return l.mine === 'treinador' && !l.ended; }).forEach(function (l) {
+      var id = 'lk_' + l.id, cur = window.DB.alunos.filter(function (a) { return a.id === id; })[0];
+      if (cur) { cur.status = l.status === 'pausado' ? 'pausado' : 'ativo'; return; }
       var since = l.since ? new Date(l.since) : null;
       window.DB.alunos.push({ id: id, server: true, name: l.studentName, first: String(l.studentName).split(' ')[0], status: l.status === 'pausado' ? 'pausado' : 'ativo',
         svc: 'Acompanhamento · ' + (l.origin === 'convite' ? 'por convite' : 'por pedido'), since: since ? ('0' + (since.getMonth() + 1)).slice(-2) + '/' + since.getFullYear() : '',
@@ -293,8 +296,10 @@
     // perfil vem do banco (99coach-v2); a API do site anterior só entra se o banco não responder
     if (!window.CONTA || !window.CONTA.pub) return legacy();
     window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,area,regions,offers(title,price_cents,unit,status,headline,sort)&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
-      var d = r.ok && Array.isArray(r.data) ? r.data.filter(function (x) { return x && x.slug === id; })[0] : null;
-      if (!d) return legacy();
+      if (!r.ok || !Array.isArray(r.data)) return legacy();
+      var d = r.data.filter(function (x) { return x && x.slug === id; })[0] || null;
+      // o banco respondeu e o perfil não está publicado (retirado ou nunca publicado): some daqui e do cache, sem voltar pela API antiga
+      if (!d) { delete details[id]; save('c99.perfis', details); if (byId[id]) { items = items.filter(function (x) { return x.id !== id; }); delete byId[id]; cache = {}; } (window.__RETIRADOS = window.__RETIRADOS || {})[id] = 1; rerender(); return; }
       var offers = (d.offers || []).filter(function (o) { return o.status === 'publicada'; }).sort(function (a, b) { return (b.headline ? 1 : 0) - (a.headline ? 1 : 0) || (a.sort || 0) - (b.sort || 0); })
         .map(function (o) { return { title: o.title, priceCents: o.price_cents, unit: o.unit }; });
       keep({ role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',

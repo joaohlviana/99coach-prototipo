@@ -277,7 +277,7 @@ class Component extends DCLogic {
       mapShown: mapOn, mapOk: mapOn && st.mapCap === 'on', mapFail: mapOn && st.mapCap === 'fail', markers, mapNote, mapTitle: markers.length + ' no mapa', toList: () => set({ view: 'lista' }), retryMap: () => set({ mapCap: 'on', scen: '' }),
       progs, progFail, progsOk: !progFail && progs.length > 0, retryProgs: () => set({ load: 'ok', scen: '' }), pg,
       edTitleA: edA, edTitleB: edB, localTxt, facts, faqs, rel, hasRel: rel.length > 0, ftrLinks,
-      goHome: () => window.NAV.go('home', {}, this), goProgs: () => set({ sheet: 'info', info: 'progs', prog: -1 }),
+      goHome: () => window.NAV.go('home', {}, this), demoProgs: document.documentElement.classList.contains('demo'), goProgs: () => set({ sheet: 'info', info: 'progs', prog: -1 }),
       openMod: () => set({ sheet: 'mod' }), openCity: () => set({ sheet: 'city', loc: '' }), openFilters: () => set({ sheet: 'filters', pend: { fmt: st.fmt, lang: st.lang, avail: st.avail } }), openSaved: () => set({ sheet: 'saved', toast: null }), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), openMenu: () => set({ sheet: 'menu' }),
       closeSheet: () => set({ sheet: '', pend: null }), menuOpen: String(sheet === 'menu'),
       sh_filters: sheet === 'filters', sh_city: sheet === 'city', sh_mod: sheet === 'mod', sh_saved: sheet === 'saved', sh_menu: sheet === 'menu', sh_auth: sheet === 'auth', sh_info: sheet === 'info', sh_prog: sheet === 'prog',

@@ -47,7 +47,7 @@ export default function Shell({ route, children }) {
 
 // cartão de treinador nas listas do servidor: só o que o catálogo afirma (nome, especialidade, cidade, formato)
 export function Cartao({ t }) {
-  const onde = [t.pres ? 'Presencial em ' + t.city : '', t.onl ? 'Online' : ''].filter(Boolean).join(' · ');
+  const onde = [t.pres ? 'Presencial em ' + t.city : '', t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
   return (
     <li className="ssr-card">
       <span className="ssr-av" aria-hidden="true">{t.ini || t.name.slice(0, 1)}</span>
