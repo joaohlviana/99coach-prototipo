@@ -29,14 +29,19 @@ REG.screen({
         Promise.all([
           idl ? C.db('GET', 'messages?select=link_id&side=eq.aluno&read_at=is.null&link_id=in.(' + idl + ')&limit=500') : Promise.resolve({ ok: true, data: [] }),
           idl ? C.db('GET', 'sessions?select=id,link_id,submitted_at:received_at,session_comments(side)&link_id=in.(' + idl + ')&received_at=gte.' + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString()) + '&order=received_at.desc&limit=200') : Promise.resolve({ ok: true, data: [] }),
-          C.myInvites()
-        ]).then(function (x) { ctx.setUi({ wk: { unread: x[0].ok ? x[0].data || [] : null, regs: x[1].ok ? x[1].data || [] : null, inv: x[2].ok ? x[2].data || [] : null } }); });
+          C.myInvites(),
+          idl ? C.db('GET', 'form_sends?select=id,link_id,title,status,sent_at,answered_at&status=in.(enviado,respondido)&link_id=in.(' + idl + ')&order=sent_at.desc&limit=100') : Promise.resolve({ ok: true, data: [] })
+        ]).then(function (x) { ctx.setUi({ wk: { unread: x[0].ok ? x[0].data || [] : null, regs: x[1].ok ? x[1].data || [] : null, inv: x[2].ok ? x[2].data || [] : null, forms: x[3].ok ? x[3].data || [] : null } }); });
       }
       var wk = ui.wk || {}, byL = {}; L.forEach(function (l) { byL[l.id] = l; });
       var un = {}; (wk.unread || []).forEach(function (m) { un[m.link_id] = (un[m.link_id] || 0) + 1; });
       Object.keys(un).forEach(function (k) { if (byL[k]) mine.push({ name: byL[k].studentName, why: U.plural(un[k], 'mensagem não lida', 'mensagens não lidas'), when: 'responda pela conversa', act: 'Abrir conversa', go: function () { GO('TRE25'); } }); });
       var seenReg = {}; (wk.regs || []).forEach(function (r) { if (seenReg[r.link_id] || !byL[r.link_id]) return; seenReg[r.link_id] = 1; if ((r.session_comments || []).some(function (c) { return c.side === 'treinador'; })) return;
         mine.push({ name: byL[r.link_id].studentName, why: 'Registrou um treino em ' + dt(r.submitted_at), when: (r.session_comments || []).length ? 'deixou um retorno para você' : 'ainda sem comentário seu', act: 'Ver registro', go: open(byL[r.link_id]) }); });
+      // formulários: respondido e ainda não revisado é pendência do treinador; enviado sem resposta é do aluno
+      (wk.forms || []).forEach(function (f) { if (!byL[f.link_id]) return;
+        if (f.status === 'respondido') mine.push({ name: byL[f.link_id].studentName, why: 'Respondeu "' + f.title + '" em ' + dt(f.answered_at), when: 'ainda não revisado por você', act: 'Revisar resposta', go: open(byL[f.link_id]) });
+        else theirs.push({ name: byL[f.link_id].studentName, why: 'Formulário "' + f.title + '" aguardando resposta', when: 'enviado em ' + dt(f.sent_at), act: 'Abrir aluno', go: open(byL[f.link_id]) }); });
       var nowT = Date.now(); (wk.inv || []).filter(function (i) { return i.status !== 'aceito' && i.status !== 'revogado' && !i.accepted_at && new Date(i.expires_at).getTime() > nowT; }).slice(0, 5)
         .forEach(function (i) { theirs.push({ name: i.recipient_name || 'Convite', why: 'Convite aguardando aceite', when: 'vale até ' + dt(i.expires_at), act: 'Ver convites', go: function () { GO('REL02'); } }); });
       var paused = L.filter(function (l) { return l.status === 'pausado'; }).length;

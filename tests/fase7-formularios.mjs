@@ -19,7 +19,7 @@ async function mk(who, uid) {
     if (path === 'invites' && rq.method() === 'POST') { const bb = JSON.parse(rq.postData() || '{}'); if (bb.kind === 'individual' && !bb.recipient_email) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'new row for relation "invites" violates check constraint "invites_check"' }) }); }
     if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
     if (path === 'links') return j(200, [L1]);
-    if (path === 'form_sends') return j(200, srv.forms.filter((f) => uid === 'tr' || f.status !== 'cancelado' || true));
+    if (path === 'form_sends') { const m = /status=in\.\(([^)]*)\)/.exec(decodeURIComponent(u.search)); return j(200, srv.forms.filter((f) => !m || m[1].split(',').indexOf(f.status) >= 0)); }
     if (path === 'rpc/send_form') {
       if (uid !== 'tr') return j(403, { message: 'acompanhamento não encontrado' });
       if (srv.idem[body.p_idem]) return j(200, srv.idem[body.p_idem]);
@@ -89,6 +89,9 @@ await click(al, /^Enviar respostas para Marina$/); await al.waitForTimeout(1200)
 console.log('4 respondido:', srv.forms[0].status === 'respondido' && srv.forms[0].answers.q1 === 'Treinei 3 vezes, foi boa.' && !('q2' in srv.forms[0].answers), '| tela:', /Você respondeu em 12\/11 · Marina ainda não marcou como revisado/.test(t), '| rascunho apagado:', await al.evaluate(() => Object.keys(localStorage).filter((k) => /formRasc/.test(k)).length === 0));
 // treinador lê e revisa
 await tr.reload({ waitUntil: 'load' }); await tr.waitForTimeout(1500); await tr.evaluate(() => NAV.go('treinador', { s: 'alunoreal', id: 'lk_L1' }, null)); await tr.waitForTimeout(1500); t = await txt(tr);
+await tr.evaluate(() => NAV.go('treinador', { s: 'hoje' }, null)); await tr.waitForTimeout(1500); t = await txt(tr);
+console.log('  Hoje avisa:', /Respondeu "Check-in semanal" em 12\/11/i.test(t), /Revisar resposta/i.test(t));
+await click(tr, /^Revisar resposta$/); await tr.waitForTimeout(1500); t = await txt(tr);
 console.log('5 treinador vê resposta pendente de revisão:', /Para revisar Respondido em 12\/11 · ainda não revisado por você/i.test(t));
 await click(tr, /^Ver respostas$/); await tr.waitForTimeout(300); t = await txt(tr);
 console.log('  respostas:', /Como foi a sua semana de treino\? Treinei 3 vezes, foi boa\./.test(t), '| pergunta pulada não vira resposta:', /O que foi mais difícil\? Sem resposta/.test(t));
