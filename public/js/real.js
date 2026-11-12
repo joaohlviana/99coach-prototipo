@@ -60,7 +60,7 @@
     esporte: function () {
       if (!items.length) return null;
       return cache.esp || (cache.esp = items.map(function (t, i) {
-        var f = []; if (t.pres && t.city) f.push('Presencial'); if (t.onl || !t.city) f.push('Online');
+        var f = []; if (t.pres && t.city) f.push('Presencial'); if (t.onl) f.push('Online'); /* sem formato informado: não inferimos 'online' */
         return { id: t.id, name: t.name, ph: t.photo, ini: t.ini, spec: t.spec, mods: t.sports.map(function (s) { return LABEL[s]; }), city: t.city, area: '', fmts: f, langs: ['português'], avail: '', ad: '', imported: true, rating: '', reviews: 0,
           pub: t.pub, rank: i + 1, pos: [12 + (i * 37) % 76, 14 + (i * 53) % 70], trust: [['Perfil importado · não confirmado pelo profissional', 'imp']] };
       }));

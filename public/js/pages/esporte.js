@@ -50,7 +50,11 @@ class Component extends DCLogic {
     };
     const countFor = (o) => { const s2 = Object.assign({}, st, o); let k = 0; for (let i = 0; i < T.length; i++) if (match(T[i], s2)) k++; return k; };
     const pl = (k, a, b) => k + ' ' + (k === 1 ? a : b);
-    let res = T.filter((t) => match(t, st));
+    // "Não tenho interesse": some das buscas neste aparelho (não é denúncia e não avisa o profissional); dá para desfazer
+    const HID = (() => { try { return JSON.parse(localStorage.getItem('c99.ocultos') || '{}'); } catch (_) { return {}; } })();
+    const saveHid = (h) => { try { localStorage.setItem('c99.ocultos', JSON.stringify(h)); } catch (_) {} };
+    const hidN = Object.keys(HID).length;
+    let res = T.filter((t) => match(t, st) && !HID[t.id]);
     res = res.slice().sort((a, b) => st.sort === 'rec' ? (a.pub < b.pub ? 1 : -1) : a.rank - b.rank);
     const n = res.length;
     const pagesN = Math.max(1, Math.ceil(n / PER));
@@ -111,11 +115,11 @@ class Component extends DCLogic {
       const p = has(t.fmts, 'Presencial'), o = has(t.fmts, 'Online');
       if (online) return 'Online';
       if (st.fmt === 'Presencial') return o ? 'Presencial · também online' : 'Presencial';
-      return p && o ? 'Presencial e online' : (p ? 'Presencial' : 'Online');
+      return p && o ? 'Presencial e online' : (p ? 'Presencial' : (o ? 'Online' : 'Formato não informado'));
     };
     const placeOf = (t) => {
       const p = has(t.fmts, 'Presencial');
-      if (online || !p) return 'base em ' + t.city;
+      if (online || !p) return t.city ? 'base em ' + t.city : 'local não informado';
       return t.city + (t.area ? ' · ' + t.area : '');
     };
     const offerOf = (t) => {
@@ -130,9 +134,17 @@ class Component extends DCLogic {
     const mapOn = st.view === 'mapa' && mapToggle;
     const mapIds = mapOn ? shown.filter((t) => t.pos && has(t.fmts, 'Presencial') && t.city === st.city) : [];
     const mkNum = {}; mapIds.forEach((t, i) => { mkNum[t.id] = String(i + 1); });
+    // motivo do cartão: um dos seis permitidos pelo plano, e só quando o fato existe no dado usado na seleção
+    const whyOf = (t, saved) => {
+      const recent = t.pub && (Date.now() - new Date(t.pub).getTime()) < 30 * 864e5;
+      return saved ? 'Você salvou' : (online && has(t.fmts, 'Online') ? 'Atende online' : (st.city && has(t.fmts, 'Presencial') && t.city === st.city ? 'Atende em ' + cityShort(st.city) : ((t.mods || []).indexOf(st.mod) >= 0 ? 'Atende ' + st.mod : (recent ? 'Publicado recentemente' : ''))));
+    };
+    const hideOf = (t) => () => { const h = Object.assign({}, HID); h[t.id] = 1; saveHid(h); set({ hidUndo: { id: t.id, name: t.name } }); };
     const cards = shown.map((t) => {
       const of = offerOf(t), on = !!favs[t.id], isBack = st.back === t.id, isSel = mapOn && st.sel === t.id;
+      const reason = whyOf(t, on);
       return {
+        reason: reason, hasReason: !!reason, hide: hideOf(t), hideLabel: 'Não tenho interesse em ' + t.name,
         name: t.name, spec: t.spec, ini: t.ini || '', photo: t.ph ? B(t.ph) : '', hasPhoto: !!t.ph, noPhoto: !t.ph,
         fmtTxt: fmtTxtOf(t), place: placeOf(t), hasLang: t.langs.length > 1, langTxt: 'Atende em ' + t.langs.join(' e '),
         availYes: t.avail === 'sim', availNo: t.avail === 'nao', availDate: t.ad, imported: !!t.imported,
@@ -270,6 +282,9 @@ class Component extends DCLogic {
       fmtSeg, sortSeg, viewSeg, mapToggle, sortInfo: st.sortInfo, toggleSortInfo: () => set({ sortInfo: !st.sortInfo }),
       applied, hasApplied: applied.length > 0, hasExtra: applied.length > 0, extraCount, clearExtra,
       countMain, countSub, removedNote: st.removed, dismissRemoved: () => set({ removed: false, back: '' }), noCityNote: !st.city && !online && !loading,
+      hasHidUndo: !!st.hidUndo, hidUndoTxt: st.hidUndo ? st.hidUndo.name + ' não aparece mais nas suas buscas neste aparelho.' : '',
+      undoHide: () => { if (!st.hidUndo) return; const h = Object.assign({}, HID); delete h[st.hidUndo.id]; saveHid(h); set({ hidUndo: null }); }, closeHidUndo: () => set({ hidUndo: null }),
+      hasHidden: hidN > 0 && !st.hidUndo, hiddenTxt: hidN === 1 ? '1 perfil oculto por você' : hidN + ' perfis ocultos por você', showHidden: () => { saveHid({}); set({ hidUndo: null }); },
       updating, loading, showEmpty, showList, skels: [1, 2, 3, 4, 5, 6], alts, cards,
       layCls: 'e-lay' + (mapOn ? ' is-map' : '') + (updating ? ' is-dim' : ''),
       pages, pagStatus, prevPage: () => page > 1 && set({ page: page - 1, more: 0, back: '' }), nextPage: () => page < pagesN && set({ page: page + 1, more: 0, back: '' }), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
@@ -329,6 +344,7 @@ class Component extends DCLogic {
       if (t.imported) m2.push('Não confirmado pelo profissional');
       if (t.langs.length > 1) m2.push('Atende em ' + t.langs.join(' e '));
       return { name: t.name, spec: t.spec, ini: t.ini || '', photo: t.ph ? B(t.ph) : '', hasPhoto: !!t.ph, noPhoto: !t.ph, verified: isVer(t),
+        reason: whyOf(t, on), hasReason: !!whyOf(t, on), hide: hideOf(t), hideLabel: 'Não tenho interesse em ' + t.name,
         fmtTxt: fmtTxtOf(t), place: placeOf(t), meta2: m2.join(' · '), hasMeta2: m2.length > 0,
         rated: !!t.rating, unrated: !t.rating, rating: t.rating, reviews: String(t.reviews),
         hasOffer: !!of, noOffer: !of, offerName: of ? of[0] : '', price: of ? of[1] : '', unit: of ? of[2] : '',

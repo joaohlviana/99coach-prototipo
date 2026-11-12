@@ -107,6 +107,8 @@
           <div class="vfe-alts"><sc-for list="{{alts4}}" as="a" hint-placeholder-count="3"><button type="button" class="lrow v4-lrow" onClick="{{a.pick}}"><span class="lrow__ic"><i class="{{a.icon}}"></i></span><span class="lrow__t"><b>{{a.label}}</b><span>{{a.sub}}</span></span><i class="ic ic--sm i-chev-r"></i></button></sc-for></div>
           <span>Profissionais de outras cidades ou só online não entram nesta lista como se atendessem presencialmente aqui.</span>
         </section></sc-if>
+        <sc-if value="{{hasHidUndo}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-eye" aria-hidden="true"></i><div>{{hidUndoTxt}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{undoHide}}">Desfazer</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{closeHidUndo}}">Fechar</button></div></sc-if>
+        <sc-if value="{{hasHidden}}" hint-placeholder-val="{{ false }}"><p class="vf-meta">{{hiddenTxt}}. <button type="button" class="onb-link" onClick="{{showHidden}}">Mostrar de novo</button></p></sc-if>
         <sc-if value="{{showList}}" hint-placeholder-val="{{ true }}">
           <ul class="vfe-grid" aria-label="Treinadores">
             <sc-for list="{{cards4}}" as="t" hint-placeholder-count="8">
@@ -136,6 +138,8 @@
                 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.bodyBadgeCls}}"><sc-if value="{{t.badgeDot}}" hint-placeholder-val="{{ true }}"><span class="dot"></span></sc-if>{{t.badge}}</span></sc-if>
                 <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{t.rated}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.reviews}} avaliações"><i class="ic ic--xs i-star"></i>{{t.rating}}<small>({{t.reviews}})</small></span></sc-if></div>
                 <span class="vf-meta">{{t.fmtTxt}} · {{t.place}}</span>
+                <sc-if value="{{t.hasReason}}" hint-placeholder-val="{{ true }}"><span class="vf-meta vf-why"><i class="ic ic--xs i-check" aria-hidden="true"></i> {{t.reason}}</span></sc-if>
+                <button type="button" class="vf-meta vf-hide" onClick="{{t.hide}}" aria-label="{{t.hideLabel}}">Não tenho interesse</button>
                 <sc-if value="{{t.hasMeta2}}" hint-placeholder-val="{{ true }}"><span class="vf-meta">{{t.meta2}}</span></sc-if>
                 <sc-if value="{{t.unrated}}" hint-placeholder-val="{{ false }}"><span class="vf-meta">Ainda sem avaliações</span></sc-if>
                 <div class="vf-tc__f">

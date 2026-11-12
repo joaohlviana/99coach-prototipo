@@ -1358,3 +1358,7 @@ html,body{margin:0;background:var(--concrete)}
 .vfe-st--art>img{inset:auto;right:-8%;top:-6%;width:auto;height:78%;aspect-ratio:1;object-fit:contain;filter:brightness(0) invert(1);opacity:.2}
 .vfe-st--art::before{display:none}
 @media (max-width:599px){.vfe-hero--art{background:none}.vfe-hero--art .vfe-hero__img{display:none}.vfe-hero--art::after{display:none}}
+
+/* motivo do cartão e "não tenho interesse" */
+.vf-why { color: var(--ok, #0a7a3f); }
+.vf-hide { background: none; border: 0; padding: 4px 0; text-align: left; text-decoration: underline; cursor: pointer; min-height: 24px; }
