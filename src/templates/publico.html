@@ -424,6 +424,44 @@
 
       <!-- PUB07 · Favoritos -->
       <!-- PUB17 · Pedir acompanhamento -->
+      <!-- ADMR · Administração real: verificação em duas etapas e filas do banco -->
+      <sc-if value="{{is.admin}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Equipe 99coach</span><h1 class="pghead__title">Administração</h1><p class="pghead__sub">Pedidos de correção e retirada, reivindicações de perfil e conferências de CREF. Cada decisão fica registrada com quem decidiu.</p></div></div>
+        <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.login}}">Entrar</button></div></sc-if>
+        <sc-if value="{{v.checking}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Conferindo acesso…</p></sc-if>
+        <sc-if value="{{v.denied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-lock" aria-hidden="true"></i><div><b>Sem acesso</b>Esta conta não faz parte da equipe de administração.</div></div><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Ir para a página inicial</button></div></sc-if>
+        <sc-if value="{{v.needMfa}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="ad-mfa"><h2 class="onb-h2" id="ad-mfa">Verificação em duas etapas</h2>
+          <p class="mod-small mod-muted">Para decidir pedidos, a equipe entra também com o código de um app autenticador (Google Authenticator, Authy, 1Password…).</p>
+          <sc-if value="{{v.noFactor}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.enroll}}">{{v.enrollLabel}}</button></div></sc-if>
+          <sc-if value="{{v.pending}}" hint-placeholder-val="{{ false }}"><p>Escaneie com o app autenticador, ou digite a chave.</p><img src="{{v.qr}}" alt="Código QR para o app autenticador" width="180" height="180"><p class="mod-small">Chave: <code>{{v.secret}}</code></p></sc-if>
+          <sc-if value="{{v.hasFactor}}" hint-placeholder-val="{{ false }}"><p class="mod-small">Abra o app autenticador e digite o código de 6 números da 99coach.</p></sc-if>
+          <div class="field" style="max-width: 220px"><label class="field__label" for="ad-code">Código</label><div class="input"><input id="ad-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{v.code}}" onInput="{{v.setCode}}"></div></div>
+          <sc-if value="{{v.hasMErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.mErr}}</span></sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.verify}}">{{v.verifyLabel}}</button></div>
+        </section></sc-if>
+        <sc-if value="{{v.ready}}" hint-placeholder-val="{{ false }}">
+          <div class="onb-actions onb-actions--row"><span class="mod-small mod-muted">Atualizado às {{v.at}}</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Atualizar</button></div>
+          <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando filas…</p></sc-if>
+          <sc-if value="{{v.hasQErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.qErr}}</div></div></sc-if>
+          <sc-if value="{{v.hasDErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.dErr}}</div></div></sc-if>
+          <sc-if value="{{v.emptyAll}}" hint-placeholder-val="{{ false }}"><p class="mod-small">Nenhum pedido esperando decisão.</p></sc-if>
+          <section class="card onb-sec" aria-labelledby="ad-rem"><h2 class="onb-h2" id="ad-rem">Correção e retirada ({{v.nRem}})</h2>
+            <ol class="onb-secs"><sc-for list="{{v.rem}}" as="r" hint-placeholder-count="2"><li><div class="card onb-sec"><b>{{r.title}}</b><p class="mod-small mod-muted">{{r.meta}}</p><p>{{r.reason}}</p>
+              <div class="field"><label class="field__label" for="{{r.idN}}">Explicação para a pessoa (obrigatória para concluir, recusar ou pedir complemento)</label><div class="input"><textarea id="{{r.idN}}" rows="2" maxlength="1000" onInput="{{r.setNote}}">{{r.note}}</textarea></div></div>
+              <div class="onb-actions onb-actions--row" style="flex-wrap: wrap"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.open}}">Ver perfil</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.analyze}}">Em análise</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.more}}">Pedir complemento</button>
+                <sc-if value="{{r.isRetire}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{r.retire}}">Retirar perfil</button></sc-if><sc-if value="{{r.isFix}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{r.fixed}}">Dados corrigidos</button></sc-if>
+                <button type="button" class="btn btn--outline btn--sm" onClick="{{r.refuse}}">Recusar</button></div></div></li></sc-for></ol></section>
+          <section class="card onb-sec" aria-labelledby="ad-cl"><h2 class="onb-h2" id="ad-cl">Reivindicações de perfil ({{v.nClaim}})</h2>
+            <ol class="onb-secs"><sc-for list="{{v.claims}}" as="r" hint-placeholder-count="1"><li><div class="card onb-sec"><b>{{r.title}}</b><p class="mod-small mod-muted">{{r.meta}}</p><p><b>Provas:</b> {{r.proof}}</p>
+              <div class="field"><label class="field__label" for="{{r.idN}}">Observação (obrigatória para recusar)</label><div class="input"><textarea id="{{r.idN}}" rows="2" maxlength="500" onInput="{{r.setNote}}">{{r.note}}</textarea></div></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.open}}">Ver perfil</button><button type="button" class="btn btn--primary btn--sm" onClick="{{r.approve}}">Aprovar</button><button type="button" class="btn btn--outline btn--sm" onClick="{{r.refuse}}">Recusar</button></div></div></li></sc-for></ol></section>
+          <section class="card onb-sec" aria-labelledby="ad-cr"><h2 class="onb-h2" id="ad-cr">Conferência de CREF ({{v.nCref}})</h2>
+            <ol class="onb-secs"><sc-for list="{{v.crefs}}" as="r" hint-placeholder-count="1"><li><div class="card onb-sec"><b>{{r.title}}</b><p class="mod-small mod-muted">{{r.meta}}</p><p>{{r.ev}}</p>
+              <div class="field"><label class="field__label" for="{{r.idN}}">Observação (obrigatória se não conferir)</label><div class="input"><textarea id="{{r.idN}}" rows="2" maxlength="500" onInput="{{r.setNote}}">{{r.note}}</textarea></div></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--sm" onClick="{{r.ok}}">Conferido no conselho</button><button type="button" class="btn btn--outline btn--sm" onClick="{{r.bad}}">Não conferiu</button></div></div></li></sc-for></ol></section>
+        </sc-if>
+      </sc-if>
+
       <!-- PUB12R · Corrigir, retirar ou reivindicar um perfil (banco real) -->
       <sc-if value="{{is.perfilpedido}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Perfil público</span><h1 class="pghead__title">{{v.name}}</h1><p class="pghead__sub">Pedir correção, retirada ou assumir este perfil.</p></div></div>
@@ -466,7 +504,8 @@
           </section>
           <section class="card onb-sec" aria-labelledby="md-loc"><h2 class="onb-h2" id="md-loc">Neste aparelho</h2>
             <p class="mod-small mod-muted">{{v.localTxt}}</p>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button></div>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.others}}">{{v.othersLabel}}</button></div>
+            <sc-if value="{{v.hasOthersMsg}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status">{{v.othersMsg}}</p></sc-if>
           </section>
           <section class="card onb-sec" aria-labelledby="md-del"><h2 class="onb-h2" id="md-del">Excluir a conta</h2>
             <p class="mod-small mod-muted">{{v.delTxt}}</p>

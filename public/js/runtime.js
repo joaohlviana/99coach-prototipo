@@ -254,7 +254,7 @@
     if (name === 'operacao' || name === 'telas' || name === 'servico') return ['home', {}];
     if (name === 'treinador' && area !== 'treinador') return area === 'aluno' ? ['aluno', {}] : ['onboarding', { flow: 'entrar' }];
     if (name === 'aluno' && !area) return ['onboarding', { flow: 'entrar' }];
-    if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir', 'perfilpedido'].indexOf(params.s || '') < 0) return ['home', {}];
+    if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir', 'perfilpedido', 'admin'].indexOf(params.s || '') < 0) return ['home', {}];
     if (name === 'perfil' && area !== 'treinador' && !(window.REAL && window.REAL.has(params.id))) return ['home', {}];
     return [name, params];
   }

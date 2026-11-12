@@ -64,6 +64,8 @@ REG.screen({
       isTrainer: area === 'treinador', unpub: unpub, unpubLabel: ui.busy2 ? 'Retirando…' : 'Retirar meu perfil da busca', unpubMsg: ui.unpub || '', hasUnpub: !!ui.unpub,
       localTxt: U.plural(local, 'item guardado', 'itens guardados') + ' neste aparelho (rascunhos, favoritos, última busca, sessão). Sair apaga todos.',
       signOut: function () { GO('@sair'); },
+      others: function () { if (ui.obusy) return; ctx.setUi({ obusy: true }); C.signOutOthers().then(function (r) { ctx.setUi({ obusy: false, othersMsg: r.ok ? 'Pronto: a conta saiu de todos os outros aparelhos às ' + U.now() + '. Este continua conectado.' : 'Não foi possível agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); }); },
+      othersLabel: ui.obusy ? 'Saindo…' : 'Sair dos outros aparelhos', othersMsg: ui.othersMsg || '', hasOthersMsg: !!ui.othersMsg,
       delNone: !del, delAsked: !!del && del.status === 'pedido', delRunning: !!del && del.status === 'em_processamento',
       delTxt: !del ? 'Excluir apaga sua conta e seus dados pessoais. Baixe seus dados antes. Primeiro você pede; nada é apagado até você confirmar.' : (del.status === 'em_processamento' ? 'Exclusão em andamento: acompanhamentos encerrados, perfil fora da busca e entrada bloqueada. Conclua para apagar os dados pessoais.' : 'Você pediu a exclusão. Confirme para começar ou desista.'),
       delAsk: function () { rpc('request_account_deletion'); }, delCancel: function () { rpc('cancel_account_deletion'); },

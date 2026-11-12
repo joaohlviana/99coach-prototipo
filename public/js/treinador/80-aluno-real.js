@@ -77,6 +77,13 @@ REG.screen({
       };
       return { when: d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—', sets: U.plural(sets.length, 'série', 'séries'), vol: vol ? Math.round(vol).toLocaleString('pt-BR') + ' kg' : '—',
         cms: cm.map(function (c) { return { who: c.side === 'treinador' ? 'Você' : String(L.studentName).split(' ')[0], body: c.body }; }), hasCms: cm.length > 0,
+        canAdj: !!L.workout && L.status === 'ativo', adjust: function () {
+          // parte da prescrição atual; mostra ao lado o que o aluno fez neste registro
+          var done = {}; sets.forEach(function (x) { var k = x.exercise_id || x.exercise_name; var b = done[k]; if (!b || (Number(x.load_kg) || 0) > (Number(b.load_kg) || 0)) done[k] = x; });
+          var rows = []; (L.workout.sessions || []).forEach(function (ss, si) { (ss.items || []).forEach(function (it, ii) { var d0 = done[it.exerciseId] || done[it.name];
+            rows.push({ si: si, ii: ii, sess: ss.title, name: it.name, sets: String(it.sets), reps: String(it.reps), load: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), did: d0 ? d0.reps + ' rep' + (d0.load_kg != null ? ' × ' + String(d0.load_kg).replace('.', ',') + ' kg' : '') : 'não registrado' }); }); });
+          ctx.setUi({ adj: s.id, adjWhen: d, adjRows: rows, adjNote: '', adjErr: '' });
+        },
         open: open, toggle: function () { ctx.setUi({ cmOpen: open ? '' : s.id, cmDraft: '', cmErr: '' }); }, toggleLabel: open ? 'Cancelar' : 'Comentar',
         idIn: 'cm-' + s.id, draft: open ? (ui.cmDraft || '') : '', setDraft: function (e) { ctx.setUi({ cmDraft: U.val(e), cmErr: '' }); }, post: post, postLabel: ui.cmBusy ? 'Enviando…' : 'Enviar comentário', err: open ? (ui.cmErr || '') : '', hasErr: open && !!ui.cmErr };
     });
@@ -106,6 +113,27 @@ REG.screen({
       add: function () { ctx.setUi({ rows: rows.concat([{ id: '', name: '', sets: '3', reps: '10', load: '', rest: '60' }]) }); },
       catalog: cat.slice(0, 200), assign: assign, assignLabel: ui.busy ? 'Atribuindo…' : (rot ? 'Atribuir esta rotina' : (L.workout ? 'Atribuir nova versão' : 'Atribuir treino')),
       err: ui.err || '', hasErr: !!ui.err,
+      adjOpen: !!ui.adj, adjTitle: ui.adj ? 'Ajustar o treino a partir do registro de ' + new Date(ui.adjWhen).toLocaleDateString('pt-BR') : '',
+      adjRows: (ui.adjRows || []).map(function (r, i) {
+        var upd = function (k) { return function (e) { var rs = ui.adjRows.slice(); rs[i] = Object.assign({}, rs[i]); rs[i][k] = U.val(e); ctx.setUi({ adjRows: rs, adjErr: '' }); }; };
+        return { sess: r.sess, name: r.name, did: r.did, sets: r.sets, reps: r.reps, load: r.load, idS: 'adj-s' + i, idR: 'adj-r' + i, idL: 'adj-l' + i, setSets: upd('sets'), setReps: upd('reps'), setLoad: upd('load') };
+      }),
+      adjNote: ui.adjNote || '', setAdjNote: function (e) { ctx.setUi({ adjNote: U.val(e), adjErr: '' }); }, adjErr: ui.adjErr || '', hasAdjErr: !!ui.adjErr,
+      adjCancel: function () { ctx.setUi({ adj: null }); }, adjLabel: ui.adjBusy ? 'Salvando…' : 'Salvar nova versão do treino',
+      adjSave: function () {
+        var note = String(ui.adjNote || '').trim();
+        if (note.length < 3) return ctx.setUi({ adjErr: 'Escreva o motivo do ajuste: o aluno vê esse texto na nova versão.' });
+        var bad = (ui.adjRows || []).filter(function (r) { var n = parseInt(r.sets, 10); return !(n >= 1 && n <= 20) || !String(r.reps).trim() || (String(r.load).trim() && isNaN(parseFloat(String(r.load).replace(',', '.')))); })[0];
+        if (bad) return ctx.setUi({ adjErr: 'Confira ' + bad.name + ': séries de 1 a 20, repetições preenchidas e carga em número.' });
+        var ss = JSON.parse(JSON.stringify(L.workout.sessions || []));
+        (ui.adjRows || []).forEach(function (r) { var it = ss[r.si].items[r.ii]; it.sets = parseInt(r.sets, 10); it.reps = String(r.reps).trim(); it.loadKg = String(r.load).trim() ? Math.round(parseFloat(String(r.load).replace(',', '.')) * 100) / 100 : null; });
+        if (ui.adjBusy) return; ctx.setUi({ adjBusy: true, adjErr: '' });
+        C.rpc('adjust_workout_from_session', { p_session: ui.adj, p_sessions: ss, p_note: note, p_idem: 'adj:' + ui.adj + ':' + (L.workout.version || 0) }).then(function (r) {
+          if (!r.ok) return ctx.setUi({ adjBusy: false, adjErr: /motivo_obrigatorio/.test(r.msg || '') ? 'Escreva o motivo do ajuste.' : 'Não salvo: ' + (r.msg || r.status || 'sem conexão') + '. Nada mudou no treino.' });
+          var v = (r.data && (r.data.version || (r.data[0] && r.data[0].version))) || '';
+          ctx.setUi({ adjBusy: false, adj: null }); refresh('Treino ajustado' + (v ? ': versão ' + v : '') + '. ' + String(L.studentName).split(' ')[0] + ' vê a nova versão e o motivo.');
+        });
+      },
       hasLogs: logs.length > 0, noLogs: !logs.length && !ui.sessErr, logs: logs, sessErr: !!ui.sessErr, logsCount: U.plural(logs.length, 'sessão registrada', 'sessões registradas'),
       back: function () { ctx.go('H04'); }
     };

@@ -37,6 +37,13 @@
     };
     return go().then(function (r) { return r.status === 401 ? refresh().then(function (ok) { return ok ? go() : r; }) : r; });
   }
+  // chamada ao serviço de contas com o token da sessão
+  function auth(method, path, body) {
+    var h = { apikey: KEY, 'Content-Type': 'application/json' }; if (sess && sess.access_token) h.Authorization = 'Bearer ' + sess.access_token;
+    return fetch(URL0 + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
+      return r.text().then(function (t) { var d = null; try { d = t ? JSON.parse(t) : null; } catch (_) {} return { ok: r.ok, status: r.status, data: d, msg: d && (d.msg || d.message || d.error_description || d.error) || '' }; });
+    }, function () { return { ok: false, offline: true, msg: 'Sem conexão com o servidor.' }; });
+  }
   function hash(t) { var h = 0x811c9dc5; t = String(t); for (var i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 0x1000193); return (h >>> 0).toString(36); }
   function slugify(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   var SPORT = { jiujitsu: 'jiu-jitsu', beach: 'beach-tennis' };
@@ -235,6 +242,22 @@
     pub: function (path) { return call('GET', '/rest/v1/' + path); },
     db: function (method, path, body, prefer) { return db(method, path, body, prefer); },
     rpc: function (fn, args) { return db('POST', 'rpc/' + fn, args || {}); },
+    // verificação em duas etapas (app autenticador, TOTP) — exigida pelo banco para a administração (aal2)
+    aal: function () { try { return JSON.parse(atob(String(sess.access_token).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal || 'aal1'; } catch (_) { return 'aal1'; } },
+    mfaFactors: function () { return auth('GET', '/auth/v1/user').then(function (r) { return r.ok ? ((r.data && r.data.factors) || []).filter(function (f) { return f.factor_type === 'totp'; }) : null; }); },
+    mfaEnroll: function () { return auth('POST', '/auth/v1/factors', { factor_type: 'totp', friendly_name: '99coach ' + new Date().toISOString().slice(0, 10) }); },
+    mfaUnenroll: function (id) { return auth('DELETE', '/auth/v1/factors/' + id); },
+    mfaVerify: function (id, code) {
+      return auth('POST', '/auth/v1/factors/' + id + '/challenge', {}).then(function (c) {
+        if (!c.ok || !c.data || !c.data.id) return c;
+        return auth('POST', '/auth/v1/factors/' + id + '/verify', { challenge_id: c.data.id, code: code }).then(function (v) {
+          if (v.ok && v.data && v.data.access_token) keep({ access_token: v.data.access_token, refresh_token: v.data.refresh_token, user: v.data.user || sess.user });
+          return v;
+        });
+      });
+    },
+    // encerrar a sessão nos outros aparelhos (esta continua)
+    signOutOthers: function () { return auth('POST', '/auth/v1/logout?scope=others'); },
     // login com Google: vai ao servidor de contas e volta para esta página já autenticado
     oauth: function (provider, o) {
       try { LS.setItem('c99.oauth', JSON.stringify(o || {})); } catch (_) {}

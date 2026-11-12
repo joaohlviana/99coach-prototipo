@@ -21,6 +21,7 @@ async function mk(uid) {
     if (path === 'profiles') return j(200, /id=in/.test(u.search) ? [{ id: 'al', display_name: 'Caio Prado' }] : [{ id: uid, roles: [uid === 'tr' ? 'treinador' : 'aluno'] }]);
     if (path === 'sessions') return j(200, srv.sessions);
     if (path === 'rpc/comment_session') { srv.sessions.find((s) => s.id === body.p_session).session_comments.push({ id: 'C1', side: 'treinador', body: body.p_body, created_at: '2026-11-06T10:00:00Z' }); return j(200, { id: 'C1' }); }
+    if (path === 'rpc/adjust_workout_from_session') { srv.adj = body; return j(200, { version: 2, basedOn: body.p_session }); }
     if (path === 'conversation_blocks') return j(200, srv.blocks.map((x) => ({ blocker: x })));
     if (path === 'rpc/block_conversation') { srv.blocks = body.p_block ? [uid] : []; return j(200, { blocked: !!body.p_block }); }
     if (path === 'rpc/report_conversation') { srv.report = body; return j(200, { report: 'R1', status: 'aberta' }); }
@@ -50,6 +51,15 @@ await tr.fill('#cm-S0', 'Boa! Na próxima, sobe 2,5 kg no agachamento.');
 await click(tr, /Enviar comentário/); await tr.waitForTimeout(800);
 let t = await txt(tr);
 console.log('  enviado e aparece:', srv.calls.includes('tr:comment_session'), /Você: Boa! Na próxima/.test(t));
+// 1b. ajustar o treino a partir do registro
+await click(tr, /^Ajustar treino$/); await tr.waitForTimeout(300);
+t = await txt(tr);
+console.log('1b ajuste mostra prescrição e o que fez:', /Agachamento · Treino A · fez: 8 rep × 40 kg/.test(t));
+await click(tr, /Salvar nova versão/); t = await txt(tr);
+console.log('  exige motivo:', /Escreva o motivo do ajuste/.test(t), !srv.adj);
+await tr.fill('#adj-l0', '42,5'); await tr.fill('#adj-note', 'Subiu bem: +2,5 kg.');
+await click(tr, /Salvar nova versão/); await tr.waitForTimeout(800);
+console.log('  nova versão enviada:', !!srv.adj && srv.adj.p_session === 'S0' && srv.adj.p_sessions[0].items[0].loadKg === 42.5 && srv.adj.p_note === 'Subiu bem: +2,5 kg.');
 // 2. bloquear e denunciar
 await click(tr, /^Bloquear$/); await clickD(tr, /^Bloquear$/); await tr.waitForTimeout(800);
 t = await txt(tr);
