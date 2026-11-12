@@ -2547,3 +2547,7 @@ button.lrow{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer
 }
 
 [data-t=table]{display:table;width:100%;border-collapse:collapse}[data-t=thead]{display:table-header-group}[data-t=tbody]{display:table-row-group}[data-t=tfoot]{display:table-footer-group}[data-t=tr]{display:table-row}[data-t=td],[data-t=th]{display:table-cell}[data-t=th]{font-weight:700;text-align:left}
+
+/* caixa de conversas: lista ao lado no computador, em cima no celular */
+@media (max-width: 760px) { .tm-inbox { grid-template-columns: 1fr !important; } }
+.tm-inbox .onb-secs__r.is-on { background: var(--surface-2, rgba(0,0,0,.04)); border-radius: 12px; }

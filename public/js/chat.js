@@ -6,6 +6,8 @@
     var load = function () { C.messages(linkId).then(function (r) { ctx.setUi({ msgs: r.ok && Array.isArray(r.data) ? r.data : (ui.msgs || []), msgErr: !r.ok }); if (r.ok) C.markRead(linkId); }); };
     var loadBlocks = function () { C.db('GET', 'conversation_blocks?select=blocker&link_id=eq.' + encodeURIComponent(linkId) + '&lifted_at=is.null').then(function (r) { if (r.ok) ctx.setUi({ blk: (r.data || []).map(function (b) { return b.blocker; }) }); }); };
     if (C && linkId && !ui.msgAsked) { ctx.setUi({ msgAsked: true }); load(); loadBlocks(); }
+    // a conversa se atualiza sozinha enquanto está aberta (a cada 10 s), sem perder o que está sendo digitado
+    clearTimeout(window['__chatT' + linkId]); window['__chatT' + linkId] = setTimeout(function () { if (document.getElementById('tr-chat-in') || document.getElementById('tm-chat-in') || document.getElementById('al-chat-in')) load(); }, 10000);
     // bloquear e denunciar (plano: segurança da conversa). Bloqueio impede novas mensagens dos dois lados; denúncia vai para a equipe.
     var me = (C && C.user() || {}).id, blk = ui.blk || [], byMe = blk.indexOf(me) >= 0, blocked = blk.length > 0;
     var toggleBlock = function () {
@@ -24,21 +26,21 @@
       });
     };
     var send = function () {
-      var body = String(ui.msgDraft || '').trim();
+      var body = String(ui.msgDraft != null ? ui.msgDraft : ((window.__chatDrafts || {})[linkId] || '')).trim();
       if (!body || ui.msgSending) return;
       if (body.length > 2000) return ctx.setUi({ msgSendErr: 'A mensagem passou de 2.000 caracteres.' });
       ctx.setUi({ msgSending: true, msgSendErr: '' });
       C.sendMessage(linkId, body).then(function (r) {
         if (!r.ok) return ctx.setUi({ msgSending: false, msgSendErr: r.offline ? 'Sem conexão: a mensagem não foi enviada. Ela continua no campo.' : (/bloquead/i.test(r.msg || '') ? 'Conversa bloqueada: a mensagem não foi enviada.' : 'Não enviada: ' + (r.msg || ('erro ' + r.status))) });
-        ctx.setUi({ msgSending: false, msgDraft: '' }); load();
+        if (window.__chatDrafts) delete window.__chatDrafts[linkId]; ctx.setUi({ msgSending: false, msgDraft: '' }); load();
       });
     };
     var msgs = ui.msgs || [];
     var fmt = function (d) { return d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''; };
     return {
-      list: msgs.map(function (m) { var me = m.side === side; return { body: m.body, cls: 'rx-msg' + (me ? ' is-me' : ''), who: me ? 'Você' : (otherName || 'Contato'), when: fmt(m.created_at), state: me ? (m.read_at ? 'Lida' : 'Entregue') : '' }; }),
+      list: msgs.map(function (m) { var me = m.side === side; return { body: m.body, cls: 'rx-msg' + (me ? ' is-me' : ''), who: me ? 'Você' : (otherName || 'Contato'), when: fmt(m.created_at), state: me ? (m.read_at ? 'Lida' : 'Enviada') : '' }; }),
       hasMsgs: msgs.length > 0, noMsgs: !msgs.length && !ui.msgErr, msgErr: !!ui.msgErr,
-      draft: ui.msgDraft || '', setDraft: function (e) { ctx.setUi({ msgDraft: U.val(e), msgSendErr: '' }); },
+      draft: ui.msgDraft != null ? ui.msgDraft : ((window.__chatDrafts || {})[linkId] || ''), setDraft: function (e) { var v = U.val(e); (window.__chatDrafts = window.__chatDrafts || {})[linkId] = v; ctx.setUi({ msgDraft: v, msgSendErr: '' }); },
       send: send, sendLabel: ui.msgSending ? 'Enviando…' : 'Enviar', sendErr: ui.msgSendErr || '', hasSendErr: !!ui.msgSendErr,
       reload: function () { ctx.setUi({ msgAsked: false }); },
       blocked: blocked, notBlocked: !blocked, blockTxt: byMe ? 'Você bloqueou esta conversa. Ninguém consegue mandar mensagens.' : 'Esta conversa foi bloqueada. Não dá para mandar mensagens.',

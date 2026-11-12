@@ -144,7 +144,7 @@
       tabOf: { exercicios: 'rotinas', formularios: 'rotinas', agenda: 'conta', programas: 'conta', ofertas: 'conta', recebimentos: 'conta', insights: 'conta', ia: 'conta' },
       // produto: só destinos com dados reais
       sideReal: [
-        { sec: 'Trabalho', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Agenda', 'calendar', 'TRE20', 'agenda']] },
+        { sec: 'Trabalho', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Agenda', 'calendar', 'TRE20', 'agenda'], ['Mensagens', 'message', 'TRE25', 'mensagens', 'mensagens']] },
         { sec: 'Conteúdo', items: [['Rotinas', 'clipboard', 'H06', 'rotinas'], ['Exercícios', 'dumbbell', 'TRE10', 'exercicios']] },
         { sec: 'Negócio', items: [['Insights', 'chart', 'H08', 'insights']] },
         { sec: 'Conta', items: [['Conta e perfil', 'user', 'tmenu', 'conta']] }
@@ -206,7 +206,7 @@
   window.TODAY = function () { var t = U.today; return t.charAt(0).toUpperCase() + t.slice(1); };
   // telas que ainda só existem com dados de exemplo: no produto não abrem (nem digitando o endereço)
   var DEMO_ONLY = {
-    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', mensagens: 'alunos', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal', insights: 'insightsreal', credenciais: 'credreal', convites: 'convitesreal',
+    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', mensagens: 'mensagensreal', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal', insights: 'insightsreal', credenciais: 'credreal', convites: 'convitesreal',
       // ainda sem dados reais no servidor: no produto não abrem com conteúdo de exemplo
       formularios: 'hoje', formEditor: 'hoje', respostas: 'hoje', avaliacoes: 'hoje', arquivos: 'hoje', notas: 'hoje', calendario: 'hoje', macro: 'hoje', programas: 'hoje', programaEditor: 'hoje', publicacao: 'hoje', participantes: 'hoje', notificacoes: 'hoje', ofertas: 'hoje', cupons: 'hoje', proposta: 'hoje', reivindicar: 'credreal', denunciar: 'hoje' },
     aluno: { fc01: 'semvinculo', fc02: 'semvinculo', fc03: 'semvinculo', fc04: 'semvinculo', fc05: 'semvinculo', fc06: 'semvinculo', fc08: 'semvinculo', fc09: 'semvinculo', fc10: 'semvinculo', pedir: 'semvinculo', contratacoes: 'semvinculo' }
@@ -219,7 +219,7 @@
         var scr = REG.get(page, props.s) || REG.first(page);
         if (scr && DEMO_ONLY[page] && DEMO_ONLY[page][scr.key] && !document.documentElement.classList.contains('demo')) {
           var alt = REG.get(page, DEMO_ONLY[page][scr.key]);
-          if (alt) { if (['agenda', 'insights', 'credenciais', 'convites'].indexOf(scr.key) < 0 && !c.__blk) { c.__blk = 1; var why = scr.key === 'mensagens' ? 'As conversas ficam na tela de cada aluno: abra o aluno para conversar.' : 'Esta parte ainda não está disponível.'; setTimeout(function () { NOTICE(why); }, 0); } scr = alt; }
+          if (alt) { if (['agenda', 'insights', 'credenciais', 'convites', 'mensagens'].indexOf(scr.key) < 0 && !c.__blk) { c.__blk = 1; var why = scr.key === 'mensagens' ? 'As conversas ficam na tela de cada aluno: abra o aluno para conversar.' : 'Esta parte ainda não está disponível.'; setTimeout(function () { NOTICE(why); }, 0); } scr = alt; }
         }
         // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
         if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && (window.ACCT.area() || (window.ACCT.hasLink && window.ACCT.hasLink()))
