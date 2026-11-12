@@ -336,6 +336,26 @@
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.assign}}">{{v.assignLabel}}</button></div>
             </section>
           </sc-if>
+          <sc-if value="{{v.fm.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="tr-fm"><h2 class="onb-h2" id="tr-fm">Formulários</h2>
+            <p class="mod-small mod-muted">{{v.fm.sub}} Enviado, respondido e revisado são estados diferentes.</p>
+            <sc-if value="{{v.fm.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para carregar os formulários agora</b>Isto não quer dizer que não há envios.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.fm.reload}}">Tentar de novo</button></div></sc-if>
+            <sc-if value="{{v.fm.has}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.fm.list}}" as="f" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><div style="flex: 1 1 240px"><b>{{f.title}}</b> <span class="{{f.badgeCls}}">{{f.badge}}</span><p class="mod-small mod-muted">{{f.meta}}</p><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="kv" style="margin-top: 8px"><sc-for list="{{f.pairs}}" as="a" hint-placeholder-count="2"><div class="kv__r" style="flex-direction: column; align-items: flex-start; gap: 2px"><span>{{a.q}}</span><b style="white-space: pre-wrap">{{a.a}}</b></div></sc-for></div></sc-if></div>
+              <sc-if value="{{f.canSee}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{f.see}}">{{f.seeLabel}}</button></sc-if>
+              <sc-if value="{{f.canReview}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--sm" onClick="{{f.review}}">Marcar como revisado</button></sc-if>
+              <sc-if value="{{f.canCancel}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{f.cancel}}">Cancelar envio</button></sc-if>
+            </div></li></sc-for></ol></sc-if>
+            <sc-if value="{{v.fm.hasRowErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.fm.rowErr}}</span></sc-if>
+            <sc-if value="{{v.fm.notActive}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Só dá para enviar formulário com o acompanhamento ativo.</p></sc-if>
+            <sc-if value="{{v.fm.canSend}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.fm.toggle}}">{{v.fm.toggleLabel}}</button></div>
+              <sc-if value="{{v.fm.open}}" hint-placeholder-val="{{ false }}">
+                <div class="field"><span class="field__label">Começar de um modelo</span><div class="seg" role="group" aria-label="Modelo" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.fm.models}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+                <div class="field"><label class="field__label" for="fm-title">Nome do formulário</label><div class="input"><input id="fm-title" type="text" maxlength="120" value="{{v.fm.title}}" onInput="{{v.fm.setTitle}}"></div></div>
+                <div class="field"><label class="field__label" for="fm-purpose">Para que serve (o aluno vê, opcional)</label><div class="input"><input id="fm-purpose" type="text" maxlength="300" value="{{v.fm.purpose}}" onInput="{{v.fm.setPurpose}}"></div></div>
+                <div class="field"><label class="field__label" for="fm-qs">Perguntas, uma por linha</label><div class="input"><textarea id="fm-qs" rows="5" onInput="{{v.fm.setQs}}">{{v.fm.qs}}</textarea></div><span class="field__help">{{v.fm.preview}}</span></div>
+                <sc-if value="{{v.fm.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não enviado</b>{{v.fm.err}}</div></div></sc-if>
+                <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.fm.send}}">{{v.fm.sendLabel}}</button></div>
+              </sc-if></sc-if>
+          </section></sc-if>
           <section class="card onb-sec" aria-labelledby="tr-chat"><h2 class="onb-h2" id="tr-chat">Conversa</h2>
             <sc-if value="{{v.chat.noMsgs}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Nenhuma mensagem ainda. Mensagem não altera o acompanhamento nem o treino.</p></sc-if>
             <sc-if value="{{v.chat.msgErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a conversa agora.</p></sc-if>

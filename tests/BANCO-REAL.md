@@ -32,3 +32,12 @@ Transação desfeita, agindo como o treinador de teste e depois como o aluno:
 - primeira gravação cria a versão 1; gravação com a versão certa vira versão 2
 - gravação com versão velha **não grava** e devolve o conteúdo atual (o app junta e regrava)
 - o treinador lê só a própria biblioteca; o aluno enxerga 0 linhas
+
+
+## Fase 7 — formulários enviados (12/11)
+Transação desfeita, com um vínculo criado só dentro dela:
+- treinador envia; repetir com a mesma chave devolve o mesmo envio (1 linha)
+- uma terceira conta enxerga 0 linhas; o aluno do vínculo enxerga o formulário
+- aluno responde uma vez; responder de novo devolve `changed: false`
+- treinador lê a resposta e marca como revisado
+- não conferido nesta rodada: recusa quando o aluno tenta marcar revisado/cancelar (a função filtra pelo treinador do vínculo)
