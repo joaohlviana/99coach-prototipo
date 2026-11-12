@@ -69,10 +69,14 @@ REG.screen({
     var sKey = function (x) { return link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
     var dGet = function (x) { var v = null; try { v = JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) {} return v || ((ui.srvDrafts || {})[sKey(x)] || null); };
     var dPut = function (x, v) {
-      try { if (v) window.localStorage.setItem(dKey(x), JSON.stringify(v)); else window.localStorage.removeItem(dKey(x)); } catch (_) {}
+      var localOk = true;
+      try { if (v) window.localStorage.setItem(dKey(x), JSON.stringify(v)); else window.localStorage.removeItem(dKey(x)); } catch (_) { localOk = !v; }
+      window.__svLocal = localOk;
       if (!v || !C || !w) return;
-      var k = sKey(x); clearTimeout(window.__svT); window.__svT = setTimeout(function () { C.rpc('save_session', { p_link: link.id, p_key: k, p_version: w.version, p_state: v }); }, 1200);
+      window.__svState = 'salvando';
+      var k = sKey(x); clearTimeout(window.__svT); window.__svT = setTimeout(function () { C.rpc('save_session', { p_link: link.id, p_key: k, p_version: w.version, p_state: v }).then(function (r) { window.__svState = r.ok ? 'servidor' : (r.offline ? 'offline' : 'erro'); window.__svAt = U.now(); ctx.setUi({ svTick: Date.now() }); }); }, 1200);
     };
+    var orphan = []; try { var pre = 'c99.sessaoTreino.' + uid + '.' + link.id + '_v'; Object.keys(window.localStorage).forEach(function (k) { if (k.indexOf(pre) === 0 && w && k.indexOf(pre + w.version + '_') !== 0) orphan.push(k); }); } catch (_) {}
     var draftIdx = -1; SS.forEach(function (x, i) { if (draftIdx < 0 && !doneOf(x) && dGet(x)) draftIdx = i; });
     var draft = draftIdx >= 0 ? dGet(SS[draftIdx]) : null;
     var marked = function (g) { return g.reduce(function (n, sets) { return n + sets.filter(function (c) { return c.done; }).length; }, 0); };
@@ -87,7 +91,7 @@ REG.screen({
     var start = function () {
       // realizado começa em branco: o previsto aparece como referência e só entra quando a série é marcada
       var grid = s0.items.map(function (it) { var a = []; for (var k = 0; k < it.sets; k++) a.push({ reps: '', load: '', done: false }); return a; });
-      var e0 = { grid: grid, started: new Date().toISOString() };
+      var e0 = { grid: grid, started: new Date().toISOString(), ver: w.version };
       dPut(s0, e0); ctx.setUi({ exec: e0, err: '', receipt: null, partial: false });
     };
     var setCell = function (i, k, f) { return function (e) {
@@ -120,7 +124,7 @@ REG.screen({
         var tot = total(ex.grid);
         dPut(s0, null);
         // recibo que fica na tela (não é só um aviso que some): o que foi recebido pelo servidor
-        ctx.setUi({ busy: false, exec: null, asked: false, sx: null, partial: false, receipt: { title: s0.title || w.title, n: logs.length, tot: tot, at: U.now() } });
+        ctx.setUi({ busy: false, exec: null, asked: false, sx: null, partial: false, rest: null, receipt: { title: s0.title || w.title, n: logs.length, tot: tot, at: U.now(), key: key } });
       });
     };
 
@@ -169,16 +173,39 @@ REG.screen({
       var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null, out = d && (d.outcome || d.status);
       ctx.setUi({ busy: false });
       if (!r.ok || (out && OUTB[out])) return ctx.toast(OUTB[out] || ('Não foi possível marcar: ' + (r.msg || r.status)));
-      ctx.setUi({ slotsOpen: false, apAsked: false }); ctx.toast('Horário marcado: ' + fmtSlot(s.starts_at) + '. ' + tf + ' vê na agenda.');
+      var from0 = ui.moveFrom;
+      ctx.setUi({ slotsOpen: false, apAsked: false, moveFrom: null, apReceipt: (from0 ? 'Remarcado para ' : 'Horário marcado: ') + fmtSlot(s.starts_at) + ' (horário de Brasília). ' + tf + ' vê na agenda.' });
+      if (from0) C.cancelAppointment(from0, 'remarcado').then(function (x) { if (!x.ok) ctx.toast('O novo horário foi marcado, mas o antigo não foi cancelado: cancele-o na lista.'); ctx.setUi({ apAsked: false }); });
     }); }; };
     var appts = (ui.appts || []).map(function (a) { return { when: fmtSlot(a.starts_at), by: a.booked_by === 'aluno' ? 'marcado por você' : 'marcado por ' + tf,
-      cancel: function () { C.cancelAppointment(a.id, 'aluno').then(function (r) { if (!r.ok) return ctx.toast('Não foi possível cancelar: ' + (r.msg || r.status)); ctx.setUi({ apAsked: false }); ctx.toast('Horário cancelado.'); }); } }; });
+      cancel: function () { ctx.ask({ title: 'Cancelar o horário de ' + fmtSlot(a.starts_at) + '?', lines: [tf + ' é avisado e o horário volta a ficar livre.', 'Cancelar um horário não muda o acompanhamento nem o treino.'], ok: 'Cancelar horário', cancel: 'Manter horário', onOk: function () {
+        C.cancelAppointment(a.id, 'aluno').then(function (r) { if (!r.ok) return ctx.toast('Não foi possível cancelar: ' + (r.msg || r.status || 'sem conexão') + '. O horário continua marcado.'); ctx.setUi({ apAsked: false, apReceipt: 'Horário de ' + fmtSlot(a.starts_at) + ' cancelado às ' + U.now() + '. ' + tf + ' foi avisado.' }); }); } }); },
+      // remarcar = escolher outro horário livre; o atual só é cancelado depois que o novo for confirmado
+      reschedule: function () { ctx.setUi({ moveFrom: a.id }); loadSlots(); } }; });
     var slots = (ui.slots || []).slice(0, 12).map(function (s) { return { when: fmtSlot(s.starts_at), book: book(s) }; });
+    var apExtra = { apReceipt: ui.apReceipt || '', hasApReceipt: !!ui.apReceipt, moving: !!ui.moveFrom, tzTxt: 'Horários no fuso de Brasília (UTC−3).' };
     var showEvo = from === 'evolucao', showMsg = from === 'mensagens';
     var t = showEvo ? ['Evolução', hist.length ? 'Registros confirmados com ' + tf + ' · ' + period : 'Sua evolução começa no primeiro treino registrado.'] : (showMsg ? ['Conversa com ' + tf, 'Fale sobre o treino, dúvidas ou mudanças de rotina. ' + tf + ' responde por aqui.'] : TT[state]);
     return Object.assign(base, {
       appts: appts, hasAppts: appts.length > 0, slots: slots, hasSlots: slots.length > 0, slotsOpen: !!ui.slotsOpen, noSlots: !!ui.slotsOpen && !slots.length && !ui.slotsLoading && !ui.slotsErr,
       slotsErr: ui.slotsErr || '', hasSlotsErr: !!ui.slotsErr, loadSlots: loadSlots, slotsLabel: ui.slotsLoading ? 'Carregando…' : 'Ver horários livres', tfName: tf,
+      // Treinos: a rotina sessão por sessão e o histórico, cada registro abrindo o previsto × realizado
+      isTreinos: from === 'treinos' && !ex, notTreinos: !(from === 'treinos' && !ex),
+      sessList: w ? SS.map(function (x, i) { var k = link.id + '_v' + w.version + '_' + x.id, last = (ui.sess || []).filter(function (y) { return y.session_key === k; }).map(function (y) { return y.submitted_at; }).sort().pop();
+        return { title: x.title || ('Sessão ' + (i + 1)), sub: U.plural((x.items || []).length, 'exercício', 'exercícios') + ' · ~' + (x.estMin || 0) + ' min · ' + (last ? 'feita em ' + new Date(last).toLocaleDateString('pt-BR') : 'ainda não feita nesta versão'), pick: function () { ctx.setUi({ sx: i }); GO('H10'); } }; }) : [],
+      hasSessList: !!w && SS.length > 0,
+      regs: (ui.sess || []).slice().sort(function (a, b) { return String(b.submitted_at).localeCompare(String(a.submitted_at)); }).map(function (x) {
+        var m = /_v(\d+)_(.+)$/.exec(x.session_key || ''), sv = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null, open = ui.regOpen === x.id;
+        var by = {}; (x.set_logs || []).forEach(function (l) { var k = l.exercise_name || l.exercise_id; (by[k] = by[k] || []).push(l); });
+        var rows = Object.keys(by).map(function (k) { var it = sv ? (sv.items || []).filter(function (y) { return y.exerciseId === by[k][0].exercise_id || y.name === k; })[0] : null;
+          return { ex: k, plan: it ? 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') : 'previsto: versão anterior do treino', did: 'feito ' + by[k].sort(function (a, b) { return a.set_no - b.set_no; }).map(function (l) { return l.reps + (l.load_kg != null ? '×' + String(l.load_kg).replace('.', ',') + 'kg' : ' rep'); }).join(' · ') }; });
+        var cm = (x.session_comments || []).map(function (c) { return { who: c.side === 'treinador' ? tf : 'Você', body: c.body }; });
+        return { when: new Date(x.submitted_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }), name: sv ? sv.title : 'Sessão registrada', n: U.plural((x.set_logs || []).length, 'série', 'séries'),
+          open: open, toggle: function () { ctx.setUi({ regOpen: open ? '' : x.id }); }, toggleLabel: open ? 'Fechar' : 'Ver registro', rows: rows, cms: cm, hasCms: cm.length > 0 };
+      }),
+      hasRegs: (ui.sess || []).length > 0, noRegs: !(ui.sess || []).length && !ui.sessErr, goTreinos: function () { GO('ALU06'); },
+      manyT: window.ACCT.myLinks().length > 1, tChoices: window.ACCT.myLinks().map(function (l) { var on = l.id === link.id; return { label: (l.trainerName || 'Treinador') + (l.status === 'pausado' ? ' (pausado)' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { window.ACCT.pickTrainer(l.id); ctx.setUi({ asked: false, sess: null, msgs: null, msgAsked: false, sx: null, exec: null, receipt: null, v: (ui.v || 0) + 1 }); } }; }),
+      apReceipt: apExtra.apReceipt, hasApReceipt: apExtra.hasApReceipt, moving: apExtra.moving, tzTxt: apExtra.tzTxt,
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',
       qs: QS.map(function (q) { return { id: 'pq-' + q[0], q: q[1], ph: q[2], v: P[q[0]] || '', set: function (e) { var o = Object.assign({}, P); o[q[0]] = U.val(e); ctx.setUi({ prep: o, err: '' }); } }; }),
@@ -204,12 +231,32 @@ REG.screen({
       chGo: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(link.id, ui.chAct, ui.chWhy).then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status || 'sem conexão') + '. Nada mudou.'); } var end = ui.chAct === 'encerrar'; ctx.setUi({ chAct: '', endOpen: false }); if (window.__refreshLinks) window.__refreshLinks(); refresh(end ? 'Acompanhamento encerrado. Seu histórico continua aqui.' : 'Acompanhamento pausado. Retome quando quiser.'); }); },
       resumeL: function () { if (ui.busy) return; ctx.setUi({ busy: true }); C.changeLink(link.id, 'retomar', 'outro').then(function (r) { if (!r.ok) { ctx.setUi({ busy: false }); return ctx.toast('O servidor não registrou: ' + (r.msg || r.status || 'sem conexão') + '.'); } refresh('Acompanhamento retomado.'); }); }, openProfile: function () { if (link.trainerSlug && window.NAV) window.NAV.go('perfil', { id: link.trainerSlug }, null); },
       canProfile: !!(link.trainerSlug && window.REAL && window.REAL.has(link.trainerSlug)),
-      grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { name: it.name, rx: 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : ''), last: lastOf(it.exerciseId), sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), phR: String(parseInt(it.reps, 10) || ''), phL: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
+      grid: ex ? ex.grid.map(function (sets, i) { var it = s0.items[i]; return { note: it.notes ? 'Nota de ' + tf + ': ' + it.notes : '', hasNote: !!it.notes, name: it.name, rx: 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : ''), last: lastOf(it.exerciseId), sets: sets.map(function (c, k) { return { n: 'Série ' + (k + 1), phR: String(parseInt(it.reps, 10) || ''), phL: it.loadKg == null ? '' : String(it.loadKg).replace('.', ','), reps: c.reps, load: c.load, done: c.done, doneOn: String(c.done), doneCls: 'check' + (c.done ? ' is-on' : ''), idR: 'ex-r' + i + '-' + k, idL: 'ex-l' + i + '-' + k, setReps: setCell(i, k, 'reps'), setLoad: setCell(i, k, 'load'), toggle: setCell(i, k, 'done') }; }) }; }) : [],
       finish: finish, finishLabel: ui.busy ? 'Enviando…' : (ui.partial ? 'Encerrar e enviar o que fiz' : 'Concluir sessão'),
       // pausar guarda as marcações neste aparelho; descartar apaga
       cancel: function () { ctx.setUi({ exec: null, err: '', partial: false }); }, discard: function () { dPut(s0, null); ctx.setUi({ exec: null, err: '', partial: false }); },
       isPartial: !!ui.partial && !!ex, partialTxt: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas. As não marcadas ficam sem registro; nada é inventado.' : '', backPartial: function () { ctx.setUi({ partial: false }); },
-      hasRest: !!(ex && ui.rest && ui.rest.until > Date.now() - 60000), restUntil: ui.rest ? String(ui.rest.until) : '', restName: ui.rest ? ui.rest.name : '', skipRest: function () { ctx.setUi({ rest: null }); },
+      hasRest: !!(ex && ui.rest && (ui.rest.paused != null || ui.rest.until > Date.now() - 60000)), restUntil: ui.rest && ui.rest.paused == null ? String(ui.rest.until) : '', restName: ui.rest ? ui.rest.name : '', skipRest: function () { ctx.setUi({ rest: null }); },
+      restPaused: !!(ui.rest && ui.rest.paused != null), restRunning: !!(ui.rest && ui.rest.paused == null),
+      restPausedTxt: ui.rest && ui.rest.paused != null ? 'Descanso pausado: ' + Math.floor(ui.rest.paused / 60) + ':' + ('0' + (ui.rest.paused % 60)).slice(-2) : '',
+      pauseRest: function () { if (!ui.rest) return; ctx.setUi({ rest: { name: ui.rest.name, paused: Math.max(0, Math.ceil((ui.rest.until - Date.now()) / 1000)) } }); },
+      resumeRest: function () { if (!ui.rest) return; ctx.setUi({ rest: { name: ui.rest.name, until: Date.now() + (ui.rest.paused || 0) * 1000 } }); },
+      addRest: function () { if (!ui.rest) return; ctx.setUi({ rest: ui.rest.paused != null ? { name: ui.rest.name, paused: ui.rest.paused + 30 } : { name: ui.rest.name, until: ui.rest.until + 30000 } }); },
+      hasOrphan: orphan.length > 0 && !ex, orphanTxt: tf + ' publicou uma versão nova do treino enquanto você tinha um treino em andamento. As marcações antigas não valem para a versão nova e não foram enviadas.',
+      dropOrphan: function () { orphan.forEach(function (k) { try { window.localStorage.removeItem(k); } catch (_) {} }); ctx.setUi({ v: (ui.v || 0) + 1 }); },
+      svTxt: !window.__svLocal && window.__svLocal !== undefined ? 'Atenção: este aparelho está sem espaço; as marcações não ficaram guardadas aqui.' : ({ salvando: 'Salvando…', servidor: 'Salvo também na sua conta às ' + (window.__svAt || ''), offline: 'Sem conexão: salvo só neste aparelho', erro: 'Não salvou na conta; continua neste aparelho' })[window.__svState] || 'Guardado neste aparelho',
+      // retorno do aluno ao concluir: comentário curto e esforço opcional (vai para o treinador)
+      fbEfforts: [2, 4, 6, 8, 10].map(function (n) { var on = ui.fbEff === n; return { label: n + '/10', on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ fbEff: on ? null : n }); } }; }),
+      fbNote: ui.fbNote || '', setFbNote: function (e) { ctx.setUi({ fbNote: U.val(e), fbErr: '' }); }, fbDone: !!ui.fbDone, fbOpen: !ui.fbDone, fbErr: ui.fbErr || '', hasFbErr: !!ui.fbErr, fbLabel: ui.fbBusy ? 'Enviando…' : 'Enviar retorno para ' + tf,
+      sendFb: function () {
+        var note = String(ui.fbNote || '').trim(); if (!note && !ui.fbEff) return ctx.setUi({ fbErr: 'Escreva um comentário ou escolha o esforço.' });
+        if (ui.fbBusy || !ui.receipt) return; ctx.setUi({ fbBusy: true, fbErr: '' });
+        C.sessions(link.id).then(function (r) {
+          var row = r.ok ? (r.data || []).filter(function (x) { return x.session_key === ui.receipt.key && x.submitted_at; })[0] : null;
+          if (!row) return ctx.setUi({ fbBusy: false, fbErr: 'Não encontramos o registro no servidor ainda. Tente de novo em instantes.' });
+          return C.rpc('student_session_feedback', { p_session: row.id, p_body: note || null, p_effort: ui.fbEff || null, p_idem: 'fb:' + row.id }).then(function (x) { if (!x.ok) return ctx.setUi({ fbBusy: false, fbErr: 'Não enviado: ' + (x.msg || x.status || 'sem conexão') + '.' }); ctx.setUi({ fbBusy: false, fbDone: true }); ctx.toast('Retorno enviado para ' + tf + '.'); });
+        });
+      },
       progress: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas · guardado neste aparelho até você enviar' : '',
       hasDraft: !!draft && !ex && state !== 'exec', draftTitle: draft ? 'Continuar ' + (SS[draftIdx].title || 'treino') : '', draftTxt: draft ? marked(draft.grid) + ' de ' + total(draft.grid) + ' séries marcadas · guardado só neste aparelho, ainda não enviado' : '', resume: resume, discardDraft: discard,
       hasReceipt: !!ui.receipt && !ex, rcTitle: ui.receipt ? 'Registro recebido pelo servidor às ' + ui.receipt.at : '', rcTxt: ui.receipt ? ui.receipt.title + ' · ' + (ui.receipt.n < ui.receipt.tot ? ui.receipt.n + ' de ' + ui.receipt.tot + ' séries registradas (sessão parcial)' : U.plural(ui.receipt.n, 'série registrada', 'séries registradas')) + '. ' + tf + ' vê no painel; isso não quer dizer que já revisou.' : '',

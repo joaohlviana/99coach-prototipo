@@ -147,7 +147,10 @@
     go: function () { var a = ACCT.area(); if (a && window.NAV) window.NAV.go(a, {}, null); },
     // vínculo confirmado no servidor (ainda não ligado nesta versão: convites e vínculos são o próximo passo)
     hasLink: function () { return !!ACCT.myTrainer(); },
-    myTrainer: function () { var L = window.CONTA ? window.CONTA.cachedLinks() : []; for (var i = 0; i < L.length; i++) if (L[i].mine === 'aluno') return L[i]; return null; }
+    myLinks: function () { return (window.CONTA ? window.CONTA.cachedLinks() : []).filter(function (l) { return l.mine === 'aluno'; }); },
+    // com mais de um treinador, vale o escolhido pela pessoa (guardado neste aparelho); senão, o mais recente
+    myTrainer: function () { var L = ACCT.myLinks(), pick = ''; try { pick = LS.getItem('c99.treinadorAtual') || ''; } catch (_) {} return L.filter(function (l) { return l.id === pick; })[0] || L[0] || null; },
+    pickTrainer: function (id) { try { LS.setItem('c99.treinadorAtual', id); } catch (_) {} }
   };
   window.ACCT = ACCT;
   var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
