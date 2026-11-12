@@ -424,6 +424,31 @@
 
       <!-- PUB07 · Favoritos -->
       <!-- PUB17 · Pedir acompanhamento -->
+      <!-- ACC13R · Meus dados: exportar e o que acontece ao sair -->
+      <sc-if value="{{is.meusdados}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Conta</span><h1 class="pghead__title">Meus dados</h1><p class="pghead__sub">Leve uma cópia do que é seu e veja o que fica guardado em cada lugar.</p></div></div>
+        <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec"><p>Entre na sua conta para ver e baixar seus dados.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.login}}">Entrar</button></div></section></sc-if>
+        <sc-if value="{{v.logged}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-labelledby="md-exp"><h2 class="onb-h2" id="md-exp">Baixar meus dados</h2>
+            <p class="mod-small mod-muted">Conta {{v.email}}. O arquivo traz sua conta, vínculos, pedidos, horários, registros de treino e mensagens, como estão no servidor agora. Ele é gerado aqui no seu navegador e não é enviado a ninguém.</p>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Arquivo não gerado</b>{{v.err}}</div></div></sc-if>
+            <sc-if value="{{v.hasDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pronto</b>{{v.done}}</div></div></sc-if>
+            <sc-if value="{{v.hasPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Cópia incompleta</b>{{v.partial}}</div></div></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.run}}">{{v.exportLabel}}</button></div>
+          </section>
+          <section class="card onb-sec" aria-labelledby="md-loc"><h2 class="onb-h2" id="md-loc">Neste aparelho</h2>
+            <p class="mod-small mod-muted">{{v.localTxt}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button></div>
+          </section>
+          <section class="card onb-sec" aria-labelledby="md-del"><h2 class="onb-h2" id="md-del">Excluir a conta</h2>
+            <p class="mod-small mod-muted">A exclusão definitiva no servidor ainda não é automática neste site, e não vamos mostrar um botão que finge excluir. O que já funciona de verdade: encerrar seus acompanhamentos, retirar o perfil da busca e sair apagando este aparelho. Para apagar a conta no servidor, fale com a equipe da 99coach pela Ajuda; baixe seus dados antes.</p>
+            <sc-if value="{{v.isTrainer}}" hint-placeholder-val="{{ false }}"><sc-if value="{{v.hasUnpub}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status"><b>{{v.unpubMsg}}</b></p></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.unpub}}">{{v.unpubLabel}}</button></div></sc-if>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Voltar</button></div>
+        </sc-if>
+      </sc-if>
+
       <sc-if value="{{is.pedir}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Pedido</span><h1 class="pghead__title">Pedir acompanhamento</h1><p class="pghead__sub">Pedido não é vínculo: {{v.first}} responde e, se aceitar, o acompanhamento começa. Nada é cobrado no pedido.</p></div></div>
         <section class="card onb-sec onb-me-card" aria-label="Treinador"><span class="av onb-photo__av"><sc-if value="{{v.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.photo}}" alt=""></sc-if><sc-if value="{{v.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.ini}}</sc-if></span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.meta}}</span></div></section>

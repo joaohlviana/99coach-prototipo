@@ -199,7 +199,7 @@
         <h1 id="v4-cont-t" class="d3" style="color: #fff">{{sportLabel}} · {{cityShort}} · {{modeLabel}}</h1>
         <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--glass btn--sm" onClick="{{openEdit}}">Alterar</button><button type="button" class="btn btn--glass btn--sm" onClick="{{clearSearch}}">Limpar</button><button type="button" class="btn btn--primary btn--arrow" onClick="{{continueSearch}}">Continuar busca<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
       </div>
-      <p style="margin-top: 12px; font-size: 13px; color: var(--text-on-dark)">Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou. <button type="button" class="v4-reset" style="color: #fff; text-decoration: underline; min-height: 44px" onClick="{{openHist}}">Gerenciar histórico</button></p>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--text-on-dark)">{{contNote}} <button type="button" class="v4-reset" style="color: #fff; text-decoration: underline; min-height: 44px" onClick="{{openHist}}">Gerenciar histórico</button></p>
     </div>
     <sc-if value="{{showRecent}}" hint-placeholder-val="{{ true }}">
       <div class="v4-row v4-row--between" style="margin-top: 16px"><span class="label">Vistos recentemente</span><span class="badge badge--warn">Variante condicional · depende da política de histórico</span></div>
@@ -251,7 +251,7 @@
   <sc-if value="{{showPending}}" hint-placeholder-val="{{ false }}">
   <section class="wrap vf-top" aria-labelledby="vf-ped-t">
     <div class="card vf-strip">
-      <span class="av av--md"><img src="@@IMG:272071ea45b1ee18@@" alt="Foto de perfil de Rafael Lima"></span>
+      <span class="av av--md"><img src="{{pedPhoto}}" alt=""></span>
       <div class="vf-strip__t"><span class="{{pedCls}}">{{pedStatus}}</span><p id="vf-ped-t"><b>{{pedTitle}}</b> · {{pedText}}</p></div>
       <button type="button" class="btn btn--primary btn--sm" onClick="{{openPedido}}">{{pedCta}}</button>
     </div>

@@ -61,6 +61,7 @@
             </section></sc-if>
             <sc-if value="{{v.isExec}}" hint-placeholder-val="{{ false }}">
               <p class="mod-small mod-muted" role="status">{{v.progress}}</p>
+              <sc-if value="{{v.hasRest}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info c99-restbox"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b class="c99-rest" data-until="{{v.restUntil}}" aria-live="off">Descanso</b>depois de {{v.restName}}. Siga quando estiver pronto.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.skipRest}}">Pular</button></div></sc-if>
               <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="2"><section class="card onb-sec" aria-label="{{g.name}}"><h2 class="onb-h2">{{g.name}}</h2><p class="mod-small mod-muted">{{g.rx}} · {{g.last}}</p>
                 <ol class="onb-secs"><sc-for list="{{g.sets}}" as="c" hint-placeholder-count="3"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px; align-items: flex-end">
                   <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{c.doneOn}}" onClick="{{c.toggle}}"><span class="{{c.doneCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{c.n}} feita</span></button>

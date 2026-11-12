@@ -225,7 +225,7 @@
         <h1 id="v4-cont-t" class="d3" style="color: #fff">{{sportLabel}} · {{cityShort}} · {{modeLabel}}</h1>
         <div class="v4-row" style="gap: 8px"><button type="button" class="btn btn--glass btn--sm" onClick="{{openEdit}}">Alterar</button><button type="button" class="btn btn--glass btn--sm" onClick="{{clearSearch}}">Limpar</button><button type="button" class="btn btn--primary btn--arrow" onClick="{{continueSearch}}">Continuar busca<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
       </div>
-      <p style="margin-top: 12px; font-size: 13px; color: var(--text-on-dark)">Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou. <button type="button" class="v4-reset" style="color: #fff; text-decoration: underline; min-height: 44px" onClick="{{openHist}}">Gerenciar histórico</button></p>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--text-on-dark)">{{contNote}} <button type="button" class="v4-reset" style="color: #fff; text-decoration: underline; min-height: 44px" onClick="{{openHist}}">Gerenciar histórico</button></p>
     </div>
     <sc-if value="{{showRecent}}" hint-placeholder-val="{{ true }}">
       <div class="v4-row v4-row--between" style="margin-top: 16px"><span class="label">Vistos recentemente</span><span class="badge badge--warn">Variante condicional · depende da política de histórico</span></div>
@@ -277,7 +277,7 @@
   <sc-if value="{{showPending}}" hint-placeholder-val="{{ false }}">
   <section class="wrap vf-top" aria-labelledby="vf-ped-t">
     <div class="card vf-strip">
-      <span class="av av--md"><img src="@@IMG:272071ea45b1ee18@@" alt="Foto de perfil de Rafael Lima"></span>
+      <span class="av av--md"><img src="{{pedPhoto}}" alt=""></span>
       <div class="vf-strip__t"><span class="{{pedCls}}">{{pedStatus}}</span><p id="vf-ped-t"><b>{{pedTitle}}</b> · {{pedText}}</p></div>
       <button type="button" class="btn btn--primary btn--sm" onClick="{{openPedido}}">{{pedCta}}</button>
     </div>
@@ -1475,8 +1475,8 @@
           </div>
           <sc-if value="{{f.askPw}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-senha">Senha</label><div class="{{f.pwCls}}"><input id="onb-senha" type="password" autocomplete="{{f.pwAuto}}" value="{{f.pw}}" onInput="{{f.setPw}}" aria-describedby="onb-senha-msg"></div><span class="field__help" id="onb-senha-msg">{{f.pwHelp}}</span><sc-if value="{{f.canForgot}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" style="align-self: flex-start" onClick="{{f.forgot}}">Esqueci a senha</button></sc-if></div></sc-if>
           <sc-if value="{{f.emailExists}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{f.loginExisting}}">Entrar com esta conta</button></sc-if>
-          <sc-if value="{{conta.askTerms}}" hint-placeholder-val="{{ true }}"><button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{f.termsOn}}" onClick="{{f.toggleTerms}}"><span class="{{f.termsCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Li e aceito os <u>Termos de uso</u> e a <u>Política de privacidade</u>.</span></button>
-            <sc-if value="{{f.termsErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para criar a conta, aceite os Termos. A opção não vem marcada.</span></sc-if>
+          <sc-if value="{{conta.askTerms}}" hint-placeholder-val="{{ true }}"><button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{f.termsOn}}" onClick="{{f.toggleTerms}}"><span class="{{f.termsCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais e aceito os <u>Termos de uso</u> e a <u>Política de privacidade</u>.</span></button>
+            <sc-if value="{{f.termsErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para criar a conta, confirme que tem 18 anos ou mais e aceite os Termos. A opção não vem marcada.</span></sc-if>
           </sc-if>
         </div>
         <sc-if value="{{f.noExists}}" hint-placeholder-val="{{ true }}"><div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{f.submit}}">{{conta.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
@@ -5960,6 +5960,7 @@
             </section></sc-if>
             <sc-if value="{{v.isExec}}" hint-placeholder-val="{{ false }}">
               <p class="mod-small mod-muted" role="status">{{v.progress}}</p>
+              <sc-if value="{{v.hasRest}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info c99-restbox"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b class="c99-rest" data-until="{{v.restUntil}}" aria-live="off">Descanso</b>depois de {{v.restName}}. Siga quando estiver pronto.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.skipRest}}">Pular</button></div></sc-if>
               <sc-for list="{{v.grid}}" as="g" hint-placeholder-count="2"><section class="card onb-sec" aria-label="{{g.name}}"><h2 class="onb-h2">{{g.name}}</h2><p class="mod-small mod-muted">{{g.rx}} · {{g.last}}</p>
                 <ol class="onb-secs"><sc-for list="{{g.sets}}" as="c" hint-placeholder-count="3"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px; align-items: flex-end">
                   <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{c.doneOn}}" onClick="{{c.toggle}}"><span class="{{c.doneCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>{{c.n}} feita</span></button>
@@ -7375,6 +7376,31 @@
 
       <!-- PUB07 · Favoritos -->
       <!-- PUB17 · Pedir acompanhamento -->
+      <!-- ACC13R · Meus dados: exportar e o que acontece ao sair -->
+      <sc-if value="{{is.meusdados}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Conta</span><h1 class="pghead__title">Meus dados</h1><p class="pghead__sub">Leve uma cópia do que é seu e veja o que fica guardado em cada lugar.</p></div></div>
+        <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec"><p>Entre na sua conta para ver e baixar seus dados.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.login}}">Entrar</button></div></section></sc-if>
+        <sc-if value="{{v.logged}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-labelledby="md-exp"><h2 class="onb-h2" id="md-exp">Baixar meus dados</h2>
+            <p class="mod-small mod-muted">Conta {{v.email}}. O arquivo traz sua conta, vínculos, pedidos, horários, registros de treino e mensagens, como estão no servidor agora. Ele é gerado aqui no seu navegador e não é enviado a ninguém.</p>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Arquivo não gerado</b>{{v.err}}</div></div></sc-if>
+            <sc-if value="{{v.hasDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pronto</b>{{v.done}}</div></div></sc-if>
+            <sc-if value="{{v.hasPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Cópia incompleta</b>{{v.partial}}</div></div></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.run}}">{{v.exportLabel}}</button></div>
+          </section>
+          <section class="card onb-sec" aria-labelledby="md-loc"><h2 class="onb-h2" id="md-loc">Neste aparelho</h2>
+            <p class="mod-small mod-muted">{{v.localTxt}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button></div>
+          </section>
+          <section class="card onb-sec" aria-labelledby="md-del"><h2 class="onb-h2" id="md-del">Excluir a conta</h2>
+            <p class="mod-small mod-muted">A exclusão definitiva no servidor ainda não é automática neste site, e não vamos mostrar um botão que finge excluir. O que já funciona de verdade: encerrar seus acompanhamentos, retirar o perfil da busca e sair apagando este aparelho. Para apagar a conta no servidor, fale com a equipe da 99coach pela Ajuda; baixe seus dados antes.</p>
+            <sc-if value="{{v.isTrainer}}" hint-placeholder-val="{{ false }}"><sc-if value="{{v.hasUnpub}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status"><b>{{v.unpubMsg}}</b></p></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.unpub}}">{{v.unpubLabel}}</button></div></sc-if>
+          </section>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Voltar</button></div>
+        </sc-if>
+      </sc-if>
+
       <sc-if value="{{is.pedir}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Pedido</span><h1 class="pghead__title">Pedir acompanhamento</h1><p class="pghead__sub">Pedido não é vínculo: {{v.first}} responde e, se aceitar, o acompanhamento começa. Nada é cobrado no pedido.</p></div></div>
         <section class="card onb-sec onb-me-card" aria-label="Treinador"><span class="av onb-photo__av"><sc-if value="{{v.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{v.photo}}" alt=""></sc-if><sc-if value="{{v.noPhoto}}" hint-placeholder-val="{{ true }}">{{v.ini}}</sc-if></span><div class="onb-me-card__t"><b>{{v.name}}</b><span>{{v.meta}}</span></div></section>
@@ -11313,6 +11339,7 @@
 <script src="js/publico/20-vistos.js"></script>
 <script src="js/publico/30-convite.js"></script>
 <script src="js/publico/30-pedir.js"></script>
+<script src="js/publico/30-meusdados.js"></script>
 <script src="js/operacao/10-base.js"></script>
 <script src="js/operacao/10-caso.js"></script>
 <script src="js/operacao/10-conteudo.js"></script>

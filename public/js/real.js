@@ -251,10 +251,19 @@
     d.appendChild(i); d.appendChild(w); m.insertBefore(d, m.firstChild);
   }
 
+  function tickRest() {
+    var els = document.querySelectorAll('.c99-rest[data-until]');
+    for (var i = 0; i < els.length; i++) {
+      var left = Math.ceil((Number(els[i].getAttribute('data-until')) - Date.now()) / 1000);
+      els[i].textContent = left > 0 ? 'Descanso: ' + Math.floor(left / 60) + ':' + ('0' + (left % 60)).slice(-2) + ' ' : 'Descanso concluído ';
+    }
+  }
+  setInterval(tickRest, 500);
+
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
     applyMe();
-    whereSaved(page, root);
+    whereSaved(page, root); tickRest();
     if (page === 'aluno') startAccount();
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {

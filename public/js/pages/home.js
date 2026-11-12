@@ -40,7 +40,7 @@ class Component extends DCLogic {
     const sportLabel = sp[1];
     const pickSport = (id) => () => set({ sport: id, hidden: {}, sheet: null, toast: null });
     // clicar em um esporte abre a página do esporte (com a cidade e o formato já escolhidos)
-    const goSport = (id) => () => { set({ sport: id, hidden: {}, sheet: null, toast: null }); window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this); };
+    const goSport = (id) => () => { try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} set({ sport: id, hidden: {}, sheet: null, toast: null }); window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this); };
     const chips = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: goSport(id) }));
     const allSports = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: goSport(id) }));
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
@@ -149,10 +149,21 @@ class Component extends DCLogic {
       msg: open('info', { title: 'Mensagens', lines: ['Abre a conversa com ' + lkRaw.coach + ' no app do aluno.', 'Mensagem não altera o contrato nem a programação.'], cta: 'Entendi' })
     });
     const linkTabs = LINKS.map((l, i) => ({ coach: l.coach, kind: l.kind, cls: 'seg__it' + (S.link === i ? ' is-on' : ''), on: S.link === i ? 'true' : 'false', pick: () => set({ link: i }) }));
-    const showLink = S.scen === 'vinculo' || S.scen === 'dois';
-    const showPending = S.scen === 'pendente';
-    const showCont = S.scen === 'retorno' && !S.retCleared;
+    // produto: quem está logado vê primeiro o próprio acompanhamento ou pedido; a última busca fica só neste aparelho
+    const PRODH = !document.documentElement.classList.contains('demo');
+    const lsGet = (k) => { try { return window.localStorage.getItem(k); } catch (_) { return null; } };
+    const lsSet = (k, v) => { try { if (v == null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (_) {} };
+    const avatar = (name) => { const ini = String(name || '?').split(' ').filter(Boolean).map((x) => x[0]).slice(0, 2).join('').toUpperCase(); return 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#E4E4E7"/><text x="32" y="40" font-family="Arial,sans-serif" font-size="24" font-weight="700" text-anchor="middle" fill="#3F3F46">' + ini + '</text></svg>'); };
+    const myLink = PRODH && window.ACCT && window.ACCT.myTrainer ? window.ACCT.myTrainer() : null;
+    const myReq = PRODH && !myLink ? (window.__myRequests || []).filter((r) => r.mine === 'aluno' && r.status === 'pendente')[0] : null;
+    const dmy = (iso) => iso ? new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '';
+    const showLink = PRODH ? !!myLink : (S.scen === 'vinculo' || S.scen === 'dois');
+    const showPending = PRODH ? !!myReq : S.scen === 'pendente';
+    const showCont = PRODH ? (lsGet('c99.tela.busca') === '1' && !S.retCleared) : (S.scen === 'retorno' && !S.retCleared);
     const showHero = !showCont;
+    if (myLink) Object.assign(lk, { coach: myLink.trainerName || 'Seu treinador', photo: avatar(myLink.trainerName),
+      today: myLink.status === 'pausado' ? 'Acompanhamento pausado' : (myLink.workout ? 'Treino disponível: ' + myLink.workout.title : (myLink.prep === 'awaiting_client' ? 'Preparação pendente: 4 perguntas' : 'Treino em preparação')),
+      week: 'vínculo desde ' + dmy(myLink.since), go: () => window.NAV.go('aluno', {}, this) });
     const heroCls = 'v4-hero';
     const recent = [byId('rafael'), byId('gabriel')].map((t, i) => ({ name: t.name, photo: t.photo, when: i ? 'visto ontem' : 'visto em 25/10', open: () => window.NAV.go('perfil', { id: t.id }, this) }));
 
@@ -296,20 +307,21 @@ class Component extends DCLogic {
       segP: 'seg__it' + (S.mode === 'presencial' ? ' is-on' : ''), segO: 'seg__it' + (S.mode === 'online' ? ' is-on' : ''), segQ: 'seg__it' + (S.mode === 'qualquer' ? ' is-on' : ''),
       prP: String(S.mode === 'presencial'), prO: String(S.mode === 'online'), prQ: String(S.mode === 'qualquer'),
       modeP: setMode('presencial'), modeO: setMode('online'), modeQ: setMode('qualquer'),
-      doSearch: (e) => { if (e && e.preventDefault) e.preventDefault(); if (!S.city && S.mode === 'presencial') { return set({ sheet: 'city', sd: null, y: yOf(e), loc: 0 }); } window.NAV.go('esporte', {}, this); },
+      doSearch: (e) => { if (e && e.preventDefault) e.preventDefault(); try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} if (!S.city && S.mode === 'presencial') { return set({ sheet: 'city', sd: null, y: yOf(e), loc: 0 }); } window.NAV.go('esporte', {}, this); },
       useLoc: (e) => set({ sheet: 'city', sd: null, y: yOf(e), loc: 1, toast: null }),
       chips, allSports, editSports, goals, cities,
       // topo
       showLink, twoLinks, linkTabs, lk, linkTitle: twoLinks ? 'Seus acompanhamentos' : 'Seu acompanhamento',
-      showPending, pedStatus: pedLine[0], pedCls: pedLine[2] + (S.pedCanceled ? '' : ''), pedTitle: S.pedCanceled ? 'Pedido para Rafael Lima cancelado' : 'Pedido de acompanhamento para Rafael Lima',
-      pedText: S.pedCanceled ? 'Nada foi cobrado. Você pode enviar um novo pedido pelo perfil quando quiser.' : 'Enviado em 26/10 às 09:40 · Acompanhamento online · R$ 200 / mês. Rafael responde até 28/10. Ainda não há acompanhamento ativo e nada foi cobrado.',
-      pedCta: S.pedCanceled ? 'Ver perfil de Rafael' : 'Acompanhar pedido', openPedido: S.pedCanceled ? () => window.NAV.go('perfil', { id: 'rafael', scn: 'comparando' }, this) : open('pedido'),
+      pedPhoto: myReq ? avatar(myReq.trainerName) : B('272071ea45b1ee18'), contNote: PRODH ? 'Sua última escolha, guardada só neste aparelho.' : 'Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou.',
+      showPending, pedStatus: myReq ? 'Aguardando resposta' : pedLine[0], pedCls: pedLine[2] + (S.pedCanceled ? '' : ''), pedTitle: myReq ? 'Pedido de acompanhamento para ' + (myReq.trainerName || 'o treinador') : (S.pedCanceled ? 'Pedido para Rafael Lima cancelado' : 'Pedido de acompanhamento para Rafael Lima'),
+      pedText: myReq ? 'Enviado em ' + dmy(myReq.at) + (myReq.due ? ' · vale até ' + dmy(myReq.due) : '') + (myReq.offer ? ' · ' + myReq.offer : '') + '. Pedido não é vínculo: ainda não há acompanhamento ativo e nada foi cobrado.' : S.pedCanceled ? 'Nada foi cobrado. Você pode enviar um novo pedido pelo perfil quando quiser.' : 'Enviado em 26/10 às 09:40 · Acompanhamento online · R$ 200 / mês. Rafael responde até 28/10. Ainda não há acompanhamento ativo e nada foi cobrado.',
+      pedCta: S.pedCanceled ? 'Ver perfil de Rafael' : 'Acompanhar pedido', openPedido: myReq ? () => window.NAV.go('aluno', {}, this) : (S.pedCanceled ? () => window.NAV.go('perfil', { id: 'rafael', scn: 'comparando' }, this) : open('pedido')),
       pedNow: pedLine[0], pedNowSub: pedLine[1], pedNowCls: S.pedCanceled ? '' : 'is-now', pedActive: !S.pedCanceled,
       pedMsg: open('info', { title: 'Mensagem para Rafael Lima', lines: ['Abre a conversa ligada a este pedido.', 'Mensagem não confirma o acompanhamento nem gera cobrança.'], cta: 'Entendi' }),
       pedCancel: (e) => set(Object.assign({ pedCanceled: true, sheet: null }, toastAt(e, 'Pedido cancelado. Nada foi cobrado.', { k: 'ped' }))),
       showCont, continueSearch: (e) => window.NAV.go('esporte', {}, this),
-      openEdit: open('edit'), clearSearch: (e) => set(Object.assign({ retCleared: true }, toastAt(e, 'Busca limpa. Seus salvos continuam em Salvos.', { k: 'clear' }))),
-      showRecent: !S.recentCleared, recent, clearRecent: (e) => set(Object.assign({ recentCleared: true }, toastAt(e, 'Vistos recentemente limpos neste aparelho.', { k: 'recent' }))),
+      openEdit: open('edit'), clearSearch: (e) => { if (PRODH) lsSet('c99.tela.busca', null); set(Object.assign({ retCleared: true }, toastAt(e, 'Busca limpa. Seus salvos continuam em Salvos.', { k: 'clear' }))); },
+      showRecent: !PRODH && !S.recentCleared, recent, clearRecent: (e) => set(Object.assign({ recentCleared: true }, toastAt(e, 'Vistos recentemente limpos neste aparelho.', { k: 'recent' }))),
       // vitrines
       tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tlist, alts, emptyText, openOrder: open('order'),
       seeAllT: () => window.NAV.go('esporte', {}, this),

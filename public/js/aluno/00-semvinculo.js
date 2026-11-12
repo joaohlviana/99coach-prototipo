@@ -23,7 +23,7 @@ REG.screen({
       var reqs = (window.__myRequests || []).filter(function (r) { return r.mine === 'aluno'; });
       var RS = { pendente: 'Aguardando resposta', recusado: 'Recusado', expirado: 'Expirou sem resposta', cancelado: 'Cancelado', aceito: 'Aceito' };
       return Object.assign(base, { title: T0[0], text: T0[1], hasReqs: reqs.length > 0,
-        reqs: reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.offer ? ' · ' + r.offer : '') }; }) });
+        reqs: reqs.map(function (r) { return { t: r.trainerName || 'Treinador', x: (RS[r.status] || r.status) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') }; }) });
     }
 
     var tf = String(link.trainerName || 'seu treinador').split(' ')[0];
@@ -78,7 +78,9 @@ REG.screen({
         if (c.done && c.reps === '') c.reps = String(parseInt(it.reps, 10) || '');
         if (c.done && c.load === '' && it.loadKg != null) c.load = String(it.loadKg);
       } else c[f] = U.val(e);
-      var e1 = Object.assign({}, ex, { grid: g }); dPut(s0, e1); ctx.setUi({ exec: e1, partial: false });
+      var e1 = Object.assign({}, ex, { grid: g }); dPut(s0, e1);
+      // descanso conta pelo relógio (não trava a tela nem depende de ficar com o app aberto)
+      ctx.setUi({ exec: e1, partial: false, rest: f === 'done' && c.done && it.restS ? { until: Date.now() + it.restS * 1000, name: it.name } : (f === 'done' ? null : ui.rest) });
     }; };
     var resume = function () { if (draftIdx < 0) return; ctx.setUi({ sx: draftIdx, exec: draft, err: '', receipt: null, partial: false }); };
     var discard = function () { if (draftIdx >= 0) dPut(SS[draftIdx], null); ctx.setUi({ exec: null, err: '', v: (ui.v || 0) + 1 }); };
@@ -162,6 +164,7 @@ REG.screen({
       // pausar guarda as marcações neste aparelho; descartar apaga
       cancel: function () { ctx.setUi({ exec: null, err: '', partial: false }); }, discard: function () { dPut(s0, null); ctx.setUi({ exec: null, err: '', partial: false }); },
       isPartial: !!ui.partial && !!ex, partialTxt: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas. As não marcadas ficam sem registro; nada é inventado.' : '', backPartial: function () { ctx.setUi({ partial: false }); },
+      hasRest: !!(ex && ui.rest && ui.rest.until > Date.now() - 60000), restUntil: ui.rest ? String(ui.rest.until) : '', restName: ui.rest ? ui.rest.name : '', skipRest: function () { ctx.setUi({ rest: null }); },
       progress: ex ? marked(ex.grid) + ' de ' + total(ex.grid) + ' séries marcadas · guardado neste aparelho até você enviar' : '',
       hasDraft: !!draft && !ex && state !== 'exec', draftTitle: draft ? 'Continuar ' + (SS[draftIdx].title || 'treino') : '', draftTxt: draft ? marked(draft.grid) + ' de ' + total(draft.grid) + ' séries marcadas · guardado só neste aparelho, ainda não enviado' : '', resume: resume, discardDraft: discard,
       hasReceipt: !!ui.receipt && !ex, rcTitle: ui.receipt ? 'Registro recebido pelo servidor às ' + ui.receipt.at : '', rcTxt: ui.receipt ? ui.receipt.title + ' · ' + (ui.receipt.n < ui.receipt.tot ? ui.receipt.n + ' de ' + ui.receipt.tot + ' séries registradas (sessão parcial)' : U.plural(ui.receipt.n, 'série registrada', 'séries registradas')) + '. ' + tf + ' vê no painel; isso não quer dizer que já revisou.' : '',

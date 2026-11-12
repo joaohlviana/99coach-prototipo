@@ -81,7 +81,9 @@ t = await txt(al); console.log('3 aluno vê treino:', /FORÇA A/i.test(t), /Agac
 await click(al, /Começar treino/); await al.waitForTimeout(300);
 await click(al, /Concluir sessão/); await al.waitForTimeout(200);
 console.log('  sem marcar série:', /Marque pelo menos uma série/.test(await txt(al)));
-const rows = await al.$$('#app .onb-checkrow'); await rows[0].click(); await rows[1].click(); await al.fill('#ex-r0-1', '8'); await rows[3].click();
+// a tela se redesenha ao marcar (aparece o descanso): busca o botão de novo a cada clique
+const row = async (n) => { await al.locator('#app .onb-checkrow').nth(n).click(); await al.waitForTimeout(200); };
+await row(0); await row(1); await al.fill('#ex-r0-1', '8'); await row(3);
 await click(al, /Concluir sessão/); await al.waitForTimeout(300);
 console.log('  sessão incompleta pede confirmação:', /Encerrar com a sessão incompleta/.test(await txt(al)));
 await click(al, /Encerrar e enviar o que fiz/); await al.waitForTimeout(1200);

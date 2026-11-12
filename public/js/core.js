@@ -96,7 +96,7 @@
   function SIGN_OUT() {
     window.__signingOut = true;
     var done = function () {
-      try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\.(cadastro|db|conta|papeis|sessao|tela)/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
+      try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\./.test(k) && !/^c99\.(demo|semdemo)$/.test(k)) window.localStorage.removeItem(k); }); } catch (_) {}
       location.hash = ''; location.reload();
     };
     if (window.CONTA) window.CONTA.signOut().then(done, done); else done();
@@ -194,7 +194,7 @@
   window.TODAY = function () { var t = U.today; return t.charAt(0).toUpperCase() + t.slice(1); };
   // telas que ainda só existem com dados de exemplo: no produto não abrem (nem digitando o endereço)
   var DEMO_ONLY = {
-    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal' },
+    treinador: { ft03: 'recebimentos', ft04: 'recebimentos', ft05: 'recebimentos', ft06: 'recebimentos', ft07: 'recebimentos', ft08: 'recebimentos', ft10: 'recebimentos', ft12: 'recebimentos', organizacao: 'hoje', social: 'hoje', mensagens: 'alunos', ia: 'hoje', ia02: 'hoje', ia03: 'hoje', ia04: 'hoje', ia05: 'hoje', ia06: 'hoje', ia07: 'hoje', agenda: 'agendareal' },
     aluno: { fc01: 'contratacoes', fc02: 'contratacoes', fc03: 'contratacoes', fc04: 'contratacoes', fc05: 'contratacoes', fc06: 'contratacoes', fc08: 'contratacoes', fc09: 'contratacoes', fc10: 'contratacoes', pedir: 'semvinculo' }
   };
   window.MODPAGE = function (page, role) {
@@ -205,7 +205,7 @@
         var scr = REG.get(page, props.s) || REG.first(page);
         if (scr && DEMO_ONLY[page] && DEMO_ONLY[page][scr.key] && !document.documentElement.classList.contains('demo')) {
           var alt = REG.get(page, DEMO_ONLY[page][scr.key]);
-          if (alt) { if (scr.key !== 'agenda' && !c.__blk) { c.__blk = 1; setTimeout(function () { NOTICE('Esta parte ainda não está disponível.'); }, 0); } scr = alt; }
+          if (alt) { if (scr.key !== 'agenda' && !c.__blk) { c.__blk = 1; var why = scr.key === 'mensagens' ? 'As conversas ficam na tela de cada aluno: abra o aluno para conversar.' : 'Esta parte ainda não está disponível.'; setTimeout(function () { NOTICE(why); }, 0); } scr = alt; }
         }
         // aluno com conta real e sem vínculo: o dia a dia só existe depois do vínculo
         if (page === 'aluno' && !document.documentElement.classList.contains('demo') && window.ACCT && (window.ACCT.area() || (window.ACCT.hasLink && window.ACCT.hasLink()))

@@ -310,6 +310,8 @@ class Component extends DCLogic {
     // conta confirmada no servidor (e-mail e senha ou Google): grava o papel, retoma o cadastro salvo e segue
     const finishReal = (role, email, login) => {
       window.CONTA.setName(st.name);
+      // conta nova: a pessoa declarou 18+ junto com os Termos; grava a declaração na conta
+      if (role && !login && st.terms && window.CONTA.confirmAdult) window.CONTA.confirmAdult();
       const p = role ? window.CONTA.addRole(role) : Promise.resolve();
       p.then(() => window.CONTA.syncRoles()).then((roles) => (login && (roles || []).indexOf('treinador') >= 0 ? window.CONTA.loadTrainer() : null)).then((srv) => {
         if (srv && window.STORE) {

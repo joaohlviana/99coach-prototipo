@@ -72,7 +72,8 @@ console.log('4 aluno vê o treino:', /FORÇA BASE|Força base/.test(t), '| escol
 await click(al, /^Treino B · superiores/); await al.waitForTimeout(400);
 t = await txt(al); console.log('  sessão B aberta:', /Supino/.test(t), /Prancha/.test(t));
 await click(al, /^Começar treino$/); await al.waitForTimeout(500);
-const boxes = await al.$$('#app input[type=checkbox], #app .onb-checkrow'); if (boxes[0]) await boxes[0].click({ force: true }); if (boxes[1]) await boxes[1].click({ force: true });
+// a tela se redesenha ao marcar (aparece o descanso): busca o botão de novo a cada clique
+for (const n of [0, 1]) { await al.locator('#app .onb-checkrow').nth(n).click({ force: true }); await al.waitForTimeout(200); }
 await al.waitForTimeout(300);
 console.log('  botões na execução:', (await al.$$eval('#app button', (e) => e.map((x) => x.textContent.trim()).filter((x) => x.length < 30))).slice(-8).join(' | '));
 t = await txt(al); console.log('  previsto como referência e progresso:', /previsto 4 × 8 · 40 kg/.test(t), /Sem registro anterior deste exercício/.test(t), /2 de 7 séries marcadas · guardado neste aparelho/.test(t));
