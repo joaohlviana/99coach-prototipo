@@ -1,3 +1,4 @@
+import { linha, ehCatalogo } from './_banco.mjs';
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const EV = '<img src=x onerror="window.__x=(window.__x||0)+1">';
@@ -10,6 +11,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' };
   if (rq.method() === 'OPTIONS') return route.fulfill({ status: 200, headers: cors });
   const path = u.pathname.replace('/rest/v1/', '');
+  if (path === 'trainers' && ehCatalogo(u)) return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify([linha(item, { role: 'Treinador ' + EV, pitch: 'Bio ' + EV, offers: [{ title: 'Plano ' + EV, priceCents: 20000, unit: 'mes' }], externalHandle: EV })]) });
   if (path === 'profiles') return route.fulfill({ status: 200, headers: cors, body: JSON.stringify(/id=in/.test(u.search) ? [{ id: 'al', display_name: 'Aluno ' + EV }] : [{ id: 'tr', roles: ['treinador'] }]) });
   if (path === 'trainers') return route.fulfill({ status: 200, headers: cors, body: JSON.stringify([{ id: 'T1' }]) });
   if (path === 'links') return route.fulfill({ status: 200, headers: cors, body: JSON.stringify([{ id: 'L1', status: 'ativo', origin: 'convite', prep: 'assigned', answers: { objetivo: EV }, created_at: '2026-11-01T12:00:00Z', student_id: 'al', trainers: { slug: 'x', name: 'Tr ' + EV, user_id: 'tr' }, workouts: [] }]) });

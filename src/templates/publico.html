@@ -424,6 +424,34 @@
 
       <!-- PUB07 · Favoritos -->
       <!-- PUB17 · Pedir acompanhamento -->
+      <!-- PUB12R · Corrigir, retirar ou reivindicar um perfil (banco real) -->
+      <sc-if value="{{is.perfilpedido}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Perfil público</span><h1 class="pghead__title">{{v.name}}</h1><p class="pghead__sub">Pedir correção, retirada ou assumir este perfil.</p></div></div>
+        <sc-if value="{{v.noT}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Perfil não encontrado no catálogo</b>Ele pode ter sido retirado. Você ainda pode enviar o pedido.</div></div></sc-if>
+        <section class="card onb-sec" aria-labelledby="pp-fix"><h2 class="onb-h2" id="pp-fix">Corrigir ou retirar</h2>
+          <p class="mod-small mod-muted">Não precisa de conta. Você recebe um protocolo para acompanhar; o perfil continua visível durante a análise.</p>
+          <sc-if value="{{v.sent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pedido recebido · protocolo {{v.protocol}}</b>Guardamos o protocolo neste aparelho para você acompanhar aqui. Anote se for usar outro aparelho.</div></div></sc-if>
+          <sc-if value="{{v.hasPrev}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Seu pedido · protocolo {{v.protocol}}</b>Situação: {{v.statusTxt}}. {{v.statusNote}}</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.check}}">Atualizar</button></div></sc-if>
+          <div class="onb-choices" role="radiogroup" aria-label="O que você precisa"><sc-for list="{{v.kinds}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><b>{{o.label}}</b><span>{{o.sub}}</span></button></sc-for></div>
+          <div class="field"><label class="field__label" for="pp-reason">O que precisa ser feito</label><div class="input"><textarea id="pp-reason" rows="4" maxlength="2000" onInput="{{v.setReason}}">{{v.reason}}</textarea></div></div>
+          <div class="field"><label class="field__label" for="pp-mail">E-mail para resposta (opcional)</label><div class="input"><input id="pp-mail" type="email" autocomplete="email" value="{{v.contact}}" onInput="{{v.setContact}}"></div></div>
+          <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">{{v.sendLabel}}</button></div>
+        </section>
+        <section class="card onb-sec" aria-labelledby="pp-claim"><h2 class="onb-h2" id="pp-claim">É meu perfil</h2>
+          <p class="mod-small mod-muted">Assumir um perfil exige conta (18+) e uma revisão da equipe. Nada é transferido na hora e o perfil não muda até a decisão.</p>
+          <sc-if value="{{v.anon}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.login}}">Entrar para pedir</button></div></sc-if>
+          <sc-if value="{{v.logged}}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{v.hasClaimed}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pedido de titularidade</b>{{v.claimed}}</div></div></sc-if>
+            <div class="field"><label class="field__label" for="pp-proof">Como confirmamos que é você</label><div class="input"><textarea id="pp-proof" rows="3" maxlength="2000" placeholder="Ex.: o Instagram do perfil é o meu e posso mandar uma mensagem de lá" onInput="{{v.setProof}}">{{v.proof}}</textarea></div></div>
+            <button type="button" class="onb-checkrow" role="checkbox" aria-checked="{{v.adultOn}}" onClick="{{v.toggleAdult}}"><span class="{{v.adultCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span><span>Tenho 18 anos ou mais</span></button>
+            <sc-if value="{{v.hasCerr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.cerr}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.claim}}">{{v.claimLabel}}</button></div>
+          </sc-if>
+        </section>
+        <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.back}}">Voltar ao perfil</button></div>
+      </sc-if>
+
       <!-- ACC13R · Meus dados: exportar e o que acontece ao sair -->
       <sc-if value="{{is.meusdados}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Conta</span><h1 class="pghead__title">Meus dados</h1><p class="pghead__sub">Leve uma cópia do que é seu e veja o que fica guardado em cada lugar.</p></div></div>
@@ -441,7 +469,12 @@
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button></div>
           </section>
           <section class="card onb-sec" aria-labelledby="md-del"><h2 class="onb-h2" id="md-del">Excluir a conta</h2>
-            <p class="mod-small mod-muted">A exclusão definitiva no servidor ainda não é automática neste site, e não vamos mostrar um botão que finge excluir. O que já funciona de verdade: encerrar seus acompanhamentos, retirar o perfil da busca e sair apagando este aparelho. Para apagar a conta no servidor, fale com a equipe da 99coach pela Ajuda; baixe seus dados antes.</p>
+            <p class="mod-small mod-muted">{{v.delTxt}}</p>
+            <sc-if value="{{v.hasDelErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.delErr}}</span></sc-if>
+            <sc-if value="{{v.delNone}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg mod-danger" onClick="{{v.delAsk}}">Pedir a exclusão da conta</button></div></sc-if>
+            <sc-if value="{{v.delAsked}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Pedido aberto, nada foi apagado ainda</b>Ao confirmar: seus acompanhamentos são encerrados, o perfil sai da busca e a conta deixa de entrar. Depois, os dados pessoais são apagados; recibos de sessão ficam 90 dias sem séries nem rascunhos, para o histórico do treinador.</div></div>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg mod-danger" onClick="{{v.delGo}}">{{v.delGoLabel}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.delCancel}}">Desistir</button></div></sc-if>
+            <sc-if value="{{v.delRunning}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg mod-danger" onClick="{{v.delGo}}">{{v.delGoLabel}}</button></div></sc-if>
             <sc-if value="{{v.isTrainer}}" hint-placeholder-val="{{ false }}"><sc-if value="{{v.hasUnpub}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status"><b>{{v.unpubMsg}}</b></p></sc-if>
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.unpub}}">{{v.unpubLabel}}</button></div></sc-if>
           </section>

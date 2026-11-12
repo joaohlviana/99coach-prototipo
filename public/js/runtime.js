@@ -254,7 +254,7 @@
     if (name === 'operacao' || name === 'telas' || name === 'servico') return ['home', {}];
     if (name === 'treinador' && area !== 'treinador') return area === 'aluno' ? ['aluno', {}] : ['onboarding', { flow: 'entrar' }];
     if (name === 'aluno' && !area) return ['onboarding', { flow: 'entrar' }];
-    if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir'].indexOf(params.s || '') < 0) return ['home', {}];
+    if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir', 'perfilpedido'].indexOf(params.s || '') < 0) return ['home', {}];
     if (name === 'perfil' && area !== 'treinador' && !(window.REAL && window.REAL.has(params.id))) return ['home', {}];
     return [name, params];
   }
@@ -376,7 +376,7 @@
     if (hsh === 'esporte') name = 'esporte';
     else if (hsh.indexOf('servico') === 0) { name = 'servico'; params = { offer: hsh.split('-')[1] || 'online' }; }
     else if (hsh.indexOf('onboarding') === 0) { name = 'onboarding'; params = { flow: hsh.split('-')[1] || 'treinador', scn: hsh.split('-')[2] || '' }; }
-    else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' }; }
+    else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = /^(pedir|perfilpedido)$/.test(hp[1] || '') ? { s: hp[1], id: hp.slice(2).join('-'), scn: '' } : { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' }; }
     else if (hsh.indexOf('telas') === 0) { name = 'telas'; params = { id: hsh.split('-')[1] || '' }; }
     else if (hsh.indexOf('perfil') === 0) { name = 'perfil'; params = { id: hsh.slice(7) || 'rafael' }; }
     var g0 = guard(name, params), moved = g0[0] !== name; name = g0[0]; params = g0[1];

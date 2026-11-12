@@ -48,11 +48,19 @@ export default async function Page({ params }) {
           <p>{[t.pres ? 'Atende presencialmente em ' + t.city : '', t.onl ? 'Atende online' : ''].filter(Boolean).join(' · ')}</p>
         </div>
       </section>
+      {t.importado ? (
       <section aria-labelledby="h-orig" className="ssr-aviso">
-        <h2 id="h-orig">Perfil importado, ainda não confirmado</h2>
-        <p>Este perfil foi criado a partir de dados públicos e não foi confirmado por {t.name.split(' ')[0]}. Por isso não mostramos foto, avaliações, preço nem disponibilidade, e não há contratação pelo 99coach.</p>
-        <p>É você, ou há algo errado? <a href="/app#publico-ajuda-perfil">Veja como corrigir, reivindicar ou pedir a retirada</a>, sem precisar de conta.</p>
-      </section>
+          <h2 id="h-orig">Perfil importado, ainda não confirmado</h2>
+          <p>Este perfil foi criado a partir de dados públicos e não foi confirmado por {t.name.split(' ')[0]}. Por isso não mostramos foto, avaliações, preço nem disponibilidade, e não há contratação pelo 99coach.</p>
+          <p>É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar este perfil</a>. Corrigir e retirar não precisam de conta.</p>
+        </section>
+      ) : (
+        <section aria-labelledby="h-ped" className="ssr-aviso">
+          <h2 id="h-ped">Acompanhamento</h2>
+          <p>Perfil publicado por {t.name.split(' ')[0]} no 99coach. Pedido não é vínculo: {t.name.split(' ')[0]} responde e, se aceitar, o acompanhamento começa. Nada é cobrado no pedido.</p>
+          <p><a href={'/app#publico-pedir-' + t.id}>Pedir acompanhamento</a></p>
+        </section>
+      )}
       {esp.length ? <section aria-labelledby="h-esp"><h2 id="h-esp">Modalidades</h2>
         <ul className="ssr-chips">{esp.map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + (cid ? '/' + cid : '')}>{s.label}{cid ? ' em ' + curta(t.city) : ''}</a></li>)}</ul></section> : null}
       {parecidos.length ? <section aria-labelledby="h-par"><h2 id="h-par">Outros profissionais{principal ? ' de ' + principal.label : ''}{cid ? ' em ' + curta(t.city) : ''}</h2>

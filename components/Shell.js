@@ -55,7 +55,7 @@ export function Cartao({ t }) {
         <a href={'/treinador/' + t.id}><b>{t.name}</b></a>
         {t.spec ? <span>{t.spec}</span> : null}
         <span>{onde}</span>
-        <small>Perfil importado · não confirmado pelo profissional</small>
+        {t.importado ? <small>Perfil importado · não confirmado pelo profissional</small> : null}
       </div>
     </li>
   );

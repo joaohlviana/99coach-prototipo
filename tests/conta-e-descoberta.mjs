@@ -1,4 +1,5 @@
 // Home e perfil conforme a situação real do aluno, continuar busca, meus dados, descanso, sair apaga o aparelho.
+import { linha, ehCatalogo } from './_banco.mjs';
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const LIVE = { slug: 'marina-duarte-teste', name: 'Marina Duarte', initials: 'MD', photo: null, specialty: 'CrossFit', sports: ['crossfit'], city: { label: 'Londrina, PR' }, formats: ['presencial', 'online'], imported: false, receivesRequests: true, headlineOffers: [], publishedAt: '2026-11-10' };
@@ -12,6 +13,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   if (rq.method() === 'OPTIONS') return route.fulfill({ status: 200, headers: cors });
   const j = (s, d) => route.fulfill({ status: s, headers: cors, body: JSON.stringify(d) });
   const path = u.pathname.replace('/rest/v1/', '');
+  if (path === 'trainers' && ehCatalogo(u)) return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify([linha(LIVE, { role: 'Treinadora de CrossFit', pitch: 'Treino adultos.', offers: [{ title: 'Acompanhamento online', priceCents: 20000, unit: 'mes' }] })]) });
   if (rq.method() === 'PATCH') srv.patches.push(path + ' ' + rq.postData());
   if (path === 'requests') return j(200, srv.reqs);
   if (path === 'links') return j(200, srv.links);
@@ -77,7 +79,7 @@ const o = js ? JSON.parse(js[1]) : {};
 console.log('  arquivos:', files.map((f) => f[0].replace(/\d{4}-\d{2}-\d{2}/, 'DATA')).join(', '));
 console.log('  json:', o.conta && o.conta.display_name, '| vínculos', (o.vinculos || []).length, '| sessões', (o.sessoes || []).length, '| mensagens', (o.mensagens || []).length, '| sem token:', !/access_token|refresh_token/.test(js ? js[1] : 'access_token'));
 console.log('  csv:', cs && cs[1].split('\r\n')[1]);
-t = await txt(); console.log('  recibo:', /Arquivo gerado às/.test(t), '| exclusão honesta:', /ainda não é automática/.test(t));
+t = await txt(); console.log('  recibo:', /Arquivo gerado às/.test(t), '| exclusão honesta:', /nada é apagado até você confirmar/.test(t));
 // 7. sair apaga tudo o que é da conta
 await p.evaluate(() => localStorage.setItem('c99.sessaoTreino.al.x', '{}'));
 await press(/^Sair e apagar deste aparelho$/); await p.waitForTimeout(2500);

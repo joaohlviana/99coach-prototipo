@@ -8,8 +8,8 @@
     "dev": "npm run shell && next dev -p 5173",
     "build": "npm run shell && next build",
     "start": "next start -p 5173",
-    "sync": "node scripts/sync-dados.mjs",
-    "vercel-build": "(test \"$SYNC\" = \"1\" && node scripts/sync-dados.mjs || true) && npm run build",
+    "sync": "node scripts/sync-supabase.mjs",
+    "vercel-build": "node scripts/sync-supabase.mjs && npm run build",
     "test": "bash tests/run.sh"
   },
   "dependencies": {

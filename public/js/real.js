@@ -210,7 +210,7 @@
   }
   window.__refreshLinks = refreshLinks;
   // só depois que todos os módulos carregaram (a fila de pedidos e a lista de alunos já existem)
-  var bootSync = function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); };
+  var bootSync = function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); FAV.sync(); };
   if (document.readyState === 'complete') setTimeout(bootSync, 0); else window.addEventListener('load', bootSync);
   window.__applyMe = function () { applyMe(); };
   // quem aparece no rodapé do menu: a conta cadastrada, sem a foto de exemplo
@@ -283,11 +283,23 @@
   var details = load('c99.perfis', {}), asked = {};
   function fetchDetail(id) {
     if (asked[id] || !window.fetch) return; asked[id] = 1;
-    fetch('api/v1/trainers/' + encodeURIComponent(id)).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (!d || !d.slug) return;
-      details[id] = { role: d.role, pitch: d.pitch, bio: d.bio, serviceArea: d.serviceArea, externalHandle: d.externalHandle, imported: d.imported, receivesRequests: d.receivesRequests, offers: d.offers, credentials: d.credentials };
-      save('c99.perfis', details); rerender();
-    }).catch(function () {});
+    var keep = function (d) { details[id] = d; save('c99.perfis', details); rerender(); };
+    var legacy = function () {
+      fetch('api/v1/trainers/' + encodeURIComponent(id)).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (!d || !d.slug) return;
+        keep({ role: d.role, pitch: d.pitch, bio: d.bio, serviceArea: d.serviceArea, externalHandle: d.externalHandle, imported: d.imported, receivesRequests: d.receivesRequests, offers: d.offers, credentials: d.credentials });
+      }).catch(function () {});
+    };
+    // perfil vem do banco (99coach-v2); a API do site anterior só entra se o banco não responder
+    if (!window.CONTA || !window.CONTA.pub) return legacy();
+    window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,area,regions,offers(title,price_cents,unit,status,headline,sort)&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
+      var d = r.ok && Array.isArray(r.data) ? r.data.filter(function (x) { return x && x.slug === id; })[0] : null;
+      if (!d) return legacy();
+      var offers = (d.offers || []).filter(function (o) { return o.status === 'publicada'; }).sort(function (a, b) { return (b.headline ? 1 : 0) - (a.headline ? 1 : 0) || (a.sort || 0) - (b.sort || 0); })
+        .map(function (o) { return { title: o.title, priceCents: o.price_cents, unit: o.unit }; });
+      keep({ role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',
+        receivesRequests: d.origin !== 'importado' && d.availability !== 'nao_aceita', offers: offers, credentials: d.cref && d.cref_status !== 'nao_informado' ? [{ kind: 'CREF', status: d.cref_status }] : [] });
+    });
   }
   function rerender() { if (window.__rerender) window.__rerender(); }
 
@@ -313,7 +325,18 @@
         if (cursor && page < 4) return next();
       });
     };
-    next().then(function () {
+    // perfis publicados por quem se cadastrou no app vêm do banco; a API antiga só entra se o banco não responder
+    var fromDb = !window.CONTA || !window.CONTA.pub ? Promise.resolve(false) : window.CONTA.pub('trainers?select=slug,name,initials,photo_url,specialty,formats,published_at,cities(name,uf),trainer_sports(sport_slug),offers(title,price_cents,unit,status,headline)&status=eq.publicado&origin=neq.importado&order=published_at.desc&limit=200').then(function (r) {
+      var L = r.ok && Array.isArray(r.data) ? r.data.filter(function (t) { return t && t.slug && t.name; }) : [];
+      L.forEach(function (t) {
+        var of = (t.offers || []).filter(function (o) { return o.status === 'publicada'; });
+        got.push({ slug: t.slug, name: t.name, initials: t.initials || '', photo: t.photo_url || null, specialty: t.specialty || '', sports: (t.trainer_sports || []).map(function (s) { return s.sport_slug; }),
+          city: t.cities ? { label: t.cities.name + ', ' + t.cities.uf } : null, formats: t.formats || [], imported: false, receivesRequests: true,
+          headlineOffers: of.map(function (o) { return { title: o.title, priceCents: o.price_cents, unit: o.unit }; }), publishedAt: (t.published_at || '').slice(0, 10) });
+      });
+      return r.ok;
+    });
+    fromDb.then(function (ok) { return ok ? null : next(); }).then(function () {
       if (!got.length) return;
       got.forEach(function (t) { live[t.slug] = t; });
       var rows = got.concat(items.filter(function (x) { return !live[x.id]; }).map(function (x) { return [x.id, x.name, x.ini, x.photo, x.spec, x.raw, x.city, (x.pres ? 'p' : '') + (x.onl ? 'o' : ''), x.pub]; }));
@@ -327,6 +350,54 @@
   if (window.fetch) fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); rerender(); }
   }).catch(function () {});
+
+  // ---------- favoritos ----------
+  // Visitante: ficam neste aparelho. Com conta: ficam na conta (servidor) e valem em qualquer aparelho.
+  // Favoritar antes de entrar sobrevive ao login: ao entrar, o que estava no aparelho vai para a conta uma vez.
+  var FAV = (function () {
+    var map = load('c99.favoritos', {}), ids = {}, synced = false;
+    var C = function () { return window.CONTA && window.CONTA.session() ? window.CONTA : null; };
+    var me = function () { var u = window.CONTA && window.CONTA.user(); return u && u.id; };
+    var idOf = function (slug) {
+      if (ids[slug]) return Promise.resolve(ids[slug]);
+      return window.CONTA.pub('trainers?select=id&slug=eq.' + encodeURIComponent(slug)).then(function (r) { var d = r.ok && r.data && r.data[0]; if (d) ids[slug] = d.id; return d ? d.id : null; });
+    };
+    var push = function (slug, on) {
+      var c = C(); if (!c) return Promise.resolve(true);
+      return idOf(slug).then(function (tid) {
+        if (!tid) return false;
+        return on ? c.db('POST', 'favorites', { user_id: me(), trainer_id: tid }, 'resolution=ignore-duplicates,return=minimal').then(function (r) { return r.ok || r.status === 409; })
+          : c.db('DELETE', 'favorites?trainer_id=eq.' + tid + '&user_id=eq.' + me()).then(function (r) { return r.ok; });
+      });
+    };
+    var api = {
+      map: function () { return Object.assign({}, map); },
+      has: function (slug) { return !!map[slug]; },
+      count: function () { return Object.keys(map).length; },
+      where: function () { return C() ? 'na sua conta' : 'neste aparelho'; },
+      set: function (slug, on) {
+        if (!slug || !!map[slug] === !!on) return;
+        if (on) map[slug] = true; else delete map[slug];
+        save('c99.favoritos', map);
+        push(slug, on).then(function (ok) { if (!ok && window.NOTICE) window.NOTICE('Não foi possível salvar o favorito na sua conta agora. Ele continua neste aparelho.'); });
+      },
+      // aplica um mapa inteiro (como as páginas guardam no estado)
+      replace: function (next) { var all = {}; Object.keys(map).concat(Object.keys(next || {})).forEach(function (k) { all[k] = 1; }); Object.keys(all).forEach(function (k) { api.set(k, !!(next || {})[k]); }); },
+      // ao entrar: traz os favoritos da conta e envia os do aparelho
+      sync: function () {
+        var c = C(); if (!c || synced) return; synced = true;
+        c.db('GET', 'favorites?select=trainers(slug)&user_id=eq.' + me()).then(function (r) {
+          if (!r.ok) { synced = false; return; }
+          var server = {}; (r.data || []).forEach(function (f) { if (f.trainers && f.trainers.slug) server[f.trainers.slug] = true; });
+          Object.keys(map).forEach(function (k) { if (!server[k]) push(k, true); });
+          Object.keys(server).forEach(function (k) { map[k] = true; });
+          save('c99.favoritos', map); rerender();
+        });
+      }
+    };
+    return api;
+  })();
+  window.FAV = FAV;
 
   // ---------- gravação local ----------
   var STORE = {

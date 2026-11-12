@@ -12,7 +12,9 @@ class Component extends DCLogic {
       code: 0, loc: 0, pedCanceled: false, sx: null, sxq: '', sxIa: false, sxTab: 'Treinadores', sxR1: true, sxR2: true, sxY: 150, sxX: 40, sxW: 640 };
   }
   renderVals() {
-    const S = this.state, B = (id) => Component.img(id), set = (p) => this.setState(p);
+    const B = (id) => Component.img(id), set = (p) => { if (p && p.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(p.favs); this.setState(p); };
+    if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
+    const S = this.state;
     const yOf = (e) => { try { const el = e && (e.currentTarget || e.target); if (!el || !el.getBoundingClientRect) return S.y; const r = el.getBoundingClientRect(); return Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) { return S.y; } };
     const pageScroll = () => { try { return document.documentElement.scrollHeight > window.innerHeight + 40; } catch (_) { return false; } };
     const toastAt = (e, msg, undo) => ({ toast: { msg: msg, undo: undo || null }, ty: yOf(e) + 52 });
@@ -89,7 +91,7 @@ class Component extends DCLogic {
         why2: t.imp ? 'Perfil importado · não confirmado' : [S.mode === 'qualquer' ? (t.pres && inCity(t) ? (t.onl ? 'Presencial e online' : 'Presencial') : 'Online') : '', t.av === 'no' ? t.avLong.replace(' (', ' · ').replace(')', '') : ''].filter(Boolean).join(' · '), whyCls: t.av === 'yes' && !t.imp ? 'is-ok' : '', hasPrice: !!off, offName: off ? off[0] : '', price: off ? off[1] : '', unit: off ? off[2] : '', reason,
         hid: !!S.hidden[t.id], vis: !S.hidden[t.id],
         favCls: 'tc__fav' + (on ? ' is-on' : ''), favOn: on ? 'true' : 'false', favLabel: (on ? 'Remover ' : 'Salvar ') + t.name + (on ? ' dos salvos' : ''),
-        fav: (e) => { const nv = !S.favs[t.id]; set(Object.assign({ favs: Object.assign({}, S.favs, { [t.id]: nv }) }, toastAt(e, nv ? (visitor ? t.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : t.name + ' salvo em Salvos.') : t.name + ' removido dos salvos.', { k: 'fav', id: t.id, v: !nv }))); },
+        fav: (e) => { const nv = !S.favs[t.id]; set(Object.assign({ favs: Object.assign({}, S.favs, { [t.id]: nv }) }, toastAt(e, nv ? ((document.documentElement.classList.contains('demo') ? visitor : !(window.CONTA && window.CONTA.session())) ? t.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : t.name + ' salvo em Salvos.') : t.name + ' removido dos salvos.', { k: 'fav', id: t.id, v: !nv }))); },
         open: window.NAV.has(t.id) ? () => window.NAV.go('perfil', { id: t.id }, this) : open('trainer', { id: t.id, ctx: ctx }), why: open('why', { id: t.id, ctx: ctx, reason: reason }),
         unhide: () => set({ hidden: Object.assign({}, S.hidden, { [t.id]: false }), toast: null })
       };

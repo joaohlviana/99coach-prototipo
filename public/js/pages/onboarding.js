@@ -322,6 +322,10 @@ class Component extends DCLogic {
         set({ conta: true, real: true, pw: '', toast: '' });
         let pend = ''; try { pend = localStorage.getItem('c99.conviteCode') || ''; } catch (_) {}
         if (pend && window.NAV) return window.NAV.go('publico', { s: 'convite', id: pend }, this);
+        // voltar para onde a pessoa estava quando precisou entrar (ex.: "é meu perfil")
+        let back = ''; try { back = localStorage.getItem('c99.depoisEntrar') || ''; localStorage.removeItem('c99.depoisEntrar'); } catch (_) {}
+        const m = /^#publico-perfilpedido-(.+)$/.exec(back);
+        if (m && window.NAV) return window.NAV.go('publico', { s: 'perfilpedido', id: m[1] }, this);
         afterAuth();
       });
     };

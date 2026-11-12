@@ -7,8 +7,9 @@ class Component extends DCLogic {
   constructor(props) { super(props); this.state = Object.assign({}, this.base(), (props && props.init) || {}); try { if (!Component.__cap && typeof document !== 'undefined' && document.addEventListener) { Component.__cap = 1; document.addEventListener('click', (e) => { try { const t = e.target; const el = (t && t.closest && t.closest('button,a,[role=switch]')) || t; const r = el.getBoundingClientRect(); Component.__y = Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) {} }, true); } } catch (_) {} }
   base() { return { scen: 'londrina', mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial', lang: 'Qualquer', avail: false, sort: 'rel', sortInfo: false, page: 1, more: 0, view: 'lista', mapCap: 'off', load: 'ok', removed: false, sheet: '', pend: null, favs: {}, toast: null, sel: '', open: '', back: '', faq: 0, seo: false, codeSent: false, auth: 'login', loc: '', info: '', prog: -1, dd: '', foco: '', area: '' }; }
   renderVals() {
+    if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
     const st = this.state;
-    const set = (o) => this.setState(o);
+    const set = (o) => { if (o && o.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(o.favs); this.setState(o); };
     const B = (id) => Component.img(id);
     const PER = 8;
     const TD = [

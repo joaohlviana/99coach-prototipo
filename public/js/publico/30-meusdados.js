@@ -46,6 +46,15 @@ REG.screen({
       if (ui.busy2) return; ctx.setUi({ busy2: true });
       C.unpublish().then(function (r) { ctx.setUi({ busy2: false, unpub: r.ok ? 'Perfil retirado da busca às ' + U.now() + '. Sua conta e seus alunos continuam.' : 'Não foi possível retirar agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); });
     };
+    // exclusão de conta pelo banco: pedir → confirmar (encerra vínculos, retira perfil, bloqueia a entrada) → concluir (apaga identidade)
+    if (logged && !ui.delAsked0) { ctx.setUi({ delAsked0: true }); C.db('GET', 'account_deletions?select=id,status,requested_at,completed_at&order=requested_at.desc&limit=1').then(function (r) { ctx.setUi({ del: r.ok && r.data && r.data[0] ? r.data[0] : null, delLoadErr: !r.ok }); }); }
+    var del = ui.del && ui.del.status !== 'cancelado' ? ui.del : null;
+    var rpc = function (fn, then) { if (ui.dbusy) return; ctx.setUi({ dbusy: true, delErr: '' }); C.db('POST', 'rpc/' + fn, { p_idem: fn + ':' + (C.user() || {}).id + ':' + Date.now() }).then(function (r) {
+      var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
+      if (!r.ok) return ctx.setUi({ dbusy: false, delErr: r.offline ? 'Sem conexão: nada foi alterado.' : 'O servidor não aceitou: ' + (r.msg || r.status) + '. Nada foi apagado.' });
+      ctx.setUi({ dbusy: false, del: d && d.status ? { status: d.status } : null }); if (then) then(d);
+    }); };
+    var delDone = function (d) { if (d && d.status === 'concluido') { ctx.toast('Conta excluída. Saindo deste aparelho.'); setTimeout(function () { GO('@sair'); }, 1200); } };
     var local = 0; try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\./.test(k)) local++; }); } catch (_) {}
     return {
       logged: logged, anon: !logged, login: function () { GO('@onboarding', { flow: 'entrar' }); },
@@ -55,6 +64,11 @@ REG.screen({
       isTrainer: area === 'treinador', unpub: unpub, unpubLabel: ui.busy2 ? 'Retirando…' : 'Retirar meu perfil da busca', unpubMsg: ui.unpub || '', hasUnpub: !!ui.unpub,
       localTxt: U.plural(local, 'item guardado', 'itens guardados') + ' neste aparelho (rascunhos, favoritos, última busca, sessão). Sair apaga todos.',
       signOut: function () { GO('@sair'); },
+      delNone: !del, delAsked: !!del && del.status === 'pedido', delRunning: !!del && del.status === 'em_processamento',
+      delTxt: !del ? 'Excluir apaga sua conta e seus dados pessoais. Baixe seus dados antes. Primeiro você pede; nada é apagado até você confirmar.' : (del.status === 'em_processamento' ? 'Exclusão em andamento: acompanhamentos encerrados, perfil fora da busca e entrada bloqueada. Conclua para apagar os dados pessoais.' : 'Você pediu a exclusão. Confirme para começar ou desista.'),
+      delAsk: function () { rpc('request_account_deletion'); }, delCancel: function () { rpc('cancel_account_deletion'); },
+      delGo: function () { rpc('advance_account_deletion', delDone); }, delGoLabel: ui.dbusy ? 'Processando…' : (del && del.status === 'em_processamento' ? 'Concluir a exclusão' : 'Confirmar e começar a exclusão'),
+      delErr: ui.delErr || '', hasDelErr: !!ui.delErr,
       back: function () { GO(area === 'treinador' ? 'TMENU' : 'AMENU'); }
     };
   }

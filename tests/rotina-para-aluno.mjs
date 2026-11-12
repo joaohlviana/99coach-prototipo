@@ -49,7 +49,7 @@ await tr.evaluate(() => { DB.rotinas.push({ id: 'rx1', name: 'Força base', fold
 // 1. pelo aluno: escolher a rotina
 await tr.evaluate(() => GO('H05', { id: 'lk_L1' })); await tr.waitForTimeout(900);
 let t = await txt(tr);
-console.log('1 tela do aluno mostra origem do treino:', /De onde vem o treino/.test(t), /Força base/.test(t));
+console.log('1 tela do aluno mostra origem do treino:', /De onde vem o treino/i.test(t), /Força base/.test(t));
 await click(tr, /^Força base$/); await tr.waitForTimeout(400);
 t = await txt(tr);
 console.log('  resumo:', /2 sessões · 4 exercícios/.test(t), /Treino A · inferiores/.test(t), /72,5 kg/.test(t), '| formulário manual escondido:', !(await tr.$('#rx-title')));

@@ -1,4 +1,5 @@
 // Pedido de acompanhamento: busca ao vivo → perfil real → pedir → treinador aceita → vínculo.
+import { linha, ehCatalogo } from './_banco.mjs';
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const srv = { reqs: [], links: [], log: [] };
@@ -15,6 +16,7 @@ async function mk(who, tok, uid, wantRole) {
     const j = (s, d) => route.fulfill({ status: s, headers: cors, body: d == null ? '' : JSON.stringify(d) });
     const body = rq.postData() ? JSON.parse(rq.postData()) : {};
     const path = u.pathname.replace('/rest/v1/', '');
+  if (path === 'trainers' && ehCatalogo(u)) return route.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify([linha(LIVE, { role: 'Treinadora de CrossFit', pitch: 'Treino adultos iniciantes.', offers: [{ title: 'Acompanhamento online', priceCents: 20000, unit: 'mes' }] })]) });
     srv.log.push(who + ' ' + rq.method() + ' ' + path + u.search.slice(0, 60) + ' ' + (rq.postData() || '').slice(0, 100));
     if (path === 'trainers') return j(200, [{ id: 'T1', offers: [{ id: 'OF1', key: 'principal' }] }]);
     if (path === 'requests' && rq.method() === 'POST') {

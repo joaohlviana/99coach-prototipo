@@ -29,7 +29,7 @@
   // chamada autenticada ao banco (PostgREST), com uma renovação de sessão se o token venceu
   function db(method, path, body, prefer) {
     var go = function () {
-      var h = { apikey: KEY, 'Content-Type': 'application/json', Authorization: 'Bearer ' + (sess ? sess.access_token : '') };
+      var h = { apikey: KEY, 'Content-Type': 'application/json' }; if (sess && sess.access_token) h.Authorization = 'Bearer ' + sess.access_token;
       if (prefer) h.Prefer = prefer;
       return fetch(URL0 + '/rest/v1/' + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
         return r.text().then(function (t) { var d = null; try { d = t ? JSON.parse(t) : null; } catch (_) {} return { ok: r.ok, status: r.status, data: d, msg: d && (d.message || d.msg || d.error) || '' }; });
@@ -231,6 +231,10 @@
     // publica o perfil (passa a aparecer na busca do site)
     publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },
+    // leitura pública (o que qualquer visitante pode ver), sem depender de conta
+    pub: function (path) { return call('GET', '/rest/v1/' + path); },
+    db: function (method, path, body, prefer) { return db(method, path, body, prefer); },
+    rpc: function (fn, args) { return db('POST', 'rpc/' + fn, args || {}); },
     // login com Google: vai ao servidor de contas e volta para esta página já autenticado
     oauth: function (provider, o) {
       try { LS.setItem('c99.oauth', JSON.stringify(o || {})); } catch (_) {}
