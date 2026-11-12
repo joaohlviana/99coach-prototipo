@@ -10,7 +10,7 @@ REG.screen({
       var a = document.createElement('a'), url = URL.createObjectURL(new Blob([text], { type: type }));
       a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
     };
-    var csv = function (rows) { return rows.map(function (r) { return r.map(function (v) { v = v == null ? '' : String(v); return /[",;\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';'); }).join('\r\n'); };
+    var csv = function (rows) { return rows.map(function (r) { return r.map(function (v) { v = v == null ? '' : String(v); if (/^[=+\-@\t\r]/.test(v) && isNaN(Number(v.replace(',', '.')))) v = "'" + v; return /[",;\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';'); }).join('\r\n'); };
     var run = function () {
       if (ui.busy) return;
       ctx.setUi({ busy: true, err: '', done: '' });

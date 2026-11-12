@@ -484,7 +484,8 @@ class Component extends DCLogic {
             set({ busy: false });
             if (r.session) return done();
             if (r.offline) return set({ toast: 'Sem conexão com o servidor da 99Coach. Verifique a internet e tente de novo.' });
-            if (!login && r.exists) return set({ emailExists: true, toast: '' });
+            // e-mail que já tem conta: a tela não revela isso; pede o código enviado ao e-mail (quem é dono entra na conta que já existe)
+            if (!login && r.exists) return window.CONTA.sendCode(email, st.name).then(() => { set({ step: 'codigo', code: '', real: true, toast: 'Enviamos um código para ' + email + ' para confirmar que o e-mail é seu.' }); top(); });
             if (login && r.wrong) return set({ pwErr: true, toast: 'E-mail ou senha não conferem.' });
             if (login && r.unconfirmed) return window.CONTA.sendCode(email, st.name).then(() => { set({ step: 'codigo', code: '', real: true, toast: 'Enviamos um código para ' + email + ' para confirmar a conta.' }); top(); });
             if (!login && r.ok) return window.CONTA.sendCode(email, st.name).then(() => { set({ step: 'codigo', code: '', real: true, toast: 'Enviamos um código para ' + email + '.' }); top(); });

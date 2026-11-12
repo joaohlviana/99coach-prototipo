@@ -44,7 +44,8 @@ console.log('senha curta ->', await st());
 await fill('Marina Duarte', 'ja@existe.com', 'senhaboa123');
 await (await btn(/^Criar conta$/)).click();
 await p.waitForTimeout(500);
-console.log('já existe ->', await st(), '| aviso:', await p.evaluate(() => /já tem conta/.test(document.getElementById('app').textContent)));
+console.log('e-mail que já tem conta -> não revela:', await p.evaluate(() => !/Este e-mail já tem conta/i.test(document.getElementById('app').textContent)), '| pede o código do e-mail:', await p.evaluate(() => /Enviamos um código/.test(document.getElementById('app').textContent)));
+await (await btn(/^Trocar e-mail$/)).click(); await p.waitForTimeout(300);
 // cadastro certo
 await fill('Marina Duarte', 'marina@teste.com', 'senhaboa123');
 await (await btn(/^Criar conta$/)).click();

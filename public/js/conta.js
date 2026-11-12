@@ -41,7 +41,7 @@
         return r.text().then(function (t) { var d = null; try { d = t ? JSON.parse(t) : null; } catch (_) {} return { ok: r.ok, status: r.status, data: d, msg: d && (d.message || d.msg || d.error) || '' }; });
       }, function () { return { ok: false, offline: true, msg: 'Sem conexão com o servidor.' }; });
     };
-    return go().then(function (r) { return r.status === 401 ? refresh().then(function (ok) { return ok ? go() : r; }) : r; });
+    return go().then(function (r) { return r.status === 401 && sess ? refresh().then(function (ok) { return ok ? go() : expired(r); }) : r; }).then(friendly);
   }
   // chamada ao serviço de contas com o token da sessão
   function auth(method, path, body) {
@@ -49,6 +49,22 @@
     return fetch(URL0 + path, { method: method, headers: h, body: body ? JSON.stringify(body) : undefined }).then(function (r) {
       return r.text().then(function (t) { var d = null; try { d = t ? JSON.parse(t) : null; } catch (_) {} return { ok: r.ok, status: r.status, data: d, msg: d && (d.msg || d.message || d.error_description || d.error) || '' }; });
     }, function () { return { ok: false, offline: true, msg: 'Sem conexão com o servidor.' }; });
+  }
+  // sessão vencida e sem renovação: avisa uma vez e leva para entrar (em vez de "o servidor não recebeu")
+  var expiredShown = false;
+  function expired(r) {
+    r.expired = true; r.msg = 'Sua sessão expirou. Entre de novo para continuar.';
+    if (!expiredShown && !window.__signingOut) { expiredShown = true; keep(null); try { LS.removeItem('c99.vinculos'); } catch (_) {}
+      setTimeout(function () { if (window.NOTICE) window.NOTICE('Sua sessão expirou. Entre de novo para continuar; nada do que estava salvo no servidor se perdeu.'); if (window.GO) window.GO('@onboarding', { flow: 'entrar' }); }, 0); }
+    return r;
+  }
+  // mensagens técnicas do banco não vão para a tela: códigos conhecidos passam (as telas traduzem), o resto vira texto simples
+  function friendly(r) {
+    if (!r || r.ok || r.offline) return r;
+    if (r.status === 429) { r.raw = r.msg; r.msg = 'Muitas tentativas em pouco tempo. Aguarde um minuto e tente de novo.'; return r; }
+    var m = String(r.msg || '');
+    if (/violates|constraint|column|relation|syntax|schema cache|permission denied|JWT|PGRST|duplicate key|does not exist|function public\./i.test(m)) { r.raw = m; try { console.warn('[99coach] erro do servidor:', m); } catch (_) {} r.msg = 'não foi possível concluir agora'; }
+    return r;
   }
   function hash(t) { var h = 0x811c9dc5; t = String(t); for (var i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 0x1000193); return (h >>> 0).toString(36); }
   function slugify(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
@@ -105,7 +121,7 @@
         var tryInsert = function (slug) {
           return db('POST', 'trainers?select=id,slug', Object.assign({}, row, { slug: slug, user_id: uid, origin: 'cadastro', status: 'rascunho' }), 'return=representation').then(function (x) {
             if (x.ok && x.data && x.data[0]) { tr = x.data[0]; return x; }
-            if (!x.ok && /duplicate|unique/i.test(x.msg || '') && ++n < 3) return tryInsert(base + '-' + Math.random().toString(36).slice(2, 6));
+            if (!x.ok && /duplicate|unique/i.test(x.raw || x.msg || '') && ++n < 3) return tryInsert(base + '-' + Math.random().toString(36).slice(2, 6));
             return x;
           });
         };
@@ -217,7 +233,7 @@
         var t = r.ok && r.data && r.data[0]; if (!t) return { ok: false, msg: 'Perfil não encontrado.' };
         var of = (t.offers || []).filter(function (o) { return o.key === 'principal'; })[0];
         return db('POST', 'requests', { trainer_id: t.id, student_id: sess.user.id, offer_id: of ? of.id : null, message: message || null, search_sport: (search && search.esporte) || null, search_city: (search && search.cidade) || null }).then(function (x) {
-          if (!x.ok && /requests_one_pending|duplicate/i.test(x.msg || '')) { x.ok = true; x.already = true; }
+          if (!x.ok && /requests_one_pending|duplicate/i.test(x.raw || x.msg || '')) { x.ok = true; x.already = true; }
           return x;
         });
       });
