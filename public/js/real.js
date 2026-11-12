@@ -353,20 +353,30 @@
       });
       return r.ok;
     });
-    fromDb.then(function (ok) { return ok ? null : next(); }).then(function () {
-      if (!got.length) return;
+    fromDb.then(function (ok) { LOADST.live = ok ? 'ok' : 'falha'; return ok ? null : next().then(function () { if (got.length) LOADST.live = 'ok'; }); }).then(function () {
+      if (!got.length) { rerender(); return; }
       got.forEach(function (t) { live[t.slug] = t; });
       var rows = got.concat(items.filter(function (x) { return !live[x.id]; }).map(function (x) { return [x.id, x.name, x.ini, x.photo, x.spec, x.raw, x.city, (x.pres ? 'p' : '') + (x.onl ? 'o' : ''), x.pub]; }));
       setItems(rows); rerender();
-    }).catch(function () {});
+    }).catch(function () { rerender(); });
   }
   REAL.isLive = function (id) { return !!live[id]; };
+  // estado real do carregamento, para a busca separar "vazio" de "falha" (plano: vazio × falha × fim)
+  var LOADST = { base: 'carregando', live: 'carregando' };
+  REAL.status = function () { return LOADST; };
+  REAL.retry = function () { LOADST = { base: 'carregando', live: 'carregando' }; rerender(); fetchLive(); fetchBase(); };
   setTimeout(fetchLive, 0);
 
   // base completa gerada por `npm run sync`
-  if (window.fetch) fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-    if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); rerender(); }
-  }).catch(function () {});
+  function fetchBase() {
+    if (!window.fetch) { LOADST.base = 'falha'; return; }
+    fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); LOADST.base = 'ok'; }
+      else LOADST.base = 'falha';
+      rerender();
+    }).catch(function () { LOADST.base = 'falha'; rerender(); });
+  }
+  fetchBase();
 
   // ---------- favoritos ----------
   // Visitante: ficam neste aparelho. Com conta: ficam na conta (servidor) e valem em qualquer aparelho.

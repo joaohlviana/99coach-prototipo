@@ -26,5 +26,24 @@ await p.locator('#app .tc__name').first().click(); await p.waitForTimeout(1200);
 const onProfile = await p.evaluate(() => /^\/treinador\//.test(location.pathname));
 await p.goBack(); await p.waitForTimeout(1200);
 console.log('4 abriu perfil:', onProfile, '| voltou para a mesma busca:', (await p.evaluate(() => location.pathname)) === url0, /Musculação/i.test(await txt()));
+// vazio × falha × fim: sem a base e sem o banco a tela diz que é falha (não "nenhum treinador"); "Tentar de novo" recupera
+const c2 = await b.newContext({ viewport: { width: 1280, height: 900 } }); let fora = true;
+await c2.route('**/api/v1/**', (r) => r.abort());
+await c2.route('**/rycaxboqkkiopjdecgld.supabase.co/**', (r) => (fora ? r.abort() : r.fulfill({ status: 200, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: '[]' })));
+await c2.route('**/data/treinadores.json', (r) => (fora ? r.abort() : r.continue()));
+const q = await c2.newPage(); q.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
+await q.goto('http://localhost:5173/treinadores/musculacao', { waitUntil: 'load' }); await q.waitForTimeout(2500);
+const tq = () => q.evaluate(() => document.getElementById('app').innerText.replace(/\s+/g, ' '));
+let u = await tq();
+console.log('5 falha não é vazio:', /Não conseguimos carregar a lista de treinadores|A lista pode estar incompleta/.test(u), '| não diz "não encontramos":', !/Não encontramos profissionais com estes filtros/.test(u));
+fora = false;
+await q.locator('#app button', { hasText: /^Tentar de novo$/ }).first().click(); await q.waitForTimeout(2500); u = await tq();
+console.log('  tentar de novo recupera:', (await q.evaluate(() => window.REAL.count())) > 1000, !/Não conseguimos carregar a lista|A lista pode estar incompleta/.test(u));
+// fim da lista: numa busca pequena a tela diz que acabou
+const peq = await q.evaluate(() => { const c = {}; (window.REAL.esporte() || []).forEach((t) => { if (t.city && t.fmts.indexOf('Presencial') >= 0 && t.mods.indexOf('Musculação') >= 0) c[t.city] = (c[t.city] || 0) + 1; }); return Object.keys(c).filter((k) => c[k] >= 1 && c[k] <= 5)[0] || ''; });
+await q.evaluate((city) => NAV.go('esporte', { mod: 'Musculação', city, fmt: 'Presencial' }, null), peq); await q.waitForTimeout(1200); u = await tq();
+console.log('6 fim da lista em', peq + ':', /Fim da lista: (este é o único treinador|você viu os \d+ treinadores) desta busca/.test(u));
+await q.evaluate(() => NAV.go('esporte', { mod: 'Musculação', city: '', fmt: 'Qualquer' }, null)); await q.waitForTimeout(1200);
+console.log('  lista longa não diz fim:', !/Fim da lista:/.test(await tq()));
 console.log('errs', JSON.stringify(errs));
 await b.close();

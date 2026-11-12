@@ -156,9 +156,14 @@ class Component extends DCLogic {
         mapBtn: mapOn && !!mkNum[t.id], locate: () => set({ sel: t.id })
       };
     });
-    const loading = st.load === 'loading';
-    const showEmpty = !loading && n === 0;
+    // produto: o estado vem do carregamento de verdade. Lista vazia enquanto carrega não é "nenhum treinador"; falha não é vazio.
+    const CAT = !document.documentElement.classList.contains('demo') && window.REAL && window.REAL.status ? window.REAL.status() : null;
+    const loading = st.load === 'loading' || (!!CAT && n === 0 && CAT.base === 'carregando');
+    const showFail = !loading && !!CAT && n === 0 && CAT.base === 'falha';
+    const showEmpty = !loading && !showFail && n === 0;
     const showList = !loading && n > 0;
+    const stale = showList && !!CAT && (CAT.base === 'falha' || CAT.live === 'falha');
+    const retryCat = () => window.REAL && window.REAL.retry && window.REAL.retry();
     const updating = st.load === 'updating';
 
     // alternativas do vazio — só mudam a busca depois da escolha
@@ -285,7 +290,8 @@ class Component extends DCLogic {
       hasHidUndo: !!st.hidUndo, hidUndoTxt: st.hidUndo ? st.hidUndo.name + ' não aparece mais nas suas buscas neste aparelho.' : '',
       undoHide: () => { if (!st.hidUndo) return; const h = Object.assign({}, HID); delete h[st.hidUndo.id]; saveHid(h); set({ hidUndo: null }); }, closeHidUndo: () => set({ hidUndo: null }),
       hasHidden: hidN > 0 && !st.hidUndo, hiddenTxt: hidN === 1 ? '1 perfil oculto por você' : hidN + ' perfis ocultos por você', showHidden: () => { saveHid({}); set({ hidUndo: null }); },
-      updating, loading, showEmpty, showList, skels: [1, 2, 3, 4, 5, 6], alts, cards,
+      updating, loading, showEmpty, showList, showFail, stale, retryCat, skels: [1, 2, 3, 4, 5, 6], alts, cards,
+      showEnd: showList && end >= n, endTxt: 'Fim da lista: ' + (n === 1 ? 'este é o único treinador' : 'você viu os ' + n.toLocaleString('pt-BR') + ' treinadores') + ' desta busca. Mudar cidade, formato ou modalidade mostra outros.',
       layCls: 'e-lay' + (mapOn ? ' is-map' : '') + (updating ? ' is-dim' : ''),
       pages, pagStatus, prevPage: () => page > 1 && set({ page: page - 1, more: 0, back: '' }), nextPage: () => page < pagesN && set({ page: page + 1, more: 0, back: '' }), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
       canMore, moreLabel, loadMore: () => set({ more: st.more + 1 }),

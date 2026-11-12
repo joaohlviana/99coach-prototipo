@@ -101,6 +101,8 @@
     <div class="{{layCls}} vfe-lay" id="lista" style="{{syVar}}">
       <div>
         <sc-if value="{{loading}}" hint-placeholder-val="{{ false }}"><ul class="vfe-grid" aria-busy="true" aria-label="Carregando treinadores"><sc-for list="{{skels}}" as="k" hint-placeholder-count="4"><li class="vf-tc"><div class="vf-tc__m skel"></div><div class="vf-tc__b"><span class="skel vfe-sk" style="width: 40%"></span><span class="skel vfe-sk" style="width: 80%"></span><span class="skel vfe-sk" style="width: 60%"></span></div></li></sc-for></ul></sc-if>
+        <sc-if value="{{showFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não conseguimos carregar a lista de treinadores</b>Isto é uma falha de conexão, não quer dizer que não há profissionais nesta busca. Seus filtros foram mantidos.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{retryCat}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{stale}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>A lista pode estar incompleta</b>Parte dos perfis não carregou agora. O que aparece abaixo é o que já estava disponível.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{retryCat}}">Tentar de novo</button></div></sc-if>
         <sc-if value="{{showEmpty}}" hint-placeholder-val="{{ false }}"><section class="emp vfe-emp" aria-labelledby="vazio">
           <span class="emp__ic"><i class="ic ic--sm i-search"></i></span><b id="vazio">Não encontramos profissionais com estes filtros</b>
           <span>{{ctxLine}}. Nada foi alterado na sua busca: escolha uma alternativa, se fizer sentido para você.</span>
@@ -151,6 +153,7 @@
             </li>
             </sc-for>
           </ul>
+          <sc-if value="{{showEnd}}" hint-placeholder-val="{{ false }}"><p class="field__help vfe-end" role="status" style="text-align: center; margin: 16px 0 0">{{endTxt}}</p></sc-if>
           <div class="vfe-more">
             <sc-if value="{{canMore}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{loadMore}}">{{moreLabel4}}<i class="ic ic--sm i-plus"></i></button><sc-if value="{{showPbar}}" hint-placeholder-val="{{ true }}"><div class="pbar vfe-pbar" aria-hidden="true"><span style="{{pbarW}}"></span></div></sc-if></sc-if>
             <nav class="vfe-pager" aria-label="Páginas de resultados">
