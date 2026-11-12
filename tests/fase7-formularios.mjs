@@ -3,7 +3,7 @@
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const L1 = { id: 'L1', status: 'ativo', origin: 'convite', prep: 'ready_to_assign', answers: {}, created_at: '2026-11-01T12:00:00Z', student_id: 'al', trainers: { slug: 'marina', name: 'Marina Duarte', user_id: 'tr' }, workouts: [] };
-const srv = { assign: [], log: [], forms: [], idem: {} };
+const srv = { assign: [], log: [], forms: [], idem: {}, prefs: {} };
 async function mk(who, uid) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
   await ctx.route('**/api/v1/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"items":[]}' }));
@@ -20,6 +20,12 @@ async function mk(who, uid) {
     if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
     if (path === 'links') return j(200, [L1]);
     if (path === 'form_sends') { const m = /status=in\.\(([^)]*)\)/.exec(decodeURIComponent(u.search)); return j(200, srv.forms.filter((f) => !m || m[1].split(',').indexOf(f.status) >= 0)); }
+    // avisos: mesma forma do banco real (tipo, de quem, quando; sem texto)
+    if (path === 'rpc/my_notices') { const pf = srv.prefs[uid] || { muted: [], seen: false }; const mine = uid === 'tr' ? 'treinador' : 'aluno';
+      const items = srv.forms.filter((f) => (mine === 'aluno' ? f.status === 'enviado' : f.status === 'respondido')).map((f) => ({ kind: 'formulario', link: 'L1', mine, who: mine === 'aluno' ? 'Marina Duarte' : 'Caio Prado', at: mine === 'aluno' ? f.sent_at : f.answered_at, n: 1, extra: f.status, new: !pf.seen }))
+        .concat(mine === 'aluno' ? [{ kind: 'mensagem', link: 'L1', mine, who: 'Marina Duarte', at: '2026-11-12T11:00:00Z', n: 2, extra: null, new: !pf.seen }] : []).filter((n) => pf.muted.indexOf(n.kind) < 0);
+      return j(200, { items, muted: pf.muted, seen_at: pf.seen ? '2026-11-12T15:00:00Z' : null }); }
+    if (path === 'rpc/set_notice_prefs') { const pf = srv.prefs[uid] || (srv.prefs[uid] = { muted: [], seen: false }); if (body.p_muted) { if (body.p_muted.some((k) => ['mensagem', 'pedido', 'treino', 'registro', 'comentario', 'formulario', 'horario'].indexOf(k) < 0)) return j(400, { message: 'tipo_invalido' }); pf.muted = body.p_muted; } if (body.p_seen) pf.seen = true; return j(200, { muted: pf.muted }); }
     if (path === 'rpc/send_form') {
       if (uid !== 'tr') return j(403, { message: 'acompanhamento não encontrado' });
       if (srv.idem[body.p_idem]) return j(200, srv.idem[body.p_idem]);
@@ -81,6 +87,16 @@ await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(1500
 console.log('3 aluno vê:', /Formulários Check-in semanal Marina enviou em 12\/11 · Acompanhar como foi a sua semana/.test(t), /Como foi a sua semana de treino\?/.test(t));
 await click(al, /^Enviar respostas para Marina$/); await al.waitForTimeout(300); t = await txt(al);
 console.log('  vazio não envia:', /Responda pelo menos uma pergunta/.test(t), srv.forms[0].status === 'enviado');
+// avisos do aluno: tipo e de quem, sem texto; silenciar e marcar como visto
+await al.evaluate(() => NAV.go('publico', { s: 'avisos' }, null)); await al.waitForTimeout(1500); t = await txt(al);
+console.log('  avisos do aluno:', /Marina enviou um formulário para você responder/.test(t), /2 mensagens não lidas de Marina/.test(t), /2 avisos novos/.test(t), '| sem texto de mensagem:', !/Treinei|secreta/.test(t));
+await click(al, /^Marcar todos como vistos$/); await al.waitForTimeout(1200); t = await txt(al);
+console.log('  marcar como vistos:', srv.prefs.al.seen === true, /Nada novo desde a última vez/.test(t));
+await al.evaluate(() => { const b = [...document.querySelectorAll('#app button.chip')].find((e) => e.closest('li').textContent.includes('Mensagens')); b.click(); });
+await al.waitForTimeout(1200); t = await txt(al);
+console.log('  silenciar mensagens:', JSON.stringify(srv.prefs.al.muted), !/mensagens não lidas de Marina/.test(t), /Silenciado/.test(t), /Aviso por e-mail ou no celular ainda não existe/.test(t));
+await click(al, /^Responder$/); await al.waitForTimeout(1200);
+console.log('  aviso leva ao formulário:', /Como foi a sua semana de treino\?/.test(await txt(al)));
 const ids = await al.$$eval('#app textarea[id^=fm-]', (e) => e.map((x) => x.id));
 await al.fill('#' + ids[0], 'Treinei 3 vezes, foi boa.'); await al.waitForTimeout(300);
 await al.reload({ waitUntil: 'load' }); await al.waitForTimeout(1500); await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(1500);

@@ -41,3 +41,12 @@ Transação desfeita, com um vínculo criado só dentro dela:
 - aluno responde uma vez; responder de novo devolve `changed: false`
 - treinador lê a resposta e marca como revisado
 - não conferido nesta rodada: recusa quando o aluno tenta marcar revisado/cancelar (a função filtra pelo treinador do vínculo)
+
+
+## Fase 7 — avisos no app (12/11)
+Transação desfeita:
+- conta sem nada recebe lista vazia
+- aluno vê aviso de formulário e de mensagem não lida: só tipo, de quem e quando (o texto da mensagem não vem)
+- silenciar um tipo tira da lista; marcar como visto tira o "novo"
+- treinador vê o formulário respondido; uma terceira conta não vê nada nem lê preferências alheias
+- não conferido nesta rodada: avisos de pedido, treino, registro, comentário e horário (mesma consulta, sem dados de teste)
