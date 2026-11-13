@@ -32,7 +32,9 @@ REG.screen({
           ctx.setUi({ busy: '', open: '', mode: '' }); ctx.toast(WHY[dd.status] || 'O pedido não está mais pendente.'); if (window.__refreshLinks) window.__refreshLinks(); return;
         }
         real.status = decision; real.result = (decision === 'aceito' ? 'Aceito hoje às ' : 'Recusado hoje às ') + U.now();
-        ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(okMsg);
+        var stt = decision === 'aceito' && r.start ? r.start.outcome : '';
+        var startMsg = { vinculo_ativo: 'Pedido aceito: o acompanhamento com ' + fst + ' começou. Abra em Alunos.', pagamento_necessario: 'Pedido aceito. ' + fst + ' precisa pagar pelo app para o acompanhamento começar.', capacidade_esgotada: 'Pedido aceito, mas você está sem vagas: o acompanhamento não começou. Encerre um acompanhamento e abra este pedido de novo.', falhou: 'Pedido aceito, mas não deu para iniciar o acompanhamento agora. Ele começa quando ' + fst + ' abrir o app.' }[stt];
+        ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(startMsg || okMsg);
         if (window.__refreshLinks) window.__refreshLinks();
       });
     };

@@ -78,7 +78,7 @@ console.log('5 convites do servidor:', /Bia Lima/.test(t), /vale até 17\/11\/20
 await press(tr, /^Revogar$/); await press(tr, /^Revogar convite$/, '.mod-sheet button'); await tr.waitForTimeout(800); t = await txt(tr);
 console.log('  revogou no servidor:', srv.calls.includes('revoke_invite'), /Vencidos e revogados \(1\)/.test(t));
 await tr.evaluate(() => NAV.go('treinador', { s: 'menu' }, null)); await tr.waitForTimeout(600); t = await txt(tr);
-console.log('6 menu do treinador real:', /Ver meu perfil publicado/.test(t), /Convites/.test(t), '| sem exemplos:', !/Recebimentos|Ofertas|Organização|Assistência de IA|Conta e preferências|Formulários/.test(t));
+console.log('6 menu do treinador real:', /Ver meu perfil publicado/.test(t), /Convites/.test(t), '| sem exemplos:', /Receber pelo app \(modo de teste\)/.test(t) && !/Vendas, saldo e repasses|Ofertas|Organização|Assistência de IA|Conta e preferências|Formulários/.test(t));
 await tr.evaluate(() => NAV.go('treinador', { s: 'formularios' }, null)); await tr.waitForTimeout(500); t = await txt(tr);
 console.log('  formulários de exemplo não abrem:', !/Anamnese inicial/.test(t));
 console.log('errs', JSON.stringify(al.errs.concat(tr.errs)));

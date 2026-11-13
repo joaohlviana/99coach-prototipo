@@ -58,3 +58,13 @@ Transação desfeita:
 - com um formulário novo, a fila traz o aluno com o aviso (tipo e nome, sem texto)
 - depois de marcar como enviado, a fila fica vazia; em horário de silêncio, também
 - não conferido: envio de verdade pelo Resend (falta a chave nos segredos do Supabase)
+
+
+## Fase 8 — pagamento (13/11)
+Transações desfeitas:
+- **defeito**: `decide_request` aceito não criava vínculo (0 vínculos). Corrigido com `activate_accepted_request`: antes de aceitar não faz nada; terceiro é recusado; sem cobrança possível inicia o acompanhamento; chamar de novo não duplica
+- sem conta de recebimento, `create_checkout` responde `vendedor_sem_recebimento`
+- com conta ativa: cobrança criada (R$ 200, comissão R$ 10); contexto só para o comprador certo
+- aviso com valor errado fica `divergente` e não libera nada; aviso certo marca pago, cria o vínculo e o recebível (líquido = bruto − comissão − tarifa); repetir o aviso não duplica; a soma do razão dá zero
+- conta comum não tem permissão nas funções de servidor
+- **não conferido**: nenhuma chamada real ao Stripe (criar conta, página de pagamento, assinatura do webhook, reembolso)

@@ -1,0 +1,36 @@
+/* H09R · Recebimentos (conta real). Cobrança pelo Stripe em modo de teste: o treinador ativa a própria conta de recebimento,
+   o aluno paga o pedido aceito e a 99coach fica com 5%. Sem a configuração do servidor, a tela diz que não está ligado
+   e não pede dado nenhum. Valores mostrados vêm do banco (recebíveis), nunca de exemplo. */
+REG.screen({
+  page: 'treinador', key: 'recebimentosreal', id: 'H09R', title: 'Recebimentos', nav: 'recebimentos', wide: true, back: 'TMENU',
+  vals: function (ctx) {
+    var C = window.CONTA, ui = ctx.ui;
+    var money = function (c) { return c == null ? 'a confirmar' : 'R$ ' + (c / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); };
+    var load = function () {
+      ctx.setUi({ asked: true, loading: true });
+      C.fn('pagamentos', { acao: 'estado' }).then(function (r) { ctx.setUi({ loading: false, st: r.ok ? (r.data || {}) : { ok: false, motivo: r.offline ? 'offline' : 'falhou' } }); });
+      C.db('GET', 'receivables?select=order_id,gross_cents,provider_fee_cents,platform_fee_cents,net_cents,refunded_cents,status,available_on,updated_at&order=updated_at.desc&limit=50').then(function (r) { ctx.setUi({ recv: r.ok ? (r.data || []) : null }); });
+    };
+    if (C && C.session() && !ui.asked) load();
+    var st = ui.st || {}, off = st.ok === false;
+    var OFF = { pagamentos_nao_configurados: ['Recebimentos pelo app ainda não estão ligados', 'A cobrança pelo app depende de uma configuração que ainda não foi feita. Nada é cobrado nem pedido a você por enquanto.'],
+      chave_nao_e_de_teste: ['Recebimentos pelo app ainda não estão ligados', 'A cobrança só funciona em modo de teste nesta fase. Nada é cobrado por enquanto.'],
+      sem_perfil_de_treinador: ['Complete seu cadastro de treinador', 'O recebimento é ligado ao seu perfil de treinador.'],
+      offline: ['Sem conexão', 'Não deu para consultar seus recebimentos agora.'] };
+    var offT = OFF[st.motivo] || ['Não foi possível consultar agora', 'Tente de novo em instantes. Nada mudou na sua conta.'];
+    var ready = st.ok && st.conta && st.cobrancas;
+    var stage = !st.ok ? '' : !st.conta ? 'Você ainda não ativou o recebimento.' : ready ? 'Recebimento ativo: alunos podem pagar pelo app.' + (st.repasses ? '' : ' O repasse para o seu banco ainda depende de dados pendentes no Stripe.') : st.cadastroEnviado ? 'Cadastro enviado ao Stripe, em análise.' + (st.pendencias ? ' Faltam ' + st.pendencias + ' informações.' : '') : 'Cadastro no Stripe começado e não terminado.';
+    var ST = { pago: 'Pago · tarifa a confirmar', em_liberacao: 'Em liberação', liberado: 'Liberado', enviado_ao_banco: 'Enviado ao banco', recebido: 'Recebido no banco', estornado: 'Reembolsado' };
+    var rows = (ui.recv || []).map(function (x) { return { t: money(x.gross_cents) + ' pago pelo aluno', x: 'Comissão 99coach ' + money(x.platform_fee_cents) + ' · tarifa do Stripe ' + money(x.provider_fee_cents) + ' · líquido ' + money(x.net_cents) + (x.refunded_cents ? ' · reembolsado ' + money(x.refunded_cents) : ''), s: (ST[x.status] || x.status) + (x.status === 'em_liberacao' && x.available_on ? ' até ' + new Date(x.available_on).toLocaleDateString('pt-BR') : '') }; });
+    return {
+      loading: !!ui.loading && !ui.st, isOff: off, offTitle: offT[0], offTxt: offT[1], isOn: !!st.ok,
+      stage: stage, testNote: 'Modo de teste: nenhuma cobrança é de verdade e nenhum dinheiro é movimentado.',
+      canActivate: !!st.ok && !ready, activateLabel: ui.busy ? 'Abrindo o Stripe…' : (st.conta ? 'Continuar cadastro no Stripe' : 'Ativar recebimento'),
+      activate: function () { if (ui.busy) return; ctx.setUi({ busy: true, err: '' }); C.fn('pagamentos', { acao: 'ativar' }).then(function (r) { var d = (r.ok && r.data) || {}; if (d.ok && d.url) { location.href = d.url; return; } ctx.setUi({ busy: false, err: 'Não foi possível abrir o cadastro do Stripe agora. Nada mudou.' }); }); },
+      err: ui.err || '', hasErr: !!ui.err, reload: load,
+      how: 'O aluno paga pelo app depois que você aceita o pedido. A 99coach fica com 5% do valor; a tarifa do Stripe sai da sua parte. O acompanhamento começa quando o pagamento é confirmado.',
+      hasRows: rows.length > 0, noRows: !!ui.recv && !rows.length, rows: rows, recvFail: ui.recv === null,
+      back: function () { GO('TMENU'); }
+    };
+  }
+});

@@ -241,6 +241,22 @@
       <!-- REL01 · Criar convite individual -->
       <!-- TRE20R · Agenda real -->
       <!-- H08R · Insights com dados do servidor -->
+      <sc-if value="{{is.recebimentosreal}}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Consultando seus recebimentos…</p></sc-if>
+        <sc-if value="{{v.isOff}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-info" aria-hidden="true"></i><div style="flex: 1"><b>{{v.offTitle}}</b>{{v.offTxt}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.isOn}}" hint-placeholder-val="{{ true }}">
+          <section class="card onb-sec" aria-labelledby="rc-h"><h2 class="onb-h2" id="rc-h">Receber pelo app</h2>
+            <p class="mod-small">{{v.stage}}</p><p class="mod-small mod-muted">{{v.how}}</p><p class="mod-small mod-muted">{{v.testNote}}</p>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><sc-if value="{{v.canActivate}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--md" onClick="{{v.activate}}">{{v.activateLabel}}</button></sc-if><button type="button" class="btn btn--ghost btn--md" onClick="{{v.reload}}">Atualizar</button></div>
+          </section>
+        </sc-if>
+        <section class="card onb-sec" aria-labelledby="rc-l"><h2 class="onb-h2" id="rc-l">Pagamentos recebidos</h2>
+          <sc-if value="{{v.recvFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a lista agora. Isto não quer dizer que não há pagamentos.</p></sc-if>
+          <sc-if value="{{v.noRows}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum pagamento recebido ainda. Não mostramos zero como se fosse resultado.</p></sc-if>
+          <sc-if value="{{v.hasRows}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><div style="flex: 1 1 260px"><b>{{r.t}}</b><p class="mod-small mod-muted">{{r.x}}</p></div><span class="badge badge--plain">{{r.s}}</span></div></li></sc-for></ol></sc-if>
+        </section>
+      </sc-if>
       <sc-if value="{{is.insightsreal}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Insights</h1><p class="pghead__sub">Calculado pelo servidor a partir dos seus pedidos, alunos e treinos. Com pouca base, mostramos "Sem base" em vez de um número enganoso.</p></div></div>
         <div class="seg" role="group" aria-label="Período" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.pers}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>

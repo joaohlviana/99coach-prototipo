@@ -259,7 +259,22 @@
     cancelRequest: function (id) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: 'cancelado', p_idem: 'cancel:' + id }); },
     declineRequest: function (id, reason) { return db('POST', 'rpc/decline_request', { p_id: id, p_reason: reason, p_idem: 'decide:' + id + ':recusado' }); },
     prepMore: function (link, note) { return db('POST', 'rpc/request_prep_more', { p_link: link, p_note: note }); },
-    decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }); },
+    // aceitar: o pedido aceito inicia o acompanhamento quando não há cobrança pelo app; havendo cobrança, o aluno paga primeiro
+    decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }).then(function (r) {
+      var d = (r.ok && r.data && (Array.isArray(r.data) ? r.data[0] : r.data)) || {};
+      if (!r.ok || decision !== 'aceito' || d.status !== 'aceito') return r;
+      return db('POST', 'rpc/activate_accepted_request', { p_request: id }).then(function (a) { r.start = a.ok ? (a.data || {}) : { outcome: 'falhou' }; return r; });
+    }); },
+    activateRequest: function (id) { return db('POST', 'rpc/activate_accepted_request', { p_request: id }); },
+    // funções do servidor (pagamentos): sempre com a sessão da pessoa
+    fn: function (name, body) { return sess ? call('POST', '/functions/v1/' + name, body || {}, true) : Promise.resolve({ ok: false, nosession: true }); },
+    // pagar um pedido aceito: o banco cria a cobrança (valor e comissão vêm de lá) e o servidor devolve a página do Stripe
+    payRequest: function (id) { var k = 'pay:' + id; return db('POST', 'rpc/create_checkout', { p_request: id, p_idem: intent(k) }).then(settle(k)).then(function (r) {
+      var d = (r.ok && r.data) || {};
+      if (!r.ok) return { ok: false, motivo: r.offline ? 'offline' : (/email_nao_confirmado/.test(r.raw || r.msg || '') ? 'email_nao_confirmado' : 'falhou') };
+      if (d.outcome !== 'aguardando_pagamento') return { ok: false, motivo: d.outcome || 'falhou', method: d.method };
+      return CONTA.fn('pagamentos', { acao: 'checkout', intent: d.intent }).then(function (x) { var y = (x.ok && x.data) || {}; return y.ok && y.url ? { ok: true, url: y.url } : { ok: false, motivo: y.motivo || (x.offline ? 'offline' : 'falhou') }; });
+    }); },
     // ---------- vínculo: pausar, retomar, encerrar (com motivo; nada é apagado) ----------
     changeLink: function (link, action, reason, note) {
       var go = function (a) { var k = 'link:' + link + ':' + a; return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: intent(k) }).then(settle(k)); };

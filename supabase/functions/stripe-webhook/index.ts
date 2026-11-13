@@ -1,0 +1,72 @@
+// Recebe os avisos do Stripe (endpoint de Connect) e traduz para os eventos que o banco entende.
+// A assinatura é conferida com STRIPE_WEBHOOK_SECRET; aviso sem assinatura válida é recusado.
+// Avisos de modo real (livemode) são ignorados: pagamentos só em modo de teste.
+// O banco é quem decide: confere valor, moeda e comissão contra o pedido e trata repetição pelo id do aviso.
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
+const hex = (b: ArrayBuffer) => [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join("");
+function same(a: string, b: string) { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; }
+async function valid(raw: string, header: string, secret: string): Promise<boolean> {
+  const parts = Object.fromEntries(header.split(",").map((p) => p.split("=") as [string, string]).filter((p) => p.length === 2 && p[0] !== "v1"));
+  const sigs = header.split(",").filter((p) => p.startsWith("v1=")).map((p) => p.slice(3));
+  const t = Number(parts.t);
+  if (!t || Math.abs(Date.now() / 1000 - t) > 300 || !sigs.length) return false;
+  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const mac = hex(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(`${t}.${raw}`)));
+  return sigs.some((s) => same(s, mac));
+}
+async function stripeGet(key: string, path: string, account?: string) {
+  const headers: Record<string, string> = { Authorization: `Bearer ${key}` };
+  if (account) headers["Stripe-Account"] = account;
+  const r = await fetch(`https://api.stripe.com${path}`, { headers });
+  return r.ok ? await r.json() : null;
+}
+
+Deno.serve(async (req: Request) => {
+  const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { "Content-Type": "application/json" } });
+  const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "", key = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+  if (!secret || !key) return json({ ok: false, motivo: "pagamentos_nao_configurados" }, 503);
+  const raw = await req.text();
+  if (!(await valid(raw, req.headers.get("stripe-signature") ?? "", secret))) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
+  const ev = JSON.parse(raw);
+  if (ev.livemode) return json({ ok: true, ignorado: "modo_real" });
+  const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+  const o = ev.data?.object ?? {}, account: string | undefined = ev.account;
+  const ingest = async (type: string, payload: Record<string, unknown>) => {
+    const { data, error } = await db.rpc("ingest_payment_event", { p_provider: "stripe", p_event: ev.id, p_type: type, p_payload: payload });
+    return error ? json({ ok: false, motivo: "banco_recusou" }, 500) : json({ ok: true, resultado: data });
+  };
+
+  if (ev.type === "account.updated") {
+    const { error } = await db.rpc("srv_set_payment_account", { p_trainer: null, p_account: o.id, p_charges: !!o.charges_enabled, p_payouts: !!o.payouts_enabled,
+      p_submitted: !!o.details_submitted, p_fees_payer: o.controller?.fees?.payer ?? null, p_capabilities: o.capabilities ?? {} });
+    return error ? json({ ok: false }, 500) : json({ ok: true });
+  }
+
+  if (ev.type === "checkout.session.completed" || ev.type === "checkout.session.async_payment_succeeded") {
+    const intent = o.metadata?.intent;
+    if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
+    if (o.payment_status !== "paid") return ingest("payment.processing", { intent, method: (o.payment_method_types ?? []).includes("boleto") ? "boleto" : "card", paymentIntent: o.payment_intent });
+    // valores vêm do próprio Stripe (cobrança e lançamento de saldo), não do que o navegador mandou
+    const pi = await stripeGet(key, `/v1/payment_intents/${o.payment_intent}?expand[]=latest_charge.balance_transaction`, account);
+    if (!pi) return json({ ok: false, motivo: "cobranca_indisponivel" }, 500);
+    const ch = pi.latest_charge ?? {}, bt = typeof ch.balance_transaction === "object" ? ch.balance_transaction : null;
+    const fee = bt ? (bt.fee_details ?? []).filter((f: any) => f.type !== "application_fee").reduce((n: number, f: any) => n + f.amount, 0) : null;
+    return ingest("payment.succeeded", { intent, amountCents: pi.amount_received, currency: pi.currency, applicationFeeCents: pi.application_fee_amount ?? 0,
+      providerFeeCents: fee, method: ch.payment_method_details?.type ?? null, paymentIntent: pi.id, charge: ch.id ?? null,
+      availableOn: bt ? new Date(bt.available_on * 1000).toISOString() : null, balanceTxn: bt?.id ?? null });
+  }
+
+  if (ev.type === "checkout.session.async_payment_failed" || ev.type === "checkout.session.expired") {
+    const intent = o.metadata?.intent;
+    return intent ? ingest("payment.failed", { intent }) : json({ ok: true, ignorado: "sem_intencao" });
+  }
+
+  if (ev.type === "charge.refunded") {
+    const before = ev.data?.previous_attributes?.amount_refunded ?? 0;
+    return ingest("refund.succeeded", { charge: o.id, amountCents: (o.amount_refunded ?? 0) - before });
+  }
+
+  return json({ ok: true, ignorado: ev.type });
+});
