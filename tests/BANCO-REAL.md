@@ -68,3 +68,12 @@ Transações desfeitas:
 - aviso com valor errado fica `divergente` e não libera nada; aviso certo marca pago, cria o vínculo e o recebível (líquido = bruto − comissão − tarifa); repetir o aviso não duplica; a soma do razão dá zero
 - conta comum não tem permissão nas funções de servidor
 - **não conferido**: nenhuma chamada real ao Stripe (criar conta, página de pagamento, assinatura do webhook, reembolso)
+
+
+## Fase 8 — modo real (13/11)
+Decisão do dono: produção direto. Transação desfeita:
+- ambiente em vigor = `live`
+- conta de recebimento criada em teste não cobra no modo real (`vendedor_sem_recebimento`)
+- conta real: pedido aceito pede pagamento; cobrança sai com ambiente `live`, R$ 200, comissão R$ 10
+- no Stripe real: criado o endereço de avisos `we_1Ub86C…` para contas conectadas, ao lado dos dois do site atual (não alterados)
+- **não conferido**: criação de conta de treinador, página de pagamento, aviso de pagamento e reembolso de verdade

@@ -1,6 +1,7 @@
 // Recebe os avisos do Stripe (endpoint de Connect) e traduz para os eventos que o banco entende.
-// A assinatura é conferida com STRIPE_WEBHOOK_SECRET; aviso sem assinatura válida é recusado.
-// Avisos de modo real (livemode) são ignorados: pagamentos só em modo de teste.
+// Autenticidade: se houver STRIPE_WEBHOOK_SECRET, a assinatura é conferida. Em todos os casos o aviso é buscado de novo
+// direto no Stripe pelo id, com a nossa chave, e é essa cópia que vale: um aviso forjado não existe no Stripe.
+// Aviso de ambiente diferente do da chave (teste x real) é ignorado.
 // O banco é quem decide: confere valor, moeda e comissão contra o pedido e trata repetição pelo id do aviso.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -26,11 +27,14 @@ async function stripeGet(key: string, path: string, account?: string) {
 Deno.serve(async (req: Request) => {
   const json = (d: unknown, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { "Content-Type": "application/json" } });
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "", key = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
-  if (!secret || !key) return json({ ok: false, motivo: "pagamentos_nao_configurados" }, 503);
+  if (!key) return json({ ok: false, motivo: "pagamentos_nao_configurados" }, 503);
   const raw = await req.text();
-  if (!(await valid(raw, req.headers.get("stripe-signature") ?? "", secret))) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
-  const ev = JSON.parse(raw);
-  if (ev.livemode) return json({ ok: true, ignorado: "modo_real" });
+  if (secret && !(await valid(raw, req.headers.get("stripe-signature") ?? "", secret))) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
+  let got: any; try { got = JSON.parse(raw); } catch (_) { return json({ ok: false, motivo: "corpo_invalido" }, 400); }
+  if (!/^evt_[A-Za-z0-9_]+$/.test(String(got?.id ?? "")) || (got.account && !/^acct_[A-Za-z0-9]+$/.test(String(got.account)))) return json({ ok: false, motivo: "aviso_invalido" }, 400);
+  const ev = await stripeGet(key, `/v1/events/${got.id}`, got.account || undefined);
+  if (!ev || ev.id !== got.id) return json({ ok: false, motivo: "aviso_nao_existe_no_stripe" }, 400);
+  if (!!ev.livemode !== /^(sk|rk)_live_/.test(key)) return json({ ok: true, ignorado: "outro_ambiente" });
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
   const o = ev.data?.object ?? {}, account: string | undefined = ev.account;
   const ingest = async (type: string, payload: Record<string, unknown>) => {
@@ -64,6 +68,8 @@ Deno.serve(async (req: Request) => {
   }
 
   if (ev.type === "charge.refunded") {
+    // a mesma conta do Stripe atende outro site: só entram reembolsos de cobranças criadas por este app
+    if (!o.metadata?.intent) return json({ ok: true, ignorado: "cobranca_de_outro_sistema" });
     const before = ev.data?.previous_attributes?.amount_refunded ?? 0;
     return ingest("refund.succeeded", { charge: o.id, amountCents: (o.amount_refunded ?? 0) - before });
   }

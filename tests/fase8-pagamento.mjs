@@ -63,9 +63,9 @@ console.log('3 recebimentos sem configuração:', /Recebimentos pelo app ainda n
 srv.estado = { ok: true, conta: false };
 await click(tr, /^Tentar de novo$/); await tr.waitForTimeout(1200); t = await txt(tr);
 console.log('  configurado, sem conta:', /Você ainda não ativou o recebimento/.test(t), /Modo de teste: nenhuma cobrança é de verdade/.test(t), /fica com 5%/.test(t));
-srv.estado = { ok: true, conta: true, cobrancas: true, repasses: true, cadastroEnviado: true, pendencias: 0 };
+srv.estado = { ok: true, real: true, conta: true, cobrancas: true, repasses: true, cadastroEnviado: true, pendencias: 0 };
 srv.recv = [{ order_id: 'O1', gross_cents: 20000, provider_fee_cents: 838, platform_fee_cents: 1000, net_cents: 18162, refunded_cents: 0, status: 'em_liberacao', available_on: '2026-12-12T00:00:00Z', updated_at: '2026-11-12T12:00:00Z' }];
 await tr.reload({ waitUntil: 'load' }); await tr.waitForTimeout(1500); await tr.evaluate(() => NAV.go('treinador', { s: 'recebimentosreal' }, null)); await tr.waitForTimeout(1500); t = await txt(tr);
-console.log('  ativo com um pagamento:', /Recebimento ativo: alunos podem pagar pelo app/.test(t), /R\$ 200,00 pago pelo aluno/.test(t), /Comissão 99coach R\$ 10,00 · tarifa do Stripe R\$ 8,38 · líquido R\$ 181,62/.test(t), /Em liberação/i.test(t), !/Ativar recebimento/.test(t));
+console.log('  ativo com um pagamento:', /Recebimento ativo: alunos podem pagar pelo app/.test(t), /Cobranças de verdade/.test(t), /R\$ 200,00 pago pelo aluno/.test(t), /Comissão 99coach R\$ 10,00 · tarifa do Stripe R\$ 8,38 · líquido R\$ 181,62/.test(t), /Em liberação/i.test(t), !/Ativar recebimento/.test(t));
 console.log('errs', al.errs, al2.errs, tr.errs);
 await b.close();

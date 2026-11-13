@@ -1,4 +1,4 @@
-/* H09R · Recebimentos (conta real). Cobrança pelo Stripe em modo de teste: o treinador ativa a própria conta de recebimento,
+/* H09R · Recebimentos (conta real). Cobrança pelo Stripe: o treinador ativa a própria conta de recebimento,
    o aluno paga o pedido aceito e a 99coach fica com 5%. Sem a configuração do servidor, a tela diz que não está ligado
    e não pede dado nenhum. Valores mostrados vêm do banco (recebíveis), nunca de exemplo. */
 REG.screen({
@@ -14,7 +14,7 @@ REG.screen({
     if (C && C.session() && !ui.asked) load();
     var st = ui.st || {}, off = st.ok === false;
     var OFF = { pagamentos_nao_configurados: ['Recebimentos pelo app ainda não estão ligados', 'A cobrança pelo app depende de uma configuração que ainda não foi feita. Nada é cobrado nem pedido a você por enquanto.'],
-      chave_nao_e_de_teste: ['Recebimentos pelo app ainda não estão ligados', 'A cobrança só funciona em modo de teste nesta fase. Nada é cobrado por enquanto.'],
+      chave_de_outro_ambiente: ['Recebimentos pelo app ainda não estão ligados', 'A configuração de pagamento do servidor não confere com a do banco. Nada é cobrado até isso ser corrigido.'],
       sem_perfil_de_treinador: ['Complete seu cadastro de treinador', 'O recebimento é ligado ao seu perfil de treinador.'],
       offline: ['Sem conexão', 'Não deu para consultar seus recebimentos agora.'] };
     var offT = OFF[st.motivo] || ['Não foi possível consultar agora', 'Tente de novo em instantes. Nada mudou na sua conta.'];
@@ -24,7 +24,7 @@ REG.screen({
     var rows = (ui.recv || []).map(function (x) { return { t: money(x.gross_cents) + ' pago pelo aluno', x: 'Comissão 99coach ' + money(x.platform_fee_cents) + ' · tarifa do Stripe ' + money(x.provider_fee_cents) + ' · líquido ' + money(x.net_cents) + (x.refunded_cents ? ' · reembolsado ' + money(x.refunded_cents) : ''), s: (ST[x.status] || x.status) + (x.status === 'em_liberacao' && x.available_on ? ' até ' + new Date(x.available_on).toLocaleDateString('pt-BR') : '') }; });
     return {
       loading: !!ui.loading && !ui.st, isOff: off, offTitle: offT[0], offTxt: offT[1], isOn: !!st.ok,
-      stage: stage, testNote: 'Modo de teste: nenhuma cobrança é de verdade e nenhum dinheiro é movimentado.',
+      stage: stage, testNote: st.real ? 'Cobranças de verdade: o pagamento do aluno é processado pelo Stripe e cai na sua conta do Stripe.' : 'Modo de teste: nenhuma cobrança é de verdade e nenhum dinheiro é movimentado.',
       canActivate: !!st.ok && !ready, activateLabel: ui.busy ? 'Abrindo o Stripe…' : (st.conta ? 'Continuar cadastro no Stripe' : 'Ativar recebimento'),
       activate: function () { if (ui.busy) return; ctx.setUi({ busy: true, err: '' }); C.fn('pagamentos', { acao: 'ativar' }).then(function (r) { var d = (r.ok && r.data) || {}; if (d.ok && d.url) { location.href = d.url; return; } ctx.setUi({ busy: false, err: 'Não foi possível abrir o cadastro do Stripe agora. Nada mudou.' }); }); },
       err: ui.err || '', hasErr: !!ui.err, reload: load,

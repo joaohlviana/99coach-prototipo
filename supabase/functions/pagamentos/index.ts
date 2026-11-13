@@ -1,5 +1,6 @@
 // Pagamentos (Stripe Connect, cobrança direta na conta do treinador, comissão de 5% como application fee).
-// Só funciona com chave de TESTE: uma chave real é recusada aqui, por decisão do plano (pagamentos só em modo de teste).
+// Modo real (produção) por decisão do dono em 13/11/2026. O ambiente da chave tem de ser o mesmo que o banco está usando:
+// chave de teste com banco em modo real (ou o contrário) é recusada, para nunca misturar os dois.
 // Ações (sempre com o usuário logado):
 //   estado   -> situação da conta de recebimento do treinador
 //   ativar   -> cria a conta do treinador no Stripe (se não existir) e devolve o link de cadastro do Stripe
@@ -44,28 +45,31 @@ Deno.serve(async (req: Request) => {
   const body = await req.json().catch(() => ({}));
   const acao = String(body.acao ?? "");
   if (!key) return json({ ok: false, motivo: "pagamentos_nao_configurados" });
-  if (!/^(sk|rk)_test_/.test(key)) return json({ ok: false, motivo: "chave_nao_e_de_teste" });
+  const env = /^(sk|rk)_live_/.test(key) ? "live" : /^(sk|rk)_test_/.test(key) ? "sandbox" : "";
+  if (!env) return json({ ok: false, motivo: "pagamentos_nao_configurados" });
 
   if (acao === "estado" || acao === "ativar") {
     const { data: t } = await db.rpc("srv_trainer_of", { p_user: user.id });
     if (!t?.trainer) return json({ ok: false, motivo: "sem_perfil_de_treinador" });
-    let account: string | null = t.account ?? null;
-    if (!account && acao === "estado") return json({ ok: true, conta: false });
+    if (t.env !== env) return json({ ok: false, motivo: "chave_de_outro_ambiente" });
+    // conta criada em outro ambiente não serve: cria outra neste
+    let account: string | null = t.account && t.accountEnv === env ? t.account : null;
+    if (!account && acao === "estado") return json({ ok: true, real: env === "live", conta: false });
     if (!account) {
       const c = await stripe(key, "POST", "/v1/accounts", {
         country: "BR", email: user.email, business_profile: { name: t.name, product_description: "Treinamento físico e acompanhamento esportivo" },
         controller: { fees: { payer: "account" }, losses: { payments: "stripe" }, stripe_dashboard: { type: "full" } },
         capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
         metadata: { trainer: t.trainer },
-      }, { idem: `conta:${t.trainer}` });
+      }, { idem: `conta:${env}:${t.trainer}` });
       if (!c.ok) return json({ ok: false, motivo: "stripe_recusou_conta", detalhe: c.data?.error?.code ?? c.status });
       account = c.data.id;
     }
     const a = await stripe(key, "GET", `/v1/accounts/${account}`);
     if (!a.ok) return json({ ok: false, motivo: "conta_indisponivel" });
     await db.rpc("srv_set_payment_account", { p_trainer: t.trainer, p_account: account, p_charges: !!a.data.charges_enabled, p_payouts: !!a.data.payouts_enabled,
-      p_submitted: !!a.data.details_submitted, p_fees_payer: a.data.controller?.fees?.payer ?? null, p_capabilities: caps(a.data) });
-    const estado = { ok: true, conta: true, cobrancas: !!a.data.charges_enabled, repasses: !!a.data.payouts_enabled, cadastroEnviado: !!a.data.details_submitted,
+      p_submitted: !!a.data.details_submitted, p_fees_payer: a.data.controller?.fees?.payer ?? null, p_capabilities: caps(a.data), p_env: env });
+    const estado = { ok: true, real: env === "live", conta: true, cobrancas: !!a.data.charges_enabled, repasses: !!a.data.payouts_enabled, cadastroEnviado: !!a.data.details_submitted,
       pendencias: (a.data.requirements?.currently_due ?? []).length };
     if (acao === "estado") return json(estado);
     const l = await stripe(key, "POST", "/v1/account_links", { account, type: "account_onboarding",
@@ -79,7 +83,7 @@ Deno.serve(async (req: Request) => {
     if (!/^[0-9a-f-]{36}$/i.test(intent)) return json({ ok: false, motivo: "intencao_invalida" }, 400);
     const { data: c } = await db.rpc("srv_checkout_context", { p_intent: intent, p_buyer: user.id });
     if (!c) return json({ ok: false, motivo: "cobranca_nao_encontrada" }, 404);
-    if (c.environment !== "sandbox") return json({ ok: false, motivo: "ambiente_nao_e_de_teste" });
+    if (c.environment !== env) return json({ ok: false, motivo: "chave_de_outro_ambiente" });
     if (c.status !== "aguardando_pagamento" || c.orderStatus !== "aguardando_pagamento") return json({ ok: false, motivo: "cobranca_fechada", estado: c.orderStatus });
     if (!c.sellerAccount || !c.chargesEnabled) return json({ ok: false, motivo: "vendedor_sem_recebimento" });
     if (c.session) {
