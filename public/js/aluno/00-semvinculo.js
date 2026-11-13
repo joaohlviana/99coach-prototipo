@@ -64,7 +64,9 @@ REG.screen({
     var w = link.workout, SS = (w && w.sessions) || [];
     var doneOf = function (x) { var k = link.id + '_v' + w.version + '_' + x.id; return (ui.sess || []).some(function (y) { return y.session_key === k; }); };
     if (ui.sx == null && window.__alunoSx && window.__alunoSx.link === link.id && SS[window.__alunoSx.i]) { ui.sx = window.__alunoSx.i; window.__alunoSx = null; }
-    var sx = ui.sx != null && SS[ui.sx] ? ui.sx : Math.max(0, SS.map(function (x) { return doneOf(x); }).indexOf(false));
+    // com a semana definida pelo treinador, a sessão de hoje já vem escolhida (a pessoa pode trocar)
+    var WK = window.WEEK ? window.WEEK.student(ctx, link, ui.sess, true) : { show: false, todayIdx: -1 };
+    var sx = ui.sx != null && SS[ui.sx] ? ui.sx : (WK.todayIdx >= 0 && !WK.todayDone ? WK.todayIdx : Math.max(0, SS.map(function (x) { return doneOf(x); }).indexOf(false)));
     var s0 = SS[sx];
 
     // ---------- preparação (depois do vínculo) ----------
@@ -235,6 +237,7 @@ REG.screen({
       sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
       estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow && !paused,
       isPaused: paused && !ex,
+      wk: Object.assign({}, WK, { show: !!WK.show && !ex && !showEvo && !showMsg && state === 'ready' }),
       fm: window.FORMS ? window.FORMS.student(ctx, link, !ex && !showEvo && !showMsg && link.status !== 'encerrado') : { show: false },
       hasNote: !!note && !ex && !showEvo && !showMsg, noteFrom: 'Recado de ' + tf, noteTxt: note ? String(note.body).slice(0, 220) : '', noteWhen: note ? new Date(note.created_at).toLocaleDateString('pt-BR') : '', openChat: function () { GO('ALU05'); },
       // semana no Hoje: só contagem confirmada, sem meta inventada

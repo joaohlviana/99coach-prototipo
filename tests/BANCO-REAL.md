@@ -77,3 +77,11 @@ Decisão do dono: produção direto. Transação desfeita:
 - conta real: pedido aceito pede pagamento; cobrança sai com ambiente `live`, R$ 200, comissão R$ 10
 - no Stripe real: criado o endereço de avisos `we_1Ub86C…` para contas conectadas, ao lado dos dois do site atual (não alterados)
 - **não conferido**: criação de conta de treinador, página de pagamento, aviso de pagamento e reembolso de verdade
+
+
+## Fase 7 — semana do treino (13/11)
+Transação desfeita:
+- sem treino atribuído, definir a semana é recusado
+- com treino de 2 sessões: a semana é gravada na mesma versão (não cria versão nova)
+- dia apontando para sessão que não existe é recusado
+- o aluno lê a semana; o aluno não consegue alterá-la

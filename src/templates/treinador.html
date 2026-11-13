@@ -352,6 +352,12 @@
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.assign}}">{{v.assignLabel}}</button></div>
             </section>
           </sc-if>
+          <sc-if value="{{v.wk.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="tr-wk"><h2 class="onb-h2" id="tr-wk">Semana do treino</h2>
+            <p class="mod-small mod-muted">{{v.wk.sub}}</p>
+            <ul class="onb-secs"><sc-for list="{{v.wk.rows}}" as="d" hint-placeholder-count="7"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><b style="flex: 0 0 90px">{{d.day}}</b><div class="seg" role="group" aria-label="{{d.day}}" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{d.opts}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div></li></sc-for></ul>
+            <sc-if value="{{v.wk.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.wk.err}}</span></sc-if>
+            <sc-if value="{{v.wk.dirty}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.wk.save}}">{{v.wk.saveLabel}}</button></div></sc-if>
+          </section></sc-if>
           <sc-if value="{{v.fm.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="tr-fm"><h2 class="onb-h2" id="tr-fm">Formulários</h2>
             <p class="mod-small mod-muted">{{v.fm.sub}} Enviado, respondido e revisado são estados diferentes.</p>
             <sc-if value="{{v.fm.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para carregar os formulários agora</b>Isto não quer dizer que não há envios.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.fm.reload}}">Tentar de novo</button></div></sc-if>
