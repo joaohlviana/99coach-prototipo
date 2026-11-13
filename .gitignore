@@ -3,3 +3,4 @@ node_modules/
 public/shell/
 docs/
 dist/
+.claude/skills/taste-skill/assets/
