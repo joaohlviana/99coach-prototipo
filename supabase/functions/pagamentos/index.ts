@@ -64,6 +64,8 @@ Deno.serve(async (req: Request) => {
       }, { idem: `conta:${env}:${t.trainer}` });
       if (!c.ok) return json({ ok: false, motivo: "stripe_recusou_conta", detalhe: c.data?.error?.code ?? c.status });
       account = c.data.id;
+      // grava a conta assim que ela existe: se a consulta seguinte falhar, a próxima tentativa reaproveita esta conta
+      await db.rpc("srv_set_payment_account", { p_trainer: t.trainer, p_account: account, p_charges: false, p_payouts: false, p_submitted: false, p_fees_payer: null, p_capabilities: {}, p_env: env });
     }
     const a = await stripe(key, "GET", `/v1/accounts/${account}`);
     if (!a.ok) return json({ ok: false, motivo: "conta_indisponivel" });
@@ -86,12 +88,16 @@ Deno.serve(async (req: Request) => {
     if (c.environment !== env) return json({ ok: false, motivo: "chave_de_outro_ambiente" });
     if (c.status !== "aguardando_pagamento" || c.orderStatus !== "aguardando_pagamento") return json({ ok: false, motivo: "cobranca_fechada", estado: c.orderStatus });
     if (!c.sellerAccount || !c.chargesEnabled) return json({ ok: false, motivo: "vendedor_sem_recebimento" });
+    // uma cobrança tem uma única página de pagamento: nunca se cria a segunda (evita pagar duas vezes).
+    // Página vencida fecha a cobrança pelo aviso do Stripe; o próximo "pagar" abre uma cobrança nova.
     if (c.session) {
       const s = await stripe(key, "GET", `/v1/checkout/sessions/${c.session}`, undefined, { account: c.sellerAccount });
-      if (s.ok && s.data.status === "open" && s.data.url) return json({ ok: true, url: s.data.url });
-      if (s.ok && s.data.status === "complete") return json({ ok: false, motivo: "pagamento_em_confirmacao" });
+      if (!s.ok) return json({ ok: false, motivo: "tente_de_novo" });
+      if (s.data.status === "open" && s.data.url) return json({ ok: true, url: s.data.url });
+      if (s.data.status === "complete") return json({ ok: false, motivo: "pagamento_em_confirmacao" });
+      return json({ ok: false, motivo: "pagina_vencida" });
     }
-    const methods = (c.methods as string[]).filter((m) => m === "card" || m === "boleto");
+    const methods = ((c.methods ?? []) as string[]).filter((m) => m === "card" || m === "boleto");
     const s = await stripe(key, "POST", "/v1/checkout/sessions", {
       mode: "payment", client_reference_id: c.order, locale: "pt-BR",
       line_items: [{ quantity: 1, price_data: { currency: String(c.currency).toLowerCase(), unit_amount: c.amountCents, product_data: { name: c.description } } }],
@@ -99,7 +105,7 @@ Deno.serve(async (req: Request) => {
       payment_intent_data: { application_fee_amount: c.applicationFeeCents, metadata: { intent, order: c.order } },
       metadata: { intent, order: c.order },
       success_url: `${SITE}/app#aluno-hoje`, cancel_url: `${SITE}/app#aluno-hoje`,
-    }, { account: c.sellerAccount, idem: c.session ? undefined : `checkout:${intent}` });
+    }, { account: c.sellerAccount, idem: `checkout:${intent}` });
     if (!s.ok || !s.data.url) return json({ ok: false, motivo: "stripe_recusou_cobranca", detalhe: s.data?.error?.code ?? s.status });
     await db.rpc("srv_attach_session", { p_intent: intent, p_session: s.data.id });
     return json({ ok: true, url: s.data.url });

@@ -104,7 +104,7 @@ class Component extends DCLogic {
     const DIST = { rafael: [21, 2, 0, 0, 0], gabriel: [24, 4, 1, 0, 0] };
     const HOW = { rafael: [['Semana 1', 'Avaliação de movimento e da sua rotina'], ['Toda semana', 'Treino novo no app'], ['A cada 15 dias', 'Ajuste com base no que você registrou']], gabriel: [['Cada sessão', '60 minutos, com carga registrada no app'], ['Técnica', 'LPO com progressão de carga'], ['Local', 'Box na Gleba Palhano']] };
     // perfil real: a distribuição vem das próprias avaliações (mesmo conjunto da média)
-    const realDist = x.realLive ? [5, 4, 3, 2, 1].map((k) => (x.reviews || []).filter((r) => r[2] === k).length) : null;
+    const realDist = x.realLive ? (x.revDist || [0, 0, 0, 0, 0]) : null;
     const dist = (realDist || DIST[x.id] || []).map((c, i) => ({ k: String(5 - i), c: String(c), w: 'width: ' + (x.n ? Math.round(100 * c / x.n) : 0) + '%' }));
     const how = (HOW[x.id] || []).map((h) => ({ k: h[0], v: h[1] }));
     const FAQ_R = [

@@ -81,11 +81,28 @@ srv.down = false;
 await a.p.evaluate(() => window.dispatchEvent(new Event('online'))); await a.p.waitForTimeout(3500); t = await txt(a.p);
 console.log('  voltou:', nomes('rotinas').includes('Feita sem conexão'), /Salvo na sua conta/.test(t));
 
+// edição de item que já existe, feita sem conexão e com o app reaberto: ao voltar, vale o que está aqui (não é desfeita)
+srv.down = true;
+await a.p.evaluate(() => { DB.rotinas.find((x) => x.id === 'r-forca').name = 'Força A (editada sem conexão)'; window.__rerender(); });
+await a.p.waitForTimeout(2500);
+await a.p.reload({ waitUntil: 'load' }); await a.p.waitForTimeout(2500);
+srv.down = false;
+await a.p.evaluate(() => NAV.go('treinador', { s: 'conteudo' }, null)); await a.p.waitForTimeout(1000);
+await a.p.evaluate(() => window.dispatchEvent(new Event('online'))); await a.p.waitForTimeout(4000);
+console.log('  edição sem conexão sobrevive:', nomes('rotinas').includes('Força A (editada sem conexão)'), await a.p.evaluate(() => DB.rotinas.some((x) => x.name === 'Força A (editada sem conexão)')), '| sem cópia duplicada:', nomes('rotinas').filter((n) => /Força A/.test(n)).length === 1);
+// os dois aparelhos editam o MESMO item: ficam as duas versões, nada some
+await bb.p.reload({ waitUntil: 'load' }); await bb.p.waitForTimeout(2500); await bb.p.evaluate(() => NAV.go('treinador', { s: 'conteudo' }, null)); await bb.p.waitForTimeout(2500);
+await bb.p.evaluate(() => { DB.rotinas.find((x) => x.id === 'r-b').name = 'B pelo aparelho B'; window.__rerender(); }); await bb.p.waitForTimeout(3500);
+await a.p.evaluate(() => { DB.rotinas.find((x) => x.id === 'r-b').name = 'B pelo aparelho A'; window.__rerender(); }); await a.p.waitForTimeout(4500);
+const rr = nomes('rotinas');
+console.log('  mesmo item editado nos dois: as duas versões ficam:', rr.includes('B pelo aparelho B'), rr.includes('B pelo aparelho A (deste aparelho)'), /duas cópias/.test(await txt(a.p)));
+await a.p.evaluate(() => { window.LIB.seenMerge(); DB.rotinas = DB.rotinas.filter((x) => !/deste aparelho/.test(x.name)); window.__rerender(); }); await a.p.waitForTimeout(3500);
+
 // 5. apagar aqui apaga na conta (não volta sozinho)
 await a.p.evaluate(() => { DB.rotinas = DB.rotinas.filter((x) => x.id !== 'r-off'); window.__rerender(); });
 await a.p.waitForTimeout(3500);
 console.log('6 apagar vale na conta:', !nomes('rotinas').includes('Feita sem conexão'));
 await a.p.reload({ waitUntil: 'load' }); await a.p.waitForTimeout(2500);
-console.log('  depois de recarregar continua apagada:', await a.p.evaluate(() => !DB.rotinas.some((x) => x.id === 'r-off') && DB.rotinas.length === 3));
+console.log('  depois de recarregar continua apagada:', await a.p.evaluate(() => !DB.rotinas.some((x) => x.id === 'r-off') && DB.rotinas.length === 3), await a.p.evaluate(() => DB.rotinas.length));
 console.log('errs', JSON.stringify(a.errs.concat(bb.errs)));
 await b.close();

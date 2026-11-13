@@ -20,7 +20,7 @@ function line(i: Item): string {
   if (i.kind === "registro") return `${w} registrou um treino`;
   if (i.kind === "comentario") return `${w} comentou um registro de treino`;
   if (i.kind === "formulario") return i.mine === "aluno" ? `${w} enviou um formulário para você responder` : `${w} respondeu um formulário`;
-  if (i.kind === "horario") return `${w} cancelou um horário`;
+  if (i.kind === "horario") return i.extra === "cancelado" ? `${w} cancelou um horário` : `Você tem horário marcado com ${w}`;
   return `Novidade de ${w}`;
 }
 
@@ -44,8 +44,12 @@ Deno.serve(async (_req: Request) => {
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM, to: [row.email], subject, text, html }),
     });
-    if (r.ok) { enviados++; await db.rpc("email_mark", { p_user: row.user }); }
-    else { falhas++; await r.text(); }
+    if (r.ok) {
+      enviados++;
+      // se não der para marcar como enviado, para aqui: melhor atrasar os próximos do que repetir e-mail para todo mundo
+      const { error: e2 } = await db.rpc("email_mark", { p_user: row.user });
+      if (e2) return json({ ok: false, motivo: "nao_marcou_enviado", enviados, falhas }, 500);
+    } else { falhas++; await r.text(); }
   }
-  return json({ ok: true, enviados, falhas });
+  return json({ ok: true, enviados, falhas, remetente_de_teste: !Deno.env.get("AVISOS_FROM") });
 });

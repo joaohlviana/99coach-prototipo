@@ -33,7 +33,7 @@ REG.screen({
         }
         real.status = decision; real.result = (decision === 'aceito' ? 'Aceito hoje às ' : 'Recusado hoje às ') + U.now();
         var stt = decision === 'aceito' && r.start ? r.start.outcome : '';
-        var startMsg = { vinculo_ativo: 'Pedido aceito: o acompanhamento com ' + fst + ' começou. Abra em Alunos.', pagamento_necessario: 'Pedido aceito. ' + fst + ' precisa pagar pelo app para o acompanhamento começar.', capacidade_esgotada: 'Pedido aceito, mas você está sem vagas: o acompanhamento não começou. Encerre um acompanhamento e abra este pedido de novo.', falhou: 'Pedido aceito, mas não deu para iniciar o acompanhamento agora. Ele começa quando ' + fst + ' abrir o app.' }[stt];
+        var startMsg = { vinculo_ativo: 'Pedido aceito: o acompanhamento com ' + fst + ' começou. Abra em Alunos.', pagamento_necessario: 'Pedido aceito. ' + fst + ' precisa pagar pelo app para o acompanhamento começar.', capacidade_esgotada: 'Pedido aceito, mas você está sem vagas: o acompanhamento não começou. Quando houver vaga, ele começa assim que ' + fst + ' abrir o app.', falhou: 'Pedido aceito, mas não deu para iniciar o acompanhamento agora. O app tenta de novo quando ' + fst + ' abrir a área dele.' }[stt];
         ctx.setUi({ busy: '', open: '', mode: '', acceptFail: '' }); ctx.toast(startMsg || okMsg);
         if (window.__refreshLinks) window.__refreshLinks();
       });

@@ -89,3 +89,7 @@ Transação desfeita:
 
 ## Repetir a sessão a cada semana (13/11)
 Transação desfeita: a mesma sessão registrada em duas semanas, com a chave levando a segunda-feira da semana, vira dois registros distintos e recebidos. Antes, cada sessão de uma versão só podia ser registrada uma vez.
+
+
+## Avaliações (13/11)
+Transação desfeita: vínculo novo sem treino não avalia (`cedo`); com 20 dias grava; editar não duplica; nota fora de 1–5 é recusada; inserir direto na tabela é recusado; quem não foi aluno é recusado; treinador responde, aluno não responde a própria; perfil em rascunho não mostra a terceiros; perfil publicado mostra ao visitante; avaliação oculta some. Nome público sem começo de e-mail ("joao.h.viana" vira "Joao").

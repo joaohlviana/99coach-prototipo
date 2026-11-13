@@ -41,6 +41,7 @@ REG.screen({
     return {
       logged: logged, anon: !logged, login: function () { window.NAV.go('onboarding', { flow: 'entrar' }, null); },
       loading: !!ui.loading && !ui.data, fail: !!ui.fail, reload: load,
+      loaded: !!ui.data, notLoaded: logged && !ui.data && !ui.loading,
       has: items.length > 0, empty: logged && !ui.loading && !ui.fail && !items.length, items: items,
       sub: !items.length ? '' : (newN ? U.plural(newN, 'aviso novo', 'avisos novos') : 'Nada novo desde a última vez que você viu'),
       canSeen: newN > 0, seen: function () { setPrefs(null, true, 'Avisos marcados como vistos.'); },

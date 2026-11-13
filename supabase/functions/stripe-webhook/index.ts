@@ -2,7 +2,9 @@
 // Autenticidade: se houver STRIPE_WEBHOOK_SECRET, a assinatura é conferida. Em todos os casos o aviso é buscado de novo
 // direto no Stripe pelo id, com a nossa chave, e é essa cópia que vale: um aviso forjado não existe no Stripe.
 // Aviso de ambiente diferente do da chave (teste x real) é ignorado.
-// O banco é quem decide: confere valor, moeda e comissão contra o pedido e trata repetição pelo id do aviso.
+// Cada aviso de pagamento só vale se vier da conta do Stripe do vendedor daquele pedido E da página de pagamento que este
+// app criou para ele. Assim, ninguém consegue marcar um pedido como pago (ou falho) com um pagamento feito em outro lugar.
+// O banco é quem decide o resto: confere valor, moeda e comissão contra o pedido e trata repetição pelo id do aviso.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -42,6 +44,15 @@ Deno.serve(async (req: Request) => {
     return error ? json({ ok: false, motivo: "banco_recusou" }, 500) : json({ ok: true, resultado: data });
   };
 
+  // o pedido a que o aviso diz se referir: tem de ser desta conta do Stripe e, quando informado, desta página de pagamento
+  const confere = async (intent: unknown, session?: string): Promise<boolean> => {
+    if (typeof intent !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(intent) || !account) return false;
+    const { data: it } = await db.from("checkout_intents").select("id, provider_ref, orders(seller_account, checkout_session)").eq("id", intent).maybeSingle();
+    const ord: any = it && (Array.isArray((it as any).orders) ? (it as any).orders[0] : (it as any).orders);
+    if (!it || !ord || ord.seller_account !== account) return false;
+    return session === undefined || (ord.checkout_session ?? (it as any).provider_ref) === session;
+  };
+
   if (ev.type === "account.updated") {
     const { error } = await db.rpc("srv_set_payment_account", { p_trainer: null, p_account: o.id, p_charges: !!o.charges_enabled, p_payouts: !!o.payouts_enabled,
       p_submitted: !!o.details_submitted, p_fees_payer: o.controller?.fees?.payer ?? null, p_capabilities: o.capabilities ?? {} });
@@ -51,6 +62,7 @@ Deno.serve(async (req: Request) => {
   if (ev.type === "checkout.session.completed" || ev.type === "checkout.session.async_payment_succeeded") {
     const intent = o.metadata?.intent;
     if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
+    if (!(await confere(intent, o.id))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     if (o.payment_status !== "paid") return ingest("payment.processing", { intent, method: (o.payment_method_types ?? []).includes("boleto") ? "boleto" : "card", paymentIntent: o.payment_intent });
     // valores vêm do próprio Stripe (cobrança e lançamento de saldo), não do que o navegador mandou
     const pi = await stripeGet(key, `/v1/payment_intents/${o.payment_intent}?expand[]=latest_charge.balance_transaction`, account);
@@ -64,12 +76,15 @@ Deno.serve(async (req: Request) => {
 
   if (ev.type === "checkout.session.async_payment_failed" || ev.type === "checkout.session.expired") {
     const intent = o.metadata?.intent;
-    return intent ? ingest("payment.failed", { intent }) : json({ ok: true, ignorado: "sem_intencao" });
+    if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
+    if (!(await confere(intent, o.id))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
+    return ingest("payment.failed", { intent });
   }
 
   if (ev.type === "charge.refunded") {
     // a mesma conta do Stripe atende outro site: só entram reembolsos de cobranças criadas por este app
     if (!o.metadata?.intent) return json({ ok: true, ignorado: "cobranca_de_outro_sistema" });
+    if (!(await confere(o.metadata.intent))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     const before = ev.data?.previous_attributes?.amount_refunded ?? 0;
     return ingest("refund.succeeded", { charge: o.id, amountCents: (o.amount_refunded ?? 0) - before });
   }

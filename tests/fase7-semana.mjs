@@ -69,7 +69,7 @@ console.log('  sessão de hoje já vem escolhida:', /Supino reto/.test(t), '| se
 // registra o treino de hoje e a semana marca feito
 srv.sessions = [{ id: 'S1', session_key: 'L1_v1_s2', started_at: new Date().toISOString(), submitted_at: new Date().toISOString(), set_logs: [] }];
 await al.reload({ waitUntil: 'load' }); await al.waitForTimeout(1500); await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(1500); t = await txt(al);
-console.log('4 depois de registrar:', /1 de 2 treinos previstos nesta semana registrado/.test(t), /Treino B Feito/i.test(t), /já registrado nesta semana/.test(t));
+console.log('4 depois de registrar:', /1 de 2 treinos previstos nesta semana registrado/.test(t), /Treino B Feito/i.test(t), /\(já registrado\)/.test(t));
 // treinador marca hoje como descanso: o aluno lê descanso, sem inventar treino
 await tr.reload({ waitUntil: 'load' }); await tr.waitForTimeout(1500); await tr.evaluate(() => NAV.go('treinador', { s: 'alunoreal', id: 'lk_L1' }, null)); await tr.waitForTimeout(1500);
 await pick(tr, DN[today], 'Descanso'); await tr.waitForTimeout(300); await click(tr, /^Salvar semana$/); await tr.waitForTimeout(1500);

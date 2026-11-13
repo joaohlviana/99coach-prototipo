@@ -6,6 +6,8 @@
   var U = window.U;
   var day = function (s) { return s ? new Date(s).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : ''; };
   var first = function (n) { return String(n || '').split(' ')[0]; };
+  var hash = function (t) { var h = 5381, i = t.length; while (i) h = (h * 33) ^ t.charCodeAt(--i); return (h >>> 0).toString(36) + t.length.toString(36); };
+  var asking = '';   // de qual acompanhamento é a consulta em andamento (o estado da tela, dentro do retorno, pode estar velho)
   var MODELS = {
     checkin: { label: 'Check-in semanal', title: 'Check-in semanal', purpose: 'Acompanhar como foi a sua semana de treino.', qs: 'Como foi a sua semana de treino?\nO que foi mais difícil?\nQuer ajustar algo no treino?' },
     inicio: { label: 'Começo do acompanhamento', title: 'Começo do acompanhamento', purpose: 'Conhecer sua rotina para montar o treino.', qs: 'Há quanto tempo você treina?\nQuais horários funcionam melhor para você?\nO que você gosta e o que não gosta de fazer no treino?' },
@@ -13,9 +15,14 @@
   };
   function load(C, ctx, lid, force) {
     if (!C || (ctx.ui.fmAsked === lid && !force)) return;
-    ctx.setUi(force ? { fmAsked: lid } : { fmAsked: lid, fmList: [], fmSee: '' });
+    asking = lid;
+    ctx.setUi(force ? { fmAsked: lid } : { fmAsked: lid, fmList: null, fmFail: false, fmSee: '', fmOpen: false, fmErr: '', fmRowErr: '' });
     C.db('GET', 'form_sends?select=id,title,purpose,form_version,questions,status,answers,sent_at,answered_at,reviewed_at&link_id=eq.' + encodeURIComponent(lid) + '&order=sent_at.desc&limit=50').then(function (r) {
-      ctx.setUi({ fmList: r.ok && Array.isArray(r.data) ? r.data : (ctx.ui.fmList || []), fmFail: !r.ok });
+      if (asking !== lid) return;   // resposta atrasada de outro aluno/treinador não entra nesta tela
+      var L2 = r.ok && Array.isArray(r.data) ? r.data : (ctx.ui.fmList || null);
+      // rascunho de resposta de envio que já não aguarda resposta (respondido ou cancelado) sai do aparelho
+      try { if (r.ok && LS) { var open = {}; (r.data || []).forEach(function (f) { if (f.status === 'enviado') open[f.id] = 1; }); (r.data || []).forEach(function (f) { if (!open[f.id]) LS.removeItem('c99.formRasc.' + f.id); }); } } catch (_) {}
+      ctx.setUi({ fmList: L2, fmFail: !r.ok });
     });
   }
   function pairs(f) { var a = f.answers || {}; return (f.questions || []).map(function (q) { var v = String(a[q.id] == null ? '' : a[q.id]).trim(); return { q: q.label, a: v || 'Sem resposta', empty: !v }; }); }
@@ -24,7 +31,7 @@
   function trainer(ctx, lid, L) {
     var C = window.CONTA, ui = ctx.ui, nm = first(L.studentName), active = L.status === 'ativo';
     load(C, ctx, lid);
-    var list = ui.fmList || [], pendN = list.filter(function (f) { return f.status === 'enviado'; }).length;
+    var known = Array.isArray(ui.fmList), list = ui.fmList || [], pendN = list.filter(function (f) { return f.status === 'enviado'; }).length;
     var parse = function () { return String(ui.fmQs || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); };
     var qs = parse();
     var send = function () {
@@ -34,7 +41,7 @@
       if (qs.length > 15) return ctx.setUi({ fmErr: 'No máximo 15 perguntas por envio. Formulário curto é respondido mais vezes.' });
       if (qs.some(function (q) { return q.length > 200; })) return ctx.setUi({ fmErr: 'Cada pergunta pode ter até 200 letras.' });
       if (ui.fmBusy) return; ctx.setUi({ fmBusy: true, fmErr: '' });
-      var k = 'form:' + lid + ':' + title + ':' + qs.join('|').length;
+      var k = 'form:' + lid + ':' + hash(title + '|' + qs.join('|') + '|' + String(ui.fmPurpose || ''));
       C.rpc('send_form', { p_link: lid, p_title: title, p_purpose: String(ui.fmPurpose || '').trim() || null, p_version: 1, p_questions: qs.map(function (q, i) { return { id: 'q' + (i + 1), label: q, type: 'texto' }; }), p_idem: C.intent(k) }).then(C.settle(k)).then(function (r) {
         if (!r.ok) {
           var m = r.raw || r.msg || '';
@@ -55,7 +62,7 @@
     };
     return {
       show: true, canSend: active, notActive: !active,
-      sub: !list.length ? 'Nenhum formulário enviado ainda.' : U.plural(list.length, 'envio', 'envios') + (pendN ? ' · ' + pendN + ' aguardando resposta' : ''),
+      sub: !known ? (ui.fmFail ? '' : 'Carregando…') : !list.length ? 'Nenhum formulário enviado ainda.' : U.plural(list.length, 'envio', 'envios') + (pendN ? ' · ' + pendN + ' aguardando resposta' : ''),
       fail: !!ui.fmFail, reload: function () { load(C, ctx, lid, true); },
       open: !!ui.fmOpen, toggle: function () { ctx.setUi({ fmOpen: !ui.fmOpen, fmErr: '' }); }, toggleLabel: ui.fmOpen ? 'Fechar' : 'Enviar formulário',
       models: Object.keys(MODELS).map(function (k) { var on = ui.fmModel === k; return { label: MODELS[k].label, on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ fmModel: k, fmTitle: MODELS[k].title, fmPurpose: MODELS[k].purpose, fmQs: MODELS[k].qs, fmErr: '' }); } }; }),

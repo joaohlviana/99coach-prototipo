@@ -159,7 +159,7 @@ class Component extends DCLogic {
     // produto: o estado vem do carregamento de verdade. Lista vazia enquanto carrega não é "nenhum treinador"; falha não é vazio.
     const CAT = !document.documentElement.classList.contains('demo') && window.REAL && window.REAL.status ? window.REAL.status() : null;
     const loading = st.load === 'loading' || (!!CAT && n === 0 && CAT.base === 'carregando');
-    const showFail = !loading && !!CAT && n === 0 && CAT.base === 'falha';
+    const showFail = !loading && !!CAT && n === 0 && (CAT.base === 'falha' || CAT.live === 'falha');
     const showEmpty = !loading && !showFail && n === 0;
     const showList = !loading && n > 0;
     const stale = showList && !!CAT && (CAT.base === 'falha' || CAT.live === 'falha');

@@ -13,7 +13,20 @@
   function intent(k) { if (!pend[k]) { var r = new Uint32Array(2); try { window.crypto.getRandomValues(r); } catch (_) { r[0] = Date.now(); r[1] = Math.random() * 1e9; } pend[k] = k + ':' + r[0].toString(36) + r[1].toString(36); } return pend[k]; }
   function settle(k) { return function (r) { if (r && r.ok) delete pend[k]; return r; }; }
   var sess = (function () { try { return JSON.parse(LS.getItem('c99.sessao') || 'null'); } catch (_) { return null; } })();
-  function keep(s) { sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} }
+  // outra conta entrou neste aparelho (sessão vencida e novo login, por exemplo): o que estava guardado aqui era da
+  // conta anterior e não pode aparecer nem ser enviado como se fosse da nova
+  function ownerCheck(s) {
+    if (!s || !s.user || !s.user.id) return;
+    var prev = ''; try { prev = LS.getItem('c99.dono') || ''; } catch (_) {}
+    if (prev && prev !== s.user.id) {
+      try { Object.keys(LS).forEach(function (k) { if (/^c99\.(db|lib|meuSlug|vinculos|contaIniciada|contaAlunoIniciada|treinadorAtual|papeis)$/.test(k) || /^c99\.(formRasc|sessaoTreino|cadastro)\./.test(k)) LS.removeItem(k); }); } catch (_) {}
+      slugAsked = false; lastReqs = [];
+      if (window.__resetLocalData) window.__resetLocalData();
+    }
+    try { LS.setItem('c99.dono', s.user.id); } catch (_) {}
+  }
+  var slugAsked = false;
+  function keep(s) { ownerCheck(s); sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} }
   // resposta: { ok, data, offline, msg }
   function call(method, path, body, auth) {
     var h = { apikey: KEY, 'Content-Type': 'application/json' };
@@ -67,7 +80,6 @@
     return r;
   }
   function hash(t) { var h = 0x811c9dc5; t = String(t); for (var i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 0x1000193); return (h >>> 0).toString(36); }
-  var slugAsked = false;
   function keepSlug(v) { try { if (v) LS.setItem('c99.meuSlug', v); } catch (_) {} }
   function slugify(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   var SPORT = { jiujitsu: 'jiu-jitsu', beach: 'beach-tennis' };
@@ -267,7 +279,11 @@
     }); },
     activateRequest: function (id) { return db('POST', 'rpc/activate_accepted_request', { p_request: id }); },
     // funções do servidor (pagamentos): sempre com a sessão da pessoa
-    fn: function (name, body) { return sess ? call('POST', '/functions/v1/' + name, body || {}, true) : Promise.resolve({ ok: false, nosession: true }); },
+    fn: function (name, body) {
+      if (!sess) return Promise.resolve({ ok: false, nosession: true });
+      var go = function () { return call('POST', '/functions/v1/' + name, body || {}, true); };
+      return go().then(function (r) { return r.status === 401 ? refresh().then(function (ok) { return ok ? go() : r; }) : r; });
+    },
     // pagar um pedido aceito: o banco cria a cobrança (valor e comissão vêm de lá) e o servidor devolve a página do Stripe
     payRequest: function (id) { var k = 'pay:' + id; return db('POST', 'rpc/create_checkout', { p_request: id, p_idem: intent(k) }).then(settle(k)).then(function (r) {
       var d = (r.ok && r.data) || {};

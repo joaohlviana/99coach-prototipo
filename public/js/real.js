@@ -102,7 +102,7 @@
         var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
         return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
-          avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: (d.reviews && d.reviews.length) ? (d.reviews.reduce(function (n, v) { return n + v[2]; }, 0) / d.reviews.length).toFixed(1).replace('.', ',') : '', n: (d.reviews || []).length, ext: d.externalHandle || '',
+          avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: (d.revStats && d.revStats.n) ? (d.revStats.sum / d.revStats.n).toFixed(1).replace('.', ',') : '', n: d.revStats ? d.revStats.n : 0, revDist: d.revStats ? d.revStats.dist : null, ext: d.externalHandle || '',
           offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: d.reviews || [] };
       }
@@ -184,6 +184,13 @@
     STORE.saveDb();
   }
   window.__startAccount = startAccount;
+  // troca de conta no mesmo aparelho: tira da memória o que era da conta anterior (o servidor repõe o que é da nova)
+  window.__resetLocalData = function () {
+    if (!window.DB) return;
+    OWN.concat(['contratacoes', 'meusTreinos', 'a2_pedidos', 'a2_pedidosAcomp', 'a2_reembolsos', 'pastas']).forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
+    if (Array.isArray(window.DB.exercicios)) { window.DB.exercicios = window.DB.exercicios.filter(function (e) { return e && !e.own; }); window.DB.exercicios.forEach(function (e) { e.fav = false; }); }
+    window.__myRequests = []; STORE._last = '';
+  };
 
   // vínculos reais: o treinador vê os alunos conectados na lista (sem dados inventados)
   function mergeLinks(L) {
@@ -307,7 +314,7 @@
     };
     // perfil vem do banco (99coach-v2); a API do site anterior só entra se o banco não responder
     if (!window.CONTA || !window.CONTA.pub) return legacy();
-    window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,availability_informed_on,area,regions,offers(title,price_cents,unit,status,headline,sort),reviews(author_name,rating,body,period,created_at,reply)&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
+    window.CONTA.pub('trainers?select=slug,role_line,pitch,bio,external_handle,origin,cref,cref_status,availability,availability_informed_on,area,regions,offers(title,price_cents,unit,status,headline,sort),reviews(author_name,rating,body,period,created_at,reply)&reviews.status=eq.publicada&status=eq.publicado&slug=eq.' + encodeURIComponent(id)).then(function (r) {
       if (!r.ok || !Array.isArray(r.data)) return legacy();
       var d = r.data.filter(function (x) { return x && x.slug === id; })[0] || null;
       // o banco respondeu e o perfil não está publicado (retirado ou nunca publicado): some daqui e do cache, sem voltar pela API antiga
@@ -317,7 +324,9 @@
       keep({ role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',
         receivesRequests: d.origin !== 'importado' && d.availability !== 'sem_vaga', availability: d.availability || 'desconhecida', availOn: d.availability_informed_on || '', crefStatus: d.cref_status || '', offers: offers, credentials: d.cref && d.cref_status !== 'nao_informado' ? [{ kind: 'CREF', status: d.cref_status }] : [],
         // avaliações reais: só de quem teve acompanhamento; sem avaliação não há nota
-        reviews: (d.reviews || []).filter(function (v) { return v && v.rating >= 1 && v.rating <= 5; }).sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); }).slice(0, 30).map(function (v) { return [v.author_name || 'Aluno', 'Acompanhamento' + (v.period ? ' · desde ' + v.period : ''), v.rating, v.body || '', v.reply || '']; }) });
+        reviews: (d.reviews || []).filter(function (v) { return v && v.rating >= 1 && v.rating <= 5; }).sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); }).slice(0, 30).map(function (v) { return [v.author_name || 'Aluno', 'Acompanhamento' + (v.period ? ' · desde ' + v.period : ''), v.rating, v.body || '', v.reply || '']; }),
+        // média, total e distribuição saem de TODAS as avaliações publicadas, não só das 30 listadas
+        revStats: (function (all) { var d = [0, 0, 0, 0, 0]; all.forEach(function (v) { d[5 - v.rating]++; }); return { n: all.length, sum: all.reduce(function (n, v) { return n + v.rating; }, 0), dist: d }; })((d.reviews || []).filter(function (v) { return v && v.rating >= 1 && v.rating <= 5; })) });
     });
   }
   function rerender() { if (window.__rerender) window.__rerender(); }

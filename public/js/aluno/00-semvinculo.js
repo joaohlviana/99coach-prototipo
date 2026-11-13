@@ -34,11 +34,12 @@ REG.screen({
       var act = ui.act || {};
       reqs.filter(function (r) { return r.status === 'aceito' && !(ui.actAsked || {})[r.id]; }).forEach(function (r) {
         var m = Object.assign({}, ui.actAsked || {}); m[r.id] = 1; ctx.setUi({ actAsked: m });
-        C.activateRequest(r.id).then(function (x) { var o = x.ok ? ((x.data || {}).outcome || '') : 'falhou', n = Object.assign({}, ctx.ui.act || {}); n[r.id] = o; ctx.setUi({ act: n }); if (o === 'vinculo_ativo' && window.__refreshLinks) window.__refreshLinks(); });
+        C.activateRequest(r.id).then(function (x) { var o = x.ok ? ((x.data || {}).outcome || '') : 'falhou'; window.__actOut = window.__actOut || {}; window.__actOut[r.id] = o; ctx.setUi({ act: Object.assign({}, window.__actOut) }); if (o === 'vinculo_ativo' && window.__refreshLinks) window.__refreshLinks(); });
       });
-      var PAYWHY = { pagamentos_nao_configurados: 'O pagamento pelo app ainda não está ligado. Combine com o treinador pela conversa depois do início.', chave_de_outro_ambiente: 'O pagamento pelo app ainda não está ligado.', stripe_recusou_cobranca: 'O Stripe não abriu o pagamento agora. Nada foi cobrado; tente de novo.', vendedor_sem_recebimento: 'O treinador ainda não ativou o recebimento pelo app.', aguardando_confirmacao: 'Seu pagamento foi emitido e está aguardando confirmação do banco.', pagamento_em_confirmacao: 'Seu pagamento está sendo confirmado. Volte em instantes.', email_nao_confirmado: 'Confirme seu e-mail antes de pagar.', offline: 'Sem conexão: nada foi cobrado.', conta_bloqueada: 'Sua conta está bloqueada para compras.' };
+      var PAYWHY = { pagamentos_nao_configurados: 'O pagamento pelo app ainda não está ligado. Combine com o treinador pela conversa depois do início.', chave_de_outro_ambiente: 'O pagamento pelo app ainda não está ligado.', stripe_recusou_cobranca: 'O Stripe não abriu o pagamento agora. Nada foi cobrado; tente de novo.', tente_de_novo: 'Não deu para consultar o pagamento agora. Nada foi cobrado; tente de novo em instantes.', pagina_vencida: 'A página de pagamento venceu. Toque em pagar de novo em alguns instantes para abrir uma nova.', cobranca_fechada: 'Esta cobrança já foi encerrada. Atualize a tela.', vendedor_sem_recebimento: 'O treinador ainda não ativou o recebimento pelo app.', aguardando_confirmacao: 'Seu pagamento foi emitido e está aguardando confirmação do banco.', pagamento_em_confirmacao: 'Seu pagamento está sendo confirmado. Volte em instantes.', email_nao_confirmado: 'Confirme seu e-mail antes de pagar.', offline: 'Sem conexão: nada foi cobrado.', conta_bloqueada: 'Sua conta está bloqueada para compras.' };
       var ACT = { pagamento_necessario: 'Aceito · falta o pagamento para começar', capacidade_esgotada: 'Aceito · o treinador está sem vagas agora', falhou: 'Aceito · não deu para iniciar agora, tente de novo em instantes', vinculo_ativo: 'Aceito · acompanhamento iniciado' };
-      var reqItems = reqs.map(function (r) { return { canPay: r.status === 'aceito' && act[r.id] === 'pagamento_necessario', payLabel: ui.payBusy === r.id ? 'Abrindo pagamento…' : 'Pagar e começar',
+      var retryAct = function (id) { return function () { var m = Object.assign({}, ui.actAsked || {}); delete m[id]; if (window.__actOut) delete window.__actOut[id]; ctx.setUi({ actAsked: m, act: Object.assign({}, window.__actOut || {}) }); }; };
+      var reqItems = reqs.map(function (r) { return { canRetry: r.status === 'aceito' && (act[r.id] === 'falhou' || act[r.id] === 'capacidade_esgotada'), retry: retryAct(r.id), canPay: r.status === 'aceito' && act[r.id] === 'pagamento_necessario', payLabel: ui.payBusy === r.id ? 'Abrindo pagamento…' : 'Pagar e começar',
         pay: function () { if (ui.payBusy) return; ctx.setUi({ payBusy: r.id }); C.payRequest(r.id).then(function (x) { if (x.ok) { location.href = x.url; return; } ctx.setUi({ payBusy: '' }); ctx.toast(PAYWHY[x.motivo] || 'Não foi possível abrir o pagamento agora. Nada foi cobrado.'); }); },
         t: r.trainerName || 'Treinador', x: (r.status === 'aceito' && ACT[act[r.id]] ? ACT[act[r.id]] : (RS[r.status] || r.status)) + ' · enviado em ' + new Date(r.at).toLocaleDateString('pt-BR') + (r.status === 'pendente' && r.due ? ' · o treinador responde até ' + new Date(r.due).toLocaleDateString('pt-BR') : '') + (r.offer ? ' · ' + r.offer : '') + (r.status === 'recusado' && r.reason ? ' · motivo: “' + r.reason + '”' : ''),
         canCancel: r.status === 'pendente', cancel: function () { ctx.ask({ title: 'Cancelar o pedido?', lines: ['O pedido para ' + (r.trainerName || 'o treinador') + ' deixa de valer. Você pode pedir de novo depois.'], ok: 'Cancelar pedido', cancel: 'Manter pedido', onOk: function () { C.cancelRequest(r.id).then(function (x) { if (!x.ok) return ctx.toast('Não foi possível cancelar: ' + (x.msg || x.status || 'sem conexão') + '.'); ctx.toast('Pedido cancelado.'); if (window.__refreshLinks) window.__refreshLinks(); setTimeout(function () { ctx.setUi({ v: (ui.v || 0) + 1 }); }, 700); }); } }); } }; });
@@ -62,13 +63,26 @@ REG.screen({
       ctx.setUi({ sess: all.filter(function (x) { return !!x.submitted_at; }), srvDrafts: drafts, sessErr: !r.ok }); }); }
     // rotina com várias sessões: o aluno escolhe qual vai fazer (a primeira ainda não registrada vem marcada)
     var w = link.workout, SS = (w && w.sessions) || [];
-    // cada sessão pode ser registrada uma vez por semana: a chave do registro leva a segunda-feira da semana.
-    // registros antigos (sem a semana na chave) contam para a semana em que foram enviados.
-    var MON = (function () { var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; })();
-    var WTAG = MON.getFullYear() + '-' + ('0' + (MON.getMonth() + 1)).slice(-2) + '-' + ('0' + MON.getDate()).slice(-2);
+    // cada sessão pode ser registrada uma vez por dia: a chave do registro leva a data em que foi começada.
+    // (o treinador pode marcar a mesma sessão em dois dias da semana.) Registros antigos, sem data na chave,
+    // contam pela data em que foram enviados. Um rascunho aberto continua na chave em que nasceu, mesmo virando o dia.
+    var uid = (C && C.user() && C.user().id) || 'local';
+    var D0 = (function () { var d = new Date(); d.setHours(0, 0, 0, 0); return d; })();
+    var MON = (function () { var d = new Date(D0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; })();
+    var DTAG = D0.getFullYear() + '-' + ('0' + (D0.getMonth() + 1)).slice(-2) + '-' + ('0' + D0.getDate()).slice(-2);
     var baseKey = function (x) { return link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
-    var wkKey = function (x) { return baseKey(x) + '@' + WTAG; };
-    var doneOf = function (x) { var b = baseKey(x), k = wkKey(x); return (ui.sess || []).some(function (y) { return y.session_key === k || (y.session_key === b && y.submitted_at && new Date(y.submitted_at) >= MON); }); };
+    var baseOf = function (k) { return String(k || '').split('@')[0]; };
+    var sentKeys = {}; (ui.sess || []).forEach(function (y) { sentKeys[y.session_key] = 1; });
+    var openKeyOf = function (x) {
+      var b = baseKey(x), pre = 'c99.sessaoTreino.' + uid + '.', found = '';
+      try { Object.keys(window.localStorage).forEach(function (k) { if (k.indexOf(pre) === 0) { var kk = k.slice(pre.length); if (baseOf(kk) === b && !sentKeys[kk] && kk > found) found = kk; } }); } catch (_) {}
+      if (!found) Object.keys(ui.srvDrafts || {}).forEach(function (kk) { if (baseOf(kk) === b && !sentKeys[kk] && kk > found) found = kk; });
+      return found;
+    };
+    var curKey = function (x) { return openKeyOf(x) || (baseKey(x) + '@' + DTAG); };
+    var doneSince = function (x, since) { var b = baseKey(x); return (ui.sess || []).some(function (y) { return baseOf(y.session_key) === b && y.submitted_at && new Date(y.submitted_at) >= since; }); };
+    var doneToday = function (x) { return (ui.sess || []).some(function (y) { return y.session_key === baseKey(x) + '@' + DTAG; }) || doneSince(x, D0); };
+    var doneOf = function (x) { return doneSince(x, MON); };
     if (ui.sx == null && window.__alunoSx && window.__alunoSx.link === link.id && SS[window.__alunoSx.i]) { ui.sx = window.__alunoSx.i; window.__alunoSx = null; }
     // com a semana definida pelo treinador, a sessão de hoje já vem escolhida (a pessoa pode trocar)
     var WK = window.WEEK ? window.WEEK.student(ctx, link, ui.sess, true) : { show: false, todayIdx: -1 };
@@ -90,10 +104,9 @@ REG.screen({
 
     // ---------- execução (registro de séries) ----------
     // A sessão em andamento fica guardada neste aparelho até ser enviada: fechar o app não perde as marcações.
-    var uid = (C && C.user() && C.user().id) || 'local';
-    var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + wkKey(x); };
+    var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + curKey(x); };
     // e também no servidor (save_session), para continuar em outro aparelho; o aparelho vale primeiro
-    var sKey = function (x) { return wkKey(x); };
+    var sKey = function (x) { return curKey(x); };
     var dGet = function (x) { var v = null; try { v = JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) {} return v || ((ui.srvDrafts || {})[sKey(x)] || null); };
     var dPut = function (x, v) {
       var localOk = true;
@@ -104,7 +117,7 @@ REG.screen({
       var k = sKey(x); clearTimeout(window.__svT); window.__svT = setTimeout(function () { C.rpc('save_session', { p_link: link.id, p_key: k, p_version: w.version, p_state: v }).then(function (r) { window.__svState = r.ok ? 'servidor' : (r.offline ? 'offline' : 'erro'); window.__svAt = U.now(); ctx.setUi({ svTick: Date.now() }); }); }, 1200);
     };
     var orphan = []; try { var pre = 'c99.sessaoTreino.' + uid + '.' + link.id + '_v'; Object.keys(window.localStorage).forEach(function (k) { if (k.indexOf(pre) === 0 && w && k.indexOf(pre + w.version + '_') !== 0) orphan.push(k); }); } catch (_) {}
-    var draftIdx = -1; SS.forEach(function (x, i) { if (draftIdx < 0 && !doneOf(x) && dGet(x)) draftIdx = i; });
+    var draftIdx = -1; SS.forEach(function (x, i) { if (draftIdx < 0 && openKeyOf(x) && dGet(x)) draftIdx = i; });
     var draft = draftIdx >= 0 ? dGet(SS[draftIdx]) : null;
     var marked = function (g) { return g.reduce(function (n, sets) { return n + sets.filter(function (c) { return c.done; }).length; }, 0); };
     var total = function (g) { return g.reduce(function (n, sets) { return n + sets.length; }, 0); };
@@ -144,7 +157,7 @@ REG.screen({
       if (!logs.length) return ctx.setUi({ err: 'Marque pelo menos uma série feita. Concluir parcialmente é permitido.' });
       // sessão incompleta: uma confirmação antes de enviar, dizendo o que fica registrado
       if (logs.length < total(ex.grid) && !ui.partial) return ctx.setUi({ partial: true, err: '' });
-      var key = wkKey(s0);
+      var key = curKey(s0);
       ctx.setUi({ busy: true, err: '' });
       clearTimeout(window.__svT);
       C.rpc('save_session', { p_link: link.id, p_key: key, p_version: w.version, p_state: ex }).then(function (sv) { return sv.ok ? C.submitSession(link.id, key, logs) : sv; }).then(function (r) {
@@ -179,7 +192,7 @@ REG.screen({
     var fmtDay = function (d) { return d.slice(8, 10) + '/' + d.slice(5, 7); };
     var tracked = Object.keys(byEx).map(function (k) { var o = byEx[k], ds = Object.keys(o.days).sort(); return { name: o.name, n: ds.length, last: fmtSet(o.days[ds[ds.length - 1]]) + ' em ' + fmtDay(ds[ds.length - 1]), prev: ds.length > 1 ? 'Antes: ' + fmtSet(o.days[ds[ds.length - 2]]) + ' em ' + fmtDay(ds[ds.length - 2]) : 'Sem registro anterior para comparar' }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 3);
 
-    var doneNow = !!(w && s0) && doneOf(s0);
+    var doneNow = !!(w && s0) && doneToday(s0) && !openKeyOf(s0);
     var state = !w ? (link.prep === 'awaiting_client' ? 'prep' : 'wait') : (ex ? 'exec' : 'ready');
     var paused = link.status === 'pausado';
     // recado do treinador: última mensagem dele ainda não lida (só o que o servidor devolveu)

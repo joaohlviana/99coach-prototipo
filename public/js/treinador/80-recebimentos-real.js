@@ -26,7 +26,7 @@ REG.screen({
       loading: !!ui.loading && !ui.st, isOff: off, offTitle: offT[0], offTxt: offT[1], isOn: !!st.ok,
       stage: stage, testNote: st.real ? 'Cobranças de verdade: o pagamento do aluno é processado pelo Stripe e cai na sua conta do Stripe.' : 'Modo de teste: nenhuma cobrança é de verdade e nenhum dinheiro é movimentado.',
       canActivate: !!st.ok && !ready, activateLabel: ui.busy ? 'Abrindo o Stripe…' : (st.conta ? 'Continuar cadastro no Stripe' : 'Ativar recebimento'),
-      activate: function () { if (ui.busy) return; ctx.setUi({ busy: true, err: '' }); C.fn('pagamentos', { acao: 'ativar' }).then(function (r) { var d = (r.ok && r.data) || {}; if (d.ok && d.url) { location.href = d.url; return; } ctx.setUi({ busy: false, err: 'Não foi possível abrir o cadastro do Stripe agora. Nada mudou.' }); }); },
+      activate: function () { if (ui.busy) return; ctx.setUi({ busy: true, err: '' }); C.fn('pagamentos', { acao: 'ativar' }).then(function (r) { var d = (r.ok && r.data) || {}; if (d.ok && d.url) { location.href = d.url; return; } ctx.setUi({ busy: false, err: 'Não foi possível abrir o cadastro do Stripe agora. Toque de novo em instantes; se a sua conta de recebimento já tiver sido criada, ela é reaproveitada.' }); load(); }); },
       err: ui.err || '', hasErr: !!ui.err, reload: load,
       how: 'O aluno paga pelo app depois que você aceita o pedido. A 99coach fica com 5% do valor; a tarifa do Stripe sai da sua parte. O acompanhamento começa quando o pagamento é confirmado.',
       hasRows: rows.length > 0, noRows: !!ui.recv && !rows.length, rows: rows, recvFail: ui.recv === null,
