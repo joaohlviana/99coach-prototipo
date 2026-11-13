@@ -80,13 +80,17 @@
       return items.filter(function (t) { var hay = t._h || (t._h = fold(t.name + ' ' + t.spec + ' ' + t.city + ' ' + t.sports.join(' '))); return words.every(function (w) { return hay.indexOf(w) >= 0; }); }).length;
     },
     // cidades com treinadores, da mais numerosa para a menos
-    cities: function (keep) {
+    cities: function (keep, q) {
       if (!items.length) return null;
       if (!cache.cit) {
         var n = {}; items.forEach(function (t) { if (t.city) n[t.city] = (n[t.city] || 0) + 1; });
-        cache.cit = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || a.localeCompare(b); }).slice(0, 12);
+        cache.citAll = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || a.localeCompare(b); });
+        cache.cit = cache.citAll.slice(0, 12);
       }
-      var L = cache.cit.slice(); if (keep && L.indexOf(keep) < 0) L.push(keep);
+      var plain = function (x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };
+      var L;
+      if (plain(q)) { var k = plain(q); L = cache.citAll.filter(function (c) { return plain(c).indexOf(k) >= 0; }).slice(0, 12); }
+      else { L = cache.cit.slice(); if (keep && L.indexOf(keep) < 0) L.push(keep); }
       return L.map(function (c) { var uf = c.split(', ')[1] || ''; return [c, (UF[uf] || uf) + ' · Brasil']; });
     },
     // Perfil público, no formato da página de Perfil

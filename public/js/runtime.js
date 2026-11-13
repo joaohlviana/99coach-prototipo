@@ -273,7 +273,20 @@
     for (var b = 0; b < bs.length; b++) { if (bs[b].getAttribute('data-pv') === name) bs[b].setAttribute('aria-current', 'page'); else bs[b].removeAttribute('aria-current'); }
     rendering = true;
     try { render(true); } finally { rendering = false; }
+    pageIn();
   }
+  // troca de página visível: barra no topo, conteúdo entra de baixo e os cartões passam por um instante de esqueleto
+  var pgT = null;
+  function pageIn() {
+    try {
+      var app = document.getElementById('app'); if (!app) return;
+      var bar = document.getElementById('pg-bar'); if (!bar) { bar = document.createElement('div'); bar.id = 'pg-bar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar); }
+      app.classList.remove('pg-in'); bar.classList.remove('is-run'); void app.offsetWidth;
+      app.classList.add('pg-in'); bar.classList.add('is-run');
+      clearTimeout(pgT); pgT = setTimeout(function () { app.classList.remove('pg-in'); bar.classList.remove('is-run'); }, 750);
+    } catch (_) {}
+  }
+  window.__pageIn = pageIn;
   function scrollLater(y) {
     window.scrollTo(0, y);
     requestAnimationFrame(function () { requestAnimationFrame(function () { window.scrollTo(0, y); }); });

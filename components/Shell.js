@@ -4,7 +4,7 @@
 export function Topo() {
   return (
     <header className="ssr-top">
-      <a className="ssr-logo" href="/" aria-label="99coach, página inicial">99coach</a>
+      <a className="ssr-logo" href="/" aria-label="99coach, página inicial"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>
@@ -21,7 +21,7 @@ export function Rodape() {
       <a href="/app#publico-ajuda">Central de ajuda</a>
       <a href="/app#publico-ajuda-termos">Termos</a>
       <a href="/app#publico-ajuda-privacidade">Privacidade</a>
-      <span>© 2026 99coach</span>
+      <span className="ssr-foot__m"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="71" height="18" /> © 2026</span>
     </footer>
   );
 }

@@ -72,10 +72,9 @@ class Component extends DCLogic {
     const langTxt = st.lang !== 'Qualquer' ? ' · atende em ' + st.lang.toLowerCase() : '';
     const ctxLine = st.mod + ' · ' + (online ? 'online' : (st.city || 'sem cidade') + ' · ' + fmtWord) + langTxt + (st.avail ? ' · aceita novos alunos' : '');
     let lede;
-    if (online) lede = 'Profissionais que acompanham ' + st.mod + ' a distância, com o treino no app. Cada preço aparece com a unidade da oferta.';
-    else if (st.city && st.fmt === 'Presencial') lede = 'Quem atende ' + st.mod + ' presencialmente em ' + cityShort(st.city) + '. Compare formato, preço com unidade e avaliações antes de conversar.';
-    else if (st.city) lede = 'Quem atende presencialmente em ' + cityShort(st.city) + ' e quem atende online, juntos e identificados em cada cartão.';
-    else lede = 'Todas as cidades e o atendimento online. Escolha uma cidade para ver quem atende perto de você.';
+    if (online) lede = 'Acompanhamento a distância, com o treino no app.';
+    else if (st.city) lede = '';
+    else lede = 'Escolha uma cidade para ver quem atende perto de você.';
 
     // cenários
     const P = { londrina: {}, online: { city: '', fmt: 'Online' }, geral: { city: '', fmt: 'Qualquer' }, vazio: { lang: 'Espanhol' }, tamarana: { city: 'Tamarana, PR' }, loading: { load: 'loading' }, parcial: { load: 'parcial' }, total: { load: 'total' }, mapa: { mapCap: 'on', view: 'mapa', sel: 'rafael' }, semmapa: { mapCap: 'fail', view: 'mapa' }, removido: { removed: true } };
@@ -84,11 +83,11 @@ class Component extends DCLogic {
     const scens = SL.map(([k, label]) => ({ label, on: String(st.scen === k), cls: 'e-sc' + (st.scen === k ? ' is-on' : ''), pick: goScen(k) }));
     const reset = () => set(this.base());
 
-    const change = (o) => set(Object.assign({ dd: '', area: (o && (o.city !== undefined || o.fmt === 'Online' || o.mod)) ? '' : st.area, foco: (o && o.mod) ? '' : st.foco, page: 1, more: 0, back: '', sel: '', scen: '', load: st.load === 'parcial' || st.load === 'total' ? st.load : 'ok' }, o));
+    const change = (o) => { if (o && (o.city !== undefined || o.mod || o.fmt) && window.__pageIn) window.__pageIn(); return set(Object.assign({ dd: '', area: (o && (o.city !== undefined || o.fmt === 'Online' || o.mod)) ? '' : st.area, foco: (o && o.mod) ? '' : st.foco, page: 1, more: 0, back: '', sel: '', scen: '', load: st.load === 'parcial' || st.load === 'total' ? st.load : 'ok' }, o)); };
     const later = () => { try { setTimeout(() => this.setState({ load: 'ok' }), 900); } catch (e) {} };
 
     // formato e ordenação
-    const fmtSeg = [['Presencial', 'Presencial'], ['Online', 'Online'], ['Qualquer', 'Qualquer formato']].map(([k, label]) => ({ label, on: String(st.fmt === k), cls: st.fmt === k ? 'is-on' : '', pick: () => change({ fmt: k }) }));
+    const fmtSeg = [['Presencial', 'Presencial'], ['Online', 'Online'], ['Qualquer', 'Qualquer formato']].map(([k, label]) => ({ label, on: String(st.fmt === k), cls: st.fmt === k ? 'is-on' : '', pick: () => change({ fmt: k }), k: k }));
     const sortSeg = [['rel', 'Relevância'], ['rec', 'Mais recentes']].map(([k, label]) => ({ label, on: String(st.sort === k), cls: st.sort === k ? 'is-on' : '', pick: () => set({ sort: k, page: 1, more: 0 }) }));
     const mapToggle = st.mapCap !== 'off' && !online;
     const viewSeg = [['lista', 'Lista', 'ic ic--sm i-list'], ['mapa', 'Mapa', 'ic ic--sm i-pin']].map(([k, label, icon]) => ({ label, icon, on: String(st.view === k), cls: st.view === k ? 'is-on' : '', pick: () => set({ view: k }) }));
@@ -350,7 +349,7 @@ class Component extends DCLogic {
       if (t.imported) m2.push('Não confirmado pelo profissional');
       if (t.langs.length > 1) m2.push('Atende em ' + t.langs.join(' e '));
       return { name: t.name, spec: t.spec, ini: t.ini || '', photo: t.ph ? B(t.ph) : '', hasPhoto: !!t.ph, noPhoto: !t.ph, verified: isVer(t),
-        reason: whyOf(t, on), hasReason: !!whyOf(t, on), hide: hideOf(t), hideLabel: 'Não tenho interesse em ' + t.name,
+        reason: whyOf(t, on), hasReason: !!whyOf(t, on) && !/^Atende /.test(whyOf(t, on)), hide: hideOf(t), hideLabel: 'Não tenho interesse em ' + t.name,
         fmtTxt: fmtTxtOf(t), place: placeOf(t), meta2: m2.join(' · '), hasMeta2: m2.length > 0,
         rated: !!t.rating, unrated: !t.rating, rating: t.rating, reviews: String(t.reviews),
         hasOffer: !!of, noOffer: !of, offerName: of ? of[0] : '', price: of ? of[1] : '', unit: of ? of[2] : '',
@@ -368,15 +367,18 @@ class Component extends DCLogic {
 
     // barra de filtros (G19)
     const fmtL = { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' };
-    const cityMenu = ((window.REAL && window.REAL.cities(st.city)) || [['Londrina, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil · 50 km de Londrina']]).concat([['', 'Todas as cidades e o online']]).map(([c, sub]) => { const on = !online && st.city === c; const k = countFor({ city: c, fmt: c ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); return { label: c || 'Qualquer cidade', sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), pick: () => change({ city: c, fmt: c ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '' }) }; });
+    const cityMenu = ((window.REAL && window.REAL.cities(st.city, st.cq)) || [['Londrina, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil · 50 km de Londrina']]).concat([['', 'Todas as cidades e o online']]).map(([c, sub]) => { const on = !online && st.city === c; const k = countFor({ city: c, fmt: c ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); return { label: c || 'Qualquer cidade', sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), pick: () => change({ city: c, fmt: c ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '' }) }; });
     const fmtMenu = [['Presencial', 'Encontro no local combinado'], ['Online', 'Treino e conversa pelo app'], ['Qualquer', 'Presencial e online juntos, identificados']].map(([k, sub]) => ({ label: fmtL[k], sub, on: String(st.fmt === k), cls: 'menu__it' + (st.fmt === k ? ' is-on' : ''), pick: () => change({ fmt: k }) }));
-    const langMenu = ['Qualquer', 'Português', 'Inglês', 'Espanhol'].map((k) => ({ sub: k === 'Qualquer' ? 'Sem filtro de idioma' : 'Atendimento em ' + k.toLowerCase(), label: k === 'Qualquer' ? 'Qualquer idioma' : k, on: String(st.lang === k), cls: 'menu__it' + (st.lang === k ? ' is-on' : ''), pick: () => change({ lang: k }) }));
+    const langMenu = ['Qualquer', 'Português', 'Inglês', 'Espanhol'].map((k) => ({ sub: k === 'Qualquer' ? 'Sem filtro de idioma' : 'Atendimento em ' + k.toLowerCase(), label: k === 'Qualquer' ? 'Qualquer idioma' : k, on: String(st.lang === k), cls: 'menu__it' + (st.lang === k ? ' is-on' : ''), pick: () => change({ lang: k }), k: k })).filter((o) => o.k === 'Qualquer' || o.on === 'true' || countFor({ lang: o.k }) > 0);
+    const totalAny = countFor({ lang: 'Qualquer' });
+    const showLang = st.lang !== 'Qualquer' || langMenu.filter((o) => o.k !== 'Qualquer' && countFor({ lang: o.k }) < totalAny).length > 0;
     const sortMenu = [['rel', 'Relevância', 'Combina modalidade, local e formato com a completude do perfil. Plano pago não muda a posição.'], ['rec', 'Mais recentes', 'Publicados mais recentemente primeiro, pela data de publicação. Suas preferências não mudam esta ordem.']].map(([k, label, sub]) => ({ label, sub, on: String(st.sort === k), cls: 'menu__it' + (st.sort === k ? ' is-on' : ''), pick: () => set({ sort: k, page: 1, more: 0, dd: '' }) }));
-    const qchips4 = [['Aceita novos alunos', 'check', st.avail, () => change({ avail: !st.avail })], ['Atende em inglês', 'message', st.lang === 'Inglês', () => change({ lang: st.lang === 'Inglês' ? 'Qualquer' : 'Inglês' })], ['Atende em espanhol', 'message', st.lang === 'Espanhol', () => change({ lang: st.lang === 'Espanhol' ? 'Qualquer' : 'Espanhol' })]].map(([label, ic, on, pick]) => ({ label, icon: 'ic i-' + ic, on: String(on), cls: 'qchip' + (on ? ' is-on' : ''), pick }));
+    const availN = countFor({ avail: true });
+    const qchips4 = (st.avail || (availN > 0 && availN < countFor({ avail: false }))) ? [{ label: 'Aceita novos alunos', icon: 'ic i-check', on: String(!!st.avail), cls: 'qchip' + (st.avail ? ' is-on' : ''), pick: () => change({ avail: !st.avail }) }] : [];
 
     // painel de filtros
-    const pFmt4 = pFmt.map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
-    const pLang4 = pLang.map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
+    const pFmt4 = pFmt.filter((o) => o.on === 'true' || countFor({ fmt: o.label === 'Qualquer formato' ? 'Qualquer' : o.label }) > 0).map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
+    const pLang4 = pLang.filter((o) => o.on === 'true' || o.label === 'Qualquer idioma' || countFor({ lang: o.label }) > 0).map((o) => ({ label: o.label, on: o.on, pick: o.pick, cls: 'opt' + (o.on === 'true' ? ' is-on' : '') }));
     const modOpts4 = RAILS.map(([m, id]) => ({ label: m, icon: id, n: String(countFor({ mod: m })), cls: 'lrow v4-lrow' + (st.mod === m ? ' is-on' : ''), on: String(st.mod === m), pick: () => change({ mod: m, sheet: '' }) }));
 
     // paginação, mapa, programas, conteúdo local
@@ -400,7 +402,7 @@ class Component extends DCLogic {
       sports4, scens4, kpis, hasKpis: kpis.length > 0, bannerImg: HERO(st.mod).img, heroCls: 'vfe-hero' + (HERO(st.mod).art ? ' vfe-hero--art' : ''), tint4: '--tint: ' + tintOf(st.mod), eyebrow4,
       cards4, countB, countT, hasCountB: !!countB,
       ddCity: dd === 'city', ddFmt: dd === 'fmt', ddLang: dd === 'lang', ddSort: dd === 'sort', ddSortC: dd === 'sortc', tgCity: tg('city'), tgFmt: tg('fmt'), tgLang: tg('lang'), tgSort: tg('sort'), tgSortC: tg('sortc'),
-      cityMenu, fmtMenu, langMenu, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',
+      cq: st.cq || '', setCq: (e) => set({ cq: e && e.target ? e.target.value : '' }), noCity: !!(st.cq || '').trim() && cityMenu.length <= 1, cityMenu, fmtMenu, langMenu, showLang, hasQ: qchips4.length > 0, showAvail: qchips4.length > 0, showFmt: true, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',
       cityFddCls: 'fdd' + (st.city && !online ? ' is-set' : ''), cityFddTxt: online ? 'Cidade: não se aplica (online)' : (st.city ? 'Cidade: ' + st.city : 'Escolha uma cidade'),
       fmtFddTxt: 'Formato: ' + fmtL[st.fmt], langFddCls: 'fdd' + (st.lang !== 'Qualquer' ? ' is-set' : ''), langFddTxt: st.lang === 'Qualquer' ? 'Idioma do atendimento' : 'Idioma: ' + st.lang,
       pFmt4, pLang4, pSwCls: 'switch' + (pend.avail ? ' is-on' : ''), modOpts4,
@@ -409,7 +411,7 @@ class Component extends DCLogic {
       markers4, progs4, facts4, faqs4, rel4, hasRel4: rel4.length > 0, alts4, pfTrust4, pgCoach: B(COACH[pg.by] || COACH['Rafael Lima']),
       seoBadge: 'tag tag--white', showTabbar: !st.sheet && !st.open,
       askLocWide: () => set({ sheet: 'city', loc: 'ask', dd: '' }),
-      openMod: () => set({ sheet: 'mod', dd: '' }), openCity: () => set({ sheet: 'city', loc: '', dd: '' }), openFilters: () => set({ sheet: 'filters', dd: '', pend: { fmt: st.fmt, lang: st.lang, avail: st.avail } }), openSaved: () => set({ sheet: 'saved', toast: null, dd: '' }), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), openMenu: () => set({ sheet: 'menu', dd: '' })
+      openMod: () => set({ sheet: 'mod', dd: '' }), openCity: () => { set({ sheet: 'city', loc: '', dd: '', cq: '' }); setTimeout(() => { try { const el = document.getElementById('cq'); if (el) el.focus(); } catch (_) {} }, 80); }, openFilters: () => set({ sheet: 'filters', dd: '', pend: { fmt: st.fmt, lang: st.lang, avail: st.avail } }), openSaved: () => set({ sheet: 'saved', toast: null, dd: '' }), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), openMenu: () => set({ sheet: 'menu', dd: '' })
     };
     // ---------- VFINAL: composição da referência ----------
     const ovKey = (sheet || '') + '|' + (st.open || '') + '|' + (mapOn ? 'mapa' : '');
@@ -420,7 +422,7 @@ class Component extends DCLogic {
     // com o catálogo completo há milhares de combinações: ficam os 12 focos mais declarados
     const fq = {};
     for (let i = 0; i < T.length; i++) { const t = T[i]; if (!has(t.mods, st.mod)) continue; t.spec.split(' e ').forEach((p) => { if (p && p !== st.mod) fq[p] = (fq[p] || 0) + 1; }); }
-    const FOCOS = Object.keys(fq).sort((a, b) => fq[b] - fq[a]).slice(0, 12);
+    const FOCOS = Object.keys(fq).sort((a, b) => fq[b] - fq[a]).slice(0, 6);
     if (st.foco && FOCOS.indexOf(st.foco) < 0) FOCOS.push(st.foco);
     const focoChips = [{ label: 'Todos', n: '', hasN: false, on: String(!st.foco), cls: 'chip' + (!st.foco ? ' is-on' : ''), pick: () => change({ foco: '' }) }]
       .concat(FOCOS.map((f) => { const k = countFor({ foco: f }); return { label: f, n: String(k), hasN: true, on: String(st.foco === f), cls: 'chip' + (st.foco === f ? ' is-on' : ''), pick: () => change({ foco: st.foco === f ? '' : f }), k }; }).filter((c) => c.k > 0 || c.on === 'true'));
@@ -431,7 +433,7 @@ class Component extends DCLogic {
     const areaMenu = [{ label: 'Toda a cidade', sub: 'Todas as regiões informadas', on: String(!st.area), cls: 'menu__it' + (!st.area ? ' is-on' : ''), pick: () => change({ area: '' }) }]
       .concat(AREAS.map((a) => { const k = countFor({ area: a }); return { label: a, sub: pl(k, 'treinador', 'treinadores'), on: String(st.area === a), cls: 'menu__it' + (st.area === a ? ' is-on' : ''), pick: () => change({ area: a }) }; }));
     const nearChips = AREAS.map((a) => { const k = countFor({ area: a, foco: '', lang: 'Qualquer', avail: false }); return { label: st.mod + ' · ' + a, n: String(k), k, pick: () => change({ area: a, foco: '', lang: 'Qualquer', avail: false }) }; }).filter((c) => c.k > 0);
-    const fmtSeg4 = fmtSeg.map((f) => ({ label: f.label, on: f.on, pick: f.pick, cls: 'seg__it' + (f.on === 'true' ? ' is-on' : '') }));
+    const fmtSeg4 = fmtSeg.filter((f) => f.on === 'true' || countFor({ fmt: f.k }) > 0).map((f) => ({ label: f.label, on: f.on, pick: f.pick, cls: 'seg__it' + (f.on === 'true' ? ' is-on' : '') }));
     // quanto custa: faixas só com ofertas publicadas nesta busca, sempre com a unidade
     const UNIT = { '/ sessão': 'Sessão avulsa', '/ mês': 'Mensal', '/ aula': 'Aula em grupo' };
     const grp = {};
@@ -447,7 +449,7 @@ class Component extends DCLogic {
     const isLondrina = st.city === 'Londrina, PR' && !online;
     const VF = {
       rootCls: 'w v4 vfe' + (sheet || st.open ? ' has-sheet' : ''), sheetTop: sy + 'px', syVar: '--sy: ' + sy + 'px', toastTop: (this.__ty || 160) + 'px',
-      focoChips, hasFoco: FOCOS.length > 0, showArea, areaMenu, ddArea: dd === 'area', tgArea: tg('area'), areaFddCls: 'fdd' + (st.area ? ' is-set' : ''), areaFddTxt: st.area ? 'Região: ' + st.area : 'Bairro ou região',
+      focoChips, hasFoco: focoChips.length > 2 || !!st.foco, showArea, areaMenu, ddArea: dd === 'area', tgArea: tg('area'), areaFddCls: 'fdd' + (st.area ? ' is-set' : ''), areaFddTxt: st.area ? 'Região: ' + st.area : 'Bairro ou região',
       nearChips, hasNear: nearChips.length > 0, nearTitle: online ? 'Outras modalidades online' : (st.city ? 'Perto de ' + cityShort(st.city) + ' e outras modalidades' : 'Outras modalidades'),
       fmtSeg4, ranges, showPrices, priceTitle, priceNote, isLondrina,
       seeEmpty: () => set(Object.assign(this.base(), { favs: st.favs, scen: 'tamarana', city: 'Tamarana, PR' })), seeOnline: () => change({ fmt: 'Online', city: '' }),

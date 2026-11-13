@@ -11,7 +11,7 @@ const txt = () => p.evaluate(() => document.getElementById('app').innerText.repl
 let t = await txt();
 const reasons = await p.evaluate(() => [...document.querySelectorAll('#app .vf-why')].map((e) => e.textContent.trim()));
 const OK = /^(Você salvou|Atende online|Atende em .+|Atende .+|Publicado recentemente)$/;
-console.log('1 motivo em cada cartão:', reasons.length > 0, '| só motivos permitidos:', reasons.every((r) => OK.test(r)), '| nesta busca:', reasons[0]);
+console.log('1 motivo só quando acrescenta (não repete o filtro):', reasons.every((r) => OK.test(r) && !/^Atende /.test(r)), '| cartão sem frases negativas:', !/Ainda sem avaliações|Não confirmado pelo profissional|Sem contratação/.test(t));
 const first = await p.evaluate(() => document.querySelector('#app .tc__name span').textContent.trim());
 await p.locator('#app .vf-hide').first().click(); await p.waitForTimeout(500); t = await txt();
 console.log('2 ocultou:', t.includes(first + ' não aparece mais'), '| saiu da lista:', await p.evaluate((n) => ![...document.querySelectorAll('#app .tc__name span')].some((e) => e.textContent.trim() === n), first));

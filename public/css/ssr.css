@@ -49,3 +49,5 @@ html.app-on #ssr{display:none}
 @media (hover:hover) and (pointer:fine){#ssr .ssr-chips a:hover,#ssr .ssr-list>li:hover{border-color:#B9B5AD;box-shadow:0 6px 20px -12px rgba(18,18,20,.35);translate:0 -1px}#ssr a:hover{opacity:.78}}
 #ssr .ssr-chips a:active,#ssr .ssr-pag a:active{scale:.97}
 @media (prefers-reduced-motion:reduce){#ssr *{transition-duration:.01ms!important;animation-duration:.01ms!important}#ssr *:hover,#ssr *:active{translate:none!important;scale:none!important}}
+
+.ssr-logo img{display:block;height:32px;width:auto}.ssr-foot__m{display:inline-flex;align-items:center;gap:8px}.ssr-foot__m img{height:18px;width:auto}
