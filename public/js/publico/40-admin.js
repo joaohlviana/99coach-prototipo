@@ -62,6 +62,7 @@
       return {
         anon: false, checking: ui.isAdmin == null, denied: ui.isAdmin === false,
         needMfa: !!ui.isAdmin && !aal2, ready: !!ui.isAdmin && aal2,
+        pn: (ui.isAdmin && aal2 && window.ADMP) ? window.ADMP(ctx) : { show: false, isFilas: true },
         hasFactor: !!verified && !ui.pending, noFactor: !verified && !ui.pending && ui.factors != null, pending: !!ui.pending,
         qr: ui.pending ? ui.pending.qr : '', secret: ui.pending ? ui.pending.secret : '',
         enroll: enroll, enrollLabel: ui.busy ? 'Preparando…' : 'Cadastrar app autenticador',

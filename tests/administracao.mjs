@@ -47,7 +47,7 @@ await press(/Cadastrar app autenticador/); t = await txt();
 console.log('  mostra QR e chave:', !!(await p.$('#app img[alt^="Código QR"]')), /ABCDEF/.test(t));
 await p.fill('#ad-code', '000000'); await press(/Confirmar código/); t = await txt();
 console.log('  código errado:', /Código errado ou vencido/.test(t));
-await p.fill('#ad-code', '123456'); await press(/Confirmar código/); await p.waitForTimeout(800); t = await txt();
+await p.fill('#ad-code', '123456'); await press(/Confirmar código/); await p.waitForTimeout(800); await press(/^Filas de pedidos$/); t = await txt();
 console.log('  confirmado e filas aparecem:', /Correção e retirada \(1\)/.test(t), /Reivindicações de perfil \(1\)/.test(t), /Conferência de CREF \(1\)/.test(t));
 // 3. decisões
 await press(/^Recusar$/); t = await txt();
