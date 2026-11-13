@@ -31,7 +31,7 @@ export async function generateMetadata({ params }) {
   if (!d || (await publicadoAgora(d.t.id)) === false) return { title: 'Perfil não encontrado', robots: { index: false } };
   const { t, esp } = d;
   const { titulo, descricao } = textos(t, esp);
-  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + t.id }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
+  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + (t.canon || t.id) }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
 }
 
 export default async function Page({ params }) {

@@ -319,6 +319,7 @@
     };
   })();
   window.__afterRender = function (page, root) {
+    if (PUBLIC[page]) ensureBase();
     if (!window.STORE) return;
     applyMe();
     if (window.__sheetFocus) window.__sheetFocus();
@@ -417,7 +418,7 @@
   // estado real do carregamento, para a busca separar "vazio" de "falha" (plano: vazio × falha × fim)
   var LOADST = { base: 'carregando', live: 'carregando' };
   REAL.status = function () { return LOADST; };
-  REAL.retry = function () { LOADST = { base: 'carregando', live: 'carregando' }; rerender(); fetchLive(); fetchBase(); };
+  REAL.retry = function () { LOADST = { base: 'carregando', live: 'carregando' }; rerender(); fetchLive(); baseAsked = true; fetchBase(); };
   setTimeout(fetchLive, 0);
 
   // base completa gerada por `npm run sync`
@@ -429,7 +430,13 @@
       rerender();
     }).catch(function () { LOADST.base = 'falha'; rerender(); });
   }
-  fetchBase();
+  // o catálogo inteiro (~500 KB) só é baixado nas páginas que mostram treinadores; login, cadastro e áreas logadas não pagam esse custo
+  var baseAsked = false;
+  var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
+  function ensureBase() { if (baseAsked) return; baseAsked = true; fetchBase(); }
+  REAL.ensure = ensureBase;
+  var first = (window.__ROUTE && window.__ROUTE.name) || (/^#?([a-z]+)/.exec(location.hash || '') || [])[1] || 'home';
+  if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
 
   // ---------- favoritos ----------
   // Visitante: ficam neste aparelho. Com conta: ficam na conta (servidor) e valem em qualquer aparelho.

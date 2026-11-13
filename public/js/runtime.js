@@ -280,6 +280,12 @@
   }
   // troca de página visível: barra no topo, conteúdo entra de baixo e os cartões passam por um instante de esqueleto
   var pgT = null;
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[data-spa]') : null; if (!a) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) { e.stopPropagation(); return; }
+    e.preventDefault();
+  }, true);
+  document.addEventListener('auxclick', function (e) { if (e.target && e.target.closest && e.target.closest('a[data-spa]')) e.stopPropagation(); }, true);
   var firstIn = true;
   function pageIn() {
     if (firstIn) { firstIn = false; return; }

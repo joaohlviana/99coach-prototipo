@@ -114,13 +114,13 @@
               <div class="vf-tc__m">
                 <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
                 <sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if>
-                <button type="button" class="v4-hit" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></button>
+                <a class="v4-hit" href="{{t.href}}" data-spa="1" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></a>
                 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.badgeCls}}"><sc-if value="{{t.badgeDot}}" hint-placeholder-val="{{ true }}"><span class="dot"></span></sc-if>{{t.badge}}</span></sc-if>
                 <button type="button" class="vf-hide vf-hidex" onClick="{{t.hide}}" aria-label="{{t.hideLabel}}" title="Não tenho interesse"><i class="ic ic--xs i-x" aria-hidden="true"></i></button>
                 <button type="button" class="{{t.favCls}}" onClick="{{t.fav}}" aria-pressed="{{t.favOn}}" aria-label="{{t.favLabel}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button>
               </div>
               <div class="vfe-mrow v4-only-m">
-                <button type="button" class="v4-hit" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></button>
+                <a class="v4-hit" href="{{t.href}}" data-spa="1" onClick="{{t.open}}" aria-label="Ver perfil de {{t.name}}"></a>
                 <span class="vfe-mrow__ph"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true">{{t.ini}}</span></sc-if></span>
                 <span class="vfe-mrow__t">
                   <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.mstatCls}}"><span class="vfe-mstat__d"></span>{{t.badge}}</span></sc-if>
@@ -134,8 +134,8 @@
               <div class="vf-tc__b">
                 <span class="tc__sport">{{t.spec}}</span>
                 <sc-if value="{{t.hasBadge}}" hint-placeholder-val="{{ true }}"><span class="{{t.bodyBadgeCls}}"><sc-if value="{{t.badgeDot}}" hint-placeholder-val="{{ true }}"><span class="dot"></span></sc-if>{{t.badge}}</span></sc-if>
-                <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{t.rated}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.reviews}} avaliações"><i class="ic ic--xs i-star"></i>{{t.rating}}<small>({{t.reviews}})</small></span></sc-if></div>
-                <span class="vf-meta">{{t.fmtTxt}} · {{t.place}}</span>
+                <div class="vf-tc__row"><a class="tc__name" href="{{t.href}}" data-spa="1" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></a><sc-if value="{{t.rated}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.reviews}} avaliações"><i class="ic ic--xs i-star"></i>{{t.rating}}<small>({{t.reviews}})</small></span></sc-if></div>
+                <span class="vf-meta">{{t.fmtTxt}}<sc-if value="{{t.place}}" hint-placeholder-val="{{ true }}"> · {{t.place}}</sc-if></span>
                 <sc-if value="{{t.hasReason}}" hint-placeholder-val="{{ true }}"><span class="vf-meta vf-why"><i class="ic ic--xs i-check" aria-hidden="true"></i> {{t.reason}}</span></sc-if>
                 <div class="vf-tc__f">
                   <sc-if value="{{t.hasOffer}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offerName}}</span></span></sc-if>
@@ -218,7 +218,6 @@
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{info_ajuda}}">Central de ajuda</button></div>
       <div class="ftr__col"><b>Legal</b><button type="button" onClick="{{info_termos}}">Termos de uso</button><button type="button" onClick="{{info_priv}}">Privacidade</button></div>
     </div></div>
-    <div class="wrap"><div class="ftr__word" aria-hidden="true">99Coach · mais que treino</div></div>
     <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><span>Plano pago do treinador não compra posição, selo nem garantia de clientes.</span></div></div>
   </footer>
 

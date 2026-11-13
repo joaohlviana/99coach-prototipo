@@ -118,7 +118,7 @@ class Component extends DCLogic {
     };
     const placeOf = (t) => {
       const p = has(t.fmts, 'Presencial');
-      if (online || !p) return t.city ? 'base em ' + t.city : 'local não informado';
+      if (online || !p) return t.city ? 'base em ' + t.city : '';
       return t.city + (t.area ? ' · ' + t.area : '');
     };
     const offerOf = (t) => {
@@ -151,7 +151,7 @@ class Component extends DCLogic {
         hasOffer: !!of, noOffer: !of, offerName: of ? of[0] : '', price: of ? of[1] : '', unit: of ? of[2] : '',
         noOfferTxt: t.imported ? 'Sem contratação pela 99Coach · contato público no perfil' : 'Sem oferta publicada neste formato',
         favCls: 'e-fav' + (on ? ' is-on' : ''), favOn: String(on), favLabel: on ? 'Remover ' + t.name + ' dos salvos' : 'Salvar ' + t.name, fav: toggleFav(t),
-        open: openP(t), isBack, cls: 'e-card' + (isBack ? ' is-back' : '') + (isSel ? ' is-sel' : ''),
+        href: '/treinador/' + encodeURIComponent(t.id), open: openP(t), isBack, cls: 'e-card' + (isBack ? ' is-back' : '') + (isSel ? ' is-sel' : ''),
         mapBtn: mapOn && !!mkNum[t.id], locate: () => set({ sel: t.id })
       };
     });
@@ -246,7 +246,6 @@ class Component extends DCLogic {
     // buscas relacionadas: só destinos com resultado
     const R = [];
     if (!online) R.push([st.mod + ' online', { fmt: 'Online', city: '' }]);
-    if (st.city !== 'Londrina, PR') R.push([st.mod + ' em Londrina', { city: 'Londrina, PR', fmt: 'Presencial' }]);
     MODS.filter((m) => m !== st.mod).forEach((m) => R.push([m + (st.city && !online ? ' em ' + cityShort(st.city) : (online ? ' online' : '')), { mod: m }]));
     const rel = R.map(([label, o]) => ({ label, n: countFor(Object.assign({ lang: 'Qualquer', avail: false, removed: false }, o)), pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) })).filter((r) => r.n > 0).map((r) => Object.assign(r, { n: r.n + (r.n === 1 ? ' treinador' : ' treinadores') }));
     const ftrLinks = [['CrossFit em Londrina', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }], ['Musculação em Londrina', { mod: 'Musculação', city: 'Londrina, PR', fmt: 'Presencial' }], ['CrossFit online', { mod: 'CrossFit', city: '', fmt: 'Online' }]].map(([label, o]) => ({ label, pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) }));
@@ -347,7 +346,8 @@ class Component extends DCLogic {
       
       if (t.imported) m2.push('Não confirmado pelo profissional');
       if (t.langs.length > 1) m2.push('Atende em ' + t.langs.join(' e '));
-      return { name: t.name, spec: t.spec, ini: t.ini || '', photo: t.ph ? B(t.ph) : '', hasPhoto: !!t.ph, noPhoto: !t.ph, verified: isVer(t),
+      const specS = (t.spec.toLowerCase().indexOf(st.mod.toLowerCase()) >= 0) ? t.spec : [st.mod].concat((t.mods || []).filter((m) => m !== st.mod)).slice(0, 3).join(', ');
+      return { name: t.name, spec: specS, ini: t.ini || '', photo: t.ph ? B(t.ph) : '', hasPhoto: !!t.ph, noPhoto: !t.ph, verified: isVer(t),
         reason: whyOf(t, on), hasReason: !!whyOf(t, on) && !/^Atende /.test(whyOf(t, on)), hide: hideOf(t), hideLabel: 'Não tenho interesse em ' + t.name,
         fmtTxt: fmtTxtOf(t), place: placeOf(t), meta2: m2.join(' · '), hasMeta2: m2.length > 0,
         rated: !!t.rating, unrated: !t.rating, rating: t.rating, reviews: String(t.reviews),
@@ -355,7 +355,7 @@ class Component extends DCLogic {
         noOfferTxt: t.imported ? 'Sem contratação pela 99Coach' : 'Sem oferta publicada neste formato',
         badge, hasBadge: !!badge, badgeCls: bcls, bodyBadgeCls: bcls.replace('tc__badge ', '') + ' v4-bbadge', badgeDot: dot,
         favCls: 'tc__fav' + (on ? ' is-on' : ''), favOn: String(on), favLabel: on ? 'Remover ' + t.name + ' dos salvos' : 'Salvar ' + t.name, fav: toggleFav(t),
-        open: openP(t), tcCls: 'vf-tc v4-tc' + (isSel ? ' is-sel' : '') + (isBack ? ' is-back' : ''),
+        href: '/treinador/' + encodeURIComponent(t.id), open: openP(t), tcCls: 'vf-tc v4-tc' + (isSel ? ' is-sel' : '') + (isBack ? ' is-back' : ''),
         mapBtn: mapOn && !!mkNum[t.id], locate: () => set({ sel: t.id }), mapNum: mkNum[t.id] || '' };
     });
     let countB = '', countT = '';
@@ -420,7 +420,9 @@ class Component extends DCLogic {
     // foco declarado (sub-modalidade): só o que os perfis declaram na especialidade
     // com o catálogo completo há milhares de combinações: ficam os 12 focos mais declarados
     const fq = {};
-    for (let i = 0; i < T.length; i++) { const t = T[i]; if (!has(t.mods, st.mod)) continue; t.spec.split(' e ').forEach((p) => { if (p && p !== st.mod) fq[p] = (fq[p] || 0) + 1; }); }
+    // foco é sub-especialidade; nome de outro esporte não é foco ("Musculação" numa busca de Yoga)
+    const isMod = (p) => MODS.some((m) => m.toLowerCase() === String(p).toLowerCase()) || /,/.test(p);
+    for (let i = 0; i < T.length; i++) { const t = T[i]; if (!has(t.mods, st.mod)) continue; t.spec.split(' e ').forEach((p) => { p = p.trim(); if (p && p !== st.mod && !isMod(p)) fq[p] = (fq[p] || 0) + 1; }); }
     const FOCOS = Object.keys(fq).sort((a, b) => fq[b] - fq[a]).slice(0, 6);
     if (st.foco && FOCOS.indexOf(st.foco) < 0) FOCOS.push(st.foco);
     const focoChips = [{ label: 'Todos', n: '', hasN: false, on: String(!st.foco), cls: 'chip' + (!st.foco ? ' is-on' : ''), pick: () => change({ foco: '' }) }]

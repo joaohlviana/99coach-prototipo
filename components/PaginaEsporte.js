@@ -2,7 +2,7 @@
 // Regras do plano (SEO local): sem treinador a página não existe (404); filtros são restrições (não completa com outra cidade);
 // número só quando confirmado pelo catálogo; nenhum texto local inventado.
 import { notFound } from 'next/navigation';
-import Shell, { Cartao } from './Shell.js';
+import Shell, { Cartao, Paginacao } from './Shell.js';
 import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE, servicoDe, semTreino, cidadeUF, caber, resumo } from '../lib/catalogo.js';
 
 const POR_PAGINA = 36;
@@ -44,7 +44,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
   if (!d) notFound();
   const { esp, online, cid, itens, h1, caminho, base, paginas } = d;
   const ini = (pagina - 1) * POR_PAGINA, naPagina = itens.slice(ini, ini + POR_PAGINA);
-  const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug).slice(0, 60);
+  const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
   const route = { name: 'esporte', params: { mod: esp.label, city: cid ? cid.label : '', fmt: online ? 'Online' : (cid ? 'Presencial' : 'Qualquer') } };
@@ -72,10 +72,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
       <section aria-labelledby="h-lista">
         <h2 id="h-lista">{cid ? `${esp.label} em ${curta(cid.label)}` : (online ? `${esp.label} online` : `Profissionais de ${esp.label}`)}</h2>
         <ul className="ssr-list">{naPagina.map((t) => <Cartao key={t.id} t={t} />)}</ul>
-        {paginas > 1 ? <nav className="ssr-pag" aria-label="Páginas da lista">
-          <p className="ssr-note">Mostrando {ini + 1} a {ini + naPagina.length} de {itens.length.toLocaleString('pt-BR')} · página {pagina} de {paginas}</p>
-          <p>{pagina > 1 ? <a rel="prev" href={base + (pagina > 2 ? '/pagina/' + (pagina - 1) : '')}>‹ Página anterior</a> : null}{pagina > 1 && pagina < paginas ? ' · ' : null}{pagina < paginas ? <a rel="next" href={base + '/pagina/' + (pagina + 1)}>Próxima página ›</a> : null}</p>
-        </nav> : null}
+        <Paginacao base={base} pagina={pagina} paginas={paginas} total={itens.length} ini={ini} n={naPagina.length} />
       </section>
       {!online && nOnline > 0 ? <section aria-labelledby="h-on"><h2 id="h-on">Também online</h2><p><a href={'/treinadores/' + esp.slug + '/online'}>{plural(nOnline, 'treinador atende', 'treinadores atendem')} {esp.label} online</a></p></section> : null}
       {cidades.length ? <section aria-labelledby="h-cid"><h2 id="h-cid">{esp.label} em outras cidades</h2>

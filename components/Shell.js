@@ -5,6 +5,7 @@ export function Topo() {
   return (
     <header className="ssr-top">
       <a className="ssr-logo" href="/" aria-label="99coach, página inicial"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
+      <a className="ssr-search" href="/#esportes"><span aria-hidden="true">⌕</span> Buscar por esporte e cidade</a>
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>
@@ -18,6 +19,7 @@ export function Topo() {
 export function Rodape() {
   return (
     <footer className="ssr-foot">
+      <a href="/cidades">Cidades</a>
       <a href="/app#publico-ajuda">Central de ajuda</a>
       <a href="/app#publico-ajuda-termos">Termos</a>
       <a href="/app#publico-ajuda-privacidade">Privacidade</a>
@@ -32,7 +34,7 @@ export default function Shell({ route, children, soServidor }) {
   return (
     <>
       {/* conteúdo do servidor: fica visível até o app ligar e continua no HTML para leitores e buscadores */}
-      <div id="ssr" className="ssr">
+      <div id="ssr" className={soServidor ? "ssr ssr--solo" : "ssr"}>
         <a className="ssr-skip" href="#conteudo-ssr">Pular para o conteúdo</a>
         <Topo />
         <main id="conteudo-ssr">{children}</main>
@@ -60,5 +62,27 @@ export function Cartao({ t }) {
         <span>{onde}</span>
       </div>
     </li>
+  );
+}
+
+// Paginação numerada: primeiras, vizinhas da atual, saltos de 10 em 10 e últimas. Nenhuma página fica a mais de ~10 cliques.
+export function Paginacao({ base, pagina, paginas, total, ini, n }) {
+  if (paginas <= 1) return null;
+  const ks = new Set([1, 2, 3, paginas - 2, paginas - 1, paginas]);
+  for (let i = pagina - 3; i <= pagina + 3; i++) ks.add(i);
+  for (let i = 10; i < paginas; i += 10) ks.add(i);
+  const nums = [...ks].filter((i) => i >= 1 && i <= paginas).sort((a, b) => a - b);
+  const href = (i) => base + (i > 1 ? '/pagina/' + i : '');
+  const out = []; let prev = 0;
+  nums.forEach((i) => { if (i - prev > 1) out.push(<li key={'g' + i} aria-hidden="true">…</li>); out.push(<li key={i}>{i === pagina ? <b aria-current="page">{i}</b> : <a href={href(i)}>{i}</a>}</li>); prev = i; });
+  return (
+    <nav className="ssr-pag" aria-label="Páginas da lista">
+      <p className="ssr-note">Mostrando {ini + 1} a {ini + n} de {total.toLocaleString('pt-BR')} · página {pagina} de {paginas}</p>
+      <ol className="ssr-pages">
+        {pagina > 1 ? <li><a rel="prev" href={href(pagina - 1)}>‹ Anterior</a></li> : null}
+        {out}
+        {pagina < paginas ? <li><a rel="next" href={href(pagina + 1)}>Próxima ›</a></li> : null}
+      </ol>
+    </nav>
   );
 }

@@ -159,3 +159,16 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 
 /* coração de salvar com área de toque de 44px (a regra antiga de 26px vencia) */
 @media (pointer:coarse){#app :is(.e-fav,.tc__fav,.vfm-fav,.vf-fav){min-width:44px!important;min-height:44px!important}}
+
+/* cartões viraram links: mesmo visual de antes */
+#app a.tc__name,#app a.v4-hit,#app a.v4-ph{color:inherit;text-decoration:none;display:block}
+#app a.tc__name{display:inline-flex}
+
+/* MENOS CARA DE MODELO PRONTO
+   etiquetas acima dos títulos: texto normal, sem caixa-alta espaçada nem traço decorativo */
+#app .eyebrow{font-family:var(--font,Inter,system-ui,sans-serif)!important;font-size:13px!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important}
+#app .eyebrow::before{display:none!important}
+#app .label,#app .vfm-eb2,#app .vfe-hero__t .eyebrow{letter-spacing:.04em!important}
+/* tamanhos de letra em meio pixel caem na escala inteira */
+#app [style*="font-size: 12.5px"],#app [style*="font-size: 13.5px"]{font-size:13px!important}
+#app [style*="font-size: 14.5px"],#app [style*="font-size: 15.5px"]{font-size:15px!important}

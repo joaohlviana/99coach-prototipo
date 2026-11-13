@@ -1,7 +1,7 @@
 // "Treinadores em <cidade>": todos os esportes com atendimento presencial naquela cidade (plano SEO local, família "cidade").
 // Sem profissional presencial ali, a página não existe (404). Online não entra como se fosse da cidade.
 import { notFound } from 'next/navigation';
-import Shell, { Cartao } from '../../../components/Shell.js';
+import Shell, { Cartao, Paginacao } from '../../../components/Shell.js';
 import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo } from '../../../lib/catalogo.js';
 
 export const revalidate = 86400;
@@ -37,19 +37,16 @@ export function Cidade({ k, pagina }) {
     <Shell soServidor>
       <nav className="ssr-crumb" aria-label="Você está em"><a href="/">Início</a> › <span>{cid.label}</span></nav>
       <section className="ssr-hero">
-        <p className="ssr-eyebrow">Cidade · presencial</p>
-        <h1>Treinadores em {curta(cid.label)}</h1>
-        <p>Quem atende presencialmente em {cid.label}. Escolha a modalidade para ver só quem trabalha com ela.</p>
-        <p className="ssr-note"><b>{plural(itens.length, 'profissional', 'profissionais')}</b> com atendimento presencial informado nesta cidade.</p>
+        <h1>Personal trainer e aulas em {curta(cid.label)}</h1>
+        <p>{plural(itens.length, 'profissional atende', 'profissionais atendem')} presencialmente em {cid.label}.</p>
+        
       </section>
       <section aria-labelledby="h-mod"><h2 id="h-mod">Modalidades em {curta(cid.label)}</h2>
-        <ul className="ssr-chips">{esportes.map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + '/' + k}>{s.label} <small>{s.n}</small></a></li>)}</ul></section>
+        <ul className="ssr-tiles">{esportes.filter((s) => s.foto).slice(0, 8).map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + '/' + k}><img src={s.foto} alt="" loading="lazy" decoding="async" width="320" height="200" /><b>{s.label}</b><small>{plural(s.n, 'profissional', 'profissionais')}</small></a></li>)}</ul>
+        <ul className="ssr-chips" style={{ marginTop: 12 }}>{esportes.filter((s, i) => !s.foto || esportes.filter((x) => x.foto).indexOf(s) >= 8).map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + '/' + k}>{s.label} <small>{s.n}</small></a></li>)}</ul></section>
       <section aria-labelledby="h-lista"><h2 id="h-lista">Profissionais em {curta(cid.label)}</h2>
         <ul className="ssr-list">{naPagina.map((t) => <Cartao key={t.id} t={t} />)}</ul>
-        {paginas > 1 ? <nav className="ssr-pag" aria-label="Páginas da lista">
-          <p className="ssr-note">Mostrando {ini + 1} a {ini + naPagina.length} de {itens.length.toLocaleString('pt-BR')} · página {pagina} de {paginas}</p>
-          <p>{pagina > 1 ? <a rel="prev" href={base + (pagina > 2 ? '/pagina/' + (pagina - 1) : '')}>‹ Página anterior</a> : null}{pagina > 1 && pagina < paginas ? ' · ' : null}{pagina < paginas ? <a rel="next" href={base + '/pagina/' + (pagina + 1)}>Próxima página ›</a> : null}</p>
-        </nav> : null}
+        <Paginacao base={base} pagina={pagina} paginas={paginas} total={itens.length} ini={ini} n={naPagina.length} />
       </section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(trilha).replace(/</g, '\\u003c') }} />
     </Shell>

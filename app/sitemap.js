@@ -12,7 +12,8 @@ export default function sitemap() {
     cidadesDo(s.slug, 1).forEach((c) => out.push({ url: `${SITE}/treinadores/${s.slug}/${c.slug}`, lastModified: quando, changeFrequency: 'weekly', priority: 0.7 }));
   });
   // página da cidade: toda cidade com profissional presencial
+  out.push({ url: `${SITE}/cidades`, lastModified: quando, changeFrequency: 'weekly', priority: 0.6 });
   cidades(1).forEach((c) => out.push({ url: `${SITE}/cidade/${c.slug}`, lastModified: quando, changeFrequency: 'weekly', priority: 0.6 }));
-  todos().forEach((t) => out.push({ url: `${SITE}/treinador/${t.id}`, lastModified: t.pub ? new Date(t.pub) : quando, changeFrequency: 'monthly', priority: 0.4 }));
+  todos().filter((t) => !t.canon).forEach((t) => out.push({ url: `${SITE}/treinador/${t.id}`, lastModified: t.pub ? new Date(t.pub) : quando, changeFrequency: 'monthly', priority: 0.4 }));
   return out;
 }

@@ -92,7 +92,7 @@ class Component extends DCLogic {
         hid: !!S.hidden[t.id], vis: !S.hidden[t.id],
         favCls: 'tc__fav' + (on ? ' is-on' : ''), favOn: on ? 'true' : 'false', favLabel: (on ? 'Remover ' : 'Salvar ') + t.name + (on ? ' dos salvos' : ''),
         fav: (e) => { const nv = !S.favs[t.id]; set(Object.assign({ favs: Object.assign({}, S.favs, { [t.id]: nv }) }, toastAt(e, nv ? ((document.documentElement.classList.contains('demo') ? visitor : !(window.CONTA && window.CONTA.session())) ? t.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : t.name + ' salvo em Salvos.') : t.name + ' removido dos salvos.', { k: 'fav', id: t.id, v: !nv }))); },
-        open: window.NAV.has(t.id) ? () => window.NAV.go('perfil', { id: t.id }, this) : open('trainer', { id: t.id, ctx: ctx }), why: open('why', { id: t.id, ctx: ctx, reason: reason }),
+        href: '/treinador/' + encodeURIComponent(t.id), open: window.NAV.has(t.id) ? () => window.NAV.go('perfil', { id: t.id }, this) : open('trainer', { id: t.id, ctx: ctx }), why: open('why', { id: t.id, ctx: ctx, reason: reason }),
         unhide: () => set({ hidden: Object.assign({}, S.hidden, { [t.id]: false }), toast: null })
       };
     };
