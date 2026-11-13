@@ -132,9 +132,9 @@
       <section class="vfm-sec" aria-labelledby="vfm-h">
         <div class="vfm-head"><h2 id="vfm-h" class="vfm-title">Como funciona</h2></div>
         <ol class="vfm-card vfm-how">
-          <li><span class="jstep__n is-ink" aria-hidden="true">1</span><span><b>Compare com calma</b><small>Preço com unidade, formato e credencial antes da conversa. Ninguém paga para subir.</small></span></li>
-          <li><span class="jstep__n is-ink" aria-hidden="true">2</span><span><b>Converse e contrate</b><small>Alguns pedem aceite antes; outros contratam direto, com Pix ou cartão.</small></span></li>
-          <li><span class="jstep__n is-ink" aria-hidden="true">3</span><span><b>Treine pelo app</b><small>Treino, registro e conversa com o treinador no mesmo lugar.</small></span></li>
+          <li><span class="jstep__n is-ink" aria-hidden="true">1</span><span><b>Compare com calma</b><small>Preço, formato e credencial antes da conversa.</small></span></li>
+          <li><span class="jstep__n is-ink" aria-hidden="true">2</span><span><b>Converse e contrate</b><small>Pix ou cartão, com o total à vista.</small></span></li>
+          <li><span class="jstep__n is-ink" aria-hidden="true">3</span><span><b>Treine pelo app</b><small>Treino, registro e conversa no mesmo lugar.</small></span></li>
         </ol>
       </section>
 
@@ -160,7 +160,7 @@
         <div class="vfm-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><button type="button" class="chip" onClick="{{k.go}}">{{k.label}}</button></sc-for></div>
       </section>
 
-      <div class="vfm-foot"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"><div><button type="button" onClick="{{openHelp}}">Ajuda</button><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button><button type="button" onClick="{{openLang}}">Português · R$</button></div><span>© 2026 99Coach · Compare profissionais, modalidades e formatos para escolher com mais clareza.</span></div>
+      <div class="vfm-foot"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"><div><button type="button" onClick="{{openHelp}}">Ajuda</button><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button><button type="button" onClick="{{openLang}}">Português · R$</button></div><span>© 2026</span></div>
     </div>
   </div>
 
@@ -232,7 +232,7 @@
         </div>
         <button type="submit" class="qbar__btn">Encontrar treinadores<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
       </form>
-      <p class="v4-hint"><span>Buscar não pede cadastro. A ordem dos resultados nunca é paga.</span><button type="button" class="link-arrow" onClick="{{useLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></p>
+      <p class="v4-hint"><span>A ordem dos resultados nunca é paga.</span><button type="button" class="link-arrow" onClick="{{useLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></p>
     </div>
   </section>
   </sc-if>
@@ -292,7 +292,7 @@
 
   <!-- Do jeito que você prefere treinar -->
   <section class="wrap vf-sec" aria-labelledby="vf-c-t">
-    <div class="sec-head"><div><h2 id="vf-c-t" class="sec-title sec-title--nonum">Do jeito que você prefere treinar</h2><p class="sec-sub">Cada formato diz o que inclui antes do preço.</p></div></div>
+    <div class="sec-head"><div><h2 id="vf-c-t" class="sec-title sec-title--nonum">Do jeito que você prefere treinar</h2></div></div>
     <div class="vf-g5"><sc-for list="{{cats}}" as="c" hint-placeholder-count="5"><button type="button" class="cat vf-cat" onClick="{{c.go}}"><b>{{c.label}}</b><span class="vf-cat__s">{{c.sub}}</span><span class="cat__img"><img src="{{c.img}}" alt=""></span></button></sc-for></div>
   </section>
 
@@ -322,7 +322,7 @@
 
   <!-- Explore os esportes -->
   <section class="wrap vf-sec" aria-labelledby="vf-e-t">
-    <div class="sec-head"><div><h2 id="vf-e-t" class="sec-title sec-title--nonum">Explore os esportes</h2><p class="sec-sub">Do presencial ao online.</p></div><button type="button" class="link-arrow" onClick="{{openSports}}">Ver todas as modalidades<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
+    <div class="sec-head"><div><h2 id="vf-e-t" class="sec-title sec-title--nonum">Explore os esportes</h2></div><button type="button" class="link-arrow" onClick="{{openSports}}">Ver todas as modalidades<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
     <div class="vf-g6"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><button type="button" class="st vf-st" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-for></div>
   </section>
 
@@ -330,9 +330,9 @@
   <section class="wrap vf-sec" aria-labelledby="vf-h-t">
     <div class="sec-head"><h2 id="vf-h-t" class="sec-title sec-title--nonum">Como funciona</h2></div>
     <ol class="vf-g3 vf-how">
-      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">1</span><b>Compare com calma</b><p>Preço com unidade, formato, onde atende e credencial aparecem antes de qualquer conversa. A ordem vem da sua busca; ninguém paga para subir.</p></li>
-      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">2</span><b>Converse e contrate</b><p>Alguns perfis pedem conversa e aceite antes; outros permitem contratar direto. Pix ou cartão; você vê o total e a renovação antes de confirmar.</p></li>
-      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">3</span><b>Treine pelo app</b><p>O treino chega no app. Você registra cada série, acompanha a evolução e fala com o treinador no mesmo lugar.</p></li>
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">1</span><b>Compare com calma</b><p>Preço, formato e credencial antes da conversa.</p></li>
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">2</span><b>Converse e contrate</b><p>Pix ou cartão, com o total à vista.</p></li>
+      <li class="card card--flat"><span class="jstep__n is-ink" aria-hidden="true">3</span><b>Treine pelo app</b><p>Treino, registro e conversa no mesmo lugar.</p></li>
     </ol>
   </section>
 
@@ -346,12 +346,12 @@
   <section class="wrap vf-sec" aria-labelledby="vf-pro-t">
     <div class="card--ink vf-pro">
       <div class="vf-pro__l"><span class="eyebrow eyebrow--light">Para treinadores</span><h2 id="vf-pro-t" class="h-page">Chega de mandar PDF no WhatsApp</h2>
-        <p>Perfil público, treinos no app, conversa e cobrança num lugar só. Convide quem já treina com você; o aluno aceita uma vez e pronto.</p>
+        <p>Perfil público, treinos, conversa e cobrança num lugar só.</p>
         <div class="v4-row" style="gap: 10px"><button type="button" class="btn btn--brand btn--lg" onClick="{{openPro}}">Criar perfil grátis</button><button type="button" class="btn btn--glass btn--lg" onClick="{{openPlans}}">Ver planos</button></div></div>
       <div class="vf-pro__r">
         <div class="vf-plan vf-plan--dark"><b>Essencial</b><b class="vf-plan__v">Grátis</b><span>Até 3 alunos ativos, perfil, treinos e mensagens.</span></div>
         <div class="vf-plan"><b>Pro</b><b class="vf-plan__v">R$ 99<small>/mês</small></b><span>Até 50 alunos e 6.000 créditos de IA por mês, ou R$ 990/ano. Teste de 7 dias só se você ativar.</span></div>
-        <p class="vf-pro__note">Comissão de 5% só nas vendas pela 99Coach. O Pro não compra posição nem selo na busca.</p>
+        <p class="vf-pro__note">Comissão de 5% só nas vendas feitas aqui.</p>
       </div>
     </div>
   </section>
@@ -366,7 +366,7 @@
   <!-- Rodapé do DS (.ftr) -->
   <footer class="ftr">
     <div class="wrap"><div class="ftr__grid">
-      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
       <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{goTrainers}}">Treinadores</button><button type="button" onClick="{{openSports}}">Esportes</button><button type="button" onClick="{{goPrograms}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPanel}}">Entrar no painel</button></div>
       <div class="ftr__col"><b>Modalidades e cidades</b><sc-for list="{{ftrLinks}}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{f.go}}">{{f.label}}</button></sc-for></div>

@@ -104,14 +104,14 @@
 
         <div class="vfp-two">
           <!-- Credenciais (G18) com situação de cada uma (G03 · selos) -->
-          <section class="card vfp-card" aria-labelledby="cred">
+          <sc-if value="{{sCred}}" hint-placeholder-val="{{ true }}"><section class="card vfp-card" aria-labelledby="cred">
             <h2 id="cred" class="vf-h3">Credenciais</h2>
             <sc-if value="{{t.hasCreds}}" hint-placeholder-val="{{ true }}"><ul class="vfp-creds"><sc-for list="{{t.creds}}" as="c" hint-placeholder-count="4"><li><span class="label">{{c.k}}</span><b>{{c.v}}</b><span class="{{c.cls}} v4-bw">{{c.st}}</span></li></sc-for></ul></sc-if>
             <sc-if value="{{t.noCreds}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-file" aria-hidden="true"></i></span><b>{{t.noCredsTitle}}</b><span>{{t.noCredsText}}</span></div></sc-if>
             <p class="vfp-small vfp-own"><i class="ic ic--sm i-user" aria-hidden="true"></i><span>{{ownLine}}</span></p>
-          </section>
+          </section></sc-if>
           <!-- Avaliações em resumo (G08 · número) -->
-          <section class="card vfp-card" aria-labelledby="avr">
+          <sc-if value="{{sAvr}}" hint-placeholder-val="{{ true }}"><section class="card vfp-card" aria-labelledby="avr">
             <h2 id="avr" class="vf-h3">Avaliações</h2>
             <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
               <div class="vfp-score"><span class="kpi__n">{{t.avg}}</span><div><div class="stars" role="img" aria-label="Nota {{t.avg}} de 5"><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i><i class="ic ic--sm i-star" aria-hidden="true"></i></div><b>{{t.n}} avaliações</b><span class="vfp-small">de alunos com contratação concluída</span></div></div>
@@ -120,7 +120,7 @@
               <button type="button" class="link-arrow v4-reset vfp-link" onClick="{{goRev}}">Ver as {{t.n}} avaliações<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
             </sc-if>
             <sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-star" aria-hidden="true"></i></span><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if>
-          </section>
+          </section></sc-if>
         </div>
       </div>
 
@@ -147,7 +147,7 @@
     </div>
 
     <!-- Ofertas: Plano ou serviço (G18 · plan) -->
-    <section id="ofertas" class="vf-sec vfp-sec" aria-labelledby="h-of">
+    <sc-if value="{{sOf}}" hint-placeholder-val="{{ true }}"><section id="ofertas" class="vf-sec vfp-sec" aria-labelledby="h-of">
       <div class="sec-head"><div><h2 id="h-of" class="sec-title sec-title--nonum">Serviços</h2><p class="sec-sub">{{svcSub}}</p></div></div>
       <sc-if value="{{hasOffers}}" hint-placeholder-val="{{ true }}"><div class="vfp-plans"><sc-for list="{{offers}}" as="o" hint-placeholder-count="5">
         <div class="{{o.cls}}">
@@ -167,11 +167,11 @@
         </div>
       </sc-for></div></sc-if>
       <sc-if value="{{noOffers}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-tag" aria-hidden="true"></i></span><b>{{noOffersTitle}}</b><span>{{noOffersText}}</span></div></sc-if>
-    </section>
+    </section></sc-if>
 
     <!-- Programas: Card/Programa (G17 · pc) + comparação com o acompanhamento (G11) -->
-    <section id="programas" class="vf-sec vfp-sec" aria-labelledby="h-pg">
-      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas</h2><p class="sec-sub">Conteúdo pronto, compra única, acesso por 12 meses. Não inclui acompanhamento individual.</p></div></div>
+    <sc-if value="{{sPg}}" hint-placeholder-val="{{ true }}"><section id="programas" class="vf-sec vfp-sec" aria-labelledby="h-pg">
+      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas</h2><p class="sec-sub">Compra única, acesso por 12 meses.</p></div></div>
       <sc-if value="{{hasProgs}}" hint-placeholder-val="{{ true }}"><div class="vfp-pg">
         <sc-for list="{{progs}}" as="p" hint-placeholder-count="1">
         <div class="{{p.cls}}"><img src="{{p.img}}" alt="Capa do programa {{p.title}}">
@@ -196,11 +196,11 @@
         </sc-if>
       </div></sc-if>
       <sc-if value="{{noProgs}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-book" aria-hidden="true"></i></span><b>Nenhum programa publicado</b><span>{{noProgsText}}</span></div></sc-if>
-    </section>
+    </section></sc-if>
 
     <!-- Avaliações: número (G08) + distribuição (barra) + Avaliação (G18 · rev) -->
     <section id="avaliacoes" class="vf-sec vfp-sec" aria-labelledby="h-av">
-      <div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2><p class="sec-sub">Só de alunos com contratação concluída pela 99Coach.</p></div></div>
+      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2></div></div></sc-if>
       <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
       <div class="vfp-rev">
         <div class="card vfp-card">
@@ -214,13 +214,13 @@
         </div>
       </div>
       </sc-if>
-      <sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><i class="ic  i-star" aria-hidden="true"></i><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if>
+      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><i class="ic  i-star" aria-hidden="true"></i><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if></sc-if>
       <div class="vfp-flags"><button type="button" class="btn btn--ghost btn--sm" onClick="{{openFix}}"><i class="ic ic--xs i-edit" aria-hidden="true"></i>Corrigir ou retirar dados públicos</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{openReport}}"><i class="ic ic--xs i-alert" aria-hidden="true"></i>Denunciar perfil</button></div>
     </section>
 
     <!-- Atendimento: chave e valor (G08) · agenda por dia (G05/G07) · contato (G10 · linhas) -->
     <section id="atendimento" class="vf-sec vfp-sec" aria-labelledby="h-at">
-      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2><p class="sec-sub">Onde, quando e como falar com {{t.first}}.</p></div></div>
+      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2></div></div>
       <div class="vfp-g3">
         <div class="card vfp-card">
           <h3 class="vfp-h4"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Onde atende</h3>
@@ -255,13 +255,13 @@
 
     <!-- Perguntas frequentes (G19 · faq) -->
     <section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
-      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2><p class="sec-sub">{{faqSub}}</p></div></div>
+      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2></div></div>
       <div class="card vfp-faq"><div class="faq"><sc-for list="{{faqs}}" as="f" hint-placeholder-count="4"><div class="faq__item"><button type="button" class="faq__q" aria-expanded="{{f.exp}}" onClick="{{f.pick}}"><span>{{f.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{f.rot}}"></i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="faq__a"><p>{{f.a}}</p><span class="badge badge--plain">{{f.who}}</span></div></sc-if></div></sc-for></div></div>
     </section>
 
     <!-- Parecidos em Londrina (G17 · treinador em lista, mesmo card da Home VFINAL) -->
     <section class="vf-sec" aria-labelledby="h-par">
-      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2><p class="sec-sub">Para comparar. Sua escolha neste perfil continua salva.</p></div></div>
+      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2></div></div>
       <ul class="vf-g4"><sc-for list="{{others}}" as="o" hint-placeholder-count="4"><li class="vf-tc card" aria-label="{{o.name}}">
         <div class="vf-tc__m"><button type="button" class="v4-ph" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></button></div>
         <div class="vf-tc__b">
