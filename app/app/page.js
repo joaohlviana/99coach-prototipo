@@ -1,7 +1,7 @@
 import Shell from '../../components/Shell.js';
 
 // Áreas com conta (painel do treinador, área do aluno, cadastro, ajuda). A tela vem depois do # e nada aqui é indexado.
-export const metadata = { title: 'Minha área', robots: { index: false, follow: false } };
+export const metadata = { title: 'Minha área', robots: { index: false, follow: true } };
 export default function Page() {
   return (
     <Shell route={null}>

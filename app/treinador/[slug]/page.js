@@ -31,9 +31,7 @@ export async function generateMetadata({ params }) {
   if (!d || (await publicadoAgora(d.t.id)) === false) return { title: 'Perfil não encontrado', robots: { index: false } };
   const { t, esp } = d;
   const { titulo, descricao } = textos(t, esp);
-  // perfil sem cidade e sem formato não tem o que responder a uma busca: fica fora do índice
-  const fino = !t.pres && !t.onl;
-  return { title: titulo, description: descricao, ...(fino ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: '/treinador/' + t.id }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
+  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + t.id }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
 }
 
 export default async function Page({ params }) {
@@ -73,7 +71,7 @@ export default async function Page({ params }) {
       {t.importado ? (
       <section aria-labelledby="h-orig" className="ssr-aviso">
           <h2 id="h-orig">Contato</h2>
-          {t.ig ? <p><a href={'https://www.instagram.com/' + t.ig + '/'} rel="nofollow noopener" target="_blank">Falar com {t.name.split(' ')[0]} no Instagram (@{t.ig})</a></p> : null}
+          {t.ig ? <p><a href={'https://www.instagram.com/' + t.ig + '/'} rel="noopener" target="_blank">Falar com {t.name.split(' ')[0]} no Instagram (@{t.ig})</a></p> : null}
           <p>Perfil importado de dados públicos, ainda não confirmado por {t.name.split(' ')[0]}. É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar</a>.</p>
         </section>
       ) : (

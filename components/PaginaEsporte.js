@@ -36,9 +36,7 @@ export function dados(esporteSlug, ondeSlug, pagina = 1) {
 
 export function metadados(d) {
   if (!d) return { title: 'Página não encontrada', robots: { index: false } };
-  // combinação com menos de 3 profissionais: a página existe para quem chega, mas não pede indexação (conteúdo fino)
-  const fino = d.cid && d.itens.length < 3;
-  return { title: d.titulo, description: d.descricao, ...(fino ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: d.caminho }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
+  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
@@ -46,7 +44,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
   if (!d) notFound();
   const { esp, online, cid, itens, h1, caminho, base, paginas } = d;
   const ini = (pagina - 1) * POR_PAGINA, naPagina = itens.slice(ini, ini + POR_PAGINA);
-  const cidades = cidadesDo(esp.slug, 3).filter((c) => !cid || c.slug !== cid.slug).slice(0, 60);
+  const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug).slice(0, 60);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
   const route = { name: 'esporte', params: { mod: esp.label, city: cid ? cid.label : '', fmt: online ? 'Online' : (cid ? 'Presencial' : 'Qualquer') } };

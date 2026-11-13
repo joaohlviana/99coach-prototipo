@@ -23,7 +23,7 @@ export function meta(k, p) {
   const titulo = caber(`Personal trainer e aulas em ${cidadeUF(d.cid.label)}`, `Personal trainer e aulas em ${curta(d.cid.label)}`, `Treinadores em ${curta(d.cid.label)}`) + (p > 1 ? ` (página ${p})` : '');
   const descricao = resumo(`Personal trainer e aulas em ${d.cid.label}: ${plural(d.itens.length, 'profissional atende', 'profissionais atendem')} presencialmente. ${d.esportes.slice(0, 5).map((x) => x.label).join(', ')} e mais.`);
   const url = d.base + (p > 1 ? '/pagina/' + p : '');
-  return { title: titulo, description: descricao, ...(d.itens.length < 3 ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: url }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: titulo, description: descricao, url, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
+  return { title: titulo, description: descricao, alternates: { canonical: url }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: titulo, description: descricao, url, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 export async function generateMetadata({ params }) { const { cidade: k } = await params; return meta(k, 1); }
 

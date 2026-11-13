@@ -4,7 +4,7 @@ export const metadata = {
   metadataBase: new URL(SITE),
   title: { default: '99coach — encontre seu treinador', template: '%s | 99coach' },
   description: '99coach: encontre treinadores por esporte e cidade, peça acompanhamento e treine com quem você escolher.',
-  robots: INDEXAR ? { index: true, follow: true } : { index: false, follow: false },
+  robots: INDEXAR ? { index: true, follow: true } : { index: false, follow: true },
   openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] },
   twitter: { card: 'summary_large_image', images: ['/img/og-99coach.png'] },
   manifest: '/manifest.webmanifest'
