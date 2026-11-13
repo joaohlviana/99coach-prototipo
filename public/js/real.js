@@ -193,6 +193,11 @@
     try { LS.setItem('c99.contaIniciada', '1'); } catch (_) {}
     STORE.saveDb();
   }
+  // "Sair" sempre à vista na barra lateral das áreas com conta
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('#app [data-sair]') : null; if (!b) return;
+    e.preventDefault(); e.stopPropagation(); if (window.GO) window.GO('@sair');
+  }, true);
   window.__startAccount = startAccount;
   // pacote de área carregado depois do início da conta: o que chegou agora como exemplo sai, como no primeiro acesso
   window.__cleanNew = function (keys) {

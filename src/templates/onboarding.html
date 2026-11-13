@@ -250,7 +250,7 @@
     <nav class="snav onb-snav" aria-label="{{navLabel}}">
       <button type="button" class="v4-reset snav__brand" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
       <sc-for list="{{side}}" as="g" hint-placeholder-count="3"><span class="snav__sec">{{g.sec}}</span><sc-for list="{{g.items}}" as="s" hint-placeholder-count="4"><button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" onClick="{{s.go}}"><i class="{{s.ic}}" aria-hidden="true"></i>{{s.label}}</button></sc-for></sc-for>
-      <div class="snav__me"><span class="av av--sm">{{me.ini}}</span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div></div>
+      <div class="snav__me"><span class="av av--sm">{{me.ini}}</span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div><button type="button" class="snav__out" data-sair="1" aria-label="Sair da conta" title="Sair da conta"><i class="ic ic--sm i-logout" aria-hidden="true"></i><span>Sair</span></button></div>
     </nav>
     <div class="onb-main">
       <div class="mtop onb-mtop"><sc-if value="{{mtop.hasBack}}" hint-placeholder-val="{{ false }}"><button type="button" class="hdr__ico" onClick="{{mtop.back}}" aria-label="Voltar"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button></sc-if><sc-if value="{{mtop.noBack}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset onb-mlogo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button></sc-if><b class="mtop__t">{{mtop.title}}</b><span class="av av--sm onb-mme">{{me.ini}}</span></div>

@@ -18,7 +18,7 @@
     <nav class="snav onb-snav" aria-label="{{navLabel}}">
       <button type="button" class="v4-reset snav__brand" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
       <sc-for list="{{side}}" as="g" hint-placeholder-count="3"><span class="snav__sec">{{g.sec}}</span><sc-for list="{{g.items}}" as="s" hint-placeholder-count="4"><button type="button" class="{{s.cls}}" aria-current="{{s.cur}}" onClick="{{s.go}}"><i class="{{s.ic}}" aria-hidden="true"></i><span class="mod-snav__l">{{s.label}}</span><sc-if value="{{s.hasCount}}" hint-placeholder-val="{{ false }}"><span class="mod-count">{{s.count}}</span></sc-if></button></sc-for></sc-for>
-      <div class="snav__me"><span class="av av--sm"><sc-if value="{{me.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{me.photo}}" alt=""></sc-if><sc-if value="{{me.noPhoto}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div></div>
+      <div class="snav__me"><span class="av av--sm"><sc-if value="{{me.hasPhoto}}" hint-placeholder-val="{{ false }}"><img src="{{me.photo}}" alt=""></sc-if><sc-if value="{{me.noPhoto}}" hint-placeholder-val="{{ true }}">{{me.ini}}</sc-if></span><div class="onb-me"><b>{{me.name}}</b><span>{{me.role}}</span></div><button type="button" class="snav__out" data-sair="1" aria-label="Sair da conta" title="Sair da conta"><i class="ic ic--sm i-logout" aria-hidden="true"></i><span>Sair</span></button></div>
     </nav>
     </sc-if>
     <div class="onb-main mod-main">

@@ -179,3 +179,9 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 /* botão do topo com a pessoa logada: iniciais + primeiro nome */
 #app button[data-minha-area][data-ini]{display:inline-flex;align-items:center;gap:8px;padding-left:6px;max-width:190px}
 #app button[data-minha-area][data-ini]::before{content:attr(data-ini);flex:none;width:28px;height:28px;border-radius:50%;background:var(--brand,#DF0A3D);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;letter-spacing:.02em}
+
+/* Sair, ao lado de quem está logado */
+#app .snav__me{display:flex;align-items:center;gap:10px}
+#app .snav__me .onb-me{flex:1;min-width:0}
+#app .snav__out{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:1px solid rgba(18,18,20,.12);border-radius:999px;background:transparent;font:600 13px var(--font,Inter,sans-serif);color:var(--fg,#121214);cursor:pointer;transition:background-color .18s ease,border-color .18s ease}
+@media (hover:hover){#app .snav__out:hover{background:rgba(18,18,20,.06);border-color:rgba(18,18,20,.25)}}
