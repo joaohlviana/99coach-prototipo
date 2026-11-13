@@ -53,7 +53,7 @@ REG.screen({
       var st0 = (window.STORE && window.STORE.loadOnb('treinador')) || {};
       var failed = !!(C.syncFailed && C.syncFailed());
       var empty = !L.length && !R.length && !failed;
-      var next = !st0.published ? { t: 'Publicar seu perfil', x: 'Rascunho salvo não aparece na busca. Publicado é o que os alunos encontram.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
+      var next = !st0.published ? { t: 'Publicar seu perfil', x: 'Só perfil publicado aparece na busca.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
         : { t: 'Convidar seu primeiro aluno', x: 'Ele aceita uma vez e o vínculo fica pronto. O convite vale 7 dias.', act: 'Convidar aluno', go: function () { GO('REL01'); } };
       return {
         isNew: false, notNew: false, real: true, date: window.TODAY(), hello: 'Olá, ' + fn(st0.name || t.first),

@@ -173,7 +173,7 @@
         </div>
 
         <sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{ false }}">
-          <div class="emp t1-emp"><span class="emp__ic"><i class="ic ic--sm i-users" aria-hidden="true"></i></span><b>Seu primeiro aluno começa com um convite</b><span>Ele aceita uma vez e o vínculo fica pronto. Sem cartão, sem app obrigatório.</span><div class="mod-row t1-center"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.invite}}">Convidar aluno</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.share}}">Compartilhar perfil</button></div></div>
+          <div class="emp t1-emp"><span class="emp__ic"><i class="ic ic--sm i-users" aria-hidden="true"></i></span><b>Seu primeiro aluno começa com um convite</b><span>Ele aceita uma vez e o vínculo fica pronto.</span><div class="mod-row t1-center"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.invite}}">Convidar aluno</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.share}}">Compartilhar perfil</button></div></div>
         </sc-if>
 
         <sc-if value="{{v.notEmpty}}" hint-placeholder-val="{{ true }}">
@@ -253,7 +253,7 @@
         </sc-if>
         <section class="card onb-sec" aria-labelledby="rc-l"><h2 class="onb-h2" id="rc-l">Pagamentos recebidos</h2>
           <sc-if value="{{v.recvFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a lista agora. Isto não quer dizer que não há pagamentos.</p></sc-if>
-          <sc-if value="{{v.noRows}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum pagamento recebido ainda. Não mostramos zero como se fosse resultado.</p></sc-if>
+          <sc-if value="{{v.noRows}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum pagamento recebido ainda.</p></sc-if>
           <sc-if value="{{v.hasRows}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><div style="flex: 1 1 260px"><b>{{r.t}}</b><p class="mod-small mod-muted">{{r.x}}</p></div><span class="badge badge--plain">{{r.s}}</span></div></li></sc-for></ol></sc-if>
         </section>
       </sc-if>
@@ -533,7 +533,7 @@
           </div>
           <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Próximo passo"><h2 class="onb-h2">{{v.next.t}}</h2><p class="mod-small mod-muted">{{v.next.x}}</p>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.next.go}}">{{v.next.act}}</button></div>
-            <p class="mod-small mod-muted">Esta página passa a mostrar o que precisa de você assim que houver um pedido ou um aluno conectado.</p></section></sc-if>
+            <p class="mod-small mod-muted">Pedidos e alunos aparecem aqui.</p></section></sc-if>
           <sc-if value="{{v.hasMine}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-mine"><h2 class="onb-h2" id="hj-mine">Precisa de você</h2>
             <ol class="onb-secs"><sc-for list="{{v.mine}}" as="m" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-user"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
           <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Tudo em dia</b>Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</div></div></sc-if>
@@ -1253,7 +1253,7 @@
       <!-- H06 · Conteúdo (TRE13 · biblioteca de rotinas e pastas) -->
       <sc-if value="{{is.conteudo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead t3-head">
-          <div class="pghead__txt"><span class="eyebrow">Rotinas · exercícios · formulários</span><h1 class="pghead__title">Conteúdo</h1><p class="pghead__sub">Encontre, reutilize e aplique — o destino aparece antes de confirmar.</p></div>
+          <div class="pghead__txt"><span class="eyebrow">Rotinas · exercícios · formulários</span><h1 class="pghead__title">Conteúdo</h1><p class="pghead__sub"></p></div>
           <div class="pghead__act"><button type="button" class="btn btn--primary" onClick="{{v.create}}"><i class="ic ic--sm i-plus" aria-hidden="true"></i>Nova rotina</button></div>
         </div>
 

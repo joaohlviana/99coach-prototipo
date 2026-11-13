@@ -556,7 +556,7 @@
         <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec"><h2 class="onb-h2">Entre para ver seus avisos</h2><p class="mod-small mod-muted">Os avisos são da sua conta.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.login}}">Entrar</button></div></section></sc-if>
         <sc-if value="{{v.logged}}" hint-placeholder-val="{{ true }}">
           <section class="card onb-sec" aria-labelledby="av-h"><h2 class="onb-h2" id="av-h">Avisos</h2>
-            <p class="mod-small mod-muted">Últimos 14 dias. O aviso diz o que aconteceu e com quem, nunca o texto da mensagem ou da resposta. {{v.sub}}</p>
+            <p class="mod-small mod-muted">Últimos 14 dias. {{v.sub}}</p>
             <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando avisos…</p></sc-if>
             <sc-if value="{{v.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para carregar os avisos agora</b>Isto não quer dizer que não há novidades.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
             <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum aviso nos últimos 14 dias.</p></sc-if>
@@ -565,7 +565,7 @@
           </section>
           <sc-if value="{{v.loaded}}" hint-placeholder-val="{{ true }}">
           <section class="card onb-sec" aria-labelledby="av-p"><h2 class="onb-h2" id="av-p">O que avisar</h2>
-            <p class="mod-small mod-muted">Toque para silenciar ou ligar um tipo. Silenciar só tira o aviso desta lista: a mensagem, o treino ou o formulário continuam no app.</p>
+            <p class="mod-small mod-muted">Toque para silenciar ou ligar. O conteúdo continua no app.</p>
             <ul class="onb-secs"><sc-for list="{{v.prefs}}" as="k" hint-placeholder-count="7"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><div style="flex: 1 1 200px"><b>{{k.label}}</b></div><button type="button" class="{{k.cls}}" aria-pressed="{{k.on}}" onClick="{{k.toggle}}">{{k.state}}</button></div></li></sc-for></ul>
             <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
           </section>
@@ -579,11 +579,11 @@
         </sc-if>
       </sc-if>
       <sc-if value="{{is.meusdados}}" hint-placeholder-val="{{ false }}">
-        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Conta</span><h1 class="pghead__title">Meus dados</h1><p class="pghead__sub">Leve uma cópia do que é seu e veja o que fica guardado em cada lugar.</p></div></div>
+        <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">Conta</span><h1 class="pghead__title">Meus dados</h1><p class="pghead__sub"></p></div></div>
         <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec"><p>Entre na sua conta para ver e baixar seus dados.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.login}}">Entrar</button></div></section></sc-if>
         <sc-if value="{{v.logged}}" hint-placeholder-val="{{ true }}">
           <section class="card onb-sec" aria-labelledby="md-exp"><h2 class="onb-h2" id="md-exp">Baixar meus dados</h2>
-            <p class="mod-small mod-muted">Conta {{v.email}}. O arquivo traz sua conta, vínculos, pedidos, horários, registros de treino e mensagens, como estão no servidor agora. Ele é gerado aqui no seu navegador e não é enviado a ninguém.</p>
+            <p class="mod-small mod-muted">Conta {{v.email}}. O arquivo traz conta, vínculos, pedidos, horários, treinos e mensagens. É gerado no seu navegador.</p>
             <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Arquivo não gerado</b>{{v.err}}</div></div></sc-if>
             <sc-if value="{{v.hasDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pronto</b>{{v.done}}</div></div></sc-if>
             <sc-if value="{{v.hasPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Cópia incompleta</b>{{v.partial}}</div></div></sc-if>

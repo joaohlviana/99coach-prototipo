@@ -28,7 +28,7 @@
         <div class="onb-choices" role="radiogroup" aria-label="Como você quer usar o 99Coach">
           <sc-for list="{{intents}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for>
         </div>
-        <p class="field__help">Você pode ter os dois papéis depois, na mesma conta.</p>
+        <p class="field__help">Dá para ter os dois na mesma conta.</p>
         <sc-if value="{{intentErr}}" hint-placeholder-val="{{ false }}"><p class="field__err" role="alert">Escolha uma opção para continuar.</p></sc-if>
         <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{continueIntent}}">Continuar<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></div>
         <p class="onb-alt">Já tem conta? <button type="button" class="onb-link" onClick="{{goLogin}}">Entrar</button></p>

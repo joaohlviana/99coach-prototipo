@@ -41,7 +41,7 @@
       show: true, loading: factors == null && !ui.mfFail, fail: !!ui.mfFail, reload: load,
       isOn: !!verified, isOff: factors != null && !verified && !p, pending: !!p,
       onTxt: 'Ligada. Para entrar, além da senha, pedimos o código do seu aplicativo autenticador. Sem o código, ninguém lê nem altera os seus dados.',
-      offTxt: 'Desligada. Se ligar, cada novo acesso pede também um código de 6 números gerado por um aplicativo autenticador no seu celular (Google Authenticator, Authy, 1Password e outros).',
+      offTxt: 'Desligada. Ligada, cada novo acesso pede também um código de 6 números de um aplicativo autenticador.',
       warn: 'Guarde o acesso ao aplicativo: sem ele você não consegue entrar. Se trocar de celular, desligue aqui antes ou transfira o autenticador.',
       enroll: enroll, enrollLabel: ui.mfBusy ? 'Preparando…' : 'Ligar verificação em duas etapas',
       qr: p ? p.qr : '', secret: p ? p.secret : '', code: ui.mfCode || '', setCode: function (e) { ctx.setUi({ mfCode: U.val(e), mfErr: '' }); },

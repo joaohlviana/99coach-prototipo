@@ -142,7 +142,7 @@
     notice: function () {
       if (!LIB.active()) return null;
       if (st.state === 'offline') return ['Sem conexão: salvo só neste aparelho', 'Suas mudanças vão para a sua conta quando a conexão voltar.', 'warn'];
-      if (st.state === 'erro') return ['Ainda não salvo na sua conta', 'Suas mudanças continuam neste aparelho. Tentamos de novo na próxima alteração.', 'warn'];
+      if (st.state === 'erro') return ['Ainda não salvo na sua conta', 'Suas mudanças continuam neste aparelho.', 'warn'];
       if (st.state === 'grande') return ['Biblioteca grande demais para salvar na conta', 'Apague rotinas ou formulários antigos. Por enquanto, as mudanças novas ficam só neste aparelho.', 'warn'];
       if (st.merged) return ['Biblioteca atualizada com outro aparelho', 'Juntamos o que estava na sua conta com o que estava aqui. ' + (st.dup ? 'O que estava diferente nos dois ficou em duas cópias; a daqui tem "(deste aparelho)" no nome. Apague a que não quiser.' : 'Nada foi descartado.'), 'info'];
       if (st.state === 'salvando' || st.phase === 'carregando') return ['Salvando na sua conta…', '', 'info'];
