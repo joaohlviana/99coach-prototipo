@@ -75,5 +75,9 @@ await tr.reload({ waitUntil: 'load' }); await tr.waitForTimeout(1500); await tr.
 await pick(tr, DN[today], 'Descanso'); await tr.waitForTimeout(300); await click(tr, /^Salvar semana$/); await tr.waitForTimeout(1500);
 await al.reload({ waitUntil: 'load' }); await al.waitForTimeout(1500); await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(1500); t = await txt(al);
 console.log('5 hoje descanso:', /Hoje é dia de descanso no plano de Marina/.test(t), /Se quiser treinar mesmo assim/.test(t));
+// a mesma sessão volta a ficar disponível na semana seguinte: registro da semana passada não conta como feito agora
+srv.sessions = [{ id: 'S0', session_key: 'L1_v1_s1@2026-01-05', started_at: '2026-01-06T12:00:00Z', submitted_at: '2026-01-06T12:40:00Z', set_logs: [] }, { id: 'S9', session_key: 'L1_v1_s2', started_at: '2026-01-07T12:00:00Z', submitted_at: '2026-01-07T12:40:00Z', set_logs: [] }];
+await al.reload({ waitUntil: 'load' }); await al.waitForTimeout(1500); await al.evaluate(() => NAV.go('aluno', {}, null)); await al.waitForTimeout(1500); t = await txt(al);
+console.log('6 semana nova: sessões antigas não contam como feitas:', !/feita nesta semana/.test(t), /0 de 1 treino previsto nesta semana registrado/.test(t), !/Sessão registrada nesta semana/.test(t));
 console.log('errs', tr.errs, al.errs);
 await b.close();

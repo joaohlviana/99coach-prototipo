@@ -45,10 +45,10 @@
     var w = link.workout, sch = w && w.schedule && w.schedule.days;
     if (!visible || !w || !sch || !Object.keys(sch).length) return { show: false, todayIdx: -1 };
     var tf = first(link.trainerName || 'seu treinador'), mon = monday(), end = new Date(mon.getTime() + 7 * 864e5), today = String(((new Date().getDay() + 6) % 7) + 1);
-    // feito nesta semana, por sessão (cada sessão de uma versão é registrada uma vez)
+    // feito nesta semana, por sessão (cada sessão pode ser registrada uma vez por semana)
     var doneAt = {};
     (sessions || []).forEach(function (s) { if (!s.submitted_at) return; var t = new Date(s.submitted_at); if (t < mon || t >= end) return;
-      w.sessions.forEach(function (x, i) { if (s.session_key === link.id + '_v' + w.version + '_' + x.id) doneAt[i] = t; }); });
+      w.sessions.forEach(function (x, i) { if (String(s.session_key || '').split('@')[0] === link.id + '_v' + w.version + '_' + x.id) doneAt[i] = t; }); });
     var used = {}, planned = 0, done = 0;
     var days = DAYS.map(function (d, n) {
       var v = sch[d[0]], date = new Date(mon.getTime() + n * 864e5), isToday = d[0] === today, what, st = '';

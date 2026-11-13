@@ -82,7 +82,7 @@ console.log('  aluno vê bloqueio:', /Esta conversa foi bloqueada/.test(t), '| n
 await al.evaluate(() => NAV.go('aluno', { s: 'semvinculo', navFrom: 'hoje' }, null)); await al.waitForTimeout(900);
 await click(al, /^Começar treino$/); await al.waitForTimeout(300);
 await (await al.$('#app [role=checkbox]')).click(); await al.waitForTimeout(2000);
-console.log('  rascunho salvo no servidor:', srv.saved.length > 0 && srv.saved[srv.saved.length - 1].p_key === 'L1_v1_s1', '| com a série marcada:', JSON.stringify(srv.saved[srv.saved.length - 1] || {}).includes('"done":true'));
+console.log('  rascunho salvo no servidor:', srv.saved.length > 0 && /^L1_v1_s1@\d{4}-\d{2}-\d{2}$/.test(srv.saved[srv.saved.length - 1].p_key), '| com a série marcada:', JSON.stringify(srv.saved[srv.saved.length - 1] || {}).includes('"done":true'));
 // 4. outro aparelho (sem nada guardado): retoma do servidor
 const al2 = await mk('al');
 await al2.evaluate(() => NAV.go('aluno', { s: 'semvinculo', navFrom: 'hoje' }, null)); await al2.waitForTimeout(1500);

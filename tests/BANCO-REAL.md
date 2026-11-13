@@ -85,3 +85,7 @@ Transação desfeita:
 - com treino de 2 sessões: a semana é gravada na mesma versão (não cria versão nova)
 - dia apontando para sessão que não existe é recusado
 - o aluno lê a semana; o aluno não consegue alterá-la
+
+
+## Repetir a sessão a cada semana (13/11)
+Transação desfeita: a mesma sessão registrada em duas semanas, com a chave levando a segunda-feira da semana, vira dois registros distintos e recebidos. Antes, cada sessão de uma versão só podia ser registrada uma vez.

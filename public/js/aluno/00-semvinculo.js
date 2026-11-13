@@ -62,7 +62,13 @@ REG.screen({
       ctx.setUi({ sess: all.filter(function (x) { return !!x.submitted_at; }), srvDrafts: drafts, sessErr: !r.ok }); }); }
     // rotina com várias sessões: o aluno escolhe qual vai fazer (a primeira ainda não registrada vem marcada)
     var w = link.workout, SS = (w && w.sessions) || [];
-    var doneOf = function (x) { var k = link.id + '_v' + w.version + '_' + x.id; return (ui.sess || []).some(function (y) { return y.session_key === k; }); };
+    // cada sessão pode ser registrada uma vez por semana: a chave do registro leva a segunda-feira da semana.
+    // registros antigos (sem a semana na chave) contam para a semana em que foram enviados.
+    var MON = (function () { var d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; })();
+    var WTAG = MON.getFullYear() + '-' + ('0' + (MON.getMonth() + 1)).slice(-2) + '-' + ('0' + MON.getDate()).slice(-2);
+    var baseKey = function (x) { return link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
+    var wkKey = function (x) { return baseKey(x) + '@' + WTAG; };
+    var doneOf = function (x) { var b = baseKey(x), k = wkKey(x); return (ui.sess || []).some(function (y) { return y.session_key === k || (y.session_key === b && y.submitted_at && new Date(y.submitted_at) >= MON); }); };
     if (ui.sx == null && window.__alunoSx && window.__alunoSx.link === link.id && SS[window.__alunoSx.i]) { ui.sx = window.__alunoSx.i; window.__alunoSx = null; }
     // com a semana definida pelo treinador, a sessão de hoje já vem escolhida (a pessoa pode trocar)
     var WK = window.WEEK ? window.WEEK.student(ctx, link, ui.sess, true) : { show: false, todayIdx: -1 };
@@ -85,9 +91,9 @@ REG.screen({
     // ---------- execução (registro de séries) ----------
     // A sessão em andamento fica guardada neste aparelho até ser enviada: fechar o app não perde as marcações.
     var uid = (C && C.user() && C.user().id) || 'local';
-    var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
+    var dKey = function (x) { return 'c99.sessaoTreino.' + uid + '.' + wkKey(x); };
     // e também no servidor (save_session), para continuar em outro aparelho; o aparelho vale primeiro
-    var sKey = function (x) { return link.id + '_v' + (w ? w.version : 0) + '_' + x.id; };
+    var sKey = function (x) { return wkKey(x); };
     var dGet = function (x) { var v = null; try { v = JSON.parse(window.localStorage.getItem(dKey(x)) || 'null'); } catch (_) {} return v || ((ui.srvDrafts || {})[sKey(x)] || null); };
     var dPut = function (x, v) {
       var localOk = true;
@@ -138,7 +144,7 @@ REG.screen({
       if (!logs.length) return ctx.setUi({ err: 'Marque pelo menos uma série feita. Concluir parcialmente é permitido.' });
       // sessão incompleta: uma confirmação antes de enviar, dizendo o que fica registrado
       if (logs.length < total(ex.grid) && !ui.partial) return ctx.setUi({ partial: true, err: '' });
-      var key = link.id + '_v' + w.version + '_' + s0.id;
+      var key = wkKey(s0);
       ctx.setUi({ busy: true, err: '' });
       clearTimeout(window.__svT);
       C.rpc('save_session', { p_link: link.id, p_key: key, p_version: w.version, p_state: ex }).then(function (sv) { return sv.ok ? C.submitSession(link.id, key, logs) : sv; }).then(function (r) {
@@ -164,7 +170,7 @@ REG.screen({
     var inP = sess.filter(function (s) { return tsOf(s) >= since; });
     var weekN = sess.filter(function (s) { return tsOf(s) >= wk; }).length;
     var weekTxt0 = weekN ? U.plural(weekN, 'sessão registrada', 'sessões registradas') + ' nos últimos 7 dias' : 'Nenhuma sessão registrada nos últimos 7 dias';
-    var fullOf = function (s) { var m = /_v(\d+)_(.+)$/.exec(s.session_key || ''); var x = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null; if (!x) return null; var t2 = x.items.reduce(function (n, it) { return n + it.sets; }, 0); return (s.set_logs || []).length >= t2; };
+    var fullOf = function (s) { var m = /_v(\d+)_(.+?)(?:@[\d-]+)?$/.exec(s.session_key || ''); var x = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null; if (!x) return null; var t2 = x.items.reduce(function (n, it) { return n + it.sets; }, 0); return (s.set_logs || []).length >= t2; };
     var partialN = inP.filter(function (s) { return fullOf(s) === false; }).length;
     // exercícios acompanhados: os mais registrados, com o último resultado e o anterior compatível (mesmo exercício)
     var byEx = {};
@@ -173,8 +179,7 @@ REG.screen({
     var fmtDay = function (d) { return d.slice(8, 10) + '/' + d.slice(5, 7); };
     var tracked = Object.keys(byEx).map(function (k) { var o = byEx[k], ds = Object.keys(o.days).sort(); return { name: o.name, n: ds.length, last: fmtSet(o.days[ds[ds.length - 1]]) + ' em ' + fmtDay(ds[ds.length - 1]), prev: ds.length > 1 ? 'Antes: ' + fmtSet(o.days[ds[ds.length - 2]]) + ' em ' + fmtDay(ds[ds.length - 2]) : 'Sem registro anterior para comparar' }; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 3);
 
-    var doneKey = w && s0 ? link.id + '_v' + w.version + '_' + s0.id : '';
-    var doneNow = !!doneKey && (ui.sess || []).some(function (s) { return s.session_key === doneKey; });
+    var doneNow = !!(w && s0) && doneOf(s0);
     var state = !w ? (link.prep === 'awaiting_client' ? 'prep' : 'wait') : (ex ? 'exec' : 'ready');
     var paused = link.status === 'pausado';
     // recado do treinador: última mensagem dele ainda não lida (só o que o servidor devolveu)
@@ -213,11 +218,11 @@ REG.screen({
       slotsErr: ui.slotsErr || '', hasSlotsErr: !!ui.slotsErr, loadSlots: loadSlots, slotsLabel: ui.slotsLoading ? 'Carregando…' : 'Ver horários livres', tfName: tf,
       // Treinos: a rotina sessão por sessão e o histórico, cada registro abrindo o previsto × realizado
       isTreinos: from === 'treinos' && !ex, notTreinos: !(from === 'treinos' && !ex),
-      sessList: w ? SS.map(function (x, i) { var k = link.id + '_v' + w.version + '_' + x.id, last = (ui.sess || []).filter(function (y) { return y.session_key === k; }).map(function (y) { return y.submitted_at; }).sort().pop();
+      sessList: w ? SS.map(function (x, i) { var k = baseKey(x), last = (ui.sess || []).filter(function (y) { return String(y.session_key || '').split('@')[0] === k; }).map(function (y) { return y.submitted_at; }).sort().pop();
         return { title: x.title || ('Sessão ' + (i + 1)), sub: U.plural((x.items || []).length, 'exercício', 'exercícios') + ' · ~' + (x.estMin || 0) + ' min · ' + (last ? 'feita em ' + new Date(last).toLocaleDateString('pt-BR') : 'ainda não feita nesta versão'), pick: function () { window.__alunoSx = { link: link.id, i: i }; GO('H10'); } }; }) : [],
       hasSessList: !!w && SS.length > 0,
       regs: (ui.sess || []).slice().sort(function (a, b) { return String(b.submitted_at).localeCompare(String(a.submitted_at)); }).map(function (x) {
-        var m = /_v(\d+)_(.+)$/.exec(x.session_key || ''), sv = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null, open = ui.regOpen === x.id;
+        var m = /_v(\d+)_(.+?)(?:@[\d-]+)?$/.exec(x.session_key || ''), sv = m && w && String(w.version) === m[1] ? SS.filter(function (y) { return y.id === m[2]; })[0] : null, open = ui.regOpen === x.id;
         var by = {}; (x.set_logs || []).forEach(function (l) { var k = l.exercise_name || l.exercise_id; (by[k] = by[k] || []).push(l); });
         var rows = Object.keys(by).map(function (k) { var it = sv ? (sv.items || []).filter(function (y) { return y.exerciseId === by[k][0].exercise_id || y.name === k; })[0] : null;
           return { ex: k, plan: it ? 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') : 'previsto: versão anterior do treino', did: 'feito ' + by[k].sort(function (a, b) { return a.set_no - b.set_no; }).map(function (l) { return l.reps + (l.load_kg != null ? '×' + String(l.load_kg).replace('.', ',') + 'kg' : ' rep'); }).join(' · ') }; });
@@ -234,7 +239,7 @@ REG.screen({
       sendPrep: sendPrep, sendLabel: ui.busy ? 'Enviando…' : 'Enviar respostas',
       items: s0 ? s0.items.map(function (it) { return { name: it.name, rx: it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') + ' · descanso ' + it.restS + ' s' }; }) : [],
       wTitle: w ? w.title : '', sTitle: s0 ? (s0.title || '') : '', manySess: SS.length > 1 && !ex,
-      sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
+      sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita nesta semana' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
       estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow && !paused,
       isPaused: paused && !ex,
       wk: Object.assign({}, WK, { show: !!WK.show && !ex && !showEvo && !showMsg && state === 'ready' }),

@@ -75,7 +75,7 @@ REG.screen({
     var logs = sess.map(function (s) {
       var sets = s.set_logs || [], vol = sets.reduce(function (n, x) { return n + (Number(x.reps) || 0) * (Number(x.load_kg) || 0); }, 0);
       var d = s.submitted_at || s.started_at;
-      var mm = /_v(\d+)_(.+)$/.exec(s.session_key || ''), sv = mm && L.workout && String(L.workout.version) === mm[1] ? (L.workout.sessions || []).filter(function (y) { return y.id === mm[2]; })[0] : null, byEx = {};
+      var mm = /_v(\d+)_(.+?)(?:@[\d-]+)?$/.exec(s.session_key || ''), sv = mm && L.workout && String(L.workout.version) === mm[1] ? (L.workout.sessions || []).filter(function (y) { return y.id === mm[2]; })[0] : null, byEx = {};
       sets.forEach(function (x) { var k = x.exercise_name || x.exercise_id; (byEx[k] = byEx[k] || []).push(x); });
       var detail = Object.keys(byEx).map(function (k) { var it = sv ? (sv.items || []).filter(function (y) { return y.exerciseId === byEx[k][0].exercise_id || y.name === k; })[0] : null;
         return { t: k + ' — ' + (it ? 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') : 'previsto: versão anterior') + ' · feito ' + byEx[k].sort(function (a, b) { return a.set_no - b.set_no; }).map(function (l) { return l.reps + (l.load_kg != null ? '×' + String(l.load_kg).replace('.', ',') + 'kg' : ' rep'); }).join(' · ') }; });
