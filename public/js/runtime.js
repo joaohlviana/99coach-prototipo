@@ -309,7 +309,11 @@
       var u = urlFor('esporte', (entries[cur.key] || {}).props, cur.comp.state);
       if (u !== location.pathname) { try { history.replaceState(history.state, '', u); } catch (_) {} }
       // mesmo título que o servidor entrega para este endereço
-      var e = cur.comp.state; document.title = (e.fmt === 'Online' ? e.mod + ' online — Treinadores' : (e.city ? e.mod + ' presencial em ' + e.city + ' — Treinadores' : e.mod + ' — Treinadores por cidade e online')) + ' | 99coach';
+      var e = cur.comp.state, per = /^(Musculação|Funcional|CrossFit|Calistenia|HIIT|Condicionamento)$/.test(e.mod), sv = (per ? 'Personal trainer de ' : 'Aulas de ') + e.mod;
+      var cu = function (c) { var p = String(c).split(', '); return p[1] ? p[0] + ' (' + p[1] + ')' : p[0]; };
+      var tt = e.fmt === 'Online' ? sv + ' online' : (e.city ? sv + ' em ' + cu(e.city) : sv + ': por cidade e online');
+      if (tt.length > 50 && e.city) tt = sv + ' em ' + String(e.city).split(',')[0];
+      document.title = tt + ' | 99coach';
     },
     go: function (name, params, from, extra) {
       saveCurrent(extra);

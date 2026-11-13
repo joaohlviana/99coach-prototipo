@@ -53,12 +53,12 @@ export function Cartao({ t }) {
   const onde = [t.pres ? 'Presencial em ' + t.city : '', t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
   return (
     <li className="ssr-card">
-      <span className="ssr-av" aria-hidden="true">{t.ini || t.name.slice(0, 1)}</span>
+      <span className="ssr-av" aria-hidden="true">{t.ini || t.name.slice(0, 1)}{t.photo ? <img src={t.photo} alt="" width="48" height="48" loading="lazy" decoding="async" /> : null}</span>
       <div>
         <a href={'/treinador/' + t.id}><b>{t.name}</b></a>
         {t.spec ? <span>{t.spec}</span> : null}
         <span>{onde}</span>
-        {t.importado ? <small>Perfil importado · não confirmado pelo profissional</small> : null}
+        {t.importado ? <small>Perfil importado</small> : null}
       </div>
     </li>
   );

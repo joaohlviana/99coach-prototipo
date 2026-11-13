@@ -3,7 +3,7 @@
 // número só quando confirmado pelo catálogo; nenhum texto local inventado.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from './Shell.js';
-import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE } from '../lib/catalogo.js';
+import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE, servicoDe, cidadeUF, caber, resumo } from '../lib/catalogo.js';
 
 const POR_PAGINA = 36;
 
@@ -19,19 +19,23 @@ export function dados(esporteSlug, ondeSlug, pagina = 1) {
   const paginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA));
   if (!(pagina >= 1 && pagina <= paginas)) return null;
   const h1 = online ? `Treinadores de ${esp.label} online` : (cid ? `Treinadores de ${esp.label} presencial em ${curta(cid.label)}` : `Treinadores de ${esp.label}`);
-  const titulo = online ? `${esp.label} online — Treinadores` : (cid ? `${esp.label} presencial em ${cid.label} — Treinadores` : `${esp.label} — Treinadores por cidade e online`);
-  const descricao = online
-    ? `${plural(itens.length, 'profissional atende', 'profissionais atendem')} ${esp.label} online. Compare e peça acompanhamento pelo 99coach.`
-    : (cid ? `${plural(itens.length, 'profissional atende', 'profissionais atendem')} ${esp.label} presencialmente em ${cid.label}. Compare e peça acompanhamento pelo 99coach.`
-      : `${plural(itens.length, 'profissional de', 'profissionais de')} ${esp.label} no catálogo, por cidade e online. Compare e peça acompanhamento pelo 99coach.`);
+  const serv = servicoDe(esp.slug, esp.label);
+  const suf = pagina > 1 ? ` (página ${pagina})` : '';
+  const titulo = caber(...(online ? [`${serv} online: ${plural(itens.length, 'profissional', 'profissionais')}`, `${serv} online`]
+    : (cid ? [`${serv} em ${cidadeUF(cid.label)}`, `${serv} em ${curta(cid.label)}`, `${esp.label} em ${curta(cid.label)}`]
+      : [`${serv}: por cidade e online`, `${serv}`, esp.label])).map((o) => o + suf));
+  const descricao = resumo(online
+    ? `${serv} online: ${plural(itens.length, 'profissional atende', 'profissionais atendem')} a distância, com o treino pelo app. Compare perfis e peça acompanhamento.`
+    : (cid ? `${serv} em ${cid.label}: ${plural(itens.length, 'profissional atende', 'profissionais atendem')} presencialmente. Compare perfis e peça acompanhamento.`
+      : `${serv} em todo o Brasil: ${plural(itens.length, 'profissional', 'profissionais')}, por cidade e online. Compare perfis e peça acompanhamento.`));
   const base = '/treinadores/' + esp.slug + (ondeSlug ? '/' + ondeSlug : '');
   const caminho = base + (pagina > 1 ? '/pagina/' + pagina : '');
-  return { esp, online, cid, itens, h1, titulo: titulo + (pagina > 1 ? ` (página ${pagina})` : ''), descricao, caminho, base, pagina, paginas };
+  return { esp, online, cid, itens, h1, titulo, descricao, caminho, base, pagina, paginas };
 }
 
 export function metadados(d) {
   if (!d) return { title: 'Página não encontrada', robots: { index: false } };
-  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho }, openGraph: { title: d.titulo, description: d.descricao, url: d.caminho } };
+  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho }, openGraph: { title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {

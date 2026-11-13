@@ -2,7 +2,7 @@
 // Sem profissional presencial ali, a página não existe (404). Online não entra como se fosse da cidade.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
-import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE } from '../../../lib/catalogo.js';
+import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo } from '../../../lib/catalogo.js';
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -20,10 +20,10 @@ export function dados(k, pagina) {
 export function meta(k, p) {
   const d = dados(k, p);
   if (!d) return { title: 'Página não encontrada', robots: { index: false } };
-  const titulo = `Treinadores em ${d.cid.label}` + (p > 1 ? ` (página ${p})` : '');
-  const descricao = `${plural(d.itens.length, 'profissional atende', 'profissionais atendem')} presencialmente em ${d.cid.label}: ${d.esportes.slice(0, 5).map((s) => s.label).join(', ')}. Compare e peça acompanhamento pelo 99coach.`;
+  const titulo = caber(`Personal trainer e aulas em ${cidadeUF(d.cid.label)}`, `Personal trainer e aulas em ${curta(d.cid.label)}`, `Treinadores em ${curta(d.cid.label)}`) + (p > 1 ? ` (página ${p})` : '');
+  const descricao = resumo(`Personal trainer e aulas em ${d.cid.label}: ${plural(d.itens.length, 'profissional atende', 'profissionais atendem')} presencialmente. ${d.esportes.slice(0, 5).map((x) => x.label).join(', ')} e mais.`);
   const url = d.base + (p > 1 ? '/pagina/' + p : '');
-  return { title: titulo, description: descricao, alternates: { canonical: url }, openGraph: { title: titulo, description: descricao, url } };
+  return { title: titulo, description: descricao, alternates: { canonical: url }, openGraph: { title: titulo, description: descricao, url, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 export async function generateMetadata({ params }) { const { cidade: k } = await params; return meta(k, 1); }
 

@@ -1,0 +1,15 @@
+# 99coach
+
+> Catálogo brasileiro de personal trainers e professores de esporte, por modalidade e cidade, com atendimento presencial ou online.
+
+## Páginas
+- /treinadores/{esporte}: profissionais de uma modalidade em todo o Brasil
+- /treinadores/{esporte}/{cidade-uf}: profissionais que atendem presencialmente naquela cidade
+- /treinadores/{esporte}/online: profissionais que atendem a distância
+- /cidade/{cidade-uf}: todas as modalidades de uma cidade
+- /treinador/{id}: perfil público de um profissional
+
+## Observações
+- Perfis marcados como "importado" vieram de dados públicos e ainda não foram confirmados pelo profissional; não têm avaliações nem preço.
+- A ordem das listas é por relevância; plano pago não muda a posição.
+- Lista completa de endereços: /sitemap.xml

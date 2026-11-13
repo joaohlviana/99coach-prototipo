@@ -16,10 +16,13 @@
   var items = [], byId = {}, cache = {};
   function fold(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
   function ui(sports) { var o = {}; (sports || []).forEach(function (s) { var id = window.SPORTS ? window.SPORTS.idOfSlug(s) : s; if (LABEL[id]) o[id] = 1; (ALIAS[s] || []).forEach(function (a) { o[a] = 1; }); }); return Object.keys(o); }
+  // fotos ficam no nosso armazenamento; o arquivo do catálogo guarda só o caminho
+  var FOTOS = 'https://rycaxboqkkiopjdecgld.supabase.co/storage/v1/object/public/trainer-photos/';
+  function foto(v) { return !v ? '' : (/^https?:/.test(v) ? v : FOTOS + v); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
-    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: '', /* perfil importado: sem foto até o titular enviar ou autorizar (avatar neutro com as iniciais) */ spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
-    return { id: r.slug, name: r.name, ini: r.initials || '', photo: r.imported === false ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
+    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
+    return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
   }
   function setItems(rows) {
     items = []; byId = {}; cache = {};
@@ -286,12 +289,23 @@
   }
   setInterval(tickRest, 500);
 
+  var PERSONAL = { musculacao: 1, funcional: 1, crossfit: 1, calistenia: 1, hiit: 1, condicionamento: 1 };
+  function perfilTitle(t) {
+    var slug0 = (t.raw || [])[0], id0 = (t.sports || [])[0], rot = LABEL[id0] || t.spec || '';
+    var serv = !rot ? 'Treinador' : (PERSONAL[slug0] ? 'Personal trainer de ' + rot : 'Aulas de ' + rot);
+    var pres = t.pres && t.city, full = t.name + ': ' + serv + (pres ? ' em ' + t.city.replace(', ', ' (') + ')' : (t.onl ? ' online' : ''));
+    return full.length > 60 ? t.name + ': ' + serv + (pres ? ' em ' + t.city.split(',')[0] : (t.onl ? ' online' : '')) : full;
+  }
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
     applyMe();
     whereSaved(page, root); tickRest();
     // título da aba acompanha a página (plano SEO: título descreve o que a pessoa está vendo)
-    if (!(window.__NEXT && page === 'esporte')) try { var h1 = root.querySelector('h1'); var tt = h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : ''; document.title = page === 'home' || !tt ? '99coach — encontre seu treinador' : tt + ' | 99coach'; } catch (_) {}
+    // perfil: mesmo título que o servidor entrega (serviço e cidade primeiro), não só o nome
+    var pm = page === 'perfil' ? /\/treinador\/([^/?#]+)/.exec(location.pathname) : null, pt = pm ? byId[decodeURIComponent(pm[1])] : null;
+    if (pt) { try { document.title = perfilTitle(pt) + ' | 99coach'; } catch (_) {} }
+    else if (pm && window.__ROUTE && window.__ROUTE.name === 'perfil') { /* catálogo ainda carregando: fica o título do servidor */ }
+    else if (!(window.__NEXT && page === 'esporte')) try { var h1 = root.querySelector('h1'); var tt = h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : ''; document.title = page === 'home' || !tt ? '99coach — encontre seu treinador' : tt + ' | 99coach'; } catch (_) {}
     if (window.NAV && window.NAV.syncUrl) window.NAV.syncUrl();
     if (page === 'aluno') startAccount();
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }

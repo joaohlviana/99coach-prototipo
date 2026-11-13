@@ -1,10 +1,10 @@
 import Shell from '../components/Shell.js';
-import { esportes, cidadesDo, todos, plural, curta } from '../lib/catalogo.js';
+import { esportes, cidadesDo, todos, plural, curta, SITE } from '../lib/catalogo.js';
 
 export const revalidate = 86400;
 export const metadata = {
-  title: { absolute: '99coach — encontre seu treinador por esporte e cidade' },
-  description: 'Compare treinadores por esporte, cidade e formato (presencial ou online), peça acompanhamento e treine pelo app.',
+  title: { absolute: 'Personal trainer e aulas perto de você ou online | 99coach' },
+  description: 'Encontre personal trainer e professores por esporte e cidade, presencial ou online. Compare perfis, peça acompanhamento e treine pelo app.',
   alternates: { canonical: '/' }
 };
 
@@ -13,6 +13,10 @@ export default function Home() {
   const cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
     <Shell route={{ name: 'home', params: {} }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/img/email/logo-99coach.png' },
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: '99coach', url: SITE + '/', inLanguage: 'pt-BR' }
+      ]).replace(/</g, '\\u003c') }} />
       <section className="ssr-hero">
         <h1>Encontre seu treinador.</h1>
         <p>Compare por esporte, cidade e formato. Peça acompanhamento ao treinador que você escolher; ele responde e, se aceitar, o treino chega pelo app.</p>

@@ -29,8 +29,10 @@ try {
     p.rows.forEach((t) => {
       const city = t.cities ? `${t.cities.name}, ${t.cities.uf}` : '';
       const f = (t.formats || []).includes('presencial') && city ? 'p' : '';
-      // foto só de quem publicou o próprio perfil; importado usa avatar com iniciais (regra do plano)
-      const photo = t.origin === 'importado' ? '' : (t.photo_url || '');
+      // foto: só a que está no nosso armazenamento (caminho curto); endereço de fora não é usado em perfil importado
+      const FOTOS = 'https://rycaxboqkkiopjdecgld.supabase.co/storage/v1/object/public/trainer-photos/';
+      const u = t.photo_url || '';
+      const photo = u.startsWith(FOTOS) ? u.slice(FOTOS.length) : (t.origin === 'importado' ? '' : u);
       rows.push([t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
         f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '']);
     });

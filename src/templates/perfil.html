@@ -56,7 +56,7 @@
     <!-- Celular: barra iOS, capa em sangria com o nome sobre a foto, abas sublinhadas fixas -->
     <div class="vfp-ios"><button type="button" class="vfp-ios__b" aria-label="Voltar para a busca: {{ctxLabel}}" onClick="{{openSearch}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><b>{{t.name}}</b><button type="button" class="vfp-ios__b" aria-label="Compartilhar perfil" onClick="{{openShare}}"><i class="ic ic--sm i-share" aria-hidden="true"></i></button></div>
     <div class="vfp-mhero">
-      <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
+      <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
       <sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="vfp-mhero__ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if>
       <sc-if value="{{showSocial}}" hint-placeholder-val="{{ true }}"><button type="button" class="vfp-glass" aria-label="{{favLabel}} perfil" aria-pressed="{{favOn}}" onClick="{{toggleFav}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i></button></sc-if>
       <div class="vfp-mhero__in">
@@ -263,7 +263,7 @@
     <section class="vf-sec" aria-labelledby="h-par">
       <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2></div></div>
       <ul class="vf-g4"><sc-for list="{{others}}" as="o" hint-placeholder-count="4"><li class="vf-tc card" aria-label="{{o.name}}">
-        <div class="vf-tc__m"><button type="button" class="v4-ph" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></button></div>
+        <div class="vf-tc__m"><button type="button" class="v4-ph" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></button></div>
         <div class="vf-tc__b">
           <span class="tc__sport">{{o.sport}}</span>
           <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{o.open}}"><span>{{o.name}}</span><sc-if value="{{o.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{o.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{o.avg}} de 5, {{o.n}} avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{o.avg}}<small>({{o.n}})</small></span></sc-if></div>
@@ -292,7 +292,7 @@
   <!-- Barra fixa de contato (G18 · sticky-bar): rodapé no tablet, acima da barra inferior no celular -->
   <sc-if value="{{barOn}}" hint-placeholder-val="{{ false }}">
   <div class="v4-bar" role="region" aria-label="Próxima etapa"><div class="sticky-bar">
-    <span class="av av--sm" style="background: var(--ink-2); color: var(--paper)"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}">{{t.ini}}</sc-if></span>
+    <span class="av av--sm" style="background: var(--ink-2); color: var(--paper)"><sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{t.photo}}" alt=""></sc-if><sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}">{{t.ini}}</sc-if></span>
     <div class="v4-bar__t"><b style="font-size: 14px">{{A.title}}</b><div style="font-size: 13px; color: var(--text-on-dark)">{{A.barLine}}</div></div>
     <sc-if value="{{A.isAnchor}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--white btn--arrow v4-wrapbtn" onClick="{{goSvc}}"><span class="vfp-cta-s">{{A.short}}</span><span class="vfp-cta-l">{{A.label}}</span><span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
     <sc-if value="{{A.hasAction}}" hint-placeholder-val="{{ true }}"><button type="button" class="{{A.barCls}}" onClick="{{A.go}}"><span class="vfp-cta-s">{{A.short}}</span><span class="vfp-cta-l">{{A.label}}</span><span class="btn__dot"><i class="ic ic--xs i-arrow-r" aria-hidden="true"></i></span></button></sc-if>
