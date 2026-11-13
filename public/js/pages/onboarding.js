@@ -592,7 +592,7 @@ class Component extends DCLogic {
     const closeSh = () => set({ dSheet: null, modQ: '' });
     const SH = {
       more: ['Mais modalidades', [], [btnS('Pronto', closeSh)]],
-      loc: ['Usar sua localização?', ['O navegador vai perguntar. Usamos a localização só para sugerir a cidade; o endereço não aparece no perfil.'], [btnS('Permitir', () => set({ dSheet: null, city: 'Londrina, PR', regions: {}, dd: null, loc: 'ok', dErr: false, cvLive: 'Londrina, PR escolhida pela localização' })), btnS('Agora não', () => { set({ dSheet: null, loc: 'denied', dd: 'open', q: '' }); focusQ(); }, 2)]],
+      loc: ['Usar sua localização?', ['O navegador vai perguntar. Usamos a localização só para sugerir a cidade; o endereço não aparece no perfil.'], [btnS('Permitir', () => { set({ dSheet: null, loc: 'busy', dd: null }); if (!window.GEO) return set({ loc: 'denied', dd: 'open' }); window.GEO.locate().then((r) => set({ city: r.city, regions: {}, dd: null, q: '', loc: 'ok', dErr: false, cvLive: r.city + ' escolhida pela localização' }), (e) => { set({ loc: 'denied', locWhy: window.GEO.why(e), dd: 'open', q: '' }); focusQ(); }); }), btnS('Agora não', () => { set({ dSheet: null, loc: 'denied', dd: 'open', q: '' }); focusQ(); }, 2)]],
       review: ['Enviar cidade para revisão', ['A equipe confere e adiciona a cidade em até 2 dias úteis. Enquanto isso o perfil fica salvo como rascunho e você pode marcar Online.'], [btnS('Enviar “' + cq + '”', () => set({ dSheet: 'sent' })), btnS('Voltar', closeSh, 3)]],
       sent: ['Cidade enviada', ['Recebemos “' + cq + '”. Você recebe um aviso quando ela entrar na lista.'], [btnS('Fechar', () => set({ dSheet: null, dd: null, q: '' }))]],
       skip: ['Pular por agora?', ['Seu perfil fica como rascunho e não aparece na busca até você completar estes dados no painel.'], [btnS('Pular', () => { set({ dSheet: null, step: 'hoje', toast: 'Rascunho salvo. Você completa estes dados depois, em Perfil e cadastro.' }); top(); }), btnS('Continuar preenchendo', closeSh, 2)]],
@@ -609,7 +609,7 @@ class Component extends DCLogic {
       presCls: 'cv-reset cv-tog' + (st.pres ? ' is-on' : ''), presOn: String(!!st.pres), togPres: () => { if (st.pres && !st.onl) return toast('Marque Online antes de tirar Presencial: é preciso pelo menos um formato.'); set({ pres: !st.pres, dErr: false }); },
       onlCls: 'cv-reset cv-tog' + (st.onl ? ' is-on' : ''), onlOn: String(!!st.onl), togOnl: () => { if (st.onl && !st.pres) return toast('Marque Presencial antes de tirar Online: é preciso pelo menos um formato.'); set({ onl: !st.onl }); },
       cityReq: cityReqd ? 'obrigatório para presencial' : 'opcional para online',
-      locDenied: st.loc === 'denied', noCity: !hasCity, hasCity, cityLabel: st.city,
+      locWhy: st.locWhy || 'Tudo bem: digite a cidade. A localização nunca é obrigatória.', locBusy: st.loc === 'busy', locDenied: st.loc === 'denied', noCity: !hasCity, hasCity, cityLabel: st.city,
       cityCls: 'cv-city' + (dd ? ' is-open' : ''), inCls: 'cv-in' + (dd ? ' is-focus' : '') + (cityErr ? ' is-err' : ''),
       ph: cityReqd ? 'Digite sua cidade' : 'Digite sua cidade (opcional)', q: cq, hasQ: !!cq, ddOpen: String(!!dd), ddOn: !!dd, cityErr: String(cityErr),
       activeId: opts[act] ? opts[act][0] : '',

@@ -277,6 +277,8 @@ class Component extends DCLogic {
     const info = INFO[st.info] || ['', ''];
     const sheet = st.sheet;
 
+    // localização de verdade: o navegador pede permissão; escolhemos a cidade com treinador mais perto
+    const locGo = () => { set({ loc: 'busy' }); const only = [...new Set(T.filter((t) => t.city && has(t.fmts, 'Presencial')).map((t) => t.city))]; if (!window.GEO) return set({ loc: 'denied' }); window.GEO.locate({ only }).then((r) => change({ city: r.match || r.city, fmt: st.fmt === 'Online' ? 'Presencial' : st.fmt, sheet: '', loc: '', locNote: r.match && r.match !== r.city ? 'Você está em ' + r.city.split(',')[0] + '; a cidade mais perto com treinador é ' + r.match.split(',')[0] + ' (' + r.matchKm + ' km).' : '' }), () => set({ loc: 'denied' })); };
     const V3 = {
       scens, reset, seoOpen: st.seo, toggleSeo: () => set({ seo: !st.seo }), seoToggleLabel: st.seo ? ' · ocultar campos' : ' · ver campos', seoIndex: seoOk ? 'indexar' : 'não indexar', seoPillCls: 'e-pill ' + (seoOk ? 'e-pill--ok' : 'e-pill--no'), seoWhy, seoTitle, seoDesc, seoCrumb,
       h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? ' em ' + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Escolha uma cidade'), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
@@ -301,7 +303,8 @@ class Component extends DCLogic {
       closeSheet: () => set({ sheet: '', pend: null }), menuOpen: String(sheet === 'menu'),
       sh_filters: sheet === 'filters', sh_city: sheet === 'city', sh_mod: sheet === 'mod', sh_saved: sheet === 'saved', sh_menu: sheet === 'menu', sh_auth: sheet === 'auth', sh_info: sheet === 'info', sh_prog: sheet === 'prog',
       pFmt, pLang, pAvailOn: String(!!pend.avail), pAvailCls: 'e-opt' + (pend.avail ? ' is-on' : ''), pAvailToggle: () => setP({ avail: !pend.avail }), pDirty, pApply, pClear: () => setP({ fmt: st.fmt === 'Online' ? 'Online' : 'Presencial', lang: 'Qualquer', avail: false }),
-      locIdle: st.loc === '', locAsk: st.loc === 'ask', locDenied: st.loc === 'denied', askLoc: () => set({ loc: 'ask' }), locAllow: () => { change({ city: 'Londrina, PR', fmt: st.fmt === 'Online' ? 'Presencial' : st.fmt, sheet: '', loc: '' }); }, locDeny: () => set({ loc: 'denied' }),
+      locIdle: st.loc === '' || !st.loc, locAsk: st.loc === 'busy', locDenied: st.loc === 'denied', askLoc: () => locGo(), locAllow: () => locGo(), locNote: st.locNote || '', hasLocNote: !!st.locNote,
+      locDeny: () => set({ loc: 'denied' }),
       cityOpts: [['Londrina, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil · 50 km de Londrina'], ['', 'Ver todas as cidades e o online']].map(([c, sub]) => { const on = !online && st.city === c; const k = countFor({ city: c, fmt: c ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); return { label: c || 'Qualquer cidade', sub, n: String(k), cls: 'e-opt' + (on ? ' is-on' : ''), pick: () => change({ city: c, fmt: c ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '' }) }; }),
       modOpts: MODS.map((m) => ({ label: m, n: String(countFor({ mod: m })), cls: 'e-opt' + (st.mod === m ? ' is-on' : ''), pick: () => change({ mod: m, sheet: '' }) })),
       favList, noFavs: favList.length === 0, favCount: String(favList.length), hasFavs: favList.length > 0,
@@ -409,7 +412,7 @@ class Component extends DCLogic {
       pbarW: 'width: ' + (n ? Math.round(end / n * 100) : 0) + '%; background: var(--ink)', showPbar: st.load !== 'total' && n > 0, moreLabel4: 'Carregar mais ' + nextN + (nextN === 1 ? ' treinador' : ' treinadores'),
       markers4, progs4, facts4, faqs4, rel4, hasRel4: rel4.length > 0, alts4, pfTrust4, pgCoach: B(COACH[pg.by] || COACH['Rafael Lima']),
       seoBadge: 'tag tag--white', showTabbar: !st.sheet && !st.open,
-      askLocWide: () => set({ sheet: 'city', loc: 'ask', dd: '' }),
+      askLocWide: () => { set({ sheet: 'city', dd: '' }); locGo(); },
       openMod: () => set({ sheet: 'mod', dd: '' }), openCity: () => { set({ sheet: 'city', loc: '', dd: '', cq: '' }); setTimeout(() => { try { const el = document.getElementById('cq'); if (el) el.focus(); } catch (_) {} }, 80); }, openFilters: () => set({ sheet: 'filters', dd: '', pend: { fmt: st.fmt, lang: st.lang, avail: st.avail } }), openSaved: () => set({ sheet: 'saved', toast: null, dd: '' }), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), openMenu: () => set({ sheet: 'menu', dd: '' })
     };
     // ---------- VFINAL: composição da referência ----------

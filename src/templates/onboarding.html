@@ -161,7 +161,7 @@
       <!-- 3 · Cidade com autocompletar (Componentes-16) -->
       <div class="field" role="group" aria-labelledby="cv-l3">
         <span id="cv-l3" class="field__label">Onde você atende<small>{{d.cityReq}}</small></span>
-        <sc-if value="{{d.locDenied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn cv-loc" role="status"><i class="ic ic--sm i-pin" aria-hidden="true"></i><div><b>Sem acesso à localização</b>Tudo bem: digite a cidade. A localização nunca é obrigatória.</div></div></sc-if>
+        <sc-if value="{{d.locDenied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn cv-loc" role="status"><i class="ic ic--sm i-pin" aria-hidden="true"></i><div><b>Sem acesso à localização</b>{{d.locWhy}}</div></div></sc-if>
         <sc-if value="{{d.noCity}}" hint-placeholder-val="{{ true }}">
           <div class="{{d.cityCls}}">
             <div class="cv-city__row">
