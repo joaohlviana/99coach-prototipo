@@ -3,7 +3,7 @@
 // preço ou disponibilidade inventados, e com caminho para corrigir ou retirar sem precisar de conta.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
-import { treinador, esportesDe, lista, slug as slugify, curta, SITE, publicadoAgora, treinadorAgora, servicoDe, cidadeUF, caber, resumo } from '../../../lib/catalogo.js';
+import { treinador, esportesDe, lista, slug as slugify, curta, SITE, publicadoAgora, treinadorAgora, servicoDe, cidadeUF, caber, resumo, nomeLimpo } from '../../../lib/catalogo.js';
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -14,23 +14,26 @@ export async function generateStaticParams() { return []; }
 function textos(t, esp) {
   const principal = esp[0];
   const serv = servicoDe(principal && principal.slug, principal ? principal.label : (t.spec || ''));
-  const curto = t.name.split(' ').length > 2 ? t.name.split(' ')[0] + ' ' + t.name.split(' ').slice(-1)[0] : t.name;
+  const nome = nomeLimpo(t.name);
+  const curto = nome.split(' ').length > 2 ? nome.split(' ')[0] + ' ' + nome.split(' ').slice(-1)[0] : nome;
   const onde = t.pres ? ' em ' + cidadeUF(t.city) : (t.onl ? ' online' : ''), ondeC = t.pres ? ' em ' + curta(t.city) : (t.onl ? ' online' : '');
-  const titulo = caber(`${t.name}: ${serv}${onde}`, `${t.name}: ${serv}${ondeC}`, `${curto}: ${serv}${onde}`, `${curto}: ${serv}${ondeC}`, `${curto}: ${principal ? principal.label : 'Treinador'}${ondeC}`);
+  const titulo = caber(`${nome}: ${serv}${onde}`, `${nome}: ${serv}${ondeC}`, `${curto}: ${serv}${onde}`, `${curto}: ${serv}${ondeC}`, `${curto}: ${principal ? principal.label : 'Treinador'}${ondeC}`, `${curto.split(' ')[0]}: ${principal ? principal.label : 'Treinador'}${ondeC}`);
   const outros = esp.slice(1, 4).map((s) => s.label);
   const fmt = t.pres && t.onl ? 'Atende presencialmente e online' : (t.pres ? 'Atendimento presencial' : (t.onl ? 'Atendimento online' : ''));
   const descricao = resumo(`${serv}${onde} com ${t.name}.${fmt ? ' ' + fmt + '.' : ''}${outros.length ? ' Também: ' + outros.join(', ') + '.' : ''} Veja o perfil e compare com outros profissionais${t.pres ? ' de ' + curta(t.city) : ''}.`);
   return { titulo, descricao };
 }
 
-async function carregar(id) { const k = decodeURIComponent(id); const t = treinador(k) || (await treinadorAgora(k)); return t ? { t, esp: esportesDe(t) } : null; }
+async function carregar(id) { let k = id; try { k = decodeURIComponent(id); } catch { return null; } const t = treinador(k) || (await treinadorAgora(k)); return t ? { t, esp: esportesDe(t) } : null; }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params; const d = await carregar(slug);
   if (!d || (await publicadoAgora(d.t.id)) === false) return { title: 'Perfil não encontrado', robots: { index: false } };
   const { t, esp } = d;
   const { titulo, descricao } = textos(t, esp);
-  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + t.id }, openGraph: { title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
+  // perfil sem cidade e sem formato não tem o que responder a uma busca: fica fora do índice
+  const fino = !t.pres && !t.onl;
+  return { title: titulo, description: descricao, ...(fino ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: '/treinador/' + t.id }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
 }
 
 export default async function Page({ params }) {

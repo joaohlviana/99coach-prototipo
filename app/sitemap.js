@@ -13,6 +13,6 @@ export default function sitemap() {
   });
   // página da cidade: só com pelo menos 3 profissionais presenciais
   cidades(3).forEach((c) => out.push({ url: `${SITE}/cidade/${c.slug}`, lastModified: quando, changeFrequency: 'weekly', priority: 0.6 }));
-  todos().forEach((t) => out.push({ url: `${SITE}/treinador/${t.id}`, lastModified: t.pub ? new Date(t.pub) : quando, changeFrequency: 'monthly', priority: 0.4 }));
+  todos().filter((t) => t.pres || t.onl).forEach((t) => out.push({ url: `${SITE}/treinador/${t.id}`, lastModified: t.pub ? new Date(t.pub) : quando, changeFrequency: 'monthly', priority: 0.4 }));
   return out;
 }

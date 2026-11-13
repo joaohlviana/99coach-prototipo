@@ -107,7 +107,9 @@ Deno.serve(async (req: Request) => {
       success_url: `${SITE}/app#aluno-hoje`, cancel_url: `${SITE}/app#aluno-hoje`,
     }, { account: c.sellerAccount, idem: `checkout:${intent}` });
     if (!s.ok || !s.data.url) return json({ ok: false, motivo: "stripe_recusou_cobranca", detalhe: s.data?.error?.code ?? s.status });
-    await db.rpc("srv_attach_session", { p_intent: intent, p_session: s.data.id });
+    // sem registrar a sessão no pedido, o aviso de pagamento não seria reconhecido: melhor não cobrar
+    const att = await db.rpc("srv_attach_session", { p_intent: intent, p_session: s.data.id });
+    if (att.error) return json({ ok: false, motivo: "nao_registrou_cobranca" }, 500);
     return json({ ok: true, url: s.data.url });
   }
   return json({ ok: false, motivo: "acao_desconhecida" }, 400);

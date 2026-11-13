@@ -82,7 +82,7 @@
               <ul class="vfp-facts">
                 <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if></li>
                 <sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><li><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></li></sc-if>
-                <li><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</li>
+                <sc-if value="{{t.formats}}" hint-placeholder-val="{{ true }}"><li><i class="{{fmtIc}}" aria-hidden="true"></i>{{t.formats}}</li></sc-if>
                 <sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li></sc-if>
               </ul>
             </div>
@@ -139,7 +139,6 @@
           <sc-if value="{{A.hasSecondary}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block v4-wrapbtn" onClick="{{A.go2}}">{{A.label2}}</button></sc-if>
           <sc-if value="{{showMsg}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></sc-if>
           <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
-          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
         </div>
         </sc-if>
       </aside>
@@ -280,7 +279,7 @@
       <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
       <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSearch}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
-      <div class="ftr__col"><b>Em Londrina</b><button type="button" onClick="{{openSearch}}">CrossFit</button><button type="button" onClick="{{openSearch}}">Musculação</button><button type="button" onClick="{{openSearch}}">Funcional</button></div>
+      
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{goHelp}}">Central de ajuda</button><button type="button" onClick="{{goHelpPay}}">Pagamentos e reembolsos</button></div>
     </div></div>
     <div class="wrap"><div class="ftr__word">99Coach · mais que treino</div></div>

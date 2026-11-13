@@ -54,3 +54,9 @@ html.app-on #ssr{display:none}
 
 .ssr-av{position:relative;overflow:hidden}.ssr-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ssr-foto{flex:none;width:88px;height:88px;border-radius:50%;object-fit:cover;background:#E4E4E7}
+
+/* página só-servidor: mesmo foco e mesmos títulos do app; "Entrar" como botão, não círculo */
+.ssr h1,.ssr h2{font-family:var(--display,Anton,Impact,sans-serif);font-weight:400;letter-spacing:.005em;text-transform:uppercase}
+.ssr :focus-visible{outline:2px solid var(--brand,#DF0A3D);outline-offset:2px}
+.ssr-top nav a.ssr-btn{padding:10px 20px;white-space:nowrap}
+.ssr-pager a,.ssr-pag a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;background:var(--ink,#121214);color:#fff!important;text-decoration:none;font-weight:600}

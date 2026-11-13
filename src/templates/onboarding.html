@@ -36,7 +36,7 @@
 
       <!-- ACC02 · entrar ou criar conta mínima -->
       <sc-if value="{{is.conta}}" hint-placeholder-val="{{ false }}">
-        <div class="onb-head"><span class="eyebrow">{{conta.eyebrow}}</span><h1 class="onb-h1">{{conta.title}}</h1><p class="onb-lede">{{conta.sub}}</p></div>
+        <div class="onb-head"><sc-if value="{{conta.hasEyebrow}}" hint-placeholder-val="{{ true }}"><span class="eyebrow">{{conta.eyebrow}}</span></sc-if><h1 class="onb-h1">{{conta.title}}</h1><p class="onb-lede">{{conta.sub}}</p></div>
         <sc-if value="{{conta.hasInvite}}" hint-placeholder-val="{{ false }}"><div class="onb-ctx"><span class="av av--sm onb-av"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt=""></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span><span>Convite de <b>{{inv.name}}</b> · {{inv.svc}}</span></div></sc-if>
         <sc-if value="{{conta.hasSession}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Seu rascunho está salvo</b>Entre para continuar exatamente de onde parou.</div></div></sc-if>
         <div class="onb-form">

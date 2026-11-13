@@ -434,7 +434,7 @@ class Component extends DCLogic {
     const invite = st.flow === 'convite';
     const conta = invite ? { eyebrow: 'Convite', title: 'Só falta entrar', sub: 'Use e-mail ou celular. Depois de entrar, o convite é aceito com a decisão que você já tomou.', cta: 'Receber código', askName: false, askTerms: false, hasInvite: true, fine: 'Já tem conta? Entre com ela; o convite continua aqui. Não precisa instalar o app.', hasSwitch: false }
       : st.session ? { eyebrow: 'Entrar', title: 'Sua sessão expirou', sub: 'Por segurança, entre de novo.', cta: 'Entrar e continuar', askName: false, askTerms: false, hasSession: true, fine: 'Você volta para a mesma seção do perfil.', hasSwitch: false }
-      : login ? { eyebrow: 'Entrar', title: 'Entrar', sub: window.CONTA ? '' : 'Use o e-mail ou celular da sua conta. Enviamos um código; senha não é necessária.', cta: window.CONTA ? 'Entrar' : 'Receber código', askName: false, askTerms: false, fine: 'A mesma conta serve para treinar e para atender.', hasSwitch: true, switchQ: 'Ainda não tem conta?', switchLabel: 'Criar conta', switchGo: () => { set(this.base('aluno', '')); top(); } }
+      : login ? { eyebrow: '', title: 'Entrar', sub: window.CONTA ? '' : 'Use o e-mail ou celular da sua conta. Enviamos um código; senha não é necessária.', cta: window.CONTA ? 'Entrar' : 'Receber código', askName: false, askTerms: false, fine: 'A mesma conta serve para treinar e para atender.', hasSwitch: true, switchQ: 'Ainda não tem conta?', switchLabel: 'Criar conta', switchGo: () => { set(this.base('aluno', '')); top(); } }
       : st.intent === 'treinador' ? { eyebrow: 'Sou treinador · passo 1 de 3', title: 'Crie sua conta de treinador', sub: 'Grátis e sem cartão. Você completa o perfil depois, no seu ritmo.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Grátis até 3 alunos ativos.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } }
       : { eyebrow: 'Quero treinar · passo 1 de 2', title: 'Crie sua conta', sub: 'Só o necessário para salvar treinadores, pedir acompanhamento e contratar.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Buscar e ver perfis não pede conta.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } };
     const afterAuth = () => {
@@ -448,6 +448,7 @@ class Component extends DCLogic {
     const np = !!(login && window.CONTA && window.CONTA.newPasswordPending && window.CONTA.newPasswordPending() && !st.scn);
     const npEmail = np ? ((window.CONTA.user() || {}).email || '') : '';
     if (np) Object.assign(conta, { eyebrow: 'Senha nova', title: 'Crie uma senha nova', sub: 'Você chegou pelo link que enviamos para ' + npEmail + '. Escolha a senha que vai usar daqui em diante.', cta: 'Salvar senha nova', askName: false, askTerms: false, fine: 'A senha antiga deixa de valer assim que você salvar.' });
+    conta.hasEyebrow = !!conta.eyebrow && conta.eyebrow !== conta.title;
     const f = {
       showSocial: !np, hideEmail: np,
       name: st.name, email: np ? npEmail : st.email, setName: (e) => set({ name: val(e) }), setEmail: (e) => set({ email: val(e), emailExists: false }),

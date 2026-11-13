@@ -45,12 +45,15 @@ Deno.serve(async (req: Request) => {
   };
 
   // o pedido a que o aviso diz se referir: tem de ser desta conta do Stripe e, quando informado, desta página de pagamento
+  let semSessao = false;
   const confere = async (intent: unknown, session?: string): Promise<boolean> => {
     if (typeof intent !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(intent) || !account) return false;
     const { data: it } = await db.from("checkout_intents").select("id, provider_ref, orders(seller_account, checkout_session)").eq("id", intent).maybeSingle();
     const ord: any = it && (Array.isArray((it as any).orders) ? (it as any).orders[0] : (it as any).orders);
     if (!it || !ord || ord.seller_account !== account) return false;
-    return session === undefined || (ord.checkout_session ?? (it as any).provider_ref) === session;
+    const guardada = ord.checkout_session ?? (it as any).provider_ref;
+    if (session !== undefined && !guardada) { semSessao = true; return false; }
+    return session === undefined || guardada === session;
   };
 
   if (ev.type === "account.updated") {
@@ -62,7 +65,7 @@ Deno.serve(async (req: Request) => {
   if (ev.type === "checkout.session.completed" || ev.type === "checkout.session.async_payment_succeeded") {
     const intent = o.metadata?.intent;
     if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
-    if (!(await confere(intent, o.id))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
+    if (!(await confere(intent, o.id))) return semSessao ? json({ ok: false, motivo: "sessao_nao_registrada" }, 500) : json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     if (o.payment_status !== "paid") return ingest("payment.processing", { intent, method: (o.payment_method_types ?? []).includes("boleto") ? "boleto" : "card", paymentIntent: o.payment_intent });
     // valores vêm do próprio Stripe (cobrança e lançamento de saldo), não do que o navegador mandou
     const pi = await stripeGet(key, `/v1/payment_intents/${o.payment_intent}?expand[]=latest_charge.balance_transaction`, account);
@@ -77,7 +80,7 @@ Deno.serve(async (req: Request) => {
   if (ev.type === "checkout.session.async_payment_failed" || ev.type === "checkout.session.expired") {
     const intent = o.metadata?.intent;
     if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
-    if (!(await confere(intent, o.id))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
+    if (!(await confere(intent, o.id))) return semSessao ? json({ ok: false, motivo: "sessao_nao_registrada" }, 500) : json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     return ingest("payment.failed", { intent });
   }
 

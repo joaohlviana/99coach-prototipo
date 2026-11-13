@@ -212,7 +212,8 @@
     if (name === 'servico') return { offer: p.offer || 'online', scn: p.scn || (ctx.homeScen === 'vinculo' || ctx.homeScen === 'dois' ? 'aluna' : (ctx.homeScen === 'pendente' ? 'pedido' : 'comparando')) };
     // perfil real: vale também quando o servidor já entregou este endereço e o catálogo ainda está carregando (nunca cai no perfil de exemplo)
     var srv = window.__NEXT && window.__ROUTE && window.__ROUTE.name === 'perfil' && window.__ROUTE.params && window.__ROUTE.params.id === p.id;
-    if (!PROFILE[p.id] && ((window.REAL && window.REAL.has(p.id)) || srv)) return { id: p.id, scn: 'importado', rid: p.id, offer: null };
+    var demo = document.documentElement.classList.contains('demo');
+    if ((srv || (window.REAL && window.REAL.has(p.id) && (!demo || !PROFILE[p.id])))) return { id: p.id, scn: 'importado', rid: p.id, offer: null };
     var id = PROFILE[p.id] ? p.id : 'rafael';
     var scn = p.scn || PROFILE[id];
     if (id === 'rafael' && !p.scn) {
@@ -311,11 +312,9 @@
       var u = urlFor('esporte', (entries[cur.key] || {}).props, cur.comp.state);
       if (u !== location.pathname) { try { history.replaceState(history.state, '', u); } catch (_) {} }
       // mesmo título que o servidor entrega para este endereço
-      var e = cur.comp.state, per = /^(Musculação|Funcional|CrossFit|Calistenia|HIIT|Condicionamento)$/.test(e.mod), sv = (per ? 'Personal trainer de ' : 'Aulas de ') + e.mod;
-      var cu = function (c) { var p = String(c).split(', '); return p[1] ? p[0] + ' (' + p[1] + ')' : p[0]; };
-      var tt = e.fmt === 'Online' ? sv + ' online' : (e.city ? sv + ' em ' + cu(e.city) : sv + ': por cidade e online');
-      if (tt.length > 50 && e.city) tt = sv + ' em ' + String(e.city).split(',')[0];
-      document.title = tt + ' | 99coach';
+      var e = cur.comp.state, T0 = window.__T0 || (window.__T0 = { path: location.pathname, title: document.title });
+      // no endereço em que a pessoa chegou vale o título do servidor; ao trocar esporte ou cidade, um título simples e correto
+      document.title = location.pathname === T0.path ? T0.title : (e.mod + (e.fmt === 'Online' ? ' online' : (e.city ? ' em ' + String(e.city).split(',')[0] : '')) + ' | 99coach');
     },
     go: function (name, params, from, extra) {
       saveCurrent(extra);

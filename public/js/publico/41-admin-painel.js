@@ -41,7 +41,7 @@
         var reason = String((ui.pnWhy || {})[u.id] || '').trim();
         if (!u.bloqueada && reason.length < 5) return put('pnWhyErr', (function () { var x = {}; x[u.id] = 'Escreva o motivo: fica no registro da decisão.'; return x; })());
         ctx.ask({ title: (u.bloqueada ? 'Desbloquear ' : 'Bloquear ') + (u.nome || 'esta conta') + '?', lines: [u.bloqueada ? 'A conta volta a entrar e a usar o app.' : 'A conta deixa de entrar e de enviar mensagens ou pedidos. Os dados não são apagados.'], ok: u.bloqueada ? 'Desbloquear' : 'Bloquear', cancel: 'Cancelar', danger: !u.bloqueada, onOk: function () {
-          C().rpc('admin_set_block', { p_user: u.id, p_blocked: !u.bloqueada, p_reason: reason || 'desbloqueio pela administração', p_idem: 'bloq:' + u.id + ':' + (!u.bloqueada ? 1 : 0) + ':' + reason.length }).then(function (r) { if (!r.ok) return ctx.toast('Não foi possível: ' + (r.msg || r.status) + '.'); ctx.toast(u.bloqueada ? 'Conta desbloqueada.' : 'Conta bloqueada.'); load('contas', true); load('resumo', true); });
+          C().rpc('admin_set_block', { p_user: u.id, p_blocked: !u.bloqueada, p_reason: reason || 'desbloqueio pela administração', p_idem: 'bloq:' + u.id + ':' + (!u.bloqueada ? 1 : 0) + ':' + reason.length + ':' + Math.floor(Date.now() / 60000) }).then(function (r) { if (!r.ok) return ctx.toast('Não foi possível: ' + (r.msg || r.status) + '.'); ctx.toast(u.bloqueada ? 'Conta desbloqueada.' : 'Conta bloqueada.'); load('contas', true); load('resumo', true); });
         } });
       };
     };

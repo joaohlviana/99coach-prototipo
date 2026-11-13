@@ -144,3 +144,15 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 #app .vf-tc__m:has(.v4-ini){aspect-ratio:auto;height:92px;min-height:0;background:transparent}
 #app .vf-tc__m:has(.v4-ini) .v4-ini{position:absolute;inset:auto;left:16px;top:18px;width:60px;height:60px;border-radius:50%;font-size:22px;background:var(--concrete-2,#E4E2DD);color:var(--text-2)}
 #app .vf-tc__m:has(.v4-ini)+.vfe-mrow+.vf-tc__b,#app .vf-tc__m:has(.v4-ini)+.vf-tc__b{padding-top:4px}
+
+/* AUDITORIA DE DESIGN
+   1. Títulos em Anton só existem no peso 400: sem negrito sintético nem letras coladas */
+#app :is(h1,h2,h3,h4):is(.d1,.d2,.d3,.h-page,.sec-title,.pf-name,.vf-h3,.vfm-h,.vfm-h1,.vfm-h1b,.vfm-title,.onb-h1,.cv-h1,.pghead__title,.pc__title),#app :is(.d1,.d2,.d3,.h-page,.sec-title,.pf-name,.vf-h3,.vfm-h,.vfm-h1,.vfm-h1b,.vfm-title,.onb-h1,.cv-h1,.pghead__title){font-weight:400!important;letter-spacing:.005em!important;font-synthesis:none}
+/* 2. No toque, todo botão pequeno tem pelo menos 44px de altura */
+@media (pointer:coarse){
+  #app :is(.btn--sm,.vfp-u,.vf-u,.vfm-u,.link-arrow,.qchip,.vfe-mchip,.vf-hsb,.fbtn,.sortbtn,.v4-trail button){min-height:44px}
+  #app :is(.e-fav,.tc__fav,.vfm-fav){min-width:44px;min-height:44px;display:grid;place-items:center}
+  .ssr a{min-height:44px;display:inline-flex;align-items:center}
+}
+/* 3. Perfil no celular: as iniciais gigantes não ficam atrás do nome */
+#app .vfp-mhero__ini{opacity:.12;right:16px;left:auto}

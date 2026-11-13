@@ -64,7 +64,7 @@ class Component extends DCLogic {
 
     // perfil real ainda carregando: mostra só o nome que o servidor entregou, nunca um perfil de exemplo
     const waitName = () => { try { const h = document.querySelector('#ssr h1'); return h ? h.textContent.trim() : ''; } catch (_) { return ''; } };
-    const pend = st.rid && !(window.REAL && window.REAL.perfil(st.rid)) ? (() => { const nm = waitName() || 'Carregando…'; return { id: st.rid, name: nm, first: nm.split(' ')[0], photo: '', ini: nm.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase(), role: '', city: '', formats: '', lang: '', avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: '', pitch: '', bio: '', offers: [], progs: [], creds: [], where: [], map: '', reviews: [] }; })() : null;
+    const pend = st.rid && !(window.REAL && window.REAL.perfil(st.rid)) ? (() => { const nm = waitName() || 'Carregando…'; return { id: st.rid, name: nm, first: nm.split(' ')[0], photo: '', ini: nm.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase(), role: '', city: '', formats: '', lang: '', avail: 'importado', imported: false, pending: true, crumb: { sport: '', slug: '', city: '' }, cref: 'na', avg: '', n: 0, ext: '', pitch: '', bio: '', offers: [], progs: [], creds: [], where: [], map: '', reviews: [] }; })() : null;
     const x = pend || (st.rid && window.REAL && window.REAL.perfil(st.rid)) || TR[WHO[st.scn]];
     const removed = st.scn === 'retirado';
     const own = st.user === 'rafael';
@@ -76,7 +76,7 @@ class Component extends DCLogic {
     const cr = x.crumb || null;
     const sl = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const crGo = (withCity) => () => { if (!cr || !cr.slug) return window.NAV.toSearch(this); location.assign('/treinadores/' + cr.slug + (withCity && cr.city ? '/' + sl(cr.city) : '')); };
-    const ctxLabel = cr && cr.sport ? cr.sport + (cr.city ? ' · ' + cr.city.split(',')[0] : ' · online') : window.NAV.ctxLabel() + (st.vaga ? ' · Aceita novos alunos' : '');
+    const ctxLabel = x.pending ? '' : cr && cr.sport ? cr.sport + (cr.city ? ' · ' + cr.city.split(',')[0] : (x.formats === 'Online' ? ' · online' : '')) : window.NAV.ctxLabel() + (st.vaga ? ' · Aceita novos alunos' : '');
     const AV = (y) => y.avail === 'aceita' ? ['badge badge--ok', 'ic ic--xs i-check', 'Aceita novos alunos · informado em ' + y.availDate] : y.avail === 'nao' ? ['badge badge--warn', 'ic ic--xs i-pause', 'Não aceita novos alunos · informado em ' + y.availDate] : y.avail === 'importado' ? ['trust trust--decl', 'ic ic--xs i-link', 'Perfil importado · não reivindicado'] : ['badge badge--plain', 'ic ic--xs i-info', 'Disponibilidade não informada'];
     const toggleFav = (e) => set({ fav: !st.fav, favNote: !st.fav, ty: yOf(e) + 52 });
 
@@ -90,7 +90,8 @@ class Component extends DCLogic {
     else trust.push({ ic: 'ic ic--sm i-info', icCls: 'lrow__ic', title: 'Credencial não informada', text: 'Perfis importados não mostram credenciais até a reivindicação.' });
     const av = AV(x);
     const chips = [];
-    if (x.imported) chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-link', t: 'Perfil importado', seal: false, noSeal: true });
+    if (x.pending) { /* carregando: nenhuma afirmação */ }
+    else if (x.imported) chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-link', t: 'Perfil importado', seal: false, noSeal: true });
     else chips.push({ cls: 'trust trust--owner', ic: 'ic ic--xs i-user', t: 'Titularidade confirmada', seal: false, noSeal: true });
     if (x.cref === 'ver') chips.push({ cls: 'trust trust--ver', ic: '', t: 'CREF verificado', seal: true, noSeal: false });
     else if (x.cref === 'inf') chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', t: 'CREF informado', seal: false, noSeal: true });
@@ -133,7 +134,7 @@ class Component extends DCLogic {
     const igGo = () => { try { window.open('https://www.instagram.com/' + encodeURIComponent(String(x.ext || '').replace(/^@/, '')) + '/', '_blank', 'noopener,noreferrer'); } catch (_) {} };
     // ---------- ação principal por situação ----------
     let A = null;
-    if (removed) A = null;
+    if (removed || x.pending) A = null;
     else if (ownReal) A = { title: 'Seu perfil público', line: 'É assim que visitantes veem', sub: 'Para mudar algo, edite o cadastro: o que você salvar aparece aqui.', label: 'Editar perfil', go: () => window.NAV.go('onboarding', { flow: 'treinador' }, this), label2: 'Abrir meu painel', go2: () => window.NAV.go('treinador', {}, this) };
     else if (x.realLive && window.ACCT && window.ACCT.myTrainer && window.ACCT.myTrainer() && window.ACCT.myTrainer().trainerSlug === x.id) A = { title: 'Seu acompanhamento', line: 'Você e ' + x.first + ' estão conectados', sub: 'Treino, registro e conversa ficam na sua área.', label: 'Abrir acompanhamento', go: () => window.NAV.go('aluno', {}, this), label2: 'Voltar para a busca', go2: () => window.NAV.toSearch(this), noBar: true, fine: '' };
     else if (x.realLive && (window.__myRequests || []).some((r) => r.mine === 'aluno' && r.status === 'pendente' && r.trainerSlug === x.id)) A = { title: 'Pedido enviado', line: 'Aguardando a resposta de ' + x.first, sub: 'Pedido não é vínculo: nada começa nem é cobrado até ' + x.first + ' aceitar.', label: 'Acompanhar pedido', go: () => window.NAV.go('aluno', {}, this), label2: 'Voltar para a busca', go2: () => window.NAV.toSearch(this), noBar: true, fine: 'Um pedido por vez para o mesmo treinador.' };
@@ -311,11 +312,11 @@ class Component extends DCLogic {
 
     // seção vazia não aparece para visitante: só o dono vê o que falta preencher
     const mine = own || ownReal;
-    const anchors = [['Sobre', 'visao'], ['Serviços', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => mine || !((l === 'Serviços' && !offers.length) || (l === 'Programas' && !progs.length) || (l === 'Avaliações' && !x.avg) || (l === 'Perguntas' && x.id !== 'rafael'))).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
+    const anchors = [['Sobre', 'visao'], ['Serviços', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => mine || !((l === 'Sobre' && !(x.pitch || x.bio || x.creds.length || x.avg)) || (l === 'Serviços' && !offers.length) || (l === 'Programas' && !progs.length) || (l === 'Avaliações' && !x.avg) || (l === 'Perguntas' && x.id !== 'rafael'))).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
 
     return {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
-      ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !!(x.pitch || x.bio), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
+      ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !!(x.pitch || x.bio), fmtIc: 'ic ic--sm ' + (/Presencial/.test(x.formats || '') ? 'i-pin' : 'i-monitor'), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
       menuOpen: String(st.sheet === 'menu'), openSearch: () => window.NAV.toSearch(this), openSaved: open('saved'), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: open('pro'), openAcct: open('acct'), openMenu: open('menu'), openHelp: open('ajuda'),
       removed, showProfile: !removed, note, t, showSocial: !own || preview,
       favOn: String(!!st.fav), favIc: st.fav ? 'color: var(--brand)' : '', favLabel: st.fav ? 'Salvo' : 'Salvar', toggleFav, favNote: !!st.favNote, undoFav: () => set({ fav: false, favNote: false }), openShare: open('share', { copied: false }),

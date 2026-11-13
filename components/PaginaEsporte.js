@@ -3,7 +3,7 @@
 // número só quando confirmado pelo catálogo; nenhum texto local inventado.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from './Shell.js';
-import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE, servicoDe, cidadeUF, caber, resumo } from '../lib/catalogo.js';
+import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE, servicoDe, semTreino, cidadeUF, caber, resumo } from '../lib/catalogo.js';
 
 const POR_PAGINA = 36;
 
@@ -18,14 +18,15 @@ export function dados(esporteSlug, ondeSlug, pagina = 1) {
   // página além do fim não existe (404), em vez de lista vazia
   const paginas = Math.max(1, Math.ceil(itens.length / POR_PAGINA));
   if (!(pagina >= 1 && pagina <= paginas)) return null;
-  const h1 = online ? `Treinadores de ${esp.label} online` : (cid ? `Treinadores de ${esp.label} presencial em ${curta(cid.label)}` : `Treinadores de ${esp.label}`);
+  const h1 = online ? `${servicoDe(esp.slug, esp.label)} online` : (cid ? `${servicoDe(esp.slug, esp.label)} em ${curta(cid.label)}` : servicoDe(esp.slug, esp.label));
   const serv = servicoDe(esp.slug, esp.label);
   const suf = pagina > 1 ? ` (página ${pagina})` : '';
-  const titulo = caber(...(online ? [`${serv} online: ${plural(itens.length, 'profissional', 'profissionais')}`, `${serv} online`]
-    : (cid ? [`${serv} em ${cidadeUF(cid.label)}`, `${serv} em ${curta(cid.label)}`, `${esp.label} em ${curta(cid.label)}`]
-      : [`${serv}: por cidade e online`, `${serv}`, esp.label])).map((o) => o + suf));
+  const caberP = (...o) => { const r = o.find((x) => (x + suf).length <= 50) || o[o.length - 1]; return r + suf; };
+  const titulo = online ? caberP(`${serv} online: ${plural(itens.length, 'profissional', 'profissionais')}`, `${serv} online`)
+    : (cid ? caberP(`${serv} em ${cidadeUF(cid.label)}`, `${serv} em ${curta(cid.label)}`, `${esp.label} em ${curta(cid.label)}`)
+      : caberP(`${serv}: por cidade e online`, `${serv}`, esp.label));
   const descricao = resumo(online
-    ? `${serv} online: ${plural(itens.length, 'profissional atende', 'profissionais atendem')} a distância, com o treino pelo app. Compare perfis e peça acompanhamento.`
+    ? `${serv} online: ${plural(itens.length, 'profissional atende', 'profissionais atendem')} a distância${semTreino(esp.slug) ? '' : ', com o treino pelo app'}. Compare perfis e peça acompanhamento.`
     : (cid ? `${serv} em ${cid.label}: ${plural(itens.length, 'profissional atende', 'profissionais atendem')} presencialmente. Compare perfis e peça acompanhamento.`
       : `${serv} em todo o Brasil: ${plural(itens.length, 'profissional', 'profissionais')}, por cidade e online. Compare perfis e peça acompanhamento.`));
   const base = '/treinadores/' + esp.slug + (ondeSlug ? '/' + ondeSlug : '');
@@ -35,7 +36,9 @@ export function dados(esporteSlug, ondeSlug, pagina = 1) {
 
 export function metadados(d) {
   if (!d) return { title: 'Página não encontrada', robots: { index: false } };
-  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho }, openGraph: { title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
+  // combinação com menos de 3 profissionais: a página existe para quem chega, mas não pede indexação (conteúdo fino)
+  const fino = d.cid && d.itens.length < 3;
+  return { title: d.titulo, description: d.descricao, ...(fino ? { robots: { index: false, follow: true } } : {}), alternates: { canonical: d.caminho }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
@@ -43,7 +46,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
   if (!d) notFound();
   const { esp, online, cid, itens, h1, caminho, base, paginas } = d;
   const ini = (pagina - 1) * POR_PAGINA, naPagina = itens.slice(ini, ini + POR_PAGINA);
-  const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug).slice(0, 24);
+  const cidades = cidadesDo(esp.slug, 3).filter((c) => !cid || c.slug !== cid.slug).slice(0, 60);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
   const route = { name: 'esporte', params: { mod: esp.label, city: cid ? cid.label : '', fmt: online ? 'Online' : (cid ? 'Presencial' : 'Qualquer') } };
