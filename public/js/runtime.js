@@ -251,12 +251,14 @@
   function guard(name, params) {
     if (document.documentElement.classList.contains('demo')) return [name, params];
     var area = window.ACCT ? window.ACCT.area() : null;
+    // conta com verificação em duas etapas e sessão sem o código: as áreas logadas não abrem, só a tela do código
+    if (window.__secondStepPending && (name === 'aluno' || name === 'treinador' || (name === 'publico' && ['duasetapas', 'ajuda'].indexOf(params.s || '') < 0))) return ['publico', { s: 'duasetapas' }];
     if (name === 'operacao' || name === 'telas' || name === 'servico') return ['home', {}];
     if (name === 'treinador' && area !== 'treinador') return area === 'aluno' ? ['aluno', {}] : ['onboarding', { flow: 'entrar' }];
     if (name === 'aluno' && !area) return ['onboarding', { flow: 'entrar' }];
     if (name === 'publico' && !area && ['ajuda', 'convite', 'pedir', 'perfilpedido', 'admin'].indexOf(params.s || '') < 0) return ['home', {}];
     // telas públicas que ainda só têm conteúdo de exemplo não abrem no produto, nem para quem está logado
-    if (name === 'publico' && ['ajuda', 'convite', 'pedir', 'perfilpedido', 'admin', 'meusdados', 'avisos', 'salvos', 'retirada'].indexOf(params.s || 'ajuda') < 0) return ['home', {}];
+    if (name === 'publico' && ['ajuda', 'convite', 'pedir', 'perfilpedido', 'admin', 'meusdados', 'avisos', 'duasetapas', 'salvos', 'retirada'].indexOf(params.s || 'ajuda') < 0) return ['home', {}];
     if (name === 'publico' && params.s === 'retirada') return ['publico', { s: 'ajuda', id: 'corrigir' }];
     if (name === 'perfil' && area !== 'treinador' && !(window.REAL && window.REAL.has(params.id)) && !(window.__ROUTE && window.__ROUTE.name === 'perfil' && window.__ROUTE.params && window.__ROUTE.params.id === params.id)) return ['home', {}];
     return [name, params];

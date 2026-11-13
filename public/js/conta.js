@@ -74,6 +74,8 @@
   // mensagens técnicas do banco não vão para a tela: códigos conhecidos passam (as telas traduzem), o resto vira texto simples
   function friendly(r) {
     if (!r || r.ok || r.offline) return r;
+    // conta com verificação em duas etapas e sessão que ainda não confirmou o código: o servidor recusa tudo até confirmar
+    if (/segunda_etapa_necessaria/.test(String(r.msg || ''))) { r.raw = r.msg; r.msg = 'Confirme o código do seu aplicativo autenticador para continuar.'; r.secondStep = true; window.__secondStepPending = true; if (window.__needSecondStep) window.__needSecondStep(); return r; }
     if (r.status === 429) { r.raw = r.msg; r.msg = 'Muitas tentativas em pouco tempo. Aguarde um minuto e tente de novo.'; return r; }
     var m = String(r.msg || '');
     if (/violates|constraint|column|relation|syntax|schema cache|permission denied|JWT|PGRST|duplicate key|does not exist|function public\./i.test(m)) { r.raw = m; try { console.warn('[99coach] erro do servidor:', m); } catch (_) {} r.msg = 'não foi possível concluir agora'; }

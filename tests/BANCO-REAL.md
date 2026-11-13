@@ -93,3 +93,8 @@ Transação desfeita: a mesma sessão registrada em duas semanas, com a chave le
 
 ## Avaliações (13/11)
 Transação desfeita: vínculo novo sem treino não avalia (`cedo`); com 20 dias grava; editar não duplica; nota fora de 1–5 é recusada; inserir direto na tabela é recusado; quem não foi aluno é recusado; treinador responde, aluno não responde a própria; perfil em rascunho não mostra a terceiros; perfil publicado mostra ao visitante; avaliação oculta some. Nome público sem começo de e-mail ("joao.h.viana" vira "Joao").
+
+
+## Duas etapas para qualquer conta (13/11)
+A checagem roda antes de toda chamada à API. Conferido em transação desfeita: visitante, chamada sem token, conta sem segunda etapa, token estranho e servidor passam; conta com autenticador verificado e sessão sem código é recusada (`42501 segunda_etapa_necessaria`); depois do código passa; outra conta não é afetada. Conferido por fora: o servidor recarregou a configuração e uma chamada real feita depois respondeu 200.
+Não conferido com um autenticador de verdade (nenhuma conta ligou ainda).

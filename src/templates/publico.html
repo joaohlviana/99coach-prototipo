@@ -496,6 +496,20 @@
       </sc-if>
 
       <!-- ACC13R · Meus dados: exportar e o que acontece ao sair -->
+      <sc-if value="{{is.duasetapas}}" hint-placeholder-val="{{ false }}">
+        <section class="card onb-sec" aria-labelledby="fa-h"><h2 class="onb-h2" id="fa-h">Confirme que é você</h2>
+          <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Entre na sua conta para continuar.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.login}}">Entrar</button></div></sc-if>
+          <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Consultando sua conta…</p></sc-if>
+          <sc-if value="{{v.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para consultar agora</b>Tente de novo em instantes.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+          <sc-if value="{{v.ask}}" hint-placeholder-val="{{ true }}">
+            <p class="mod-small">Sua conta tem verificação em duas etapas. Digite o código de 6 números que aparece agora no seu aplicativo autenticador.</p>
+            <div class="field"><label class="field__label" for="fa-code">Código do aplicativo</label><div class="input"><input id="fa-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" value="{{v.code}}" onInput="{{v.setCode}}"></div></div>
+            <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.err}}</span></sc-if>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.verify}}">{{v.label}}</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.out}}">Sair da conta</button></div>
+            <p class="mod-small mod-muted">Sem o código não dá para entrar: é isso que protege a sua conta. Se perdeu o acesso ao aplicativo, escreva para o suporte pela Central de ajuda.</p>
+          </sc-if>
+        </section>
+      </sc-if>
       <sc-if value="{{is.avisos}}" hint-placeholder-val="{{ false }}">
         <sc-if value="{{v.anon}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec"><h2 class="onb-h2">Entre para ver seus avisos</h2><p class="mod-small mod-muted">Os avisos são da sua conta.</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.login}}">Entrar</button></div></section></sc-if>
         <sc-if value="{{v.logged}}" hint-placeholder-val="{{ true }}">
@@ -533,6 +547,21 @@
             <sc-if value="{{v.hasPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Cópia incompleta</b>{{v.partial}}</div></div></sc-if>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.run}}">{{v.exportLabel}}</button></div>
           </section>
+          <sc-if value="{{v.mf.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="md-2fa"><h2 class="onb-h2" id="md-2fa">Verificação em duas etapas</h2>
+            <sc-if value="{{v.mf.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Consultando…</p></sc-if>
+            <sc-if value="{{v.mf.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para consultar agora</b>Nada mudou na sua conta.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.mf.reload}}">Tentar de novo</button></div></sc-if>
+            <sc-if value="{{v.mf.isOff}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.mf.offTxt}}</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.mf.enroll}}">{{v.mf.enrollLabel}}</button></div></sc-if>
+            <sc-if value="{{v.mf.pending}}" hint-placeholder-val="{{ false }}">
+              <p class="mod-small">1. Abra o aplicativo autenticador no celular e escaneie o código abaixo, ou digite a chave.</p>
+              <img src="{{v.mf.qr}}" alt="Código QR para o aplicativo autenticador" width="180" height="180" style="background: #fff; padding: 8px; border-radius: 8px">
+              <p class="mod-small">Chave: <code style="word-break: break-all">{{v.mf.secret}}</code></p>
+              <div class="field"><label class="field__label" for="md-2fa-c">2. Digite o código de 6 números que o aplicativo mostra</label><div class="input"><input id="md-2fa-c" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" value="{{v.mf.code}}" onInput="{{v.mf.setCode}}"></div></div>
+              <p class="mod-small mod-muted">{{v.mf.warn}}</p>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.mf.verify}}">{{v.mf.verifyLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.mf.cancel}}">Cancelar</button></div>
+            </sc-if>
+            <sc-if value="{{v.mf.isOn}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{v.mf.onTxt}}</p><p class="mod-small mod-muted">{{v.mf.warn}}</p><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md mod-danger" onClick="{{v.mf.off}}">{{v.mf.offLabel}}</button></div></sc-if>
+            <sc-if value="{{v.mf.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.mf.err}}</span></sc-if>
+          </section></sc-if>
           <section class="card onb-sec" aria-labelledby="md-loc"><h2 class="onb-h2" id="md-loc">Neste aparelho</h2>
             <p class="mod-small mod-muted">{{v.localTxt}}</p>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.others}}">{{v.othersLabel}}</button></div>

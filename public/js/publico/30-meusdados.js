@@ -57,6 +57,7 @@ REG.screen({
     var delDone = function (d) { if (d && d.status === 'concluido') { ctx.toast('Conta excluída. Saindo deste aparelho.'); setTimeout(function () { GO('@sair'); }, 1200); } };
     var local = 0; try { Object.keys(window.localStorage).forEach(function (k) { if (/^c99\./.test(k)) local++; }); } catch (_) {}
     return {
+      mf: window.MFA2 ? window.MFA2.manage(ctx) : { show: false },
       logged: logged, anon: !logged, login: function () { GO('@onboarding', { flow: 'entrar' }); },
       email: logged && C.user() ? C.user().email : '',
       exportLabel: ui.busy ? 'Gerando…' : 'Baixar meus dados', run: run,
