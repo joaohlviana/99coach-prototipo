@@ -9,7 +9,7 @@ const URL0 = process.env.SUPABASE_URL || 'https://rycaxboqkkiopjdecgld.supabase.
 const KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_dPQ0596gx0ok94wUE4POtw_T-QjY8Cq';
 const OUT = new URL('../public/data/treinadores.json', import.meta.url);
 const PAGE = 1000;
-const sel = 'slug,name,initials,photo_url,specialty,formats,published_at,origin,cities(name,uf),trainer_sports(sport_slug)';
+const sel = 'slug,name,initials,photo_url,specialty,formats,published_at,origin,external_handle,cities(name,uf),trainer_sports(sport_slug)';
 
 async function page(from) {
   const u = `${URL0}/rest/v1/trainers?select=${encodeURIComponent(sel)}&status=eq.publicado&order=slug.asc`;
@@ -34,7 +34,7 @@ try {
       const u = t.photo_url || '';
       const photo = u.startsWith(FOTOS) ? u.slice(FOTOS.length) : (t.origin === 'importado' ? '' : u);
       rows.push([t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
-        f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '']);
+        f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '', /^@?[A-Za-z0-9._]{1,30}$/.test(t.external_handle || '') ? t.external_handle : '']);
     });
     process.stdout.write(`\r${rows.length}${total ? ' de ' + total : ''} perfis`);
     if (p.rows.length < PAGE) break;

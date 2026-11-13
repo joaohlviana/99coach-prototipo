@@ -82,13 +82,13 @@ class Component extends DCLogic {
     const card = (t, ctx) => {
       const off = t.imp ? null : offerFor(t, ctx), on = !!S.favs[t.id];
       const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || 'Local não informado')));
-      const reason = t.imp ? 'Perfil importado: ainda não confirmado pelo profissional' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + S.city + ' · presencial';
+      const reason = t.imp ? 'Perfil importado de dados públicos' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + S.city + ' · presencial';
       return {
         name: t.name, spec: t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
         hasRating: !!t.rating, noRating: !t.rating, rating: t.rating || '', n: String(t.n), nrev: t.n + ' avaliações', verified: t.ver,
         hasAvail: t.av !== 'unknown', avail: t.av === 'yes' ? 'Aceita novos alunos' : 'Sem vagas no momento', avYes: t.av === 'yes',
         pend: S.scen === 'pendente' && !S.pedCanceled && t.id === 'rafael',
-        why2: t.imp ? 'Perfil importado' : [S.mode === 'qualquer' ? (t.pres && inCity(t) ? (t.onl ? 'Presencial e online' : 'Presencial') : 'Online') : '', t.av === 'no' ? t.avLong.replace(' (', ' · ').replace(')', '') : ''].filter(Boolean).join(' · '), whyCls: t.av === 'yes' && !t.imp ? 'is-ok' : '', hasPrice: !!off, offName: off ? off[0] : '', price: off ? off[1] : '', unit: off ? off[2] : '', reason,
+        hasWhy2: !t.imp, why2: t.imp ? '' : [S.mode === 'qualquer' ? (t.pres && inCity(t) ? (t.onl ? 'Presencial e online' : 'Presencial') : 'Online') : '', t.av === 'no' ? t.avLong.replace(' (', ' · ').replace(')', '') : ''].filter(Boolean).join(' · '), whyCls: t.av === 'yes' && !t.imp ? 'is-ok' : '', hasPrice: !!off, offName: off ? off[0] : '', price: off ? off[1] : '', unit: off ? off[2] : '', reason,
         hid: !!S.hidden[t.id], vis: !S.hidden[t.id],
         favCls: 'tc__fav' + (on ? ' is-on' : ''), favOn: on ? 'true' : 'false', favLabel: (on ? 'Remover ' : 'Salvar ') + t.name + (on ? ' dos salvos' : ''),
         fav: (e) => { const nv = !S.favs[t.id]; set(Object.assign({ favs: Object.assign({}, S.favs, { [t.id]: nv }) }, toastAt(e, nv ? ((document.documentElement.classList.contains('demo') ? visitor : !(window.CONTA && window.CONTA.session())) ? t.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : t.name + ' salvo em Salvos.') : t.name + ' removido dos salvos.', { k: 'fav', id: t.id, v: !nv }))); },

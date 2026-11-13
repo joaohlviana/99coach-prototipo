@@ -21,7 +21,7 @@
   function foto(v) { return !v ? '' : (/^https?:/.test(v) ? v : FOTOS + v); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
-    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
+    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
     return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
   }
   function setItems(rows) {
@@ -109,13 +109,15 @@
         var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
         return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
+          crumb: { sport: LABEL[t.sports[0]] || '', slug: (t.raw || [])[0] || '', city: t.pres ? t.city : '' },
           avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: (d.revStats && d.revStats.n) ? (d.revStats.sum / d.revStats.n).toFixed(1).replace('.', ',') : '', n: d.revStats ? d.revStats.n : 0, revDist: d.revStats ? d.revStats.dist : null, ext: d.externalHandle || '',
           offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: d.reviews || [] };
       }
-      return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Profissional de atividade física') + ' · dados públicos importados', city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm + ' (informação pública)', lang: '',
-        avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: d.externalHandle || '',
-        pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '',
+      return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: t.spec || 'Treinador', city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
+        avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: d.externalHandle || t.ext || '', crumb: { sport: LABEL[t.sports[0]] || '', slug: (t.raw || [])[0] || '', city: t.pres ? t.city : '' },
+        // bio, frase e cargo importados não são exibidos: não há como garantir que estão atualizados
+        pitch: '', bio: '',
         offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };
     }
   };
@@ -400,7 +402,7 @@
   function fetchBase() {
     if (!window.fetch) { LOADST.base = 'falha'; return; }
     fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (d && d.items && d.items.length) { window.__REAL_FOTOS = FOTOS = d.fotos || FOTOS; var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); LOADST.base = 'ok'; }
+      if (d && d.items && d.items.length) { var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); LOADST.base = 'ok'; }
       else LOADST.base = 'falha';
       rerender();
     }).catch(function () { LOADST.base = 'falha'; rerender(); });

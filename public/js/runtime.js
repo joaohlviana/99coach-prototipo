@@ -210,7 +210,9 @@
     if (name === 'telas') return { id: p.id || '', st: p.st || 0 };
     if (MODP[name]) return Object.assign({ s: '', id: '', scn: '' }, p);
     if (name === 'servico') return { offer: p.offer || 'online', scn: p.scn || (ctx.homeScen === 'vinculo' || ctx.homeScen === 'dois' ? 'aluna' : (ctx.homeScen === 'pendente' ? 'pedido' : 'comparando')) };
-    if (!PROFILE[p.id] && window.REAL && window.REAL.has(p.id)) return { id: p.id, scn: 'importado', rid: p.id, offer: null };
+    // perfil real: vale também quando o servidor já entregou este endereço e o catálogo ainda está carregando (nunca cai no perfil de exemplo)
+    var srv = window.__NEXT && window.__ROUTE && window.__ROUTE.name === 'perfil' && window.__ROUTE.params && window.__ROUTE.params.id === p.id;
+    if (!PROFILE[p.id] && ((window.REAL && window.REAL.has(p.id)) || srv)) return { id: p.id, scn: 'importado', rid: p.id, offer: null };
     var id = PROFILE[p.id] ? p.id : 'rafael';
     var scn = p.scn || PROFILE[id];
     if (id === 'rafael' && !p.scn) {

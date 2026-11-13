@@ -342,7 +342,6 @@ class Component extends DCLogic {
       const of = offerOf(t), on = !!favs[t.id], isBack = st.back === t.id, isSel = mapOn && st.sel === t.id;
       let badge = '', bcls = 'tc__badge tag tag--white', dot = false;
       if (isBack) { badge = 'Você abriu este perfil'; bcls = 'tc__badge tag tag--dark'; }
-      else if (t.imported) { badge = 'Perfil importado'; bcls = 'tc__badge tag tag--dark'; }
       else if (t.avail === 'nao') badge = 'Sem vagas no momento · informado em ' + t.ad;
       const m2 = [];
       
@@ -449,6 +448,7 @@ class Component extends DCLogic {
     const isLondrina = st.city === 'Londrina, PR' && !online;
     const VF = {
       rootCls: 'w v4 vfe' + (sheet || st.open ? ' has-sheet' : ''), sheetTop: sy + 'px', syVar: '--sy: ' + sy + 'px', toastTop: (this.__ty || 160) + 'px',
+      impNote: res.some((t) => t.imported), 
       focoChips, hasFoco: focoChips.length > 2 || !!st.foco, showArea, areaMenu, ddArea: dd === 'area', tgArea: tg('area'), areaFddCls: 'fdd' + (st.area ? ' is-set' : ''), areaFddTxt: st.area ? 'Região: ' + st.area : 'Bairro ou região',
       nearChips, hasNear: nearChips.length > 0, nearTitle: online ? 'Outras modalidades online' : (st.city ? 'Perto de ' + cityShort(st.city) + ' e outras modalidades' : 'Outras modalidades'),
       fmtSeg4, ranges, showPrices, priceTitle, priceNote, isLondrina,

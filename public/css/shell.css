@@ -137,3 +137,10 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 .vf-hidex .ic{background:#fff}
 .vf-tc:hover .vf-hidex,.vf-hidex:focus-visible{opacity:1}
 @media (hover:none){.vf-hidex{opacity:.85}}
+
+/* Uma menção só a "perfil importado" por página */
+.vfe-imp{margin:0 0 10px;font-size:13px;color:var(--text-3)}
+/* Cartão sem foto: em vez do bloco cinza grande, um avatar pequeno com as iniciais */
+#app .vf-tc__m:has(.v4-ini){aspect-ratio:auto;height:92px;min-height:0;background:transparent}
+#app .vf-tc__m:has(.v4-ini) .v4-ini{position:absolute;inset:auto;left:16px;top:18px;width:60px;height:60px;border-radius:50%;font-size:22px;background:var(--concrete-2,#E4E2DD);color:var(--text-2)}
+#app .vf-tc__m:has(.v4-ini)+.vfe-mrow+.vf-tc__b,#app .vf-tc__m:has(.v4-ini)+.vf-tc__b{padding-top:4px}

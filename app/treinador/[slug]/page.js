@@ -45,7 +45,7 @@ export default async function Page({ params }) {
   const url = SITE + '/treinador/' + t.id;
   const pessoa = {
     '@type': 'Person', name: t.name, url,
-    ...(t.spec ? { jobTitle: t.spec } : {}), ...(t.photo ? { image: t.photo } : {}), ...(esp.length ? { knowsAbout: esp.map((s) => s.label) } : {}),
+    ...(t.spec ? { jobTitle: t.spec } : {}), ...(t.photo ? { image: t.photo } : {}), ...(t.ig ? { sameAs: ['https://www.instagram.com/' + t.ig + '/'] } : {}), ...(esp.length ? { knowsAbout: esp.map((s) => s.label) } : {}),
     ...(t.pres ? { address: { '@type': 'PostalAddress', addressLocality: curta(t.city), addressRegion: (t.city.split(', ')[1] || ''), addressCountry: 'BR' } } : {})
   };
   const trilha = [{ name: 'Início', item: SITE + '/' }].concat(principal ? [{ name: principal.label, item: SITE + '/treinadores/' + principal.slug }] : [], principal && cid ? [{ name: t.city, item: SITE + '/treinadores/' + principal.slug + '/' + cid }] : [], [{ name: t.name, item: url }]);
@@ -69,9 +69,9 @@ export default async function Page({ params }) {
       </section>
       {t.importado ? (
       <section aria-labelledby="h-orig" className="ssr-aviso">
-          <h2 id="h-orig">Perfil importado, ainda não confirmado</h2>
-          <p>Este perfil foi criado a partir de dados públicos e não foi confirmado por {t.name.split(' ')[0]}. Por isso não mostramos avaliações, preço nem disponibilidade, e não há contratação pelo 99coach.</p>
-          <p>É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar este perfil</a>. Corrigir e retirar não precisam de conta.</p>
+          <h2 id="h-orig">Contato</h2>
+          {t.ig ? <p><a href={'https://www.instagram.com/' + t.ig + '/'} rel="nofollow noopener" target="_blank">Falar com {t.name.split(' ')[0]} no Instagram (@{t.ig})</a></p> : null}
+          <p>Perfil importado de dados públicos, ainda não confirmado por {t.name.split(' ')[0]}. É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar</a>.</p>
         </section>
       ) : (
         <section aria-labelledby="h-ped" className="ssr-aviso">

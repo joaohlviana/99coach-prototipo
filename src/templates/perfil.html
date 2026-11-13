@@ -47,8 +47,7 @@
     <!-- Trilha com voltar (G16) -->
     <div class="v4-crumbs">
       <button type="button" class="btn btn--ghost btn--sm" onClick="{{openSearch}}"><i class="ic ic--xs i-arrow-l" aria-hidden="true"></i>Voltar para a busca</button>
-      <span class="tag tag--mono">{{ctxLabel}}</span>
-      <nav class="v4-trail" aria-label="Você está em"><button type="button" class="v4-reset" onClick="{{openHome}}">Início</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openSearch}}">{{crumbSport}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><button type="button" class="v4-reset" onClick="{{openSearch}}">Londrina, PR</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><b aria-current="page">{{t.name}}</b></nav>
+      <nav class="v4-trail" aria-label="Você está em"><button type="button" class="v4-reset" onClick="{{openHome}}">Início</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><sc-if value="{{hasCrumbSport}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset" onClick="{{goCrumbSport}}">{{crumbSport}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><sc-if value="{{hasCrumbCity}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset" onClick="{{goCrumbCity}}">{{crumbCity}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><b aria-current="page">{{t.name}}</b></nav>
     </div>
 
     <sc-if value="{{note.on}}" hint-placeholder-val="{{ false }}"><div class="{{note.cls}} vfp-note"><i class="{{note.ic}}"></i><div style="flex: 1"><b>{{note.title}}</b>{{note.sub}}</div><sc-if value="{{note.hasBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{note.go}}">{{note.btn}}</button></sc-if></div></sc-if>
@@ -81,26 +80,26 @@
               <p class="vfp-line">{{vrole}}</p>
               <div class="vfp-chips"><sc-for list="{{t.chips}}" as="c" hint-placeholder-count="2"><span class="{{c.cls}}"><sc-if value="{{c.seal}}" hint-placeholder-val="{{ false }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if><sc-if value="{{c.noSeal}}" hint-placeholder-val="{{ true }}"><i class="{{c.ic}}"></i></sc-if>{{c.t}}</span></sc-for></div>
               <ul class="vfp-facts">
-                <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><span>Ainda sem avaliações</span></sc-if></li>
+                <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if></li>
                 <sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><li><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></li></sc-if>
                 <li><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</li>
                 <sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li></sc-if>
               </ul>
             </div>
           </div>
-              <ul class="vfp-mstats" aria-label="Números do perfil"><sc-for list="{{mstats}}" as="d" hint-placeholder-count="3"><li><b>{{d.v}}</b><span>{{d.k}}</span></li></sc-for></ul>
+              <sc-if value="{{showMstats}}" hint-placeholder-val="{{ true }}"><ul class="vfp-mstats" aria-label="Números do perfil"><sc-for list="{{mstats}}" as="d" hint-placeholder-count="3"><li><b>{{d.v}}</b><span>{{d.k}}</span></li></sc-for></ul></sc-if>
           <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></sc-if><span><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></sc-if></div>
           <nav class="vfp-tabs no-sb" aria-label="Seções do perfil"><div class="seg seg--fit seg--sm"><sc-for list="{{anchors}}" as="a" hint-placeholder-count="6"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></div></nav>
         </section>
 
         <!-- Como trabalho (G11 · card) -->
-        <section class="card vfp-card" aria-labelledby="como">
+        <sc-if value="{{hasPitch}}" hint-placeholder-val="{{ true }}"><section class="card vfp-card" aria-labelledby="como">
           <h2 id="como" class="vf-h3">Como trabalho</h2>
           <p class="vfp-text">{{t.pitch}}</p>
           <sc-if value="{{bioOpen}}" hint-placeholder-val="{{ false }}"><p class="vfp-text t2">{{t.bio}}</p></sc-if>
           <sc-if value="{{hasHow}}" hint-placeholder-val="{{ true }}"><ol class="vfp-how"><sc-for list="{{how}}" as="h" hint-placeholder-count="3"><li><span class="label">{{h.k}}</span><b>{{h.v}}</b></li></sc-for></ol></sc-if>
           <sc-if value="{{t.hasBio}}" hint-placeholder-val="{{ true }}"><button type="button" class="link-arrow v4-reset vfp-more" aria-expanded="{{bioExp}}" onClick="{{toggleBio}}">{{bioLabel}}<i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{bioRot}}"></i></button></sc-if>
-        </section>
+        </section></sc-if>
 
         <sc-if value="{{sTwo}}" hint-placeholder-val="{{ true }}"><div class="vfp-two">
           <!-- Credenciais (G18) com situação de cada uma (G03 · selos) -->
@@ -140,7 +139,7 @@
           <sc-if value="{{A.hasSecondary}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block v4-wrapbtn" onClick="{{A.go2}}">{{A.label2}}</button></sc-if>
           <sc-if value="{{showMsg}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></sc-if>
           <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
-          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram abre fora da 99Coach ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
+          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
         </div>
         </sc-if>
       </aside>
@@ -230,7 +229,7 @@
             <sc-if value="{{mapOn}}" hint-placeholder-val="{{ false }}"><div class="v4-map" role="img" aria-label="Mapa ilustrativo: {{t.map}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>{{t.map}}</b><span class="label">Mapa ilustrativo · demonstração</span></div></sc-if>
           </sc-if>
         </div>
-        <div class="card vfp-card">
+        <sc-if value="{{sSlots}}" hint-placeholder-val="{{ true }}"><div class="card vfp-card">
           <h3 class="vfp-h4"><i class="ic ic--sm i-calendar" aria-hidden="true"></i>Horários livres nesta semana</h3>
           <sc-if value="{{showSlots}}" hint-placeholder-val="{{ true }}">
             <div class="vfp-days" role="group" aria-label="Dia da semana"><sc-for list="{{dayTabs}}" as="d" hint-placeholder-count="5"><button type="button" class="{{d.cls}}" aria-pressed="{{d.on}}" onClick="{{d.pick}}"><span>{{d.wd}}</span><b>{{d.dt}}</b></button></sc-for></div>
@@ -239,13 +238,12 @@
             <p class="vfp-small">Sessão presencial · R$ 80 / sessão · 60 min. Atualizado hoje às 08:02, horário de Brasília. O horário só fica reservado depois do pagamento.</p>
           </sc-if>
           <sc-if value="{{noSlots}}" hint-placeholder-val="{{ false }}"><p class="vfp-small" style="font-size: 14px">{{noSlotsText}}</p></sc-if>
-        </div>
+        </div></sc-if>
         <div class="card vfp-card">
           <h3 class="vfp-h4"><i class="ic ic--sm i-message" aria-hidden="true"></i>Mensagens e contato</h3>
           <div>
             <sc-if value="{{canMsg}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Mensagens pela 99Coach</b><span>Para tirar dúvidas. Mensagem não é contratação.</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{openMsg}}">Enviar</button></div></sc-if>
-            <sc-if value="{{noMsg}}" hint-placeholder-val="{{ false }}"><div class="vfp-crow"><div><b>Sem mensagens pela 99Coach</b><span>Perfis importados não recebem mensagens nem contratações.</span></div></div></sc-if>
-            <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Abre fora da 99Coach</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
+            <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Contato direto com o profissional</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
             <sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>É o seu perfil?</b><span>Reivindique ou recupere o acesso</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openClaim}}">É meu perfil</button></div></sc-if>
             <div class="vfp-crow"><div><b>Compartilhar perfil</b><span>Copie o link para mandar a alguém</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openShare}}"><i class="ic ic--xs i-share" aria-hidden="true"></i>Copiar</button></div>
           </div>
@@ -254,10 +252,10 @@
     </section>
 
     <!-- Perguntas frequentes (G19 · faq) -->
-    <section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
+    <sc-if value="{{sFaq}}" hint-placeholder-val="{{ false }}"><section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
       <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2></div></div>
       <div class="card vfp-faq"><div class="faq"><sc-for list="{{faqs}}" as="f" hint-placeholder-count="4"><div class="faq__item"><button type="button" class="faq__q" aria-expanded="{{f.exp}}" onClick="{{f.pick}}"><span>{{f.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{f.rot}}"></i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="faq__a"><p>{{f.a}}</p><span class="badge badge--plain">{{f.who}}</span></div></sc-if></div></sc-for></div></div>
-    </section>
+    </section></sc-if>
 
     <!-- Parecidos em Londrina (G17 · treinador em lista, mesmo card da Home VFINAL) -->
     <section class="vf-sec" aria-labelledby="h-par">
@@ -267,9 +265,9 @@
         <div class="vf-tc__b">
           <span class="tc__sport">{{o.sport}}</span>
           <div class="vf-tc__row"><button type="button" class="tc__name" onClick="{{o.open}}"><span>{{o.name}}</span><sc-if value="{{o.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button><sc-if value="{{o.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{o.avg}} de 5, {{o.n}} avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{o.avg}}<small>({{o.n}})</small></span></sc-if></div>
-          <span class="vf-meta">{{o.role}}<sc-if value="{{o.noRating}}" hint-placeholder-val="{{ false }}"> · ainda sem avaliações</sc-if></span>
+          <span class="vf-meta">{{o.role}}</span>
           <span class="{{o.avCls}} v4-bw">{{o.avText}}</span>
-          <div class="vf-tc__f"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{o.price}} <small>{{o.unit}}</small></b><span>{{o.offName}}</span></span></sc-if><sc-if value="{{o.noPrice}}" hint-placeholder-val="{{ false }}"><span class="vf-price"><span>Sem serviço publicado</span></span></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{o.open}}">Ver perfil</button></div>
+          <div class="vf-tc__f"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{o.price}} <small>{{o.unit}}</small></b><span>{{o.offName}}</span></span></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{o.open}}">Ver perfil</button></div>
         </div>
       </li></sc-for></ul>
     </section>
