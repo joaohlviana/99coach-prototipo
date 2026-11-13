@@ -2,6 +2,8 @@
 // A fila vem do banco (email_queue): respeita tipos silenciados, horário de silêncio e no máximo um e-mail a cada 30 min.
 // O e-mail leva só o tipo do aviso e o primeiro nome de quem gerou: nunca texto de mensagem, resposta ou treino.
 // A chave do Resend vem do segredo RESEND_API_KEY; sem ela a função não envia nada e diz isso.
+// Chamada pelo agendador do banco a cada 5 minutos, sem segredo: a função não recebe parâmetro nenhum e só envia
+// e-mails que já são devidos, então chamá-la de fora não muda o que é enviado nem para quem.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
