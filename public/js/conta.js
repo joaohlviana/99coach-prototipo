@@ -109,6 +109,8 @@
         else { try { LS.setItem('c99.oauthVolta', JSON.stringify({ role: o.role || '', email: pl.email || '', name: md.full_name || md.name || '' })); } catch (_) {} }
       }
     } else { try { LS.setItem('c99.oauthErro', q.error_description || 'Não foi possível entrar com o Google.'); } catch (_) {} }
+    // a volta pode cair em qualquer página do site (início, perfil): o cadastro continua sempre na área do app
+    if (window.__NEXT && location.pathname !== '/app') { location.replace('/app#onboarding-' + flow); return; }
     try { history.replaceState(null, '', location.pathname + location.search + '#onboarding-' + flow); } catch (_) { location.hash = '#onboarding-' + flow; }
   })();
 
@@ -351,7 +353,7 @@
     // login com Google: vai ao servidor de contas e volta para esta página já autenticado
     oauth: function (provider, o) {
       try { LS.setItem('c99.oauth', JSON.stringify(o || {})); } catch (_) {}
-      location.href = URL0 + '/auth/v1/authorize?provider=' + encodeURIComponent(provider) + '&redirect_to=' + encodeURIComponent(location.origin + location.pathname);
+      location.href = URL0 + '/auth/v1/authorize?provider=' + encodeURIComponent(provider) + '&redirect_to=' + encodeURIComponent(location.origin + (window.__NEXT ? '/app' : location.pathname));
     },
     // chamado pelo cadastro ao abrir: se acabou de voltar do Google, devolve { role, email, name } uma única vez
     oauthBack: function () {
