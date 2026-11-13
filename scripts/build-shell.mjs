@@ -15,5 +15,8 @@ const LAZY = ['js/ds-data.js'];
 const js = scripts.filter((s) => !LAZY.includes(s)).map((s) => `/* ${s} */\n${read('public/' + s)}`).join('\n;\n');
 mkdirSync(new URL('public/shell/', root), { recursive: true });
 writeFileSync(new URL('public/shell/templates.html', root), `<div id="shell-bar">${bar}</div>\n${templates}`);
-writeFileSync(new URL('public/shell/app.js', root), js);
-console.log(`shell pronto: ${order.length} áreas, ${scripts.length - LAZY.length} scripts, ${(js.length / 1024 / 1024).toFixed(1)} MB`);
+// pacote menor: tira espaços e comentários (sem trocar nomes, para não mudar comportamento)
+let out = js;
+try { const { transformSync } = await import('esbuild'); out = transformSync(js, { minifyWhitespace: true, minifySyntax: true, legalComments: 'none', target: 'es2019' }).code; } catch (e) { console.warn('sem minificação:', e.message); }
+writeFileSync(new URL('public/shell/app.js', root), out);
+console.log(`shell pronto: ${order.length} áreas, ${scripts.length - LAZY.length} scripts, ${(js.length / 1024 / 1024).toFixed(1)} MB → ${(out.length / 1024 / 1024).toFixed(1)} MB`);

@@ -54,7 +54,7 @@ let g = await get('/treinadores/musculacao/pagina/2');
 console.log('paginação HTML:', g.st === 200, /rel="prev" href="\/treinadores\/musculacao"/.test(g.h), /rel="next" href="\/treinadores\/musculacao\/pagina\/3"/.test(g.h), /canonical" href="[^"]*\/treinadores\/musculacao\/pagina\/2"/.test(g.h), '| leve (sem o app):', !g.h.includes('<script src="/next-loader.js"'));
 console.log('além do fim é 404:', (await get('/treinadores/musculacao/pagina/9999')).st === 404, (await get('/treinadores/musculacao/pagina/1')).st === 404, (await get('/treinadores/musculacao/pagina/abc')).st === 404);
 g = await get('/treinadores/musculacao/sao-paulo-sp');
-console.log('título com presencial:', /<h1>Treinadores de Musculação presencial em São Paulo<\/h1>/.test(g.h), '| cabeçalhos de segurança:', /frame-ancestors 'none'/.test(g.csp));
+console.log('h1 com o serviço buscado:', /<h1>Personal trainer de musculação em São Paulo<\/h1>/.test(g.h), '| cabeçalhos de segurança:', /frame-ancestors 'none'/.test(g.csp));
 g = await get('/cidade/sao-paulo-sp');
 console.log('página da cidade:', g.st === 200, /Treinadores em/.test(g.h), /href="\/treinadores\/musculacao\/sao-paulo-sp"/.test(g.h), '| cidade sem ninguém é 404:', (await get('/cidade/nao-existe-xx')).st === 404);
 g = await get('/sitemap.xml'); console.log('sitemap tem cidades:', /\/cidade\/sao-paulo-sp</.test(g.h));

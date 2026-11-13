@@ -156,3 +156,6 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 }
 /* 3. Perfil no celular: as iniciais gigantes não ficam atrás do nome */
 #app .vfp-mhero__ini{opacity:.12;right:16px;left:auto}
+
+/* coração de salvar com área de toque de 44px (a regra antiga de 26px vencia) */
+@media (pointer:coarse){#app :is(.e-fav,.tc__fav,.vfm-fav,.vf-fav){min-width:44px!important;min-height:44px!important}}

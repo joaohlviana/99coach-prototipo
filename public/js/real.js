@@ -296,9 +296,32 @@
     var rot = LABEL[(t.sports || [])[0]] || t.spec || 'Treinador', pres = t.pres && t.city;
     return t.name + ': ' + rot + (pres ? ' em ' + t.city.split(',')[0] : (t.onl ? ' online' : ''));
   }
+  // Folhas e diálogos: Esc fecha, Tab fica dentro, e o foco volta para o botão que abriu
+  (function () {
+    var opener = null, wasOpen = false;
+    var sheet = function () { return document.querySelector('#app [role="dialog"][aria-modal="true"]'); };
+    document.addEventListener('click', function (e) { if (!sheet()) opener = e.target && e.target.closest ? e.target.closest('button,a,[tabindex]') : null; }, true);
+    document.addEventListener('keydown', function (e) {
+      var sh = sheet(); if (!sh) return;
+      if (e.key === 'Escape') { var x = sh.querySelector('[aria-label="Fechar"]') || document.querySelector('#app .v4-scrim'); if (x) { e.preventDefault(); x.click(); } return; }
+      if (e.key !== 'Tab') return;
+      var f = [].slice.call(sh.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')).filter(function (n) { return !n.disabled && n.offsetParent; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1], inside = sh.contains(document.activeElement);
+      if (!inside) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }, true);
+    window.__sheetFocus = function () {
+      var sh = sheet();
+      if (sh && !wasOpen) { wasOpen = true; if (!sh.contains(document.activeElement)) { var t = sh.querySelector('input,[aria-label="Fechar"],button'); if (t) setTimeout(function () { try { t.focus(); } catch (_) {} }, 60); } }
+      else if (!sh && wasOpen) { wasOpen = false; if (opener && document.contains(opener)) { try { opener.focus(); } catch (_) {} } }
+    };
+  })();
   window.__afterRender = function (page, root) {
     if (!window.STORE) return;
     applyMe();
+    if (window.__sheetFocus) window.__sheetFocus();
     whereSaved(page, root); tickRest();
     // título da aba acompanha a página (plano SEO: título descreve o que a pessoa está vendo)
     // título: o servidor já entregou o certo para o endereço em que a pessoa chegou; o app só troca ao navegar para outra página

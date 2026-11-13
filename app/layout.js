@@ -20,6 +20,7 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR">
       <head>
         <base href="/" />
+        <link rel="preload" href="/fonts/Anton-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="stylesheet" href="/css/base.css" />
         <link rel="stylesheet" href="/css/fonts.css" />
         <link rel="stylesheet" href="/css/shell.css" />

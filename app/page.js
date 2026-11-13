@@ -13,6 +13,7 @@ export default function Home() {
   const cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
     <Shell route={{ name: 'home', params: {} }}>
+      <link rel="preload" as="image" href="/img/570416df9063df47.webp" fetchPriority="high" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
         { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/img/email/logo-99coach.png' },
         { '@context': 'https://schema.org', '@type': 'WebSite', name: '99coach', url: SITE + '/', inLanguage: 'pt-BR' }

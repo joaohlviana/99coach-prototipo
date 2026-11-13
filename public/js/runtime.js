@@ -280,7 +280,9 @@
   }
   // troca de página visível: barra no topo, conteúdo entra de baixo e os cartões passam por um instante de esqueleto
   var pgT = null;
+  var firstIn = true;
   function pageIn() {
+    if (firstIn) { firstIn = false; return; }
     try {
       var app = document.getElementById('app'); if (!app) return;
       var bar = document.getElementById('pg-bar'); if (!bar) { bar = document.createElement('div'); bar.id = 'pg-bar'; bar.setAttribute('aria-hidden', 'true'); document.body.appendChild(bar); }
