@@ -53,7 +53,7 @@
         <sc-if value="{{f.noExists}}" hint-placeholder-val="{{ true }}"><div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block btn--arrow onb-cta" onClick="{{f.submit}}">{{conta.cta}}<span class="btn__dot"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button>
           <sc-if value="{{f.showSocial}}" hint-placeholder-val="{{ true }}"><div class="onb-or"><span>ou</span></div>
           <button type="button" class="btn btn--outline btn--lg btn--block" onClick="{{f.social}}">Continuar com Google</button>
-          <button type="button" class="btn btn--outline btn--lg btn--block" onClick="{{f.social}}">Continuar com Apple</button></sc-if>
+          </sc-if>
         </div></sc-if>
         <p class="field__help onb-fine">{{conta.fine}}</p>
         <sc-if value="{{conta.hasSwitch}}" hint-placeholder-val="{{ true }}"><p class="onb-alt">{{conta.switchQ}} <button type="button" class="onb-link" onClick="{{conta.switchGo}}">{{conta.switchLabel}}</button></p></sc-if>
