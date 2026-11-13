@@ -43,3 +43,9 @@ html.app-on #ssr{display:none}
 @media (max-width:599px){.ssr-hero{padding:24px 20px;border-radius:20px}.ssr-top{padding-bottom:16px}.ssr-top nav a{padding:8px 10px;font-size:14px}}
 
 .ssr-pag { margin-top: 16px; } .ssr-pag a { font-weight: 600; text-decoration: underline; }
+
+/* Movimento nas páginas entregues pelo servidor: mesmo critério do app (curto, e desligado para quem pede menos movimento) */
+#ssr a,#ssr .ssr-list>li,#ssr .ssr-chips a{transition:background-color .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease,opacity .2s ease,translate .2s ease,scale .12s ease}
+@media (hover:hover) and (pointer:fine){#ssr .ssr-chips a:hover,#ssr .ssr-list>li:hover{border-color:#B9B5AD;box-shadow:0 6px 20px -12px rgba(18,18,20,.35);translate:0 -1px}#ssr a:hover{opacity:.78}}
+#ssr .ssr-chips a:active,#ssr .ssr-pag a:active{scale:.97}
+@media (prefers-reduced-motion:reduce){#ssr *{transition-duration:.01ms!important;animation-duration:.01ms!important}#ssr *:hover,#ssr *:active{translate:none!important;scale:none!important}}

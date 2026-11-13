@@ -358,6 +358,16 @@
             <sc-if value="{{v.wk.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.wk.err}}</span></sc-if>
             <sc-if value="{{v.wk.dirty}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.wk.save}}">{{v.wk.saveLabel}}</button></div></sc-if>
           </section></sc-if>
+          <sc-if value="{{v.rv.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="tr-rv"><h2 class="onb-h2" id="tr-rv">Avaliação deste aluno</h2>
+            <p class="mod-small"><b>{{v.rv.text}}</b></p><p class="mod-small mod-muted">{{v.rv.when}}</p>
+            <sc-if value="{{v.rv.hasReply}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{v.rv.replyTxt}}</p></sc-if>
+            <sc-if value="{{v.rv.editing}}" hint-placeholder-val="{{ false }}">
+              <div class="field"><label class="field__label" for="tr-rv-t">Sua resposta pública</label><div class="input"><textarea id="tr-rv-t" rows="3" maxlength="1000" onInput="{{v.rv.setReply}}">{{v.rv.reply}}</textarea></div><span class="field__help">{{v.rv.note}}</span></div>
+              <sc-if value="{{v.rv.hasErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.rv.err}}</span></sc-if>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.rv.send}}">{{v.rv.sendLabel}}</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.rv.cancel}}">Cancelar</button></div>
+            </sc-if>
+            <sc-if value="{{v.rv.canOpen}}" hint-placeholder-val="{{ true }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.rv.open}}">{{v.rv.openLabel}}</button></div></sc-if>
+          </section></sc-if>
           <sc-if value="{{v.fm.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="tr-fm"><h2 class="onb-h2" id="tr-fm">Formulários</h2>
             <p class="mod-small mod-muted">{{v.fm.sub}} Enviado, respondido e revisado são estados diferentes.</p>
             <sc-if value="{{v.fm.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div style="flex: 1"><b>Não deu para carregar os formulários agora</b>Isto não quer dizer que não há envios.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.fm.reload}}">Tentar de novo</button></div></sc-if>

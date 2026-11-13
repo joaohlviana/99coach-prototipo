@@ -159,6 +159,7 @@ REG.screen({
       hasLogs: logs.length > 0, noLogs: !logs.length && !ui.sessErr, logs: logs, sessErr: !!ui.sessErr, logsCount: U.plural(logs.length, 'sessão registrada', 'sessões registradas'),
       fm: window.FORMS ? window.FORMS.trainer(ctx, lid, L) : { show: false },
       wk: window.WEEK ? window.WEEK.trainer(ctx, lid, L) : { show: false },
+      rv: window.REVIEWS ? window.REVIEWS.trainer(ctx, lid, L) : { show: false },
       back: function () { ctx.go('H04'); }
     };
   }

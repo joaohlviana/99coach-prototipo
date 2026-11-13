@@ -88,8 +88,8 @@ class Component extends DCLogic {
     if (x.cref === 'ver') chips.push({ cls: 'trust trust--ver', ic: '', t: 'CREF verificado', seal: true, noSeal: false });
     else if (x.cref === 'inf') chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', t: 'CREF informado', seal: false, noSeal: true });
     const t = Object.assign({}, x, {
-      hasPhoto: !!x.photo, noPhoto: !x.photo, avCls: av[0], avIc: av[1], avText: av[2], hasRating: !!x.avg, noRating: !x.avg, nLabel: x.n + ' avaliações',
-      noRatingText: x.imported ? 'Perfis importados não recebem avaliações.' : 'Só alunos com contratação concluída pela 99Coach podem avaliar. Nenhuma nota aparece até lá.',
+      hasPhoto: !!x.photo, noPhoto: !x.photo, avCls: av[0], avIc: av[1], avText: av[2], hasRating: !!x.avg, noRating: !x.avg, nLabel: x.n === 1 ? '1 avaliação' : x.n + ' avaliações',
+      noRatingText: x.imported ? 'Perfis importados não recebem avaliações.' : (x.realLive ? 'Ainda sem avaliações. Só quem teve acompanhamento com ' + x.first + ' pela 99Coach pode avaliar; nenhuma nota aparece até lá.' : 'Só alunos com contratação concluída pela 99Coach podem avaliar. Nenhuma nota aparece até lá.'),
       trust: trust, chips: chips, verified: x.cref === 'ver', showAv: x.avail !== 'importado', hasBio: !!x.bio, hasExt: !!x.ext, hasMap: !!x.map,
       hasCreds: x.creds.length > 0, noCreds: x.creds.length === 0, noCredsTitle: x.imported ? 'Credenciais não exibidas' : 'Sem credencial informada', noCredsText: x.imported ? 'Perfis importados não mostram formação nem registro profissional até a reivindicação.' : x.first + ' ainda não informou CREF ou formação. Pergunte antes de contratar.',
       creds: x.creds.map((c) => ({ k: c[0], v: c[1], st: c[2], cls: 'badge ' + (c[3] ? 'badge--ok' : 'badge--plain'), ic: 'ic ic--sm ' + (c[3] ? 'i-shield' : 'i-file') })),
@@ -103,7 +103,9 @@ class Component extends DCLogic {
     if (__dd) LINE.thiago = __dd.line;
     const DIST = { rafael: [21, 2, 0, 0, 0], gabriel: [24, 4, 1, 0, 0] };
     const HOW = { rafael: [['Semana 1', 'Avaliação de movimento e da sua rotina'], ['Toda semana', 'Treino novo no app'], ['A cada 15 dias', 'Ajuste com base no que você registrou']], gabriel: [['Cada sessão', '60 minutos, com carga registrada no app'], ['Técnica', 'LPO com progressão de carga'], ['Local', 'Box na Gleba Palhano']] };
-    const dist = (DIST[x.id] || []).map((c, i) => ({ k: String(5 - i), c: String(c), w: 'width: ' + (x.n ? Math.round(100 * c / x.n) : 0) + '%' }));
+    // perfil real: a distribuição vem das próprias avaliações (mesmo conjunto da média)
+    const realDist = x.realLive ? [5, 4, 3, 2, 1].map((k) => (x.reviews || []).filter((r) => r[2] === k).length) : null;
+    const dist = (realDist || DIST[x.id] || []).map((c, i) => ({ k: String(5 - i), c: String(c), w: 'width: ' + (x.n ? Math.round(100 * c / x.n) : 0) + '%' }));
     const how = (HOW[x.id] || []).map((h) => ({ k: h[0], v: h[1] }));
     const FAQ_R = [
       ['Preciso ter experiência com CrossFit?', 'Não. Começo pela técnica dos movimentos básicos e ajusto volume e carga à sua rotina. Se você tem lesão ou dor, peço liberação de um profissional de saúde antes de começar.', 'Resposta do Rafael'],
@@ -182,7 +184,7 @@ class Component extends DCLogic {
     const dayTimes = dayCur[1].map((h) => { const v = dayCur[0] + ' · ' + h; const on = st.slot === v; return { t: h, on: String(on), cls: 'opt' + (on ? ' is-on' : ''), pick: (e) => set({ slot: v, offer: 'sessao', sheet: 'slots', y: yOf(e) }) }; });
 
     // ---------- avaliações ----------
-    const reviews = x.reviews.slice(0, st.revMore ? 5 : 3).map((r) => ({ who: r[0], what: r[1], n: r[2], text: r[3], stars: [1, 2, 3, 4, 5].map((k) => k <= r[2] ? '' : 'color: var(--concrete-2)'), ini: r[0].charAt(0) }));
+    const reviews = x.reviews.slice(0, st.revMore ? 5 : 3).map((r) => ({ who: r[0], what: r[1], n: r[2], text: r[3], reply: r[4] || '', hasReply: !!r[4], hasText: !!r[3], stars: [1, 2, 3, 4, 5].map((k) => k <= r[2] ? '' : 'color: var(--concrete-2)'), ini: r[0].charAt(0) }));
 
     // ---------- outros profissionais ----------
     const others = ['rafael', 'gabriel', 'carolina', 'bruna'].filter((k) => k !== x.id).slice(0, 3).map((k) => {

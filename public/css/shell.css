@@ -56,3 +56,56 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 .c99-bar{flex:1 0 28px;max-width:56px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
 .c99-bar__c{width:100%;border-radius:6px 6px 0 0;background:var(--brand)}
 .c99-bar__v,.c99-bar__d{font-size:11px;color:var(--text-2);white-space:nowrap}
+
+/* ============================================================================================================
+   MOVIMENTO DO DS — hover, pressionado, foco e mudança de estado.
+   Usa os tempos e curvas do próprio DS (--dur-1..4, --ease, --ease-expo). Como o app atualiza o DOM sem recriar
+   os elementos, trocar uma classe de estado (is-on, is-err, is-sel, aria-pressed) anima sozinho pelas transições.
+   Usa translate/scale (propriedades próprias), para não desfazer o transform que um componente já use para se posicionar.
+   Quem pede menos movimento no sistema não recebe nenhuma destas animações (regra no fim).
+   Carregado antes das folhas de cada tela: componente que já define a própria transição continua mandando.
+   ============================================================================================================ */
+:where(#app) :is(.btn,.chip,.qchip,.icon-btn,.link,.link-arrow,.lrow,.menu__it,.snav__it,.hdr__link,.rail__item,.tab,.badge,.input,.card,.alert,
+  .onb-secs__r,.onb-today__r,.onb-checkrow,.actcard,.e-pg,.v4-pgb,.e-card,.tc,.rev,.kv__r,.t2-day,.t2-rowbtn,.t4-ptr,.t6-cellbtn,.fdd,.cv-opt,.field__label,.pbar>span,.bar>span){
+  transition:background-color var(--dur-2,200ms) var(--ease,ease),border-color var(--dur-2,200ms) var(--ease,ease),color var(--dur-2,200ms) var(--ease,ease),
+    box-shadow var(--dur-2,200ms) var(--ease,ease),opacity var(--dur-2,200ms) var(--ease,ease),transform var(--dur-1,120ms) var(--ease,ease),translate var(--dur-2,200ms) var(--ease-expo,ease),scale var(--dur-1,120ms) var(--ease,ease),width var(--dur-3,320ms) var(--ease-expo,ease)}
+:where(#app) :is(.ic,.btn__dot,.i-chev-r,.i-chev-d,.i-arrow-r){transition:transform var(--dur-2,200ms) var(--ease-expo,ease),translate var(--dur-2,200ms) var(--ease-expo,ease),color var(--dur-2,200ms) var(--ease,ease),opacity var(--dur-2,200ms) var(--ease,ease)}
+
+/* hover: só onde existe ponteiro de verdade (no toque, hover "gruda") */
+@media (hover:hover) and (pointer:fine){
+  :where(#app) :is(button.lrow,a.lrow,button.card,a.card,button.e-card,.actcard):hover{border-color:var(--line,#D9D6D0);box-shadow:var(--sh-card,0 6px 20px -12px rgba(18,18,20,.35));translate:0 -1px}
+  :where(#app) :is(button.onb-secs__r,.onb-checkrow,.menu__it,.snav__it,.kv__r):hover{background-color:var(--paper-3,rgba(18,18,20,.06))}
+  :where(#app) :is(.link,.hdr__link,.ftr__col a):hover{opacity:.72}
+  :where(#app) .icon-btn:hover{background-color:rgba(18,18,20,.06)}
+  :where(#app) :is(.btn,.lrow,.link-arrow,.onb-secs__r):hover :is(.btn__dot,.i-arrow-r,.i-chev-r){translate:3px 0}
+  :where(#app) .input:hover{border-color:var(--text-3,#8A8780)}
+  :where(#app) .badge[role=button]:hover{opacity:.8}
+}
+
+/* pressionado: resposta imediata ao toque ou clique */
+:where(#app) :is(.btn,.chip,.qchip,.icon-btn,.e-pg,.v4-pgb,.tab):active:not([disabled],[aria-disabled=true]){scale:.97}
+:where(#app) :is(button.lrow,a.lrow,button.onb-secs__r,.menu__it,.snav__it,button.card,button.e-card,.actcard):active{scale:.992}
+:where(#app) :is(.btn,.chip)[disabled],:where(#app) :is(.btn,.chip)[aria-disabled=true]{opacity:.55;cursor:not-allowed}
+
+/* foco em campo e erro: a borda e o halo entram suavemente; o erro balança uma vez */
+:where(#app) .input:focus-within{border-color:var(--ink,#121214);box-shadow:0 0 0 3px rgba(18,18,20,.08)}
+:where(#app) .input.is-err{animation:ds-shake var(--dur-3,320ms) var(--ease,ease) 1}
+
+/* mudança de estado: o que aparece na tela entra com um movimento curto, em vez de "pular" */
+@keyframes ds-in{from{opacity:0;translate:0 6px}}
+@keyframes ds-pop{from{opacity:0;scale:.92}}
+@keyframes ds-up{from{opacity:0;translate:0 24px}}
+@keyframes ds-shake{25%{translate:-4px 0}75%{translate:4px 0}}
+@keyframes ds-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+:where(#app) :is(.alert,.field__err,.emp,.c99-onde,.onb-fm,.rev){animation:ds-in var(--dur-3,320ms) var(--ease-expo,ease) backwards}
+:where(#app) .toast{animation:ds-up var(--dur-3,320ms) var(--ease-expo,ease) backwards}
+:where(#app) :is(.sheet,.menu,.fdd){animation:ds-up var(--dur-3,320ms) var(--ease-expo,ease) backwards}
+:where(#app) .badge{animation:ds-pop var(--dur-2,200ms) var(--ease-expo,ease) backwards}
+:where(#app) :is(.chip.is-on,.e-pg.is-on,.tab.is-on,.snav__it.is-on){animation:ds-pop var(--dur-2,200ms) var(--ease-expo,ease) backwards}
+:where(#app) [aria-busy=true]{animation:ds-pulse 1.4s var(--ease,ease) infinite}
+:where(#app) [role=checkbox][aria-checked=true] .ic{animation:ds-pop var(--dur-2,200ms) var(--ease-expo,ease) backwards}
+
+@media (prefers-reduced-motion:reduce){
+  :where(#app) *,:where(#app) *::before,:where(#app) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  :where(#app) :is(.btn,.chip,.lrow,.card,.onb-secs__r,.actcard,.e-card):is(:hover,:active){translate:none!important;scale:none!important}
+}

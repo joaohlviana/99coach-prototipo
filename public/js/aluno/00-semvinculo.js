@@ -242,6 +242,7 @@ REG.screen({
       sessOpts: SS.map(function (x, i) { var on = i === sx; return { label: (x.title || ('Sessão ' + (i + 1))) + (doneOf(x) ? ' · feita nesta semana' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ sx: i, err: '' }); } }; }),
       estMin: s0 ? 'Cerca de ' + s0.estMin + ' min' : '', start: start, doneNow: doneNow, canStart: !doneNow && !paused,
       isPaused: paused && !ex,
+      rv: window.REVIEWS ? window.REVIEWS.student(ctx, link, !ex && !showEvo && !showMsg && state === 'ready') : { show: false },
       wk: Object.assign({}, WK, { show: !!WK.show && !ex && !showEvo && !showMsg && state === 'ready' }),
       fm: window.FORMS ? window.FORMS.student(ctx, link, !ex && !showEvo && !showMsg && link.status !== 'encerrado') : { show: false },
       hasNote: !!note && !ex && !showEvo && !showMsg, noteFrom: 'Recado de ' + tf, noteTxt: note ? String(note.body).slice(0, 220) : '', noteWhen: note ? new Date(note.created_at).toLocaleDateString('pt-BR') : '', openChat: function () { GO('ALU05'); },
