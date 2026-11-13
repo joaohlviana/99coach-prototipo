@@ -55,6 +55,14 @@
 
   // ---------- navegação ----------
   var DIRECT = { home: 1, esporte: 1, perfil: 1, servico: 1, onboarding: 1, telas: 1 };
+  // carrega sob demanda o pacote de uma área com conta (no modo de desenvolvimento os scripts já vêm todos)
+  var AREA_LAZY = { treinador: 1, aluno: 1, operacao: 1 }, areaP = {};
+  window.__areaReady = function (page) { return !AREA_LAZY[page] || !window.__NEXT || areaP[page] === true; };
+  window.__needArea = function (page) {
+    if (window.__areaReady(page)) return Promise.resolve();
+    if (!areaP[page]) areaP[page] = new Promise(function (ok, no) { var before = {}; Object.keys(window.DB || {}).forEach(function (k) { before[k] = 1; }); var s = document.createElement('script'); s.src = '/shell/area-' + page + '.js'; s.onload = function () { areaP[page] = true; try { var saved = {}; try { saved = JSON.parse(localStorage.getItem('c99.db') || '{}') || {}; } catch (_) {} var fresh = Object.keys(window.DB || {}).filter(function (k) { return !(k in saved) && !(k in before); }); if (window.STORE && window.STORE.loadDb) window.STORE.loadDb(); if (window.__cleanNew) window.__cleanNew(fresh); } catch (_) {} try { if (window.__refreshLinks) window.__refreshLinks(); } catch (_) {} try { window.dispatchEvent(new Event('c99:area')); } catch (_) {} ok(); }; s.onerror = function () { delete areaP[page]; no(new Error('area')); }; document.body.appendChild(s); });
+    return areaP[page] === true ? Promise.resolve() : areaP[page];
+  };
   function GO(target, params) {
     params = params || {};
     if (!window.NAV) return;
@@ -73,6 +81,10 @@
     if (!document.documentElement.classList.contains('demo') && /^(IA\d|H15$)/.test(target || '')) return NOTICE('A assistência de IA está desligada até ser configurada e avaliada. Todo o trabalho manual continua disponível.');
     if (target && target.charAt(0) === '@') { var pg = target.slice(1); return window.NAV.go(pg, params, null); }
     if (DIRECT[target]) return window.NAV.go(target, params, null);
+    // tela de uma área ainda não carregada: baixa as áreas e tenta de novo
+    if (target && target.charAt(0) !== '@' && !byId[target] && !DIRECT[target] && window.__NEXT && Object.keys(AREA_LAZY).some(function (a) { return !window.__areaReady(a); })) {
+      return Promise.all(Object.keys(AREA_LAZY).map(window.__needArea)).then(function () { GO(target, params); }, function () { NOTICE('Sem conexão. Tente de novo.'); });
+    }
     var r = byId[target];
     if (r) return window.NAV.go(r.page, Object.assign({ s: r.key }, params), null);
     var demo = document.documentElement.classList.contains('demo');

@@ -44,8 +44,9 @@ export default async function Page({ params }) {
   const cid = t.pres ? slugify(t.city) : '';
   const parecidos = principal ? lista(principal.slug, cid || (t.onl ? 'online' : '')).filter((x) => x.id !== t.id).slice(0, 6) : [];
   const url = SITE + '/treinador/' + t.id;
+  const { descricao: resumoLd } = textos(t, esp);
   const pessoa = {
-    '@type': 'Person', name: t.name, url,
+    '@type': 'Person', name: nomeLimpo(t.name), url, description: resumoLd,
     ...(t.spec ? { jobTitle: t.spec } : {}), ...(t.photo ? { image: t.photo } : {}), ...(t.ig ? { sameAs: ['https://www.instagram.com/' + t.ig + '/'] } : {}), ...(esp.length ? { knowsAbout: esp.map((s) => s.label) } : {}),
     ...(t.pres ? { address: { '@type': 'PostalAddress', addressLocality: curta(t.city), addressRegion: (t.city.split(', ')[1] || ''), addressCountry: 'BR' } } : {})
   };

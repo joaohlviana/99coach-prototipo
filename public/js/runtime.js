@@ -266,7 +266,14 @@
     if (name === 'perfil' && area !== 'treinador' && !(window.REAL && window.REAL.has(params.id)) && !(window.__ROUTE && window.__ROUTE.name === 'perfil' && window.__ROUTE.params && window.__ROUTE.params.id === params.id)) return ['home', {}];
     return [name, params];
   }
+  var navSeq = 0;
   function mount(name, props, state, key) {
+    var my = ++navSeq;
+    if (window.__needArea && !window.__areaReady(name)) {
+      var html = document.documentElement; html.classList.add('area-loading');
+      // se a pessoa foi para outra página enquanto a área carregava, a área não passa por cima
+      return window.__needArea(name).then(function () { html.classList.remove('area-loading'); if (my === navSeq) mount(name, props, state, key); }, function () { html.classList.remove('area-loading'); if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); });
+    }
     var P = PAGES[name];
     for (var k in PAGES) PAGES[k].css.media = k === name ? 'all' : 'not all';
     var c = new P.Comp(props);
@@ -325,6 +332,7 @@
       document.title = location.pathname === T0.path ? T0.title : (e.mod + (e.fmt === 'Online' ? ' online' : (e.city ? ' em ' + String(e.city).split(',')[0] : '')) + ' | 99coach');
     },
     go: function (name, params, from, extra) {
+      if (window.__needArea && !window.__areaReady(name)) { var self = this, args = arguments, my = ++navSeq; return window.__needArea(name).then(function () { if (my === navSeq) return self.go.apply(self, args); }, function () { if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); }); }
       saveCurrent(extra);
       var g = guard(name, params || {}); name = g[0]; params = g[1];
       var props = propsFor(name, params || {});

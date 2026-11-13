@@ -172,3 +172,6 @@ html:not(.demo) #app .sx-ia,html:not(.demo) #app .sx-dia,html:not(.demo) #app .s
 /* tamanhos de letra em meio pixel caem na escala inteira */
 #app [style*="font-size: 12.5px"],#app [style*="font-size: 13.5px"]{font-size:13px!important}
 #app [style*="font-size: 14.5px"],#app [style*="font-size: 15.5px"]{font-size:15px!important}
+
+/* enquanto o pacote da área chega */
+html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}

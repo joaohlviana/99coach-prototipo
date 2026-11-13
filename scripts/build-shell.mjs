@@ -12,11 +12,21 @@ const bar = (tpl.match(/<nav class="pv-bar"[\s\S]*?<\/nav>/) || [''])[0];
 const scripts = [...tpl.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
 // os dados das telas do DS (3,7 MB) só servem ao modo demonstração: ficam fora do pacote e são carregados sob demanda
 const LAZY = ['js/ds-data.js'];
-const js = scripts.filter((s) => !LAZY.includes(s)).map((s) => `/* ${s} */\n${read('public/' + s)}`).join('\n;\n');
+// áreas com conta (treinador, aluno, operação) viram pacotes à parte: quem só busca treinador não baixa esse código
+const AREAS = ['treinador', 'aluno', 'operacao'];
+const areaOf = (src) => AREAS.find((a) => src.startsWith('js/' + a + '/')) || '';
+const pack = (list) => list.map((s) => `/* ${s} */\n${read('public/' + s)}`).join('\n;\n');
+const js = pack(scripts.filter((s) => !LAZY.includes(s) && !areaOf(s)));
+const areaJs = Object.fromEntries(AREAS.map((a) => [a, pack(scripts.filter((s) => areaOf(s) === a))]));
 mkdirSync(new URL('public/shell/', root), { recursive: true });
 writeFileSync(new URL('public/shell/templates.html', root), `<div id="shell-bar">${bar}</div>\n${templates}`);
 // pacote menor: tira espaços e comentários (sem trocar nomes, para não mudar comportamento)
 let out = js;
 try { const { transformSync } = await import('esbuild'); out = transformSync(js, { minifyWhitespace: true, minifySyntax: true, legalComments: 'none', target: 'es2019' }).code; } catch (e) { console.warn('sem minificação:', e.message); }
 writeFileSync(new URL('public/shell/app.js', root), out);
+for (const a of AREAS) {
+  let code = areaJs[a];
+  try { const { transformSync } = await import('esbuild'); code = transformSync(code, { minifyWhitespace: true, minifySyntax: true, legalComments: 'none', target: 'es2019' }).code; } catch (_) {}
+  writeFileSync(new URL(`public/shell/area-${a}.js`, root), code);
+}
 console.log(`shell pronto: ${order.length} áreas, ${scripts.length - LAZY.length} scripts, ${(js.length / 1024 / 1024).toFixed(1)} MB → ${(out.length / 1024 / 1024).toFixed(1)} MB`);

@@ -39,7 +39,8 @@
   DB.seed('t3_conflitos', {});
   DB.seed('t3_rotMeta', { r1: { assigned: 4 }, r2: { assigned: 2 } });
   (function () {
-    var r1 = clone(DB.find('rotinas', 'r1').sessions);
+    var r1src = DB.find('rotinas', 'r1'); if (!r1src) return; // fora da demonstração as rotinas de exemplo já foram removidas
+    var r1 = clone(r1src.sessions);
     var s1 = r1[0], s2 = r1[1];
     var it = function (ex, sets, reps, load, rest) { return { ex: ex, sets: sets, reps: reps, load: load, rest: rest }; };
     var v1 = [{ id: 's1', name: s1.name, items: [it('agach', 3, '8', '60 kg', '120 s'), it('terra', 3, '5', '70 kg', '150 s')] }];

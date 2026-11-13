@@ -18,7 +18,6 @@
       <nav class="hdr__nav" aria-label="Principal">
         <button type="button" class="hdr__link is-on" onClick="{{openSearch}}">Treinadores</button>
         <button type="button" class="hdr__link" onClick="{{openSearch}}">Esportes</button>
-        <button type="button" class="hdr__link" onClick="{{openSearch}}">Programas</button>
         <button type="button" class="hdr__link" onClick="{{openPro}}">Sou treinador</button>
       </nav>
       <div class="hdr__tools">
@@ -47,7 +46,7 @@
     <!-- Trilha com voltar (G16) -->
     <div class="v4-crumbs">
       <button type="button" class="btn btn--ghost btn--sm" onClick="{{openSearch}}"><i class="ic ic--xs i-arrow-l" aria-hidden="true"></i>Voltar para a busca</button>
-      <nav class="v4-trail" aria-label="Você está em"><button type="button" class="v4-reset" onClick="{{openHome}}">Início</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><sc-if value="{{hasCrumbSport}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset" onClick="{{goCrumbSport}}">{{crumbSport}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><sc-if value="{{hasCrumbCity}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset" onClick="{{goCrumbCity}}">{{crumbCity}}</button><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><b aria-current="page">{{t.name}}</b></nav>
+      <nav class="v4-trail" aria-label="Você está em"><a class="v4-reset" href="/" data-spa="1" onClick="{{openHome}}">Início</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><sc-if value="{{hasCrumbSport}}" hint-placeholder-val="{{ true }}"><a class="v4-reset" href="{{crumbSportHref}}" data-spa="1" onClick="{{goCrumbSport}}">{{crumbSport}}</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><sc-if value="{{hasCrumbCity}}" hint-placeholder-val="{{ true }}"><a class="v4-reset" href="{{crumbCityHref}}" data-spa="1" onClick="{{goCrumbCity}}">{{crumbCity}}</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><b aria-current="page">{{t.name}}</b></nav>
     </div>
 
     <sc-if value="{{note.on}}" hint-placeholder-val="{{ false }}"><div class="{{note.cls}} vfp-note"><i class="{{note.ic}}"></i><div style="flex: 1"><b>{{note.title}}</b>{{note.sub}}</div><sc-if value="{{note.hasBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{note.go}}">{{note.btn}}</button></sc-if></div></sc-if>
@@ -277,7 +276,7 @@
   <footer class="ftr" style="margin-top: 96px">
     <div class="wrap"><div class="ftr__grid">
       <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
-      <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSearch}}">Programas</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
+      <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
       
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{goHelp}}">Central de ajuda</button><button type="button" onClick="{{goHelpPay}}">Pagamentos e reembolsos</button></div>

@@ -83,3 +83,8 @@ html.app-on #ssr{display:none}
 @media (max-width:640px){.ssr-top nav a:not(.ssr-btn){display:none}.ssr-top{flex-wrap:wrap}.ssr-top nav{margin-left:auto}}
 .ssr-tiles a{min-height:150px}
 .ssr-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}@media (max-width:640px){.ssr-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ssr-search input{flex:1;border:0;outline:0;background:transparent;font:inherit;min-height:42px;color:var(--fg,#121214)}
+.ssr-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.ssr-busca{display:flex;gap:8px;margin-top:16px;max-width:620px}
+.ssr-busca input{flex:1;min-height:48px;border-radius:999px;border:0;padding:0 20px;font:inherit;font-size:16px}
+.ssr-busca button{min-height:48px;padding:0 22px;border-radius:999px;border:0;background:var(--brand,#DF0A3D);color:#fff;font-weight:700;cursor:pointer}

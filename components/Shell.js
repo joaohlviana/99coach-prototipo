@@ -5,7 +5,7 @@ export function Topo() {
   return (
     <header className="ssr-top">
       <a className="ssr-logo" href="/" aria-label="99coach, página inicial"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
-      <a className="ssr-search" href="/#esportes"><span aria-hidden="true">⌕</span> Buscar por esporte e cidade</a>
+      <form className="ssr-search" action="/buscar" method="get" role="search"><span aria-hidden="true">⌕</span><input name="q" type="search" placeholder="Nome, modalidade ou cidade" aria-label="Buscar treinador por nome, modalidade ou cidade" /></form>
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>

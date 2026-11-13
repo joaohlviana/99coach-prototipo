@@ -15,8 +15,8 @@ export default function Home() {
     <Shell route={{ name: 'home', params: {} }}>
       <link rel="preload" as="image" href="/img/570416df9063df47.webp" fetchPriority="high" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
-        { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/img/email/logo-99coach.png' },
-        { '@context': 'https://schema.org', '@type': 'WebSite', name: '99coach', url: SITE + '/', inLanguage: 'pt-BR' }
+        { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/icon.png', sameAs: ['https://www.instagram.com/99coach_'] },
+        { '@context': 'https://schema.org', '@type': 'WebSite', name: '99coach', url: SITE + '/', inLanguage: 'pt-BR', potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: SITE + '/buscar?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } }
       ]).replace(/</g, '\\u003c') }} />
       <section className="ssr-hero">
         <h1>Encontre seu treinador.</h1>

@@ -194,6 +194,17 @@
     STORE.saveDb();
   }
   window.__startAccount = startAccount;
+  // pacote de área carregado depois do início da conta: o que chegou agora como exemplo sai, como no primeiro acesso
+  window.__cleanNew = function (keys) {
+    if (document.documentElement.classList.contains('demo') || !ACCT.area() || !window.DB) return;
+    var STU = ['contratacoes', 'meusTreinos', 'a2_pedidos', 'a2_pedidosAcomp', 'a2_reembolsos'];
+    (keys || []).forEach(function (k) {
+      if (!Array.isArray(window.DB[k])) return;
+      if (STU.indexOf(k) >= 0) window.DB[k] = [];
+      else if (OWN.indexOf(k) >= 0) window.DB[k] = window.DB[k].filter(function (x) { return x && x.server; });
+    });
+    if (Array.isArray(window.DB.exercicios)) window.DB.exercicios = window.DB.exercicios.filter(function (e) { return e && !e.own; });
+  };
   // troca de conta no mesmo aparelho: tira da memória o que era da conta anterior (o servidor repõe o que é da nova)
   window.__resetLocalData = function () {
     if (!window.DB) return;
