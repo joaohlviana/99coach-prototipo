@@ -102,7 +102,7 @@
           <sc-if value="{{t.hasBio}}" hint-placeholder-val="{{ true }}"><button type="button" class="link-arrow v4-reset vfp-more" aria-expanded="{{bioExp}}" onClick="{{toggleBio}}">{{bioLabel}}<i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{bioRot}}"></i></button></sc-if>
         </section>
 
-        <div class="vfp-two">
+        <sc-if value="{{sTwo}}" hint-placeholder-val="{{ true }}"><div class="vfp-two">
           <!-- Credenciais (G18) com situação de cada uma (G03 · selos) -->
           <sc-if value="{{sCred}}" hint-placeholder-val="{{ true }}"><section class="card vfp-card" aria-labelledby="cred">
             <h2 id="cred" class="vf-h3">Credenciais</h2>
@@ -121,7 +121,7 @@
             </sc-if>
             <sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic  i-star" aria-hidden="true"></i></span><b>Ainda sem avaliações</b><span>{{t.noRatingText}}</span></div></sc-if>
           </section></sc-if>
-        </div>
+        </div></sc-if>
       </div>
 
       <!-- Cartão lateral de ofertas (G18 · contato) — fixo no desktop; no tablet e no celular vira a barra fixa -->
