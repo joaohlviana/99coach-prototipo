@@ -347,7 +347,13 @@
     if (page === 'treinador' || page === 'onboarding') { var was = window.DB && window.DB.alunos && window.DB.alunos.length; startAccount(); if (page === 'treinador' && was && !window.DB.alunos.length) { setTimeout(rerender, 0); return; } }
     if (PUBLIC[page] && ACCT.area()) {
       var bs = root.querySelectorAll('button.btn--primary.btn--sm');
-      for (var i = 0; i < bs.length; i++) if (/^(Entrar|Minha área)$/.test(bs[i].textContent.trim())) { bs[i].textContent = 'Minha área'; bs[i].setAttribute('data-minha-area', '1'); }
+      // com conta: o botão do topo mostra quem está logado (iniciais e primeiro nome) e leva à área da pessoa
+      var me = (window.ROLES && window.ROLES[ACCT.area()] && window.ROLES[ACCT.area()].me) || {}, nm = String(me.name || '').trim();
+      var first = nm.split(/\s+/)[0] || '', ini = nm ? nm.split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase() : '';
+      for (var i = 0; i < bs.length; i++) if (bs[i].hasAttribute('data-minha-area') || /^(Entrar|Minha área)$/.test(bs[i].textContent.trim())) {
+        bs[i].textContent = first || 'Minha área'; bs[i].setAttribute('data-minha-area', '1'); bs[i].setAttribute('aria-label', first ? 'Minha área, ' + nm : 'Minha área');
+        if (ini) bs[i].setAttribute('data-ini', ini); else bs[i].removeAttribute('data-ini');
+      }
     }
     if (window.__demoIdent) return;
     var c;
