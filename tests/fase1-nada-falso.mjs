@@ -63,7 +63,7 @@ t = await txt(al);
 console.log('3 encerrado aparece como histórico:', /Acompanhamento encerrado/i.test(t), /Marina Duarte/.test(t), /treino registrado/.test(t));
 // 4. menu do aluno sem telas de exemplo; favoritos reais
 await al.evaluate(() => NAV.go('aluno', { s: 'menu' }, null)); await al.waitForTimeout(600); t = await txt(al);
-console.log('4 menu do aluno real:', /Meus dados e segurança/.test(t), '| sem exemplos:', !/Compartilhamentos|Conta e preferências|Check-in semanal pendente|Meus programas|Minhas contratações/.test(t));
+console.log('4 menu do aluno real:', /Meus dados e segurança/.test(t), '| sem exemplos:', !/Compartilhamentos|Conta e preferências|Check-in semanal pendente|Retomar de onde parou|Minhas contratações/.test(t));
 await al.evaluate(() => { FAV.set('aguinaldo-siqueira-bb5ba0c0', true); NAV.go('publico', { s: 'salvos' }, null); }); await al.waitForTimeout(800); t = await txt(al);
 console.log('  favoritos reais:', /Aguinaldo siqueira/i.test(t), '| sem exemplo:', !/Carolina|Rafael Lima/.test(t));
 await al.evaluate(() => NAV.go('publico', { s: 'programas' }, null)); await al.waitForTimeout(500);
