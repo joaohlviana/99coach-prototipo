@@ -241,7 +241,28 @@ REG.screen({
           return { ex: k, plan: it ? 'previsto ' + it.sets + ' × ' + it.reps + (it.loadKg != null ? ' · ' + String(it.loadKg).replace('.', ',') + ' kg' : '') : 'previsto: versão anterior do treino', did: 'feito ' + by[k].sort(function (a, b) { return a.set_no - b.set_no; }).map(function (l) { return l.reps + (l.load_kg != null ? '×' + String(l.load_kg).replace('.', ',') + 'kg' : ' rep'); }).join(' · ') }; });
         var cm = (x.session_comments || []).map(function (c) { return { who: c.side === 'treinador' ? tf : 'Você', body: c.body }; });
         return { when: new Date(x.submitted_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }), name: sv ? sv.title : 'Sessão registrada', n: U.plural((x.set_logs || []).length, 'série', 'séries'),
-          open: open, toggle: function () { ctx.setUi({ regOpen: open ? '' : x.id }); }, toggleLabel: open ? 'Fechar' : 'Ver registro', rows: rows, cms: cm, hasCms: cm.length > 0 };
+          open: open, toggle: function () { ctx.setUi({ regOpen: open ? '' : x.id }); }, toggleLabel: open ? 'Fechar' : 'Ver registro', rows: rows, cms: cm, hasCms: cm.length > 0,
+          // corrigir o que foi registrado: até 48 h depois do envio, série por série
+          canFix: open && ui.fixId !== x.id && (Date.now() - new Date(x.submitted_at).getTime()) < 48 * 3600000 && (x.set_logs || []).length > 0,
+          fixing: open && ui.fixId === x.id,
+          startFix: function () { var f0 = {}; (x.set_logs || []).forEach(function (l) { f0[l.item + ':' + l.set_no] = { reps: String(l.reps), load: l.load_kg != null ? String(l.load_kg).replace('.', ',') : '' }; }); ctx.setUi({ fixId: x.id, fix: f0, fixErr: '' }); },
+          cancelFix: function () { ctx.setUi({ fixId: '', fix: null, fixErr: '' }); },
+          fixSets: ui.fixId === x.id ? (x.set_logs || []).slice().sort(function (a, b) { return a.item - b.item || a.set_no - b.set_no; }).map(function (l) { var k = l.item + ':' + l.set_no, cur = (ui.fix || {})[k] || { reps: '', load: '' };
+            var setK = function (fld) { return function (e) { var n2 = Object.assign({}, ui.fix || {}); n2[k] = Object.assign({}, cur); n2[k][fld] = U.val(e); ctx.setUi({ fix: n2, fixErr: '' }); }; };
+            return { label: (l.exercise_name || 'Exercício') + ' · série ' + (l.set_no + ((x.set_logs || []).some(function (q) { return q.set_no === 0; }) ? 1 : 0)), reps: cur.reps, load: cur.load, setReps: setK('reps'), setLoad: setK('load'), idR: 'fx-r-' + k.replace(':', '-'), idL: 'fx-l-' + k.replace(':', '-') }; }) : [],
+          fixErr: ui.fixId === x.id ? (ui.fixErr || '') : '', hasFixErr: ui.fixId === x.id && !!ui.fixErr, fixLabel: ui.fixBusy ? 'Salvando…' : 'Salvar correção',
+          saveFix: function () {
+            if (ui.fixBusy) return; var out = [], bad = false;
+            Object.keys(ui.fix || {}).forEach(function (k) { var v = ui.fix[k], r = parseInt(v.reps, 10), ld = String(v.load || '').trim() === '' ? null : parseFloat(String(v.load).replace(',', '.'));
+              if (isNaN(r) || r < 0 || r > 999 || (ld != null && (isNaN(ld) || ld < 0 || ld > 999))) bad = true; else out.push({ item: Number(k.split(':')[0]), set: Number(k.split(':')[1]), reps: r, loadKg: ld }); });
+            if (bad) return ctx.setUi({ fixErr: 'Use números: repetições de 0 a 999 e carga de 0 a 999 kg.' });
+            ctx.setUi({ fixBusy: true, fixErr: '' });
+            C.rpc('correct_session_sets', { p_session: x.id, p_sets: out }).then(function (r) {
+              if (!r.ok) return ctx.setUi({ fixBusy: false, fixErr: /prazo_encerrado/.test(r.msg || '') ? 'O prazo de 48 horas para corrigir este registro acabou.' : (r.offline ? 'Sem conexão: nada foi alterado.' : 'Não foi possível corrigir agora. Nada foi alterado.') });
+              var d = Array.isArray(r.data) ? r.data[0] : r.data;
+              ctx.setUi({ fixBusy: false, fixId: '', fix: null, sess: null, asked: false }); ctx.toast(d && d.changed ? U.plural(d.changed, 'série corrigida', 'séries corrigidas') + '. Seu treinador vê os valores novos.' : 'Nada mudou: os valores eram os mesmos.');
+            });
+          } };
       }),
       hasRegs: (ui.sess || []).length > 0, noRegs: !(ui.sess || []).length && !ui.sessErr, goTreinos: function () { GO('ALU06'); },
       manyT: window.ACCT.myLinks().length > 1, tChoices: window.ACCT.myLinks().map(function (l) { var on = l.id === link.id; return { label: (l.trainerName || 'Treinador') + (l.status === 'pausado' ? ' (pausado)' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { window.ACCT.pickTrainer(l.id); ctx.setUi({ asked: false, sess: null, msgs: null, msgAsked: false, blk: null, msgDraft: null, sx: null, exec: null, receipt: null, apAsked: false, appts: null, slots: null, slotsOpen: false, moveFrom: null, apReceipt: '', prep: null, srvDrafts: null, rest: null, regOpen: '', fbDone: false, fbNote: '', fbEff: null, chAct: '', endOpen: false, err: '', v: (ui.v || 0) + 1 }); } }; }),
