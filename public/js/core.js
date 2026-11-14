@@ -156,10 +156,9 @@
       tabOf: { exercicios: 'rotinas', formularios: 'rotinas', agenda: 'conta', programas: 'conta', ofertas: 'conta', recebimentos: 'conta', insights: 'conta', ia: 'conta' },
       // produto: só destinos com dados reais
       sideReal: [
-        { sec: 'Trabalho', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Agenda', 'calendar', 'TRE20', 'agenda'], ['Mensagens', 'message', 'TRE25', 'mensagens', 'mensagens']] },
-        { sec: 'Conteúdo', items: [['Rotinas', 'clipboard', 'H06', 'rotinas'], ['Exercícios', 'dumbbell', 'TRE10', 'exercicios']] },
-        { sec: 'Negócio', items: [['Insights', 'chart', 'H08', 'insights']] },
-        { sec: 'Conta', items: [['Conta e perfil', 'user', 'tmenu', 'conta']] }
+        { sec: 'Rotina', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Conteúdo', 'book', 'H06', 'rotinas'], ['Exercícios', 'dumbbell', 'TRE10', 'exercicios'], ['Mensagens', 'message', 'TRE25', 'mensagens', 'mensagens']] },
+        { sec: 'Operação', items: [['Agenda', 'calendar', 'TRE20', 'agenda'], ['Pedidos', 'clipboard', 'REL06', 'pedidos'], ['Insights', 'chart', 'H08', 'insights'], ['Recebimentos', 'card', 'H09R', 'recebimentos']] },
+        { sec: 'Conta', items: [['Perfil', 'user', '@onboarding', 'perfil', '', { flow: 'treinador' }], ['Preferências e segurança', 'settings', 'tmenu', 'conta']] }
       ]
     },
     aluno: {
@@ -269,7 +268,7 @@
         var navKey = scr && (typeof scr.nav === 'function' ? scr.nav(ctx) : scr.nav) || '';
         var mk = function (it) {
           var on = it[3] === navKey, cnt = it[4] && COUNTS[it[4]] ? COUNTS[it[4]]() : 0;
-          return { label: it[0], ic: 'ic ic--sm i-' + it[1], cls: 'v4-reset snav__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', hasCount: !!cnt, count: String(cnt || ''), go: function () { GO(it[2] === 'tmenu' || it[2] === 'amenu' ? (page === 'treinador' ? 'TMENU' : 'AMENU') : it[2]); } };
+          return { label: it[0], ic: 'ic ic--sm i-' + it[1], cls: 'v4-reset snav__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', hasCount: !!cnt, count: String(cnt || ''), go: function () { GO(it[2] === 'tmenu' || it[2] === 'amenu' ? (page === 'treinador' ? 'TMENU' : 'AMENU') : it[2], it[5] || undefined); } };
         };
         var tabKey = R && R.tabOf && R.tabOf[navKey] || navKey;
         var tabs = (R && R.tabs || []).map(function (it) {

@@ -527,24 +527,67 @@
       <sc-if value="{{is.hoje}}" hint-placeholder-val="{{ false }}">
         <!-- Conta real: o que precisa de você hoje, só com fatos do servidor -->
         <sc-if value="{{v.real}}" hint-placeholder-val="{{ false }}">
+          <div class="hj-bar">
+            <div class="t1-search hj-bar__q">
+              <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" aria-label="Buscar aluno" placeholder="Buscar aluno pelo nome" value="{{v.q}}" onInput="{{v.setQ}}"></div>
+              <sc-if value="{{v.hasFound}}" hint-placeholder-val="{{ false }}"><div class="card t1-search__res" role="list"><sc-for list="{{v.found}}" as="f" hint-placeholder-count="2"><button type="button" class="t1-search__it" role="listitem" onClick="{{f.go}}"><span class="t1-grow"><b>{{f.name}}</b><span class="mod-small mod-muted">{{f.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div></sc-if>
+              <sc-if value="{{v.noFound}}" hint-placeholder-val="{{ false }}"><div class="card t1-search__res"><p class="mod-small">Nenhum aluno com “{{v.qText}}”. <button type="button" class="t1-link" onClick="{{v.clearQ}}">Limpar busca</button></p></div></sc-if>
+            </div>
+            <button type="button" class="t1-icbtn" onClick="{{v.bell}}" aria-label="Avisos" title="Avisos"><i class="ic ic--sm i-bell" aria-hidden="true"></i></button>
+            <div class="hj-pop">
+              <button type="button" class="btn btn--primary btn--sm" aria-haspopup="menu" aria-expanded="{{v.xCriar}}" onClick="{{v.tCriar}}"><i class="ic ic--sm i-plus" aria-hidden="true"></i>Criar</button>
+              <sc-if value="{{v.mCriar}}" hint-placeholder-val="{{ false }}"><div class="card hj-pop__m" role="menu"><sc-for list="{{v.criar}}" as="c" hint-placeholder-count="3"><button type="button" class="hj-pop__it" role="menuitem" onClick="{{c.go}}"><i class="{{c.ic}}" aria-hidden="true"></i><span class="t1-grow"><b>{{c.l}}</b><span>{{c.s}}</span></span></button></sc-for></div></sc-if>
+            </div>
+            <div class="hj-pop">
+              <button type="button" class="hj-eu" aria-haspopup="menu" aria-expanded="{{v.xEu}}" onClick="{{v.tEu}}" aria-label="Menu da conta de {{v.euNome}}"><span class="av av--sm">{{v.euIni}}</span><span class="hj-eu__n">{{v.euFirst}}</span><i class="ic ic--xs i-chev-d" aria-hidden="true"></i></button>
+              <sc-if value="{{v.mEu}}" hint-placeholder-val="{{ false }}"><div class="card hj-pop__m" role="menu"><span class="hj-pop__h">{{v.euNome}}</span><sc-for list="{{v.eu}}" as="c" hint-placeholder-count="3"><button type="button" class="hj-pop__it" role="menuitem" onClick="{{c.go}}"><i class="{{c.ic}}" aria-hidden="true"></i><span class="t1-grow"><b>{{c.l}}</b></span></button></sc-for><button type="button" class="hj-pop__it hj-pop__it--out" role="menuitem" onClick="{{v.sair}}"><i class="ic ic--sm i-logout" aria-hidden="true"></i><span class="t1-grow"><b>Sair da conta</b></span></button></div></sc-if>
+            </div>
+          </div>
           <div class="t1-head">
             <div class="t1-head__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">{{v.hello}}</h1><p class="pghead__sub">{{v.rSub}}</p></div>
-            <button type="button" class="btn btn--outline btn--sm" onClick="{{v.invite}}"><i class="ic ic--sm i-user-plus" aria-hidden="true"></i>Convidar aluno</button>
           </div>
-          <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-label="Próximo passo"><h2 class="onb-h2">{{v.next.t}}</h2><p class="mod-small mod-muted">{{v.next.x}}</p>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.next.go}}">{{v.next.act}}</button></div>
-            <p class="mod-small mod-muted">Pedidos e alunos aparecem aqui.</p></section></sc-if>
-          <sc-if value="{{v.hasMine}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-mine"><h2 class="onb-h2" id="hj-mine">Precisa de você</h2>
-            <ol class="onb-secs"><sc-for list="{{v.mine}}" as="m" hint-placeholder-count="2"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-user"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--primary btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
-          <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Tudo em dia</b>Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</div></div></sc-if>
-          <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-theirs"><h2 class="onb-h2" id="hj-theirs">Aguardando o aluno</h2>
-            <ol class="onb-secs"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li><div class="onb-secs__r" style="flex-wrap: wrap; gap: 8px"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-clock"></i></span><span class="onb-secs__t"><b>{{m.name}}</b><span>{{m.why}}</span><span>{{m.when}}</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ol></section></sc-if>
-          <sc-if value="{{v.hasCounts}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="hj-ag"><h2 class="onb-h2" id="hj-ag">Agenda de hoje</h2>
-            <sc-if value="{{v.agErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a agenda agora. Isso não quer dizer que o dia está livre.</p></sc-if>
-            <sc-if value="{{v.noAg}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum horário marcado para hoje.</p></sc-if>
-            <sc-if value="{{v.hasAg}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.ag}}" as="a" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{a.when}}</b><span>{{a.who}}</span></span></div></li></sc-for></ol></sc-if>
-            <p class="mod-small mod-muted">{{v.counts}}</p>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAlunos}}">Ver alunos</button><button type="button" class="btn btn--outline btn--md" onClick="{{v.goAgenda}}">Abrir agenda</button><button type="button" class="btn btn--ghost btn--md" onClick="{{v.refresh}}">Atualizar</button></div></section></sc-if>
+          <div class="t1-hub">
+            <div class="mod-col">
+              <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><section class="mod-card t1-first" aria-label="Próximo passo"><div class="t1-first__top"><span class="label">Próximo passo</span></div><h2 class="onb-h2">{{v.next.t}}</h2><p class="t1-first__d">{{v.next.x}}</p>
+                <div class="mod-row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.next.go}}">{{v.next.act}}</button></div></section></sc-if>
+              <sc-if value="{{v.hasFirst}}" hint-placeholder-val="{{ false }}"><section class="mod-card t1-first" aria-label="Primeira pendência">
+                <div class="t1-first__top"><span class="av av--sm">{{v.first.ini}}</span><span class="label">Primeira pendência</span><span class="t1-first__tag is-me">Aguarda você</span></div>
+                <div class="hj-first"><b>{{v.first.name}}</b><span>{{v.first.why}}</span><span class="t1-q__m">{{v.first.when}}</span></div>
+                <div class="mod-row"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.first.go}}">{{v.first.act}}</button></div>
+              </section></sc-if>
+              <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><section class="mod-card t1-first t1-first--ok" aria-label="Pendências"><div class="t1-first__top"><i class="ic ic--sm i-checksq" aria-hidden="true"></i><span class="label">Tudo em dia</span></div><p class="t1-first__d">Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</p></section></sc-if>
+              <section class="mod-card" aria-labelledby="hj-mine">
+                <div class="mod-card__h"><b id="hj-mine">Alunos que precisam de ação</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goAlunos}}">Ver alunos</button></div>
+                <sc-if value="{{v.hasRest}}" hint-placeholder-val="{{ false }}"><ul class="t1-q" role="list"><sc-for list="{{v.rest}}" as="m" hint-placeholder-count="2"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><b>{{m.name}}</b><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--outline btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
+                <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><span class="label">Aguardando o aluno</span><ul class="t1-q" role="list"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><b>{{m.name}}</b><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
+                <sc-if value="{{v.noQueue}}" hint-placeholder-val="{{ false }}"><div class="hj-emp"><i class="ic ic--sm i-users" aria-hidden="true"></i><b>Ninguém na fila</b><span>Quando um aluno pedir acompanhamento, responder a preparação ou registrar um treino, ele aparece aqui.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.invite}}">Convidar aluno</button></div></sc-if>
+              </section>
+              <section class="mod-card" aria-label="Retomar trabalho">
+                <div class="mod-card__h"><b>Retomar trabalho</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goConteudo}}">Conteúdo</button></div>
+                <sc-if value="{{v.hasDrafts}}" hint-placeholder-val="{{ false }}"><div class="mod-list"><sc-for list="{{v.drafts}}" as="d" hint-placeholder-count="2"><button type="button" class="lrow" onClick="{{d.go}}"><span class="lrow__ic"><i class="ic ic--xs i-edit" aria-hidden="true"></i></span><span class="lrow__t"><b>{{d.title}}</b><span>{{d.sub}}</span></span><span class="t1-more">Continuar</span></button></sc-for></div></sc-if>
+                <sc-if value="{{v.noDrafts}}" hint-placeholder-val="{{ false }}"><div class="hj-emp hj-emp--row"><i class="ic ic--sm i-clipboard" aria-hidden="true"></i><span class="t1-grow"><b>Nada em rascunho</b><span>Treinos que você começar ficam em Conteúdo.</span></span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goConteudo}}">Abrir Conteúdo</button></div></sc-if>
+              </section>
+            </div>
+            <div class="mod-col">
+              <section class="mod-card" aria-labelledby="hj-ag">
+                <div class="mod-card__h"><b id="hj-ag">Agenda de hoje</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goAgenda}}">Abrir agenda</button></div>
+                <sc-if value="{{v.agErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar a agenda agora. Isso não quer dizer que o dia está livre.</p></sc-if>
+                <sc-if value="{{v.hasAg}}" hint-placeholder-val="{{ false }}"><div class="mod-list"><sc-for list="{{v.ag}}" as="a" hint-placeholder-count="1"><div class="lrow"><span class="lrow__ic"><i class="ic ic--xs i-clock" aria-hidden="true"></i></span><span class="lrow__t"><b>{{a.when}}</b><span>{{a.who}}</span></span></div></sc-for></div></sc-if>
+                <sc-if value="{{v.noAg}}" hint-placeholder-val="{{ false }}"><div class="hj-emp"><i class="ic ic--sm i-calendar" aria-hidden="true"></i><b>Nenhum horário marcado para hoje.</b><span>Alunos com vínculo ativo marcam nos horários que você liberar.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goAgenda}}">Definir disponibilidade</button></div></sc-if>
+              </section>
+              <section class="mod-card" aria-label="Mensagens e pedidos">
+                <div class="mod-card__h"><b>Mensagens e pedidos</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goMsgs}}">Abrir</button></div>
+                <sc-if value="{{v.hasBox}}" hint-placeholder-val="{{ false }}"><div class="mod-list"><sc-for list="{{v.box}}" as="m" hint-placeholder-count="2"><div class="lrow hj-box"><span class="lrow__ic"><i class="{{m.ic}}" aria-hidden="true"></i></span><span class="lrow__t"><b>{{m.who}}</b><span>{{m.text}}</span></span><button type="button" class="btn btn--outline btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></sc-for></div></sc-if>
+                <sc-if value="{{v.noBox}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum pedido ou mensagem esperando resposta.</p></sc-if>
+              </section>
+              <section class="mod-card" aria-label="Resumo do negócio">
+                <div class="mod-card__h"><b>Resumo do negócio</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goInsights}}">Insights</button></div>
+                <div class="hj-kpis"><sc-for list="{{v.kpis}}" as="k" hint-placeholder-count="4"><div class="hj-kpi"><div class="hj-kpi__top"><i class="{{k.ic}}" aria-hidden="true"></i><span class="{{k.badgeCls}}">{{k.badge}}</span></div><div class="hj-kpi__v"><b class="{{k.nCls}}">{{k.n}}</b><sc-if value="{{k.hasSuf}}" hint-placeholder-val="{{ false }}"><span>{{k.suf}}</span></sc-if></div><span class="hj-kpi__l">{{k.l}}</span><span class="hj-kpi__x">{{k.x}}</span><button type="button" class="t1-link hj-kpi__how" onClick="{{k.how}}">Como contamos</button></div></sc-for></div>
+                <sc-if value="{{v.hasCounts}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.counts}}</p></sc-if>
+              </section>
+            </div>
+          </div>
+          <div class="hj-strip"><i class="ic ic--sm i-card" aria-hidden="true"></i><span class="t1-grow"><b>Recebimentos</b> Receba dos alunos pelo 99coach.</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goMoney}}">Ver recebimentos</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.refresh}}">Atualizar</button></div>
         </sc-if>
         <sc-if value="{{v.isNew}}" hint-placeholder-val="{{ false }}">
           <div class="pghead"><div class="pghead__txt"><span class="eyebrow">{{v.date}}</span><h1 class="pghead__title">Bem-vindo, Rafael</h1><p class="pghead__sub">Sua conta está pronta. Por onde quer começar?</p></div></div>

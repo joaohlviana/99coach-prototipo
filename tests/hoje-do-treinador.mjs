@@ -34,6 +34,7 @@ const openHoje = async () => { await p.reload({ waitUntil: 'load' }); await p.wa
 const press = async (re) => { for (const h of await p.$$('#app button')) { const t = (await h.textContent()).trim(); if (re.test(t) && (await h.isVisible())) { await h.click(); return t; } } return null; };
 // 1. conta nova, perfil não publicado: uma próxima ação, sem números
 let t = await openHoje();
+await p.screenshot({ path: '/tmp/claude-0/hoje-vazio.png', fullPage: true });
 console.log('1 conta nova:', /Publicar seu perfil/.test(t), '| sem fila nem zeros:', !/Precisa de você/.test(t) && !/0 alunos/.test(t), '| data de hoje:', new RegExp(String(new Date().getDate())).test(t));
 // 2. com fatos: pedido pendente, preparação a revisar, aluno sem treino, aluno com a preparação, pausado, horário hoje
 const lk = (id, sid, prep, st, w) => ({ id, status: st || 'ativo', origin: 'convite', prep, answers: {}, created_at: '2026-11-01T12:00:00Z', student_id: sid, trainers: { slug: 'm', name: 'Marina Duarte', user_id: 'tr' }, workouts: w ? [{ template_id: 'manual', title: 'Treino A', current_version: 1, workout_versions: [{ version: 1, sessions: [{ id: 's1', title: 'A', estMin: 10, items: [] }], schedule: null, created_at: '2026-11-02T12:00:00Z' }] }] : [] });
@@ -42,7 +43,10 @@ srv.reqs = [{ id: 'R1', status: 'pendente', message: 'Quero treinar', created_at
 srv.appts = [{ id: 'A1', link_id: 'L2', starts_at: today.toISOString(), ends_at: today.toISOString(), tz: 'America/Sao_Paulo', status: 'marcado', booked_by: 'aluno' }];
 t = await openHoje();
 console.log('2 fila:', /3 pendências suas agora/.test(t), '| pedido:', /Eva Nunes Pediu acompanhamento/.test(t) && /vale até 12\/11/.test(t), '| revisar:', /Caio Prado Respondeu a preparação/.test(t), '| sem treino:', /Bia Lima Ainda sem treino atribuído/.test(t));
-console.log('  aguardando o aluno separado:', /Aguardando o aluno .*Davi Reis A preparação está com Davi/.test(t), '| agenda de hoje:', /Agenda de hoje .*Bia Lima/.test(t), '| contagens:', /3 alunos ativos · 1 pausado · 1 pedido aguardando/.test(t));
+console.log('  aguardando o aluno separado:', /Aguardando o aluno .*Davi Reis A preparação está com Davi/i.test(t), '| agenda de hoje:', /Agenda de hoje .*Bia Lima/.test(t), '| contagens:', /3 alunos ativos · 1 pausado · 1 pedido aguardando/.test(t));
+await p.screenshot({ path: '/tmp/claude-0/hoje-cheio.png', fullPage: true });
+console.log('  menu da conta com sair:', await press(/^Menu|Marina/) !== null && /Sair da conta/.test(await txt()), '| criar:', (await press(/^Criar$/)) && /Convidar aluno O convite vale 7 dias/.test(await txt()));
+await p.keyboard.press('Escape'); await press(/^Criar$/);
 console.log('  botões:', await press(/^Revisar respostas$/), '->', await p.evaluate(() => location.hash));
 // 3. agenda falhou: não vira "dia livre"
 srv.apFail = true; t = await openHoje();
