@@ -3,7 +3,7 @@
    confirmados, com origem e período (tabela acessível). Nada de treino, conversa ou evolução inventados. */
 REG.screen({
   page: 'aluno', key: 'semvinculo', id: 'ALU00', title: 'Meu acompanhamento', mtitle: function (ctx) { return ({ hoje: 'Hoje', treinos: 'Treinos', evolucao: 'Evolução', mensagens: 'Mensagens' })[ctx.props.navFrom || 'hoje'] || 'Hoje'; },
-  nav: function (ctx) { return ctx.props.navFrom || 'hoje'; },
+  nav: function (ctx) { return ctx.props.navFrom || 'hoje'; }, wide: true,
   vals: function (ctx) {
     var C = window.CONTA, ui = ctx.ui, from = ctx.props.navFrom || 'hoje';
     var first = (window.STORE && (window.STORE.loadOnb('aluno') || {}).name || '').split(' ')[0];
@@ -246,6 +246,16 @@ REG.screen({
       hasRegs: (ui.sess || []).length > 0, noRegs: !(ui.sess || []).length && !ui.sessErr, goTreinos: function () { GO('ALU06'); },
       manyT: window.ACCT.myLinks().length > 1, tChoices: window.ACCT.myLinks().map(function (l) { var on = l.id === link.id; return { label: (l.trainerName || 'Treinador') + (l.status === 'pausado' ? ' (pausado)' : ''), on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { window.ACCT.pickTrainer(l.id); ctx.setUi({ asked: false, sess: null, msgs: null, msgAsked: false, blk: null, msgDraft: null, sx: null, exec: null, receipt: null, apAsked: false, appts: null, slots: null, slotsOpen: false, moveFrom: null, apReceipt: '', prep: null, srvDrafts: null, rest: null, regOpen: '', fbDone: false, fbNote: '', fbEff: null, chAct: '', endOpen: false, err: '', v: (ui.v || 0) + 1 }); } }; }),
       apReceipt: apExtra.apReceipt, hasApReceipt: apExtra.hasApReceipt, moving: apExtra.moving, tzTxt: apExtra.tzTxt, stopMove: function () { ctx.setUi({ moveFrom: null, slotsOpen: false }); },
+      hasBar: true, bar: (function () {
+        var nm = (window.ROLES.aluno.me && window.ROLES.aluno.me.name) || 'Minha conta', pk = function (to) { return function () { ctx.setUi({ menu: false }); GO(to); }; };
+        return { name: nm, ini: U.ini(nm), first: String(nm).split(' ')[0], open: !!ui.menu, x: String(!!ui.menu), toggle: function () { ctx.setUi({ menu: !ui.menu }); }, bell: pk('AVISOS'),
+          items: [{ l: 'Encontrar treinador', ic: 'ic ic--sm i-search', go: pk('@home') }, { l: 'Favoritos', ic: 'ic ic--sm i-heart', go: pk('PUB07') }, { l: 'Conta e segurança', ic: 'ic ic--sm i-settings', go: pk('AMENU') }],
+          sair: function () { ctx.setUi({ menu: false }); GO('@sair'); } };
+      })(),
+      lastT: (function () { var x = (ui.sess || []).slice().sort(function (a, b) { return String(b.submitted_at).localeCompare(String(a.submitted_at)); })[0]; return x ? 'Treino registrado em ' + new Date(x.submitted_at).toLocaleDateString('pt-BR') : 'Nenhum treino registrado ainda'; })(),
+      lastX: (ui.sess || []).length ? U.plural((ui.sess || []).length, 'registro', 'registros') + ' até agora' : 'Aparece aqui quando você concluir uma sessão.',
+      goTreinos: function () { GO('ALU06'); },
+      msgT: note ? 'Recado de ' + tf : 'Nenhuma mensagem nova', msgX: note ? String(note.body).slice(0, 80) : 'Fale com ' + tf + ' pela conversa.',
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',
       qs: QS.map(function (q) { return { id: 'pq-' + q[0], q: q[1], ph: q[2], v: P[q[0]] || '', set: function (e) { var o = Object.assign({}, P); o[q[0]] = U.val(e).slice(0, 120); ctx.setUi({ prep: o, err: '' }); } }; }),
