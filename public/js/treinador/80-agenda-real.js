@@ -3,7 +3,9 @@
 REG.screen({
   page: 'treinador', key: 'agendareal', id: 'TRE20R', title: 'Agenda', nav: 'agenda', wide: true,
   vals: function (ctx) {
-    var C = window.CONTA, ui = ctx.ui, TZ = 'America/Sao_Paulo';
+    var C = window.CONTA, ui = ctx.ui;
+    var ZONES = [['America/Sao_Paulo', 'Brasília (UTC−3)'], ['America/Noronha', 'Fernando de Noronha (UTC−2)'], ['America/Manaus', 'Manaus e Cuiabá (UTC−4)'], ['America/Rio_Branco', 'Rio Branco (UTC−5)']];
+    var TZ = ui.tz || 'America/Sao_Paulo', tzName = (ZONES.filter(function (z) { return z[0] === TZ; })[0] || ZONES[0])[1];
     var DAYS = [[1, 'Segunda'], [2, 'Terça'], [3, 'Quarta'], [4, 'Quinta'], [5, 'Sexta'], [6, 'Sábado'], [7, 'Domingo']];
     var hm = function (m) { return ('0' + Math.floor(m / 60)).slice(-2) + ':' + ('0' + (m % 60)).slice(-2); };
     var mins = function (t) { var x = /^(\d{1,2}):(\d{2})$/.exec(String(t || '').trim()); return x ? Number(x[1]) * 60 + Number(x[2]) : NaN; };
@@ -12,7 +14,7 @@ REG.screen({
       ctx.setUi({ asked: true, loading: true });
       Promise.all([C.myAvailability(), C.appointments(links.map(function (l) { return l.id; }))]).then(function (x) {
         var R = {}; ((x[0].ok && x[0].data) || []).forEach(function (r) { R[r.weekday] = { on: true, from: hm(r.start_min), to: hm(r.end_min), slot: String(r.slot_min) }; });
-        ctx.setUi({ loading: false, rules: ui.rules || R, appts: (x[1].ok && x[1].data) || [], loadErr: !x[0].ok });
+        var tz0 = ((x[0].ok && x[0].data) || [])[0]; ctx.setUi({ loading: false, tz: ui.tz || (tz0 && tz0.tz) || 'America/Sao_Paulo', rules: ui.rules || R, appts: (x[1].ok && x[1].data) || [], loadErr: !x[0].ok });
       });
     }
     var rules = ui.rules || {};
@@ -56,7 +58,8 @@ REG.screen({
     return {
       exs: exs, hasExs: exs.length > 0, exFail: ui.ex === null, exDay: ui.exDay || '', exNote: ui.exNote || '', setExDay: function (e) { ctx.setUi({ exDay: U.val(e), exErr: '' }); }, setExNote: function (e) { ctx.setUi({ exNote: U.val(e) }); },
       addEx: addEx, exLabel: ui.exBusy ? 'Bloqueando…' : 'Bloquear dia', exErr: ui.exErr || '', hasExErr: !!ui.exErr,
-      loading: !!ui.loading, loadErr: !!ui.loadErr, tz: 'Fuso: Brasília (America/Sao_Paulo)',
+      loading: !!ui.loading, loadErr: !!ui.loadErr, tz: 'Fuso: ' + tzName,
+      zones: ZONES.map(function (z) { var on = z[0] === TZ; return { label: z[1], on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ tz: z[0], saved: false }); } }; }),
       days: DAYS.map(function (d) { var r = day(d[0]); return { name: d[1], on: r.on, onTxt: String(r.on), cls: 'check' + (r.on ? ' is-on' : ''), from: r.from, to: r.to, slot: r.slot, toggle: upd(d[0], 'on'), setFrom: upd(d[0], 'from'), setTo: upd(d[0], 'to'), setSlot: upd(d[0], 'slot'), idF: 'av-f' + d[0], idT: 'av-t' + d[0], idS: 'av-s' + d[0] }; }),
       save: save, saveLabel: ui.busy ? 'Salvando…' : 'Salvar disponibilidade', err: ui.err || '', hasErr: !!ui.err,
       appts: appts, hasAppts: appts.length > 0, noAppts: !appts.length && !ui.loading

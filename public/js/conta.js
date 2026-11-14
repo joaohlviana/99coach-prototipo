@@ -315,7 +315,7 @@
     cancelAppointment: function (id, reason) { return db('POST', 'rpc/cancel_appointment', { p_id: id, p_reason: reason || null }); },
     appointments: function (linkIds) { return linkIds.length ? db('GET', 'appointments?select=id,link_id,starts_at,ends_at,tz,status,booked_by&link_id=in.(' + linkIds.join(',') + ')&status=eq.marcado&ends_at=gte.' + encodeURIComponent(new Date(Date.now() - 36e5).toISOString()) + '&order=starts_at.asc') : Promise.resolve({ ok: true, data: [] }); },
     // ---------- mensagens do vínculo ----------
-    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at,edited_at,retracted_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.desc&limit=300').then(function (r) { if (r.ok && Array.isArray(r.data)) r.data.reverse(); return r; }); },
+    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at,edited_at,retracted_at,attachment_path,attachment_name,attachment_type&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.desc&limit=300').then(function (r) { if (r.ok && Array.isArray(r.data)) r.data.reverse(); return r; }); },
     sendMessage: function (link, body) { var k = 'msg:' + link + ':' + hash(body); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: intent(k), p_session: null }).then(settle(k)); },
     intent: intent, settle: settle,
     markRead: function (link) { return db('POST', 'rpc/mark_read', { p_link: link }); },
@@ -334,6 +334,21 @@
     pub: function (path) { return call('GET', '/rest/v1/' + path); },
     db: function (method, path, body, prefer) { return db(method, path, body, prefer); },
     rpc: function (fn, args) { return db('POST', 'rpc/' + fn, args || {}); },
+    // arquivos da conversa (área privada): enviar, abrir por link temporário e apagar o próprio arquivo
+    fileUp: function (bucket, path, file) {
+      if (!sess) return Promise.resolve({ ok: false, nosession: true });
+      return fetch(URL0 + '/storage/v1/object/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token, 'Content-Type': file.type || 'application/octet-stream', 'x-upsert': 'false' }, body: file })
+        .then(function (r) { return { ok: r.ok, status: r.status }; }, function () { return { ok: false, offline: true }; });
+    },
+    fileUrl: function (bucket, path) {
+      if (!sess) return Promise.resolve('');
+      return fetch(URL0 + '/storage/v1/object/sign/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ expiresIn: 300 }) })
+        .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; }).then(function (d) { var u = d && (d.signedURL || d.signedUrl); return u ? URL0 + '/storage/v1' + u : ''; });
+    },
+    fileDel: function (bucket, path) {
+      if (!sess) return Promise.resolve({ ok: false });
+      return fetch(URL0 + '/storage/v1/object/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), { method: 'DELETE', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token } }).then(function (r) { return { ok: r.ok }; }, function () { return { ok: false }; });
+    },
     // linha de menu "Mostrar quando estou online": lê e grava a preferência no servidor; o sinal é renovado enquanto o app está aberto
     // "online agora" de outra pessoa: o servidor só responde se ela ligou a preferência e há vínculo ou pedido aberto
     presenceText: function (ctx, userId) {

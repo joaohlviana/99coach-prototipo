@@ -13,7 +13,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*', 'content-type': 'application/json' };
   if (rq.method() === 'OPTIONS') return route.fulfill({ status: 200, headers: cors });
   const j = (d, s) => route.fulfill({ status: s || 200, headers: cors, body: JSON.stringify(d) });
-  const path = u.pathname.replace('/rest/v1/', ''), body = rq.postData() ? JSON.parse(rq.postData()) : {}, q = decodeURIComponent(u.search);
+  const path = u.pathname.replace('/rest/v1/', ''), body = (() => { try { return rq.postData() ? JSON.parse(rq.postData()) : {}; } catch (_) { return {}; } })(), q = decodeURIComponent(u.search);
   if (path === 'programs') {
     if (rq.method() === 'POST') { srv.progs.push(Object.assign({ id: 'P' + srv.progs.length }, body)); return j([]); }
     const id = (q.match(/id=eq\.([^&]+)/) || [])[1];
@@ -21,6 +21,9 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
     if (rq.method() === 'DELETE') { srv.progs = srv.progs.filter((x) => x.id !== id); return j([]); }
     return j(srv.progs);
   }
+  if (/\/storage\/v1\/object\/chat-anexos\//.test(u.pathname)) { srv.calls.push('upload:' + rq.method() + ':' + (rq.headers()['content-type'] || '')); return j({ Key: 'ok' }); }
+  if (path === 'rpc/send_message') { const m = { id: 'm9', side: 'treinador', body: body.p_body, client_id: body.p_client_id, created_at: iso(0), read_at: null, edited_at: null, retracted_at: null }; srv.msgs.push(m); return j({ outcome: 'entregue', id: 'm9', at: m.created_at }); }
+  if (path === 'rpc/attach_to_message') { const m = srv.msgs.find((x) => x.id === body.p_message); m.attachment_path = body.p_path; m.attachment_name = body.p_name; m.attachment_type = body.p_type; srv.calls.push('attach:' + /^L1\//.test(body.p_path)); return j({ id: m.id }); }
   if (path === 'messages') return j(srv.msgs.slice().reverse());
   if (path === 'rpc/edit_message') { const m = srv.msgs.find((x) => x.id === body.p_id); m.body = body.p_body; m.edited_at = iso(0); srv.calls.push('edit'); return j({ id: m.id }); }
   if (path === 'rpc/retract_message') { const m = srv.msgs.find((x) => x.id === body.p_id); m.body = 'Mensagem retirada'; m.retracted_at = iso(0); srv.calls.push('retract'); return j({ id: m.id }); }
@@ -63,5 +66,11 @@ await press(/^Editar$/, '.rx-msg__a'); await p.fill('textarea[aria-label="Corrig
 console.log('  editar:', srv.calls.includes('edit'), /Treino de perna amanhã às 7h/.test(t), /editada/i.test(t));
 await press(/^Retirar$/, '.rx-msg__a'); await press(/^Retirar mensagem$/, '.mod-sheet button'); await p.waitForTimeout(700); t = await T();
 console.log('  retirar:', srv.calls.includes('retract'), /Mensagem retirada/.test(t), !/às 7h/.test(t));
+// 3. anexo: recusa tipo errado, envia PDF e mostra o arquivo na conversa
+const inp = await p.$('input[type=file].onb-file__in');
+await inp.setInputFiles({ name: 'planilha.exe', mimeType: 'application/x-msdownload', buffer: Buffer.from('x') }); await p.waitForTimeout(400);
+console.log('3 anexo de tipo errado é recusado:', /Envie imagem \(JPG, PNG ou WebP\) ou PDF/.test(await T()), !srv.calls.some((c) => /^upload/.test(c)));
+await (await p.$('input[type=file].onb-file__in')).setInputFiles({ name: 'Avaliação física.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 teste') }); await p.waitForTimeout(1500); t = await T();
+console.log('  PDF enviado e ligado à mensagem:', srv.calls.includes('upload:POST:application/pdf'), srv.calls.includes('attach:true'), /Anexo: Avaliação física\.pdf/.test(t), /PDF · abrir/i.test(t));
 console.log('errs', errs);
 await b.close();
