@@ -60,6 +60,29 @@
     }
   });
 
+  // ASSIN · Minha assinatura: o plano que o servidor registra, as vagas e a comissão. Separado do que o treinador recebe dos alunos.
+  REG.screen({
+    page: 'treinador', key: 'assinatura', id: 'ASSIN', title: 'Minha assinatura', nav: 'assinatura', back: 'TMENU',
+    vals: function (ctx) {
+      var ui = ctx.ui;
+      if (!ui.cap && !ui.busy) { ctx.setUi({ busy: true }); C().rpc('my_capacity', {}).then(function (r) { ctx.setUi({ busy: false, cap: one(r) || { none: true }, err: !r.ok }); }); }
+      var cap = ui.cap && !ui.cap.none ? ui.cap : null, pro = !!cap && cap.plan === 'pro';
+      return {
+        loading: !ui.cap, fail: !!ui.cap && !cap, ok: !!cap,
+        plan: pro ? 'Pro' : 'Essencial', price: pro ? 'R$ 99 por mês' : '',
+        rows: cap ? [
+          'Até ' + U.plural(cap.limit, 'aluno ativo', 'alunos ativos') + ' ao mesmo tempo',
+          (cap.used + cap.held) + ' de ' + cap.limit + ' vagas em uso' + (cap.held ? ' (' + U.plural(cap.held, 'reservada por pedido aceito', 'reservadas por pedidos aceitos') + ')' : ''),
+          'Comissão de 5% por venda feita pelo 99coach, igual em qualquer plano',
+          'O plano não compra posição na busca, selo nem garantia de clientes'
+        ].map(function (x) { return { x: x }; }) : [],
+        full: !!cap && !cap.free,
+        change: pro ? 'Para mudar ou cancelar o Pro, fale com o suporte pela Ajuda.' : 'O plano Pro (mais vagas) ainda não é vendido pelo site. Quando estiver disponível, a troca aparece aqui.',
+        goMoney: function () { GO('H09R'); }, goHelp: function () { GO('PUB11'); }, reload: function () { ctx.setUi({ cap: null }); }
+      };
+    }
+  });
+
   var CST = { nao_informado: 'Não informado', informado: 'Informado por você', em_conferencia: 'Em conferência pela equipe', verificado: 'Verificado', divergente: 'Não conferiu', vencido: 'Vencido' };
   REG.screen({
     page: 'treinador', key: 'credreal', id: 'ACC10R', title: 'Credenciais', nav: 'conta', back: 'TMENU',

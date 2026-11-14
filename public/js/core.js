@@ -158,7 +158,7 @@
       sideReal: [
         { sec: 'Rotina', items: [['Hoje', 'home', 'H03', 'hoje'], ['Alunos', 'users', 'H04', 'alunos', 'alunos'], ['Conteúdo', 'book', 'H06', 'rotinas'], ['Exercícios', 'dumbbell', 'TRE10', 'exercicios'], ['Mensagens', 'message', 'TRE25', 'mensagens', 'mensagens']] },
         { sec: 'Operação', items: [['Agenda', 'calendar', 'TRE20', 'agenda'], ['Pedidos', 'clipboard', 'REL06', 'pedidos'], ['Insights', 'chart', 'H08', 'insights'], ['Recebimentos', 'card', 'H09R', 'recebimentos']] },
-        { sec: 'Conta', items: [['Perfil', 'user', '@onboarding', 'perfil', '', { flow: 'treinador' }], ['Preferências e segurança', 'settings', 'tmenu', 'conta']] }
+        { sec: 'Conta', items: [['Perfil', 'user', '@onboarding', 'perfil', '', { flow: 'treinador' }], ['Minha assinatura', 'card', 'ASSIN', 'assinatura'], ['Preferências e segurança', 'settings', 'tmenu', 'conta']] }
       ]
     },
     aluno: {

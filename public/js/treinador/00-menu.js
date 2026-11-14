@@ -19,7 +19,7 @@ REG.screen({
             });
           } },
           row('Credenciais', 'CREF e conferência pela equipe', 'shield', 'ACC10')] },
-        { title: 'Conta', items: [row('Avisos', 'Novidades da sua conta e o que avisar', 'bell', 'AVISOS'), row('Meus dados e segurança', 'Baixar cópia · sair dos outros aparelhos · excluir conta', 'file', 'ACC13R'), row('Sair da conta', 'Encerra a sessão neste aparelho', 'logout', '@sair')] }
+        { title: 'Conta', items: [row('Minha assinatura', 'Plano, vagas e comissão', 'card', 'ASSIN'), row('Avisos', 'Novidades da sua conta e o que avisar', 'bell', 'AVISOS'), row('Meus dados e segurança', 'Baixar cópia · sair dos outros aparelhos · excluir conta', 'file', 'ACC13R'), row('Sair da conta', 'Encerra a sessão neste aparelho', 'logout', '@sair')] }
       ] : [
         { title: 'Trabalho', items: [row('Agenda', 'Compromissos e disponibilidade', 'calendar', 'TRE20'), row('Notificações e tarefas', 'O que precisa de você', 'bell', 'TRE26')] },
         { title: 'Conteúdo', items: [row('Exercícios', 'Catálogo e meus exercícios', 'dumbbell', 'TRE10'), row('Formulários', 'Anamnese, check-in e avaliações', 'file', 'TRE04')] },
