@@ -263,6 +263,21 @@ REG.screen({
         return { days: days, sum: U.plural(n, 'treino registrado', 'treinos registrados') + ' nesta semana', range: f(d0) + ' a ' + f(new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + 6)) };
       })(),
       goTreinos: function () { GO('ALU06'); },
+      pays: (function () {
+        var C2 = window.CONTA, me2 = (C2.user() || {}).id;
+        if (me2 && ui.pays === undefined && !ui.paysAsked) { ctx.setUi({ paysAsked: true }); C2.db('GET', 'orders?select=id,description,amount_cents,status,paid_at&buyer_id=eq.' + encodeURIComponent(me2) + '&status=in.(pago,estornado)&order=paid_at.desc&limit=20').then(function (r) { ctx.setUi({ pays: r.ok ? (r.data || []) : null }); }); }
+        var money2 = function (c) { return 'R$ ' + (c / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); };
+        return (ui.pays || []).map(function (o) {
+          var left = o.paid_at ? 7 - Math.floor((Date.now() - new Date(o.paid_at).getTime()) / 86400000) : 0, can = o.status === 'pago' && left > 0 && ui.gBusy !== o.id;
+          return { t: (o.description || 'Acompanhamento') + ' · ' + money2(o.amount_cents), x: o.status === 'estornado' ? 'Reembolsado' : 'Pago em ' + new Date(o.paid_at).toLocaleDateString('pt-BR') + (left > 0 ? ' · garantia de 7 dias: ' + U.plural(left, 'dia restante', 'dias restantes') : ' · garantia de 7 dias encerrada'), can: can,
+            ask: function () { ctx.ask({ title: 'Pedir o dinheiro de volta?', lines: ['Você está dentro da garantia de 7 dias: o valor inteiro volta pelo mesmo meio de pagamento.', 'O acompanhamento pago é encerrado quando o reembolso for confirmado.', 'Não dá para desfazer.'], ok: 'Pedir reembolso', danger: true, onOk: function () {
+              ctx.setUi({ gBusy: o.id });
+              C2.fn('pagamentos', { acao: 'garantia', pedido: o.id }).then(function (r) { var d = (r.ok && r.data) || {}; ctx.setUi({ gBusy: '', paysAsked: false, pays: undefined });
+                ctx.toast(d.ok ? 'Reembolso pedido. O valor volta pelo mesmo meio de pagamento; o prazo depende do banco.' : ({ fora_da_garantia: 'A garantia de 7 dias deste pagamento já acabou.', ja_reembolsado: 'Este pagamento já foi reembolsado.' }[d.motivo] || 'Não foi possível pedir agora. Nada foi alterado.')); });
+            } }); } };
+        });
+      })(),
+      hasPays: !!(ui.pays && ui.pays.length),
       msgT: note ? 'Recado de ' + tf : 'Nenhuma mensagem nova', msgX: note ? String(note.body).slice(0, 80) : 'Fale com ' + tf + ' pela conversa.',
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',
@@ -280,6 +295,7 @@ REG.screen({
       // semana no Hoje: só contagem confirmada, sem meta inventada
       weekLine: hist.length ? weekTxt0 : '', hasWeekLine: hist.length > 0 && !ex,
       // meu treinador: situação do vínculo e o que muda ao encerrar
+      trainerOnline: link.trainerUserId ? window.CONTA.presenceText(ctx, link.trainerUserId) : '', hasTrainerOnline: !!(link.trainerUserId && window.CONTA.presenceText(ctx, link.trainerUserId)),
       trainerLine: (link.trainerName || 'Seu treinador') + ' · ' + (paused ? 'acompanhamento pausado' : 'acompanhamento ativo') + ' desde ' + new Date(link.since).toLocaleDateString('pt-BR') + ' · ' + (link.origin === 'convite' ? 'por convite' : 'por pedido'),
       endInfo: ['Encerrar é definitivo: o acompanhamento com ' + tf + ' termina e a vaga dele é liberada.', 'Seu histórico de treinos continua visível para você.', 'O treino atribuído deixa de receber novas versões.', 'Para voltar a treinar com ' + tf + ', é preciso um novo pedido ou convite.'].map(function (x) { return { x: x }; }),
       showEnd: !!ui.endOpen, toggleEnd: function () { ctx.setUi({ endOpen: !ui.endOpen, chAct: '' }); },

@@ -9,7 +9,7 @@ REG.screen({
       groups: (window.ACCT && window.ACCT.area() && !document.documentElement.classList.contains('demo')) ? [
         // produto: só o que existe de verdade
         { title: 'Trabalho', items: [row('Agenda', 'Horários marcados e disponibilidade', 'calendar', 'TRE20'), row('Convites', 'Aguardando, aceitos, vencidos e revogados', 'user-plus', 'REL02'), row('Pedidos', 'Pedidos de acompanhamento', 'clipboard', 'REL06'), row('Insights', 'Indicadores do servidor e vagas', 'chart', 'H08'), row('Recebimentos', 'Receber dos alunos pelo app', 'card', 'H09R')] },
-        { title: 'Conteúdo', items: [row('Rotinas e exercícios', 'Biblioteca salva na sua conta', 'dumbbell', 'H06')] },
+        { title: 'Conteúdo', items: [row('Rotinas e exercícios', 'Biblioteca salva na sua conta', 'dumbbell', 'H06'), row('Programas', 'Criar, publicar e retirar', 'book', 'PROGR')] },
         { title: 'Perfil público', items: [row('Cadastro e publicação', 'Dados do perfil, publicar e retirar', 'edit', '@onboarding', { flow: 'treinador' }),
           { title: 'Ver meu perfil publicado', sub: 'Como alunos veem você', ic: 'ic ic--sm i-eye', go: function () {
             window.CONTA.db('GET', 'trainers?select=slug,status&user_id=eq.' + encodeURIComponent((window.CONTA.user() || {}).id || '')).then(function (r) {

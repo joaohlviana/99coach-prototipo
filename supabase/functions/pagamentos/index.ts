@@ -5,6 +5,7 @@
 //   estado   -> situação da conta de recebimento do treinador
 //   ativar   -> cria a conta do treinador no Stripe (se não existir) e devolve o link de cadastro do Stripe
 //   checkout -> cria a página de pagamento do pedido aceito (o valor e a comissão vêm do banco, nunca do navegador)
+//   reembolsar, garantia -> devolve o pagamento de um pedido (treinador; ou aluno em até 7 dias)
 //   pro_estado, pro_assinar, pro_cancelar, pro_retomar -> assinatura Pro do treinador
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -113,6 +114,31 @@ Deno.serve(async (req: Request) => {
     if (att.error) return json({ ok: false, motivo: "nao_registrou_cobranca" }, 500);
     return json({ ok: true, url: s.data.url });
   }
+  // ---------- Reembolso ----------
+  // reembolsar -> o treinador devolve o pagamento inteiro de um pedido seu
+  // garantia   -> o aluno pede o dinheiro de volta em até 7 dias depois de pagar (garantia do plano), sem depender do treinador
+  if (acao === "reembolsar" || acao === "garantia") {
+    const pedido = String(body.pedido ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pedido)) return json({ ok: false, motivo: "pedido_invalido" }, 400);
+    const { data: o } = await db.from("orders").select("id, buyer_id, trainer_id, status, paid_at, charge_id, seller_account, environment").eq("id", pedido).maybeSingle();
+    if (!o) return json({ ok: false, motivo: "pedido_nao_encontrado" }, 404);
+    if (acao === "garantia") {
+      if (o.buyer_id !== user.id) return json({ ok: false, motivo: "pedido_nao_encontrado" }, 404);
+      if (!o.paid_at || Date.now() - new Date(o.paid_at).getTime() > 7 * 86400000) return json({ ok: false, motivo: "fora_da_garantia" });
+    } else {
+      const { data: t } = await db.rpc("srv_trainer_of", { p_user: user.id });
+      if (!t?.trainer || t.trainer !== o.trainer_id) return json({ ok: false, motivo: "pedido_nao_encontrado" }, 404);
+    }
+    if (o.environment !== env) return json({ ok: false, motivo: "chave_de_outro_ambiente" });
+    if (o.status === "estornado") return json({ ok: false, motivo: "ja_reembolsado" });
+    if (o.status !== "pago" || !o.charge_id || !o.seller_account) return json({ ok: false, motivo: "sem_cobranca" });
+    // a comissão da 99coach volta junto; a confirmação chega pelo aviso do Stripe, que atualiza o extrato
+    const r = await stripe(key, "POST", "/v1/refunds", { charge: o.charge_id, refund_application_fee: true, reason: "requested_by_customer", metadata: { order: o.id, por: acao } },
+      { account: o.seller_account, idem: `reembolso:${o.id}` });
+    if (!r.ok) return json({ ok: false, motivo: r.data?.error?.code === "charge_already_refunded" ? "ja_reembolsado" : "stripe_recusou", detalhe: r.data?.error?.code ?? r.status });
+    return json({ ok: true, situacao: r.data.status });
+  }
+
   // ---------- Assinatura Pro (cobrança da 99coach ao treinador; separada do que ele recebe dos alunos) ----------
   // pro_estado  -> situação da assinatura, conferida no Stripe e gravada no banco
   // pro_assinar -> página de pagamento da assinatura (mensal R$ 99 ou anual R$ 990), com 7 dias de teste na primeira vez

@@ -47,11 +47,34 @@
       });
       var nosrc = Object.keys(NOSRC).filter(function (k) { return !by[k] || by[k].status === 'unavailable'; }).map(function (k) { return NOSRC[k]; });
       if (by.TM11 && by.TM11.status === 'unavailable') nosrc.push('Receita (pagamentos pelo 99coach ainda em modo de teste)');
+      // funil: aberturas do perfil → pedidos recebidos → aceitos → acompanhamentos iniciados, no mesmo período
+      var fk = 'fn' + per;
+      if (!ui[fk] && !ui['busy' + fk]) {
+        var b0 = {}; b0['busy' + fk] = true; ctx.setUi(b0);
+        var since = new Date(Date.now() - per * 86400000).toISOString(), me = (C().user() || {}).id;
+        C().db('GET', 'trainers?select=id&user_id=eq.' + encodeURIComponent(me || '')).then(function (t) {
+          var tid = t.ok && t.data && t.data[0] && t.data[0].id; if (!tid) { var e0 = {}; e0[fk] = { none: true }; e0['busy' + fk] = false; return ctx.setUi(e0); }
+          Promise.all([C().rpc('my_profile_views', { p_days: per }), C().db('GET', 'requests?select=status&trainer_id=eq.' + tid + '&created_at=gte.' + encodeURIComponent(since) + '&limit=1000'), C().db('GET', 'links?select=id&trainer_id=eq.' + tid + '&created_at=gte.' + encodeURIComponent(since) + '&limit=1000')]).then(function (x) {
+            var v = one(x[0]), o = {}; o['busy' + fk] = false;
+            o[fk] = x[1].ok && x[2].ok ? { views: v && v.views != null ? v.views : null, first: v && v.first, reqs: (x[1].data || []).length, acc: (x[1].data || []).filter(function (r) { return r.status === 'aceito'; }).length, links: (x[2].data || []).length } : { none: true };
+            ctx.setUi(o);
+          });
+        });
+      }
+      var fn = ui[fk] && !ui[fk].none ? ui[fk] : null, top = fn ? Math.max(fn.views || 0, fn.reqs, fn.links, 1) : 1;
+      var bar = function (n) { return 'width:' + Math.max(2, Math.round((n || 0) / top * 100)) + '%'; };
+      var funnel = fn ? [
+        { n: fn.views == null ? 'Sem base' : String(fn.views), l: 'Aberturas do perfil', w: bar(fn.views), x: fn.views == null ? 'não medido' : 'aberturas da página pública' },
+        { n: String(fn.reqs), l: 'Pedidos recebidos', w: bar(fn.reqs), x: 'pedidos de acompanhamento' },
+        { n: String(fn.acc), l: 'Pedidos aceitos', w: bar(fn.acc), x: 'aceitos por você' },
+        { n: String(fn.links), l: 'Acompanhamentos iniciados', w: bar(fn.links), x: 'inclui os que vieram por convite' }
+      ] : [];
       var cap = ui.cap, capOk = cap && !cap.none;
       return {
         pers: [[28, '28 dias'], [90, '90 dias'], [365, '12 meses']].map(function (p) { var on = per === p[0]; return { label: p[1], on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ per: p[0] }); } }; }),
         loading: !!ui['busy' + key] && !d.list, err: d.err || '', hasErr: !!d.err, cards: cards, hasCards: cards.length > 0,
         range: d.from ? day(d.from) + ' a ' + day(d.to) : '',
+        funnel: funnel, hasFunnel: funnel.length > 0, funnelNote: 'Aberturas contam visitas à página, não pessoas, e começaram a ser medidas em 14/11/2026. Um pedido pode vir de fora do perfil; por isso não calculamos taxa entre as etapas.',
         nosrc: nosrc.join(' · '), hasNosrc: nosrc.length > 0,
         capOk: !!capOk, capTxt: capOk ? (cap.used + cap.held) + ' de ' + cap.limit + ' vagas em uso' : '', capSub: capOk ? 'Plano ' + (cap.plan === 'pro' ? 'Pro' : 'Essencial') + ': ' + U.plural(cap.used, 'aluno ativo ou pausado', 'alunos ativos ou pausados') + (cap.held ? ', ' + U.plural(cap.held, 'vaga reservada por pedido aceito', 'vagas reservadas por pedidos aceitos') : '') + '. ' + (cap.free ? U.plural(cap.free, 'vaga livre', 'vagas livres') + '.' : 'Sem vagas livres: novos pedidos não podem ser aceitos.') : '',
         capFull: !!capOk && !cap.free,

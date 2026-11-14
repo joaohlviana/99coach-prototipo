@@ -36,9 +36,29 @@
       });
     };
     var msgs = ui.msgs || [];
+    // corrigir ou retirar a própria mensagem (até 15 minutos depois de enviar) e procurar dentro da conversa
+    var fresh = function (m) { return Date.now() - new Date(m.created_at).getTime() < 15 * 60000; };
+    var WHY = { prazo_encerrado: 'O prazo de 15 minutos para alterar esta mensagem acabou.', mensagem_retirada: 'Esta mensagem já foi retirada.', texto_invalido: 'Escreva de 1 a 2.000 caracteres.' };
+    var why = function (r) { var k = Object.keys(WHY).filter(function (x) { return String(r.msg || '').indexOf(x) >= 0; })[0]; return k ? WHY[k] : (r.offline ? 'Sem conexão: nada foi alterado.' : 'Não foi possível agora. Nada foi alterado.'); };
+    var saveEdit = function (m) { return function () {
+      var b = String(ui.edBody || '').trim(); if (!b || ui.edBusy) return; ctx.setUi({ edBusy: true, edErr: '' });
+      C.rpc('edit_message', { p_id: m.id, p_body: b }).then(function (r) { if (!r.ok) return ctx.setUi({ edBusy: false, edErr: why(r) }); ctx.setUi({ edBusy: false, edId: '', edBody: '' }); load(); });
+    }; };
+    var retract = function (m) { return function () {
+      ctx.ask({ title: 'Retirar esta mensagem?', lines: ['O texto é apagado para os dois lados. Fica o aviso "Mensagem retirada".', 'Se a outra pessoa já leu, retirar não desfaz a leitura.'], ok: 'Retirar mensagem', danger: true, onOk: function () {
+        C.rpc('retract_message', { p_id: m.id }).then(function (r) { if (!r.ok) return ctx.toast(why(r)); load(); });
+      } });
+    }; };
+    var qn = U.norm(ui.msgQ || '');
+    var shown = qn ? msgs.filter(function (m) { return !m.retracted_at && U.norm(m.body || '').indexOf(qn) >= 0; }) : msgs;
     var fmt = function (d) { return d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''; };
     return {
-      list: msgs.map(function (m) { var me = m.side === side; return { body: m.body, cls: 'rx-msg' + (me ? ' is-me' : ''), who: me ? 'Você' : (otherName || 'Contato'), when: fmt(m.created_at), state: me ? (m.read_at ? 'Lida' : 'Enviada') : '' }; }),
+      list: shown.map(function (m) { var me = m.side === side, gone = !!m.retracted_at, can = me && !gone && fresh(m) && !!m.id, ed = can && ui.edId === m.id;
+        return { body: gone ? 'Mensagem retirada' : m.body, cls: 'rx-msg' + (me ? ' is-me' : '') + (gone ? ' is-gone' : ''), who: me ? 'Você' : (otherName || 'Contato'), when: fmt(m.created_at) + (m.edited_at && !gone ? ' · editada' : ''), state: me ? (m.read_at ? 'Lida' : 'Enviada') : '',
+          can: can && !ed, editing: ed, notEditing: !ed, edBody: ed ? (ui.edBody || '') : '', setEd: function (e) { ctx.setUi({ edBody: U.val(e), edErr: '' }); },
+          startEd: function () { ctx.setUi({ edId: m.id, edBody: m.body, edErr: '' }); }, cancelEd: function () { ctx.setUi({ edId: '', edBody: '', edErr: '' }); }, saveEd: saveEdit(m), saveLabel: ui.edBusy ? 'Salvando…' : 'Salvar', retract: retract(m),
+          edErr: ed ? (ui.edErr || '') : '', hasEdErr: ed && !!ui.edErr }; }),
+      q: ui.msgQ || '', setQ: function (e) { ctx.setUi({ msgQ: U.val(e) }); }, canSearch: msgs.length > 5, searching: !!qn, qCount: qn ? U.plural(shown.length, 'mensagem encontrada', 'mensagens encontradas') : '', clearQ: function () { ctx.setUi({ msgQ: '' }); },
       hasMsgs: msgs.length > 0, noMsgs: !msgs.length && !ui.msgErr, msgErr: !!ui.msgErr,
       draft: ui.msgDraft != null ? ui.msgDraft : ((window.__chatDrafts || {})[linkId] || ''), setDraft: function (e) { var v = U.val(e); (window.__chatDrafts = window.__chatDrafts || {})[linkId] = v; ctx.setUi({ msgDraft: v, msgSendErr: '' }); },
       send: send, sendLabel: ui.msgSending ? 'Enviando…' : 'Enviar', sendErr: ui.msgSendErr || '', hasSendErr: !!ui.msgSendErr,

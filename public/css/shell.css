@@ -265,3 +265,22 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .al-wk__d.is-done i{background:var(--ink,#121214);border:1.5px solid var(--ink,#121214)}
 .al-wk__d.is-today i{border-style:solid;border-color:var(--brand)}
 .al-wk__d.is-today{color:var(--fg)}
+
+/* conversa: procurar, editar e retirar */
+.rx-find{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.rx-find .input{flex:1 1 220px}
+.rx-msg.is-gone p{font-style:italic;color:var(--text-3)}
+.rx-msg__acts{display:flex;gap:10px;align-items:center;margin-top:4px}
+.rx-msg__a{background:none;border:0;padding:6px 0;min-height:32px;font:600 12px var(--sans,inherit);color:var(--text-2);text-decoration:underline;cursor:pointer}
+.rx-msg__a:hover{color:var(--fg)}
+
+/* programas e funil */
+.pg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.pg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ir-fn{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ir-fn li{display:grid;grid-template-columns:90px minmax(0,1fr);column-gap:14px;row-gap:2px;align-items:center}
+.ir-fn__n{grid-row:span 3;font:400 30px/1 var(--display)}
+.ir-fn__l{font-weight:600;font-size:14px}
+.ir-fn__bar{height:8px;border-radius:99px;background:var(--paper-2);overflow:hidden}
+.ir-fn__bar span{display:block;height:100%;background:var(--ink,#121214);border-radius:99px}
+.ir-fn__x{font-size:12px;color:var(--text-3)}

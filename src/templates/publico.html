@@ -606,6 +606,8 @@
           </section></sc-if>
           <section class="card onb-sec" aria-labelledby="md-loc"><h2 class="onb-h2" id="md-loc">Neste aparelho</h2>
             <p class="mod-small mod-muted">{{v.localTxt}}</p>
+            <sc-if value="{{v.hasDevices}}" hint-placeholder-val="{{ false }}"><h3 class="onb-h3">Aparelhos conectados</h3><ol class="onb-secs"><sc-for list="{{v.devices}}" as="d" hint-placeholder-count="2"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-shield"></i></span><span class="onb-secs__t"><b>{{d.t}}</b><span>{{d.x}}</span></span></div></li></sc-for></ol></sc-if>
+            <sc-if value="{{v.devFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para listar os aparelhos conectados agora.</p></sc-if>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.signOut}}">Sair e apagar deste aparelho</button><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.others}}">{{v.othersLabel}}</button></div>
             <sc-if value="{{v.hasOthersMsg}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status">{{v.othersMsg}}</p></sc-if>
           </section>

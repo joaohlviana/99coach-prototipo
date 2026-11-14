@@ -230,7 +230,7 @@
             var w = (l.workouts || [])[0], v = w ? (w.workout_versions || []).filter(function (x) { return x.version === w.current_version; })[0] : null;
             return { id: l.id, status: l.status, origin: l.origin, prep: l.prep, answers: l.answers || {}, prepNote: l.prep_request_note || '', since: l.created_at, studentId: l.student_id, studentName: N[l.student_id] || 'Aluno',
             workout: w && v ? { title: w.title, version: w.current_version, sessions: v.sessions || [], schedule: v.schedule || null, assignedAt: v.created_at, changeNote: v.change_note || null } : null,
-            trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador', ended: l.status === 'encerrado' }; });
+            trainerName: l.trainers && l.trainers.name, trainerSlug: l.trainers && l.trainers.slug, trainerUserId: l.trainers && l.trainers.user_id, mine: l.student_id === sess.user.id ? 'aluno' : 'treinador', ended: l.status === 'encerrado' }; });
           try { LS.setItem('c99.vinculos', JSON.stringify(out)); } catch (_) {}
           return out;
         });
@@ -315,7 +315,7 @@
     cancelAppointment: function (id, reason) { return db('POST', 'rpc/cancel_appointment', { p_id: id, p_reason: reason || null }); },
     appointments: function (linkIds) { return linkIds.length ? db('GET', 'appointments?select=id,link_id,starts_at,ends_at,tz,status,booked_by&link_id=in.(' + linkIds.join(',') + ')&status=eq.marcado&ends_at=gte.' + encodeURIComponent(new Date(Date.now() - 36e5).toISOString()) + '&order=starts_at.asc') : Promise.resolve({ ok: true, data: [] }); },
     // ---------- mensagens do vínculo ----------
-    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.desc&limit=300').then(function (r) { if (r.ok && Array.isArray(r.data)) r.data.reverse(); return r; }); },
+    messages: function (link) { return db('GET', 'messages?select=id,side,body,client_id,created_at,read_at,edited_at,retracted_at&link_id=eq.' + encodeURIComponent(link) + '&order=created_at.desc&limit=300').then(function (r) { if (r.ok && Array.isArray(r.data)) r.data.reverse(); return r; }); },
     sendMessage: function (link, body) { var k = 'msg:' + link + ':' + hash(body); return db('POST', 'rpc/send_message', { p_link: link, p_body: body, p_client_id: intent(k), p_session: null }).then(settle(k)); },
     intent: intent, settle: settle,
     markRead: function (link) { return db('POST', 'rpc/mark_read', { p_link: link }); },
@@ -335,6 +335,14 @@
     db: function (method, path, body, prefer) { return db(method, path, body, prefer); },
     rpc: function (fn, args) { return db('POST', 'rpc/' + fn, args || {}); },
     // linha de menu "Mostrar quando estou online": lê e grava a preferência no servidor; o sinal é renovado enquanto o app está aberto
+    // "online agora" de outra pessoa: o servidor só responde se ela ligou a preferência e há vínculo ou pedido aberto
+    presenceText: function (ctx, userId) {
+      var ui = ctx.ui, k = 'prs_' + userId;
+      if (userId && ui[k] === undefined) { var o = {}; o[k] = null; ctx.setUi(o); db('POST', 'rpc/presence_of', { p_user: userId }).then(function (r) { var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null, n = {}; n[k] = d || false; ctx.setUi(n); }); }
+      var d = ui[k]; if (!d || !d.visible || !d.lastSeen) return '';
+      var min = Math.round((Date.now() - new Date(d.lastSeen).getTime()) / 60000);
+      return min <= 5 ? 'Online agora' : 'Visto por último ' + (min < 60 ? 'há ' + min + ' min' : min < 1440 ? 'há ' + Math.round(min / 60) + ' h' : 'em ' + new Date(d.lastSeen).toLocaleDateString('pt-BR'));
+    },
     presenceRow: function (ctx) {
       var ui = ctx.ui, me = (window.CONTA.user() || {}).id;
       if (me && ui.pres === undefined && !ui.presAsked) { ctx.setUi({ presAsked: true }); db('GET', 'profiles?select=show_online&id=eq.' + encodeURIComponent(me)).then(function (r) { ctx.setUi({ pres: r.ok && r.data && r.data[0] ? !!r.data[0].show_online : null }); }); }

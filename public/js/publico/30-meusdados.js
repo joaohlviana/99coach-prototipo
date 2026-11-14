@@ -65,7 +65,15 @@ REG.screen({
       isTrainer: area === 'treinador', unpub: unpub, unpubLabel: ui.busy2 ? 'Retirando…' : 'Retirar meu perfil da busca', unpubMsg: ui.unpub || '', hasUnpub: !!ui.unpub,
       localTxt: U.plural(local, 'item guardado', 'itens guardados') + ' neste aparelho (rascunhos, favoritos, última busca, sessão). Sair apaga todos.',
       signOut: function () { GO('@sair'); },
-      others: function () { if (ui.obusy) return; ctx.setUi({ obusy: true }); C.signOutOthers().then(function (r) { ctx.setUi({ obusy: false, othersMsg: r.ok ? 'Pronto: a conta saiu de todos os outros aparelhos às ' + U.now() + '. Este continua conectado.' : 'Não foi possível agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); }); },
+      devices: (function () {
+        if (logged && ui.dev === undefined && !ui.devAsked) { ctx.setUi({ devAsked: true }); C.rpc('my_sessions', {}).then(function (r) { var d = r.ok ? r.data : null; ctx.setUi({ dev: Array.isArray(d) ? d : null }); }); }
+        var kind = function (ua) { ua = String(ua || ''); var os = /iPhone|iPad/.test(ua) ? 'iPhone ou iPad' : /Android/.test(ua) ? 'Android' : /Mac OS X/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : /Linux/.test(ua) ? 'Linux' : 'Aparelho';
+          var br = /Edg\//.test(ua) ? 'Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'navegador'; return os + ' · ' + br; };
+        var f = function (d) { return d ? new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''; };
+        return (ui.dev || []).map(function (x) { return { t: kind(x.agent) + (x.current ? ' · este aparelho' : ''), x: 'Entrou em ' + f(x.since) + (x.seen ? ' · último uso ' + f(x.seen) : '') }; });
+      })(),
+      hasDevices: !!(ui.dev && ui.dev.length), devFail: ui.dev === null,
+      others: function () { if (ui.obusy) return; ctx.setUi({ obusy: true }); C.signOutOthers().then(function (r) { ctx.setUi({ obusy: false, devAsked: false, dev: undefined, othersMsg: r.ok ? 'Pronto: a conta saiu de todos os outros aparelhos às ' + U.now() + '. Este continua conectado.' : 'Não foi possível agora: ' + (r.msg || r.status || 'sem conexão') + '.' }); }); },
       othersLabel: ui.obusy ? 'Saindo…' : 'Sair dos outros aparelhos', othersMsg: ui.othersMsg || '', hasOthersMsg: !!ui.othersMsg,
       delNone: !del, delAsked: !!del && del.status === 'pedido', delRunning: !!del && del.status === 'em_processamento',
       delTxt: !del ? 'Apaga sua conta e seus dados pessoais; nada é apagado até você confirmar. Baixe seus dados antes.' : (del.status === 'em_processamento' ? 'Exclusão em andamento: acompanhamentos encerrados, perfil fora da busca e entrada bloqueada. Conclua para apagar os dados pessoais.' : 'Você pediu a exclusão. Confirme para começar ou desista.'),
