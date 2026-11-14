@@ -2,6 +2,7 @@
 // Autenticidade: se houver STRIPE_WEBHOOK_SECRET, a assinatura é conferida. Em todos os casos o aviso é buscado de novo
 // direto no Stripe pelo id, com a nossa chave, e é essa cópia que vale: um aviso forjado não existe no Stripe.
 // Aviso de ambiente diferente do da chave (teste x real) é ignorado.
+// Avisos de assinatura Pro (customer.subscription.*) chegam pelo endereço de avisos da plataforma e só mandam reler a assinatura no Stripe.
 // Cada aviso de pagamento só vale se vier da conta do Stripe do vendedor daquele pedido E da página de pagamento que este
 // app criou para ele. Assim, ninguém consegue marcar um pedido como pago (ou falho) com um pagamento feito em outro lugar.
 // O banco é quem decide o resto: confere valor, moeda e comissão contra o pedido e trata repetição pelo id do aviso.
@@ -31,11 +32,16 @@ Deno.serve(async (req: Request) => {
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "", key = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
   if (!key) return json({ ok: false, motivo: "pagamentos_nao_configurados" }, 503);
   const raw = await req.text();
-  if (secret && !(await valid(raw, req.headers.get("stripe-signature") ?? "", secret))) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
+  const signed = !secret || (await valid(raw, req.headers.get("stripe-signature") ?? "", secret));
   let got: any; try { got = JSON.parse(raw); } catch (_) { return json({ ok: false, motivo: "corpo_invalido" }, 400); }
   if (!/^evt_[A-Za-z0-9_]+$/.test(String(got?.id ?? "")) || (got.account && !/^acct_[A-Za-z0-9]+$/.test(String(got.account)))) return json({ ok: false, motivo: "aviso_invalido" }, 400);
+  // Sem assinatura válida só passa o aviso de assinatura Pro, que chega por outro endereço de avisos (o da plataforma):
+  // ele não traz dado nenhum que valha por si, só manda reler a assinatura direto no Stripe.
+  const soAssinatura = (x: any) => !x?.account && /^customer\.subscription\.(created|updated|deleted|paused|resumed)$/.test(String(x?.type ?? ""));
+  if (!signed && !soAssinatura(got)) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
   const ev = await stripeGet(key, `/v1/events/${got.id}`, got.account || undefined);
   if (!ev || ev.id !== got.id) return json({ ok: false, motivo: "aviso_nao_existe_no_stripe" }, 400);
+  if (!signed && !soAssinatura(ev)) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
   if (!!ev.livemode !== /^(sk|rk)_live_/.test(key)) return json({ ok: true, ignorado: "outro_ambiente" });
   const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
   const o = ev.data?.object ?? {}, account: string | undefined = ev.account;
@@ -82,6 +88,19 @@ Deno.serve(async (req: Request) => {
     if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
     if (!(await confere(intent, o.id))) return semSessao ? json({ ok: false, motivo: "sessao_nao_registrada" }, 500) : json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     return ingest("payment.failed", { intent });
+  }
+
+  // assinatura Pro (cobrança da plataforma, sem conta conectada): grava a situação que o Stripe informa
+  if (soAssinatura(ev)) {
+    const trainer = o.metadata?.trainer;
+    if (typeof trainer !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trainer)) return json({ ok: true, ignorado: "assinatura_de_outro_sistema" });
+    const sub = await stripeGet(key, `/v1/subscriptions/${o.id}`);
+    if (!sub || sub.metadata?.trainer !== trainer) return json({ ok: true, ignorado: "nao_confere" });
+    const it = sub.items?.data?.[0] ?? {}, end = sub.current_period_end ?? it.current_period_end ?? null;
+    const { error } = await db.rpc("srv_set_subscription", { p_trainer: trainer, p_env: ev.livemode ? "live" : "sandbox", p_customer: sub.customer, p_subscription: sub.id, p_status: sub.status,
+      p_interval: it.price?.recurring?.interval ?? null, p_trial_end: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+      p_period_end: end ? new Date(end * 1000).toISOString() : null, p_cancel_at_end: !!sub.cancel_at_period_end });
+    return error ? json({ ok: false, motivo: "banco_recusou" }, 500) : json({ ok: true });
   }
 
   if (ev.type === "charge.refunded") {

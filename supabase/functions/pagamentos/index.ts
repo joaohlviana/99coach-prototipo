@@ -74,7 +74,7 @@ Deno.serve(async (req: Request) => {
     await db.rpc("srv_set_payment_account", { p_trainer: t.trainer, p_account: account, p_charges: !!a.data.charges_enabled, p_payouts: !!a.data.payouts_enabled,
       p_submitted: !!a.data.details_submitted, p_fees_payer: a.data.controller?.fees?.payer ?? null, p_capabilities: caps(a.data), p_env: env });
     const estado = { ok: true, real: env === "live", conta: true, cobrancas: !!a.data.charges_enabled, repasses: !!a.data.payouts_enabled, cadastroEnviado: !!a.data.details_submitted,
-      pendencias: (a.data.requirements?.currently_due ?? []).length };
+      pendencias: (a.data.requirements?.currently_due ?? []).length, pix: caps(a.data).pix_payments === "active" };
     if (acao === "estado") return json(estado);
     const l = await stripe(key, "POST", "/v1/account_links", { account, type: "account_onboarding",
       refresh_url: `${SITE}/app#treinador-recebimentosreal`, return_url: `${SITE}/app#treinador-recebimentosreal` });
@@ -100,10 +100,14 @@ Deno.serve(async (req: Request) => {
       return json({ ok: false, motivo: "pagina_vencida" });
     }
     const methods = ((c.methods ?? []) as string[]).filter((m) => m === "card" || m === "boleto");
+    // Pix só entra se o treinador ativou o Pix na conta dele do Stripe (a conta é dele; a plataforma só consegue conferir)
+    const acc = await stripe(key, "GET", `/v1/accounts/${c.sellerAccount}`);
+    const tipos = methods.length ? methods : ["card"];
+    if (acc.ok && caps(acc.data).pix_payments === "active") tipos.push("pix");
     const s = await stripe(key, "POST", "/v1/checkout/sessions", {
       mode: "payment", client_reference_id: c.order, locale: "pt-BR",
       line_items: [{ quantity: 1, price_data: { currency: String(c.currency).toLowerCase(), unit_amount: c.amountCents, product_data: { name: c.description } } }],
-      payment_method_types: methods.length ? methods : ["card"],
+      payment_method_types: tipos,
       payment_intent_data: { application_fee_amount: c.applicationFeeCents, metadata: { intent, order: c.order } },
       metadata: { intent, order: c.order },
       success_url: `${SITE}/app#aluno-hoje`, cancel_url: `${SITE}/app#aluno-hoje`,
