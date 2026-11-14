@@ -335,7 +335,7 @@
         <sc-if value="{{v.none}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Sua conta ainda não tem perfil de treinador salvo.</p></sc-if>
         <sc-if value="{{v.has}}" hint-placeholder-val="{{ true }}">
           <section class="card onb-sec" aria-labelledby="cr-h"><h2 class="onb-h2" id="cr-h">CREF {{v.cref}}</h2><p><span class="{{v.stCls}}">{{v.st}}</span></p>
-            <sc-if value="{{v.hasNote}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{v.note}}</p></sc-if>
+            <sc-if value="{{v.hasValidity}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.validity}}</p></sc-if><sc-if value="{{v.hasNote}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{v.note}}</p></sc-if>
             <sc-if value="{{v.noCref}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.edit}}">Informar CREF no perfil</button></div></sc-if>
             <sc-if value="{{v.waiting}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">A equipe confere no site do conselho. Enquanto isso, o perfil mostra "informado por você".</p></sc-if>
             <sc-if value="{{v.canAsk}}" hint-placeholder-val="{{ false }}">

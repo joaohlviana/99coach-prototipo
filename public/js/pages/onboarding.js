@@ -226,8 +226,8 @@ class Component extends DCLogic {
 
     const ph = {
       has: !!st.photoUrl, none: !st.photoUrl, url: st.photoUrl, title: st.photoUrl ? (st.photoOk ? 'Foto enviada por você' : 'Confirme a autorização abaixo') : 'Sem foto por enquanto', cta: st.photoUrl ? 'Trocar foto' : 'Enviar foto',
-      pick: (ev) => { const fl = ev && ev.target && ev.target.files && ev.target.files[0]; if (!fl) return; if (!/^image\//.test(fl.type)) return toast('Use uma imagem (JPG, PNG ou WebP).'); if (fl.size > 8e6) return toast('A imagem passa de 8 MB. Escolha uma menor.'); const rd = new FileReader(); rd.onload = () => this.setState({ photoUrl: String(rd.result), photoErr: false, toast: 'Foto carregada só neste navegador. Nada foi enviado.' }); rd.readAsDataURL(fl); },
-      remove: () => set({ photoUrl: '', photoOk: false, photoErr: false }),
+      pick: (ev) => { const fl = ev && ev.target && ev.target.files && ev.target.files[0]; if (!fl) return; if (!/^image\//.test(fl.type)) return toast('Use uma imagem (JPG, PNG ou WebP).'); if (fl.size > 8e6) return toast('A imagem passa de 8 MB. Escolha uma menor.'); const rd = new FileReader(); rd.onload = () => this.setState({ photoUrl: String(rd.result), photoErr: false, photoRemoved: false, toast: 'Foto carregada. Ela vai para o servidor quando você confirmar a autorização e salvar.' }); rd.readAsDataURL(fl); },
+      remove: () => set({ photoUrl: '', photoOk: false, photoErr: false, photoRemoved: true }),
       okOn: String(!!st.photoOk), okCls: 'check' + (st.photoOk ? ' is-on' : ''), toggleOk: () => set({ photoOk: !st.photoOk, photoErr: false }), err: !!st.photoErr
     };
 

@@ -146,7 +146,7 @@
       var ui = ctx.ui, uid = (C().user() || {}).id;
       if (!ui.t && !ui.loading) {
         ctx.setUi({ loading: true });
-        C().db('GET', 'trainers?select=slug,name,cref,cref_status,cref_note,status&user_id=eq.' + encodeURIComponent(uid || '')).then(function (r) { ctx.setUi({ loading: false, t: one(r) || { none: true }, loadErr: !r.ok }); });
+        C().db('GET', 'trainers?select=slug,name,cref,cref_status,cref_note,cref_verified_at,status&user_id=eq.' + encodeURIComponent(uid || '')).then(function (r) { ctx.setUi({ loading: false, t: one(r) || { none: true }, loadErr: !r.ok }); });
       }
       var t = ui.t || {}, has = !!ui.t && !t.none, cref = String(t.cref || '').trim();
       var st = t.cref_status || (cref ? 'informado' : 'nao_informado');
@@ -171,6 +171,7 @@
       return {
         loading: !ui.t, none: !!t.none, has: has, name: t.name || '',
         cref: cref || 'Não informado', st: CST[st] || st, stCls: st === 'verificado' ? 'badge badge--ok' : (st === 'em_conferencia' ? 'badge badge--warn' : (st === 'divergente' || st === 'vencido' ? 'badge badge--risk' : 'badge badge--plain')),
+        validity: st === 'verificado' && t.cref_verified_at ? 'Conferido em ' + new Date(t.cref_verified_at).toLocaleDateString('pt-BR') + ' · vale até ' + new Date(new Date(t.cref_verified_at).getTime() + 365 * 86400000).toLocaleDateString('pt-BR') + '. Depois disso, peça uma nova conferência.' : '', hasValidity: st === 'verificado' && !!t.cref_verified_at,
         note: t.cref_note || '', hasNote: !!t.cref_note,
         canAsk: has && !!cref && ['informado', 'divergente', 'vencido', 'nao_informado'].indexOf(st) >= 0, noCref: has && !cref,
         waiting: st === 'em_conferencia', verified: st === 'verificado',

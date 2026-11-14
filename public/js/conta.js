@@ -127,8 +127,37 @@
       if (st.pitch != null) row.pitch = String(st.pitch || '').trim().slice(0, 300) || null;
       if (st.bio != null) row.bio = String(st.bio || '').trim().slice(0, 4000) || null;
       if (st.avail) { row.availability = st.avail === 'sim' ? 'aceita' : (st.avail === 'nao' ? 'sem_vaga' : 'desconhecida'); row.availability_informed_on = new Date().toISOString().slice(0, 10); }
+      // foto: só vai ao servidor com a autorização marcada; a imagem é reduzida (até 800 px, JPEG) antes de subir
+      var photoP = Promise.resolve();
+      if (st.photoRemoved && !st.photoUrl) row.photo_url = null;
+      else if (st.photoOk && /^https:\/\//.test(st.photoUrl || '')) row.photo_url = st.photoUrl;
+      else if (st.photoOk && /^data:image\//.test(st.photoUrl || '')) {
+        photoP = new Promise(function (ok) {
+          var im = new Image();
+          im.onload = function () {
+            try {
+              var k = Math.min(1, 800 / Math.max(im.width, im.height)), cv = document.createElement('canvas');
+              cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k);
+              cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+              cv.toBlob(function (b) { ok(b); }, 'image/jpeg', 0.86);
+            } catch (_) { ok(null); }
+          };
+          im.onerror = function () { ok(null); };
+          im.src = st.photoUrl;
+        }).then(function (blob) {
+          if (!blob) return;
+          var path = uid + '/' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + '.jpg';
+          return CONTA.fileUp('trainer-photos', path, blob).then(function (u) {
+            if (!u.ok) return;
+            var pub = URL0 + '/storage/v1/object/public/trainer-photos/' + path;
+            row.photo_url = pub;
+            // a partir daqui o cadastro guarda o endereço do servidor, não a imagem inteira no aparelho
+            try { if (window.STORE) { var o = window.STORE.loadOnb('treinador') || {}; if (o.photoUrl === st.photoUrl) window.STORE.saveOnb(Object.assign(o, { photoUrl: pub })); } } catch (_) {}
+          });
+        });
+      }
       var tr = null;
-      return (city ? db('GET', 'cities?select=id&slug=eq.' + encodeURIComponent(slugify(city))) : Promise.resolve({ ok: true, data: [] })).then(function (r) {
+      return photoP.then(function () { return city ? db('GET', 'cities?select=id&slug=eq.' + encodeURIComponent(slugify(city))) : Promise.resolve({ ok: true, data: [] }); }).then(function (r) {
         if (r.offline) return r;
         row.city_id = r.ok && r.data && r.data[0] ? r.data[0].id : null;
         return db('GET', 'trainers?select=id,slug&user_id=eq.' + encodeURIComponent(uid));
