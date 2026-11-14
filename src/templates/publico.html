@@ -587,7 +587,7 @@
             <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Arquivo não gerado</b>{{v.err}}</div></div></sc-if>
             <sc-if value="{{v.hasDone}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Pronto</b>{{v.done}}</div></div></sc-if>
             <sc-if value="{{v.hasPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Cópia incompleta</b>{{v.partial}}</div></div></sc-if>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.run}}">{{v.exportLabel}}</button></div>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.run}}">{{v.exportLabel}}</button><sc-if value="{{v.canPdf}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.pdf}}">Imprimir ou salvar em PDF</button></sc-if></div>
           </section>
           <sc-if value="{{v.mf.show}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="md-2fa"><h2 class="onb-h2" id="md-2fa">Verificação em duas etapas</h2>
             <sc-if value="{{v.mf.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Consultando…</p></sc-if>

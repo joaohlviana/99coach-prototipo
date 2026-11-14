@@ -119,7 +119,8 @@ class Component extends DCLogic {
     const placeOf = (t) => {
       const p = has(t.fmts, 'Presencial');
       if (online || !p) return t.city ? 'base em ' + t.city : '';
-      return t.city + (t.area ? ' · ' + t.area : '');
+      const km = window.GEO && window.GEO.kmTo ? window.GEO.kmTo(t.city) : null;
+      return t.city + (t.area ? ' · ' + t.area : '') + (km != null && km >= 1 ? ' · ~' + km + ' km de você' : '');
     };
     const offerOf = (t) => {
       if (online) return t.onl || null;

@@ -10,6 +10,7 @@ await p.click('.vf-hsb--city'); await p.waitForTimeout(500);
 await p.evaluate(() => { const e = [...document.querySelectorAll('[role=dialog] button')].find((x) => /Usar minha localização/.test(x.textContent)); if (e) e.click(); });
 await p.waitForTimeout(2500);
 console.log('1 vitrine: cidade escolhida pela posição (Recife):', /recife-pe/.test(p.url()), p.url().split('/').slice(-2).join('/'));
+console.log('  distância nos cartões:', /~\d+ km de você/.test(await p.evaluate(() => document.getElementById('app').innerText)));
 // cadastro do treinador: campo "Onde você atende"
 const q = await ctx.newPage(); q.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
 await q.goto('http://localhost:5173/', { waitUntil: 'load' }); await q.waitForTimeout(500);

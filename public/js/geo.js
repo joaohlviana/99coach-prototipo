@@ -1,10 +1,10 @@
 /* Localização de verdade: pede permissão ao navegador, acha o município mais próximo (base com os 5.570 municípios)
    e, quando pedido, a cidade mais próxima que tem treinador no catálogo. A posição não sai do aparelho. */
 (function () {
-  var base = null;
+  var base = null, items = null, here = null;
   function load() {
     if (base) return base;
-    base = fetch('/data/municipios.json').then(function (r) { if (!r.ok) throw new Error('base'); return r.json(); }).then(function (d) { return d.items; });
+    base = fetch('/data/municipios.json').then(function (r) { if (!r.ok) throw new Error('base'); return r.json(); }).then(function (d) { items = d.items; return d.items; });
     base.catch(function () { base = null; });
     return base;
   }
@@ -20,6 +20,7 @@
     opts = opts || {};
     return Promise.all([pos(), load()]).then(function (x) {
       var c = x[0], L = x[1], ok = opts.only ? {} : null;
+      here = [c.latitude, c.longitude]; // fica só na memória desta aba, para mostrar a distância nos cartões
       if (ok) opts.only.forEach(function (s) { ok[s] = 1; });
       var best = null, bd = 1e9, near = null, nd = 1e9;
       L.forEach(function (m) {
@@ -30,5 +31,11 @@
       return { city: near, km: Math.round(nd), match: best, matchKm: Math.round(bd) };
     });
   }
-  window.GEO = { locate: locate, why: function (e) { var m = e && e.message; return m === 'negada' ? 'Você não permitiu a localização. Tudo bem: digite a cidade.' : (m === 'sem_suporte' ? 'Este navegador não informa a localização. Digite a cidade.' : 'Não deu para achar sua localização agora. Digite a cidade.'); } };
+  // distância aproximada (em linha reta) de onde a pessoa está até o centro de uma cidade "Nome, UF"; null se a localização não foi dada
+  function kmTo(city) {
+    if (!here || !items || !city) return null;
+    for (var i = 0; i < items.length; i++) { if (items[i][0] + ', ' + items[i][1] === city) return Math.round(dist(here[0], here[1], items[i][2], items[i][3])); }
+    return null;
+  }
+  window.GEO = { kmTo: kmTo, locate: locate, why: function (e) { var m = e && e.message; return m === 'negada' ? 'Você não permitiu a localização. Tudo bem: digite a cidade.' : (m === 'sem_suporte' ? 'Este navegador não informa a localização. Digite a cidade.' : 'Não deu para achar sua localização agora. Digite a cidade.'); } };
 })();
