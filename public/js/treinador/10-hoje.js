@@ -72,6 +72,8 @@ REG.screen({
       var pv = ui.pv && !ui.pv.none ? ui.pv : null;
       if (!ui.capAsked) { ctx.setUi({ capAsked: true }); C.rpc('my_capacity', {}).then(function (r) { var d = r && r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; ctx.setUi({ cap: d || { none: true } }); }); }
       var cap = ui.cap && !ui.cap.none ? ui.cap : null, act = L.length - paused;
+      // quem está no Pro: confere a assinatura no Stripe uma vez por visita (cancelamento ou cobrança recusada voltam a conta ao Essencial)
+      if (cap && cap.plan === 'pro' && !ui.proAsked) { ctx.setUi({ proAsked: true }); C.fn('pagamentos', { acao: 'pro_estado' }).then(function (r) { if (r.ok && r.data && r.data.ok && r.data.plano !== 'pro') ctx.setUi({ capAsked: false }); }); }
       var prepN = L.filter(function (l) { return l.status !== 'pausado' && l.prep === 'awaiting_review'; }).length;
       var regN = wk.regs ? wk.regs.length : null;
       var how = function (t, x) { return function () { ctx.ask({ title: t, lines: x, ok: 'Entendi', cancel: false }); }; };

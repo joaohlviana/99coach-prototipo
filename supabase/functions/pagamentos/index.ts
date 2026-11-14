@@ -5,6 +5,7 @@
 //   estado   -> situação da conta de recebimento do treinador
 //   ativar   -> cria a conta do treinador no Stripe (se não existir) e devolve o link de cadastro do Stripe
 //   checkout -> cria a página de pagamento do pedido aceito (o valor e a comissão vêm do banco, nunca do navegador)
+//   pro_estado, pro_assinar, pro_cancelar, pro_retomar -> assinatura Pro do treinador
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -112,5 +113,79 @@ Deno.serve(async (req: Request) => {
     if (att.error) return json({ ok: false, motivo: "nao_registrou_cobranca" }, 500);
     return json({ ok: true, url: s.data.url });
   }
+  // ---------- Assinatura Pro (cobrança da 99coach ao treinador; separada do que ele recebe dos alunos) ----------
+  // pro_estado  -> situação da assinatura, conferida no Stripe e gravada no banco
+  // pro_assinar -> página de pagamento da assinatura (mensal R$ 99 ou anual R$ 990), com 7 dias de teste na primeira vez
+  // pro_cancelar / pro_retomar -> desliga ou religa a renovação; o Pro vale até o fim do período já pago
+  if (acao.startsWith("pro_")) {
+    const { data: t } = await db.rpc("srv_subscription_of", { p_user: user.id });
+    if (!t?.trainer) return json({ ok: false, motivo: "sem_perfil_de_treinador" });
+    if (t.env !== env) return json({ ok: false, motivo: "chave_de_outro_ambiente" });
+    const mine = t.subEnv === env;
+    let customer: string | null = mine ? t.customer : null;
+    const sync = async (sub: Record<string, any> | null) => {
+      if (!sub) return null;
+      const it = sub.items?.data?.[0] ?? {};
+      const end = sub.current_period_end ?? it.current_period_end ?? null;
+      const { error } = await db.rpc("srv_set_subscription", { p_trainer: t.trainer, p_env: env, p_customer: customer, p_subscription: sub.id, p_status: sub.status,
+        p_interval: it.price?.recurring?.interval ?? it.plan?.interval ?? null, p_trial_end: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+        p_period_end: end ? new Date(end * 1000).toISOString() : null, p_cancel_at_end: !!sub.cancel_at_period_end });
+      if (error) return null;
+      return { ok: true, real: env === "live", plano: ["trialing", "active", "past_due"].includes(sub.status) ? "pro" : "essencial", status: sub.status,
+        ciclo: it.price?.recurring?.interval ?? null, testeAte: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+        periodoAte: end ? new Date(end * 1000).toISOString() : null, cancelaNoFim: !!sub.cancel_at_period_end };
+    };
+    // a assinatura mais recente deste cliente no Stripe é a verdade
+    const atual = async () => {
+      if (!customer) return null;
+      const l = await stripe(key, "GET", `/v1/subscriptions?customer=${customer}&status=all&limit=3`);
+      if (!l.ok) return undefined;
+      const subs = (l.data.data ?? []) as Record<string, any>[];
+      return subs.find((x) => ["trialing", "active", "past_due"].includes(x.status)) ?? subs[0] ?? null;
+    };
+
+    if (acao === "pro_estado") {
+      const sub = await atual();
+      if (sub === undefined) return json({ ok: false, motivo: "tente_de_novo" });
+      if (!sub) return json({ ok: true, real: env === "live", plano: "essencial", status: null, jaTeveTeste: false });
+      const r = await sync(sub);
+      return r ? json(r) : json({ ok: false, motivo: "banco_recusou" }, 500);
+    }
+
+    if (acao === "pro_assinar") {
+      const ciclo = body.ciclo === "year" ? "year" : "month";
+      const sub = await atual();
+      if (sub === undefined) return json({ ok: false, motivo: "tente_de_novo" });
+      if (sub && ["trialing", "active", "past_due"].includes(sub.status)) { await sync(sub); return json({ ok: false, motivo: "ja_assinante" }); }
+      if (!customer) {
+        const c = await stripe(key, "POST", "/v1/customers", { email: user.email, name: t.name, metadata: { trainer: t.trainer } }, { idem: `cliente-pro:${env}:${t.trainer}` });
+        if (!c.ok) return json({ ok: false, motivo: "stripe_recusou", detalhe: c.data?.error?.code ?? c.status });
+        customer = c.data.id;
+        const { error } = await db.rpc("srv_set_subscription", { p_trainer: t.trainer, p_env: env, p_customer: customer, p_subscription: null, p_status: null, p_interval: null, p_trial_end: null, p_period_end: null, p_cancel_at_end: false });
+        if (error) return json({ ok: false, motivo: "banco_recusou" }, 500);
+      }
+      const s = await stripe(key, "POST", "/v1/checkout/sessions", {
+        mode: "subscription", customer, locale: "pt-BR", client_reference_id: t.trainer,
+        line_items: [{ quantity: 1, price_data: { currency: "brl", unit_amount: ciclo === "year" ? 99000 : 9900, recurring: { interval: ciclo }, product_data: { name: "99coach Pro" } } }],
+        // teste de 7 dias só para quem nunca assinou
+        subscription_data: { metadata: { trainer: t.trainer }, ...(sub ? {} : { trial_period_days: 7 }) },
+        metadata: { trainer: t.trainer, produto: "pro" },
+        success_url: `${SITE}/app#treinador-assinatura`, cancel_url: `${SITE}/app#treinador-assinatura`,
+      });
+      if (!s.ok || !s.data.url) return json({ ok: false, motivo: "stripe_recusou", detalhe: s.data?.error?.code ?? s.status });
+      return json({ ok: true, url: s.data.url });
+    }
+
+    if (acao === "pro_cancelar" || acao === "pro_retomar") {
+      const sub = await atual();
+      if (sub === undefined) return json({ ok: false, motivo: "tente_de_novo" });
+      if (!sub || !["trialing", "active", "past_due"].includes(sub.status)) return json({ ok: false, motivo: "sem_assinatura" });
+      const u2 = await stripe(key, "POST", `/v1/subscriptions/${sub.id}`, { cancel_at_period_end: acao === "pro_cancelar" });
+      if (!u2.ok) return json({ ok: false, motivo: "stripe_recusou", detalhe: u2.data?.error?.code ?? u2.status });
+      const r = await sync(u2.data);
+      return r ? json(r) : json({ ok: false, motivo: "banco_recusou" }, 500);
+    }
+  }
+
   return json({ ok: false, motivo: "acao_desconhecida" }, 400);
 });

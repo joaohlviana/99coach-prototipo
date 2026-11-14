@@ -262,11 +262,20 @@
         <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando…</p></sc-if>
         <sc-if value="{{v.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não deu para consultar seu plano agora</b></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
         <sc-if value="{{v.ok}}" hint-placeholder-val="{{ false }}">
-          <section class="card onb-sec" aria-labelledby="as-pl"><span class="label">Plano atual</span><h2 class="onb-h2" id="as-pl">{{v.plan}}</h2><p class="mod-small mod-muted">{{v.price}}</p>
+          <section class="card onb-sec" aria-labelledby="as-pl"><span class="label">Plano atual</span><div class="mod-row"><h2 class="onb-h2" id="as-pl">{{v.plan}}</h2><sc-if value="{{v.hasBadge}}" hint-placeholder-val="{{ false }}"><span class="badge badge--ok">{{v.badge}}</span></sc-if></div><p class="mod-small mod-muted">{{v.price}}</p>
             <ol class="onb-secs"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="4"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-check"></i></span><span class="onb-secs__t"><span>{{r.x}}</span></span></div></li></sc-for></ol>
-            <sc-if value="{{v.full}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Vagas esgotadas</b>Encerre um acompanhamento para aceitar alguém novo.</div></div></sc-if>
-            <p class="mod-small mod-muted">{{v.change}}</p>
-            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.goHelp}}">Abrir a Ajuda</button></div></section>
+            <sc-if value="{{v.full}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Vagas esgotadas</b>Encerre um acompanhamento ou assine o Pro para aceitar alguém novo.</div></div></sc-if>
+            <sc-if value="{{v.hasLines}}" hint-placeholder-val="{{ false }}"><sc-for list="{{v.lines}}" as="l" hint-placeholder-count="1"><p class="mod-small">{{l.x}}</p></sc-for></sc-if>
+            <sc-if value="{{v.subWait}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Consultando a assinatura…</p></sc-if>
+            <sc-if value="{{v.subFail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não deu para consultar a assinatura agora</b>Assinar e cancelar ficam disponíveis quando a consulta voltar.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+            <sc-if value="{{v.hasAerr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.aerr}}</div></div></sc-if>
+            <sc-if value="{{v.canCancel}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.cancel}}">Cancelar renovação</button></div></sc-if>
+            <sc-if value="{{v.canResume}}" hint-placeholder-val="{{ false }}"><div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.resume}}">Religar renovação</button></div></sc-if>
+            <p class="mod-small mod-muted">{{v.real}}</p></section>
+          <sc-if value="{{v.canBuy}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec" aria-labelledby="as-pro"><span class="label">Plano Pro</span><h2 class="onb-h2" id="as-pro">Até 50 alunos ativos</h2>
+            <p class="mod-small mod-muted">Mesma comissão de 5%. O Pro não muda sua posição na busca. {{v.trialNote}}</p>
+            <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.buyM}}">{{v.buyMLabel}}</button><button type="button" class="btn btn--outline btn--lg" onClick="{{v.buyY}}">Assinar anual · R$ 990</button></div>
+            <p class="mod-small mod-muted">O pagamento abre na página segura do Stripe. Ao cancelar, o Pro vale até o fim do período pago.</p></section></sc-if>
           <section class="card onb-sec" aria-label="Duas contas separadas"><h2 class="onb-h2">Duas contas separadas</h2><p class="mod-small mod-muted">O que você paga ao 99coach fica aqui. O dinheiro das vendas aos seus alunos fica em Recebimentos e não paga a assinatura.</p>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.goMoney}}">Ver recebimentos</button></div></section>
         </sc-if>

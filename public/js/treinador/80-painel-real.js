@@ -60,25 +60,58 @@
     }
   });
 
-  // ASSIN · Minha assinatura: o plano que o servidor registra, as vagas e a comissão. Separado do que o treinador recebe dos alunos.
+  // ASSIN · Minha assinatura: plano, vagas e comissão vindos do servidor; assinar, cancelar e retomar o Pro pelo Stripe.
+  // Separado do que o treinador recebe dos alunos.
   REG.screen({
     page: 'treinador', key: 'assinatura', id: 'ASSIN', title: 'Minha assinatura', nav: 'assinatura', back: 'TMENU',
     vals: function (ctx) {
-      var ui = ctx.ui;
-      if (!ui.cap && !ui.busy) { ctx.setUi({ busy: true }); C().rpc('my_capacity', {}).then(function (r) { ctx.setUi({ busy: false, cap: one(r) || { none: true }, err: !r.ok }); }); }
-      var cap = ui.cap && !ui.cap.none ? ui.cap : null, pro = !!cap && cap.plan === 'pro';
+      var ui = ctx.ui, d2 = function (iso) { return iso ? new Date(iso).toLocaleDateString('pt-BR') : ''; };
+      var load = function () {
+        ctx.setUi({ busy: true, cap: null, sub: null });
+        C().rpc('my_capacity', {}).then(function (r) { ctx.setUi({ busy: false, cap: one(r) || { none: true } }); });
+        C().fn('pagamentos', { acao: 'pro_estado' }).then(function (r) { ctx.setUi({ sub: r.ok && r.data ? r.data : { ok: false, motivo: r.offline ? 'offline' : 'falhou' } }); });
+      };
+      if (!ui.cap && !ui.busy) load();
+      var cap = ui.cap && !ui.cap.none ? ui.cap : null, sub = ui.sub || null, subOk = !!sub && sub.ok === true;
+      var pro = subOk ? sub.plano === 'pro' : (!!cap && cap.plan === 'pro');
+      var act = function (acao, extra, done) { return function () {
+        if (ui.acting) return; ctx.setUi({ acting: acao, aerr: '' });
+        C().fn('pagamentos', Object.assign({ acao: acao }, extra || {})).then(function (r) {
+          var x = (r.ok && r.data) || {};
+          if (x.ok && x.url) { location.href = x.url; return; }
+          if (x.ok) { ctx.setUi({ acting: '', sub: x, cap: null, busy: false }); ctx.toast(done); return; }
+          var M = { ja_assinante: 'Você já tem o Pro ativo.', sem_assinatura: 'Não há assinatura ativa para alterar.', pagamentos_nao_configurados: 'A cobrança do Pro ainda não está ligada no servidor.', chave_de_outro_ambiente: 'A configuração de pagamento do servidor não confere com a do banco.', stripe_recusou: 'O Stripe não aceitou o pedido agora' + (x.detalhe ? ' (' + x.detalhe + ')' : '') + '. Nada foi cobrado.' };
+          ctx.setUi({ acting: '', aerr: M[x.motivo] || 'Não foi possível agora. Nada foi cobrado. Tente de novo em instantes.' });
+        });
+      }; };
+      var ST = { trialing: 'Em teste gratuito', active: 'Ativo', past_due: 'Pagamento pendente', canceled: 'Cancelado', unpaid: 'Não pago', incomplete: 'Pagamento não concluído', incomplete_expired: 'Pagamento não concluído', paused: 'Pausado' };
+      var lines = [];
+      if (subOk && sub.status) {
+        if (sub.status === 'trialing' && sub.testeAte) lines.push('Teste gratuito até ' + d2(sub.testeAte) + '. A primeira cobrança acontece nessa data, se você não cancelar antes.');
+        if (sub.status === 'past_due') lines.push('A última cobrança não passou. O Stripe tenta de novo; atualize o cartão para não perder o Pro.');
+        if (pro && sub.periodoAte) lines.push(sub.cancelaNoFim ? 'Renovação desligada: o Pro vale até ' + d2(sub.periodoAte) + ' e depois a conta volta ao Essencial. Seus alunos continuam.' : (sub.status === 'trialing' ? '' : 'Próxima cobrança em ' + d2(sub.periodoAte) + '.'));
+      }
       return {
         loading: !ui.cap, fail: !!ui.cap && !cap, ok: !!cap,
-        plan: pro ? 'Pro' : 'Essencial', price: pro ? 'R$ 99 por mês' : '',
+        plan: pro ? 'Pro' : 'Essencial', price: pro ? (subOk && sub.ciclo === 'year' ? 'R$ 990 por ano' : 'R$ 99 por mês') : 'Sem mensalidade',
+        badge: subOk && sub.status && pro ? (ST[sub.status] || sub.status) : '', hasBadge: !!(subOk && sub.status && pro),
         rows: cap ? [
           'Até ' + U.plural(cap.limit, 'aluno ativo', 'alunos ativos') + ' ao mesmo tempo',
           (cap.used + cap.held) + ' de ' + cap.limit + ' vagas em uso' + (cap.held ? ' (' + U.plural(cap.held, 'reservada por pedido aceito', 'reservadas por pedidos aceitos') + ')' : ''),
           'Comissão de 5% por venda feita pelo 99coach, igual em qualquer plano',
           'O plano não compra posição na busca, selo nem garantia de clientes'
         ].map(function (x) { return { x: x }; }) : [],
+        lines: lines.filter(Boolean).map(function (x) { return { x: x }; }), hasLines: lines.filter(Boolean).length > 0,
         full: !!cap && !cap.free,
-        change: pro ? 'Para mudar ou cancelar o Pro, fale com o suporte pela Ajuda.' : 'O plano Pro (mais vagas) ainda não é vendido pelo site. Quando estiver disponível, a troca aparece aqui.',
-        goMoney: function () { GO('H09R'); }, goHelp: function () { GO('PUB11'); }, reload: function () { ctx.setUi({ cap: null }); }
+        subFail: !!sub && !subOk, subWait: !sub,
+        canBuy: subOk && !pro, buyM: act('pro_assinar', { ciclo: 'month' }), buyY: act('pro_assinar', { ciclo: 'year' }),
+        buyMLabel: ui.acting === 'pro_assinar' ? 'Abrindo o pagamento…' : 'Assinar mensal · R$ 99',
+        trialNote: subOk && !sub.status ? '7 dias de teste gratuito na primeira assinatura. Cancele quando quiser.' : 'Cancele quando quiser.',
+        canCancel: subOk && pro && !sub.cancelaNoFim, cancel: function () { ctx.ask({ title: 'Cancelar a renovação do Pro?', lines: ['O Pro continua valendo até ' + (d2(sub.periodoAte) || 'o fim do período') + '.', 'Depois disso a conta volta ao Essencial (até 3 alunos ativos). Nenhum aluno é removido: só não dá para aceitar novos acima do limite.'], ok: 'Cancelar renovação', danger: true, onOk: act('pro_cancelar', null, 'Renovação cancelada. O Pro vale até o fim do período.') }); },
+        canResume: subOk && pro && !!sub.cancelaNoFim, resume: act('pro_retomar', null, 'Renovação religada.'),
+        aerr: ui.aerr || '', hasAerr: !!ui.aerr,
+        real: subOk ? (sub.real ? 'Cobrança de verdade, processada pelo Stripe.' : 'Modo de teste: nenhuma cobrança é de verdade.') : '',
+        goMoney: function () { GO('H09R'); }, goHelp: function () { GO('PUB11'); }, reload: load
       };
     }
   });

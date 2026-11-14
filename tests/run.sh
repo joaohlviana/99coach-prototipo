@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 if ! curl -s -m 3 -o /dev/null http://localhost:5173/; then echo "Suba o app antes: npm run build && npm start (ou npm run dev)"; exit 2; fi
 export PW="${PW:-$(NODE_PATH=$(npm root -g) node -e "try{console.log(require.resolve('playwright'))}catch(e){console.log('playwright')}")}"
 fail=0
-for t in cadastro-e-login login-google senha-nova convite-e-vinculo pedido-de-acompanhamento rotina-para-aluno hoje-do-treinador conta-e-descoberta enderecos-e-seo treino-evolucao-mensagens agenda-e-pausa painel-e-sair produto-sem-exemplos texto-malicioso perfil-e-exclusao painel-real comentario-e-seguranca administracao fase1-nada-falso fase2-ciclo fase3-aluno mensagens-caixa busca-e-vitrine fase7-biblioteca fase7-formularios fase7-semana fase8-pagamento avaliacoes-e-movimento duas-etapas admin-painel localizacao; do
+for t in cadastro-e-login login-google senha-nova convite-e-vinculo pedido-de-acompanhamento rotina-para-aluno hoje-do-treinador conta-e-descoberta enderecos-e-seo treino-evolucao-mensagens agenda-e-pausa painel-e-sair produto-sem-exemplos texto-malicioso perfil-e-exclusao painel-real comentario-e-seguranca administracao fase1-nada-falso fase2-ciclo fase3-aluno mensagens-caixa busca-e-vitrine fase7-biblioteca fase7-formularios fase7-semana fase8-pagamento avaliacoes-e-movimento duas-etapas admin-painel localizacao assinatura-pro; do
   echo "== $t"
   out=$(timeout 170 node "$t.mjs" 2>&1); code=$?
   echo "$out" | cut -c1-240
