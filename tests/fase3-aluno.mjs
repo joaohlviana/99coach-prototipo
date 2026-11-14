@@ -19,7 +19,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
     if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
   if (path === 'links') return j(200, srv.links);
   if (path === 'sessions') return j(200, srv.sessions.filter((x) => !/link_id=eq\./.test(u.search) || u.search.includes(x.link_id)));
-  if (path === 'rpc/submit_session') { srv.sessions.push({ id: 'S' + srv.sessions.length, link_id: body.p_link, session_key: body.p_key, started_at: '2026-11-12T10:00:00Z', submitted_at: '2026-11-12T10:40:00Z', set_logs: body.p_logs.map((x) => ({ item: x.item, set_no: x.set, reps: x.reps, load_kg: x.loadKg, exercise_id: x.exerciseId, exercise_name: x.name })), session_comments: [] }); return j(200, { receipt: 'ok' }); }
+  if (path === 'rpc/submit_session') { srv.logs = body.p_logs; srv.sessions.push({ id: 'S' + srv.sessions.length, link_id: body.p_link, session_key: body.p_key, started_at: '2026-11-12T10:00:00Z', submitted_at: '2026-11-12T10:40:00Z', set_logs: body.p_logs.map((x) => ({ item: x.item, set_no: x.set, reps: x.reps, load_kg: x.loadKg, exercise_id: x.exerciseId, exercise_name: x.name })), session_comments: [] }); return j(200, { receipt: 'ok' }); }
   if (path === 'rpc/correct_session_sets') { srv.fix = body; const x = srv.sessions.find((q) => q.id === body.p_session); body.p_sets.forEach((c) => { const l = x.set_logs.find((g) => g.item === c.item && g.set_no === c.set); if (l) { l.reps = c.reps; l.load_kg = c.loadKg; } }); return j(200, { changed: body.p_sets.length }); }
   if (path === 'rpc/student_session_feedback') { srv.fb = body; srv.sessions.find((x) => x.id === body.p_session).session_comments.push({ id: 'C1', side: 'aluno', body: 'Esforço ' + body.p_effort + '/10 · ' + body.p_body, created_at: '2026-11-12T10:45:00Z' }); return j(200, { comment: 'C1' }); }
   if (path === 'appointments') return j(200, srv.appts.filter((a) => a.status === 'marcado'));
@@ -38,13 +38,14 @@ const aluno = async (nav) => { await p.evaluate((n) => NAV.go('aluno', { s: 'sem
 await aluno('hoje'); await press(/^Começar treino$/);
 let t = await txt();
 console.log('1 nota do treinador na sessão:', /Nota de Marina: Desça até 90 graus/.test(t));
-await p.fill('#ex-r0-0', '8'); await p.fill('#ex-l0-0', '40'); await (await p.$('#app [role=checkbox]')).click(); await p.waitForTimeout(600);
+await p.fill('#ex-r0-0', '8'); await p.fill('#ex-l0-0', '40'); await press(/^Anotar esforço, tempo ou distância$/); await p.fill('#ex-e0-0', '8'); await p.fill('#ex-m0-0', '12,5'); await p.fill('#ex-k0-0', '2,4'); await (await p.$('#app [role=checkbox]')).click(); await p.waitForTimeout(600);
 await press(/^Pausar$/); t = await txt();
 console.log('  descanso pausado:', /Descanso pausado: 1:(2\d|30)/.test(t), '| retomar:', !!(await press(/^Retomar$/)), '| +30 s:', !!(await press(/^\+30 s$/)));
 console.log('  estado de gravação visível:', /Salvando…|Salvo também na sua conta|salvo só neste aparelho|Guardado neste aparelho/.test(await txt()));
 // 2. concluir e mandar retorno
 await press(/^Concluir sessão$/); await p.waitForTimeout(800); t = await txt();
 console.log('2 recibo pede retorno:', /Como foi o esforço/i.test(t));
+{ const L0 = Array.isArray(srv.logs) ? srv.logs[0] : (srv.logs && srv.logs.sets || [])[0]; console.log('  esforço, tempo e distância da série vão no registro:', !!L0 && L0.rpe === 8 && L0.durationS === 750 && L0.distanceM === 2400); }
 await press(/^8\/10$/); await p.fill('#al-fb', 'Senti o joelho na última'); await press(/Enviar retorno para Marina/); await p.waitForTimeout(800);
 console.log('  retorno enviado:', !!srv.fb && srv.fb.p_effort === 8 && /joelho/.test(srv.fb.p_body), /Retorno enviado/.test(await txt()));
 // 3. Treinos: sessões e registros com previsto × realizado

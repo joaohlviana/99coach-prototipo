@@ -244,7 +244,7 @@
       return db('POST', 'rpc/assign_workout', body);
     },
     submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
-    sessions: function (link) { return db('GET', 'sessions?select=id,session_key,status,started_at,submitted_at:received_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
+    sessions: function (link) { return db('GET', 'sessions?select=id,session_key,status,started_at,submitted_at:received_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name,rpe,duration_s,distance_m),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
     // ---------- pedidos de acompanhamento (pedido não é vínculo; o treinador decide) ----------
     createRequest: function (slug, message, search) {
       if (!sess) return Promise.resolve({ ok: false, nosession: true });
