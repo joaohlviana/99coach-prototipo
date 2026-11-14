@@ -129,6 +129,9 @@
               <sc-if value="{{v.isPartial}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Encerrar com a sessão incompleta?</b>{{v.partialTxt}}</div></div></sc-if>
               <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.finish}}">{{v.finishLabel}}</button><sc-if value="{{v.isPartial}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{v.backPartial}}">Voltar ao treino</button></sc-if><button type="button" class="btn btn--ghost btn--lg" onClick="{{v.cancel}}">Pausar e sair</button><button type="button" class="btn btn--ghost btn--lg mod-danger" onClick="{{v.discard}}">Descartar marcações</button></div>
             </sc-if>
+            <sc-if value="{{v.isReady}}" hint-placeholder-val="{{ false }}"><section class="card onb-sec al-wk" aria-label="Minha semana"><span class="label">Minha semana · {{v.week7.range}}</span><b class="al-wk__t">{{v.week7.sum}}</b>
+              <ol class="al-wk__r"><sc-for list="{{v.week7.days}}" as="d" hint-placeholder-count="7"><li class="{{d.cls}}" aria-label="{{d.aria}}"><span aria-hidden="true">{{d.k}}</span><i aria-hidden="true"></i></li></sc-for></ol>
+              <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goEvo}}">Ver evolução</button></div></section></sc-if>
             <sc-if value="{{v.hasWeekLine}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Sua semana: {{v.weekLine}}.</p></sc-if>
             </div><div class="mod-col">
             <section class="card onb-sec" aria-label="Meu treinador"><h2 class="onb-h2">Meu treinador</h2><p class="mod-small mod-muted">{{v.trainerLine}}</p>

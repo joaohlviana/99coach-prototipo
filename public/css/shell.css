@@ -242,3 +242,26 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .al-hub .onb-secs__t{flex:1 1 140px}
 .mod--aluno.mod--wide .mod-page>.card,.mod--aluno.mod--wide .mod-page>.pghead{max-width:1180px}
 .mod--aluno.mod--wide .al-hub{max-width:1180px}
+
+/* ficha rápida do aluno e semana do aluno */
+.hj-name{cursor:pointer;text-align:left;font:inherit;color:inherit}
+.hj-name:hover b{text-decoration:underline}
+.hj-peek__bg{position:fixed;inset:0;background:rgba(18,18,20,.35);z-index:60}
+.hj-peek{position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--paper);z-index:61;padding:24px;display:flex;flex-direction:column;gap:18px;overflow:auto;box-shadow:var(--sh-float)}
+.hj-peek__h{display:flex;align-items:center;gap:12px}
+.hj-peek__h .t1-grow{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.hj-peek__h b{font-size:20px}
+.hj-peek__sec ul{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.5}
+.hj-peek__kv{margin:0;display:flex;flex-direction:column}
+.hj-peek__kv div{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-top:1px solid var(--line-2)}
+.hj-peek__kv dt{font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+.hj-peek__kv dd{margin:0;font-size:14px}
+.hj-peek__a{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+.al-wk{gap:10px}
+.al-wk__t{font-size:22px;font-weight:500}
+.al-wk__r{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.al-wk__d{display:flex;flex-direction:column;align-items:center;gap:6px;font:700 11px var(--mono);color:var(--text-3)}
+.al-wk__d i{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--line)}
+.al-wk__d.is-done i{background:var(--ink,#121214);border:1.5px solid var(--ink,#121214)}
+.al-wk__d.is-today i{border-style:solid;border-color:var(--brand)}
+.al-wk__d.is-today{color:var(--fg)}

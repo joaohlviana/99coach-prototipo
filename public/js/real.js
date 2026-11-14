@@ -250,6 +250,9 @@
     Promise.all([window.CONTA.links(), window.CONTA.requests()]).then(function (x) { mergeLinks(x[0]); mergeRequests(x[1]); window.__myRequests = x[1]; rerender(); });
   }
   window.__refreshLinks = refreshLinks;
+  // sinal de presença: só tem efeito para quem ligou "Mostrar quando estou online"; renovado enquanto a aba está visível
+  var beat = function () { try { if (window.CONTA && window.CONTA.session() && !document.hidden && !document.documentElement.classList.contains('demo') && window.ACCT && window.ACCT.area()) window.CONTA.rpc('touch_presence', {}); } catch (_) {} };
+  setTimeout(beat, 8000); setInterval(beat, 240000);
   // só depois que todos os módulos carregaram (a fila de pedidos e a lista de alunos já existem)
   var bootSync = function () { mergeLinks(window.CONTA ? window.CONTA.cachedLinks() : []); refreshLinks(); FAV.sync(); };
   if (document.readyState === 'complete') setTimeout(bootSync, 0); else window.addEventListener('load', bootSync);

@@ -334,6 +334,14 @@
     pub: function (path) { return call('GET', '/rest/v1/' + path); },
     db: function (method, path, body, prefer) { return db(method, path, body, prefer); },
     rpc: function (fn, args) { return db('POST', 'rpc/' + fn, args || {}); },
+    // linha de menu "Mostrar quando estou online": lê e grava a preferência no servidor; o sinal é renovado enquanto o app está aberto
+    presenceRow: function (ctx) {
+      var ui = ctx.ui, me = (window.CONTA.user() || {}).id;
+      if (me && ui.pres === undefined && !ui.presAsked) { ctx.setUi({ presAsked: true }); db('GET', 'profiles?select=show_online&id=eq.' + encodeURIComponent(me)).then(function (r) { ctx.setUi({ pres: r.ok && r.data && r.data[0] ? !!r.data[0].show_online : null }); }); }
+      var on = ui.pres === true, known = ui.pres === true || ui.pres === false;
+      return { title: 'Mostrar quando estou online', sub: !known ? (ui.pres === null ? 'Não deu para consultar agora' : 'Consultando…') : (ui.presBusy ? 'Gravando…' : (on ? 'Ligado · só quem tem vínculo ou pedido aberto com você vê. Toque para desligar.' : 'Desligado · ninguém vê quando você está online. Toque para ligar.')), ic: 'ic ic--sm i-eye',
+        go: function () { if (!known || ui.presBusy) return; ctx.setUi({ presBusy: true }); db('POST', 'rpc/set_presence_pref', { p_on: !on }).then(function (r) { ctx.setUi({ presBusy: false, pres: r.ok ? !on : on }); if (r.ok && !on) db('POST', 'rpc/touch_presence', {}); ctx.toast(r.ok ? (!on ? 'Agora quem tem vínculo com você vê quando está online.' : 'Ninguém mais vê quando você está online.') : 'Não foi possível gravar agora. Tente de novo.'); }); } };
+    },
     // verificação em duas etapas (app autenticador, TOTP) — exigida pelo banco para a administração (aal2)
     aal: function () { try { return JSON.parse(atob(String(sess.access_token).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).aal || 'aal1'; } catch (_) { return 'aal1'; } },
     mfaFactors: function () { return auth('GET', '/auth/v1/user').then(function (r) { return r.ok ? ((r.data && r.data.factors) || []).filter(function (f) { return f.factor_type === 'totp'; }) : null; }); },

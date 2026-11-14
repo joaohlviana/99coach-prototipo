@@ -47,6 +47,8 @@ console.log('  aguardando o aluno separado:', /Aguardando o aluno .*Davi Reis A 
 await p.screenshot({ path: '/tmp/claude-0/hoje-cheio.png', fullPage: true });
 console.log('  menu da conta com sair:', await press(/^Menu|Marina/) !== null && /Sair da conta/.test(await txt()), '| criar:', (await press(/^Criar$/)) && /Convidar aluno O convite vale 7 dias/.test(await txt()));
 await p.keyboard.press('Escape'); await press(/^Criar$/);
+await press(/^Caio Prado$/); await p.waitForTimeout(300);
+console.log('  ficha rápida:', /Preparação respondida, aguardando sua revisão/.test(await txt()) && /Abrir aluno/.test(await txt()), '| fecha:', !!(await p.click('[aria-label="Fechar ficha"]').then(() => true)));
 console.log('  botões:', await press(/^Revisar respostas$/), '->', await p.evaluate(() => location.hash));
 // 3. agenda falhou: não vira "dia livre"
 srv.apFail = true; t = await openHoje();

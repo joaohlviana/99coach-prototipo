@@ -18,9 +18,9 @@ REG.screen({
       R.forEach(function (r) { mine.push({ name: r.studentName || 'Aluno', why: 'Pediu acompanhamento' + (r.offer ? ' · ' + r.offer : ''), when: (r.at ? 'recebido em ' + dt(r.at) : '') + (r.due ? ' · vale até ' + dt(r.due) : ''), act: 'Responder pedido', go: function () { GO('REL06'); } }); });
       L.forEach(function (l) {
         if (l.status === 'pausado') return;
-        if (l.prep === 'awaiting_review') mine.push({ name: l.studentName, why: 'Respondeu a preparação', when: 'revise antes de montar o treino', act: 'Revisar respostas', go: open(l) });
-        else if (!l.workout && l.prep !== 'awaiting_client') mine.push({ name: l.studentName, why: 'Ainda sem treino atribuído', when: 'vínculo desde ' + dt(l.since), act: 'Montar treino', go: open(l) });
-        else if (!l.workout) theirs.push({ name: l.studentName, why: 'A preparação está com ' + fn(l.studentName), when: 'vínculo desde ' + dt(l.since), act: 'Abrir', go: open(l) });
+        if (l.prep === 'awaiting_review') mine.push({ name: l.studentName, why: 'Respondeu a preparação', when: 'revise antes de montar o treino', act: 'Revisar respostas', go: open(l), lid: l.id });
+        else if (!l.workout && l.prep !== 'awaiting_client') mine.push({ name: l.studentName, why: 'Ainda sem treino atribuído', when: 'vínculo desde ' + dt(l.since), act: 'Montar treino', go: open(l), lid: l.id });
+        else if (!l.workout) theirs.push({ name: l.studentName, why: 'A preparação está com ' + fn(l.studentName), when: 'vínculo desde ' + dt(l.since), act: 'Abrir', go: open(l), lid: l.id });
       });
       // mensagens não lidas, treinos registrados nos últimos 7 dias ainda sem comentário seu, e convites aguardando aceite
       if (!ui.wkAsked) {
@@ -35,9 +35,9 @@ REG.screen({
       }
       var wk = ui.wk || {}, byL = {}; L.forEach(function (l) { byL[l.id] = l; });
       var un = {}; (wk.unread || []).forEach(function (m) { un[m.link_id] = (un[m.link_id] || 0) + 1; });
-      Object.keys(un).forEach(function (k) { if (byL[k]) mine.push({ name: byL[k].studentName, why: U.plural(un[k], 'mensagem não lida', 'mensagens não lidas'), when: 'responda pela conversa', act: 'Abrir conversa', go: function () { GO('TRE25'); } }); });
+      Object.keys(un).forEach(function (k) { if (byL[k]) mine.push({ name: byL[k].studentName, why: U.plural(un[k], 'mensagem não lida', 'mensagens não lidas'), when: 'responda pela conversa', act: 'Abrir conversa', go: function () { GO('TRE25'); }, lid: k }); });
       var seenReg = {}; (wk.regs || []).forEach(function (r) { if (seenReg[r.link_id] || !byL[r.link_id]) return; seenReg[r.link_id] = 1; if ((r.session_comments || []).some(function (c) { return c.side === 'treinador'; })) return;
-        mine.push({ name: byL[r.link_id].studentName, why: 'Registrou um treino em ' + dt(r.submitted_at), when: (r.session_comments || []).length ? 'deixou um retorno para você' : 'ainda sem comentário seu', act: 'Ver registro', go: open(byL[r.link_id]) }); });
+        mine.push({ name: byL[r.link_id].studentName, why: 'Registrou um treino em ' + dt(r.submitted_at), when: (r.session_comments || []).length ? 'deixou um retorno para você' : 'ainda sem comentário seu', act: 'Ver registro', go: open(byL[r.link_id]), lid: r.link_id }); });
       // formulários: respondido e ainda não revisado é pendência do treinador; enviado sem resposta é do aluno
       (wk.forms || []).forEach(function (f) { if (!byL[f.link_id]) return;
         if (f.status === 'respondido') mine.push({ name: byL[f.link_id].studentName, why: 'Respondeu "' + f.title + '" em ' + dt(f.answered_at), when: 'ainda não revisado por você', act: 'Revisar resposta', go: open(byL[f.link_id]) });
@@ -57,8 +57,7 @@ REG.screen({
         : { t: 'Convidar seu primeiro aluno', x: 'Ele aceita uma vez e o vínculo fica pronto. O convite vale 7 dias.', act: 'Convidar aluno', go: function () { GO('REL01'); } };
       // ----- painel completo: pendência principal, fila, mensagens e pedidos, rascunhos e resumo do negócio -----
       var ini = function (n) { return U.ini(n || 'Aluno'); };
-      mine.forEach(function (m) { m.ini = ini(m.name); m.tag = 'Aguarda você'; });
-      theirs.forEach(function (m) { m.ini = ini(m.name); });
+      mine.concat(theirs).forEach(function (m) { m.ini = ini(m.name); m.peek = m.lid ? function () { ctx.setUi({ peek: m.lid, menu: '' }); } : m.go; });
       var first = mine[0] || null, rest = mine.slice(1);
       // caixa: pedidos pendentes, conversas com mensagem não lida e convites aguardando
       var box = [];
@@ -69,6 +68,8 @@ REG.screen({
       // rascunhos da biblioteca desta conta
       var drafts = (DB.rotinas || []).filter(function (r) { return r.status === 'rascunho'; }).slice(0, 3).map(function (r) { return { title: r.name || 'Treino sem nome', sub: 'Rascunho' + (r.savedAt ? ' · salvo ' + r.savedAt : ''), go: function () { GO('TRE14', { id: r.id }); } }; });
       // resumo do negócio: só números que o servidor entrega; o que não é medido aparece como "Sem base"
+      if (!ui.pvAsked) { ctx.setUi({ pvAsked: true }); C.rpc('my_profile_views', { p_days: 28 }).then(function (r) { var d = r && r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; ctx.setUi({ pv: d && d.views != null ? d : { none: true } }); }); }
+      var pv = ui.pv && !ui.pv.none ? ui.pv : null;
       if (!ui.capAsked) { ctx.setUi({ capAsked: true }); C.rpc('my_capacity', {}).then(function (r) { var d = r && r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; ctx.setUi({ cap: d || { none: true } }); }); }
       var cap = ui.cap && !ui.cap.none ? ui.cap : null, act = L.length - paused;
       var prepN = L.filter(function (l) { return l.status !== 'pausado' && l.prep === 'awaiting_review'; }).length;
@@ -78,11 +79,20 @@ REG.screen({
         { ic: 'ic ic--sm i-users', n: String(act), suf: cap ? 'de ' + cap.limit + ' no ' + (cap.plan === 'pro' ? 'Pro' : 'Essencial') : '', l: 'Alunos ativos', x: paused ? U.plural(paused, 'pausado', 'pausados') + ' à parte' : 'Atualizado agora', ok: true, how: how('Alunos ativos', ['Vínculos ativos agora, sem contar pausados e encerrados.', 'O limite é o do seu plano.']) },
         { ic: 'ic ic--sm i-clipboard', n: String(prepN), suf: '', l: 'Preparações para revisar', x: 'Agora', ok: true, how: how('Preparações para revisar', ['Alunos que responderam a preparação e esperam a sua revisão.']) },
         { ic: 'ic ic--sm i-trend', n: regN == null ? 'Sem base' : String(regN), suf: '', l: 'Treinos registrados', x: 'Últimos 7 dias', ok: regN != null, how: how('Treinos registrados', ['Treinos que seus alunos registraram no app nos últimos 7 dias.', 'Treino feito sem registro não entra.']) },
-        { ic: 'ic ic--sm i-eye', n: 'Sem base', suf: '', l: 'Visitas ao perfil', x: 'Ainda não são medidas', ok: false, how: how('Visitas ao perfil', ['As visitas ao seu perfil ainda não são medidas.', 'Quando forem, o número aparece aqui com a data.']) }
+        { ic: 'ic ic--sm i-eye', n: pv ? String(pv.views) : 'Sem base', suf: '', l: 'Aberturas do perfil', x: pv ? 'Últimos 28 dias' : 'Sem dado agora', ok: !!pv, how: how('Aberturas do perfil', ['Quantas vezes a sua página pública foi aberta nos últimos 28 dias.', 'É contagem de aberturas, não de pessoas: a mesma pessoa pode abrir mais de uma vez.', 'A contagem começou em 14/11/2026.']) }
       ].map(function (k) { k.badge = k.ok ? 'Atualizado' : 'Sem dado'; k.badgeCls = k.ok ? 'badge badge--ok' : 'badge badge--plain'; k.hasSuf = !!k.suf; k.nCls = 'hj-kpi__n' + (k.n === 'Sem base' ? ' is-txt' : ''); return k; });
       // busca de aluno pelo nome
       var qs = U.norm(ui.q || '');
-      var found = qs ? L.filter(function (l) { return U.norm(l.studentName || '').indexOf(qs) >= 0; }).slice(0, 6).map(function (l) { return { name: l.studentName, sub: l.status === 'pausado' ? 'Pausado' : 'Ativo desde ' + dt(l.since), go: open(l) }; }) : [];
+      var peek = function (l) { return function () { ctx.setUi({ peek: l.id, q: '', menu: '' }); }; };
+      var found = qs ? L.filter(function (l) { return U.norm(l.studentName || '').indexOf(qs) >= 0; }).slice(0, 5).map(function (l) { return { name: l.studentName, sub: 'Aluno · ' + (l.status === 'pausado' ? 'pausado' : 'ativo desde ' + dt(l.since)), go: peek(l) }; })
+        .concat((DB.rotinas || []).filter(function (r) { return U.norm(r.name || '').indexOf(qs) >= 0; }).slice(0, 4).map(function (r) { return { name: r.name || 'Treino sem nome', sub: 'Treino em Conteúdo' + (r.status === 'rascunho' ? ' · rascunho' : ''), go: function () { GO('TRE14', { id: r.id }); } }; })) : [];
+      // ficha rápida do aluno: resumo do vínculo sem sair de Hoje
+      var pk = ui.peek ? byL[ui.peek] : null, pkPend = pk ? mine.concat(theirs).filter(function (m) { return m.lid === pk.id; }) : [];
+      var PREP = { awaiting_client: 'Preparação com o aluno', awaiting_review: 'Preparação respondida, aguardando sua revisão', ready_to_assign: 'Preparação revisada, falta o treino', assigned: 'Treino atribuído' };
+      var pkV = pk ? { name: pk.studentName, ini: ini(pk.studentName), st: pk.status === 'pausado' ? 'Pausado' : 'Ativo', stCls: pk.status === 'pausado' ? 'badge badge--warn' : 'badge badge--ok',
+        rows: [['Vínculo', 'desde ' + dt(pk.since) + (pk.origin === 'convite' ? ' · por convite' : ' · por pedido')], ['Preparação', PREP[pk.prep] || 'Sem preparação'], ['Treino', pk.workout ? pk.workout.title + ' · versão ' + pk.workout.version : 'Nenhum treino atribuído'], ['Mensagens', un[pk.id] ? U.plural(un[pk.id], 'não lida', 'não lidas') : 'Nenhuma não lida']].map(function (r) { return { k: r[0], v: r[1] }; }),
+        pend: pkPend.map(function (m) { return { x: m.why + (m.when ? ' · ' + m.when : '') }; }), hasPend: pkPend.length > 0,
+        open: function () { ctx.setUi({ peek: '' }); GO('H05', { id: 'lk_' + pk.id }); }, chat: function () { ctx.setUi({ peek: '' }); GO('TRE25'); } } : { name: '', ini: '', st: '', stCls: '', rows: [], pend: [], hasPend: false, open: function () {}, chat: function () {} };
       var nm = String(st0.name || t.name || '').trim();
       var menu = function (k) { return function () { ctx.setUi({ menu: ui.menu === k ? '' : k }); }; };
       var pick = function (to, p) { return function () { ctx.setUi({ menu: '' }); GO(to, p || {}); }; };
@@ -99,12 +109,13 @@ REG.screen({
         rSub: failed ? 'Não foi possível atualizar agora. A lista abaixo pode estar desatualizada.' : (mine.length ? U.plural(mine.length, 'pendência sua', 'pendências suas') + ' agora' : (empty ? 'Sua conta está pronta.' : 'Tudo em dia: nada depende de você agora.')),
         q: ui.q || '', setQ: function (e) { ctx.setUi({ q: U.val(e) }); }, clearQ: function () { ctx.setUi({ q: '' }); }, qText: ui.q || '',
         found: found, hasFound: found.length > 0, noFound: !!qs && !found.length,
+        hasPeek: !!pk, pk: pkV, closePeek: function () { ctx.setUi({ peek: '' }); },
         bell: pick('AVISOS'), mCriar: ui.menu === 'criar', mEu: ui.menu === 'eu', tCriar: menu('criar'), tEu: menu('eu'), xCriar: String(ui.menu === 'criar'), xEu: String(ui.menu === 'eu'),
         criar: [{ l: 'Convidar aluno', s: 'O convite vale 7 dias', ic: 'ic ic--sm i-user-plus', go: pick('REL01') }, { l: 'Criar treino', s: 'Fica salvo em Conteúdo', ic: 'ic ic--sm i-clipboard', go: pick('H06') }, { l: 'Definir horários', s: 'Disponibilidade da agenda', ic: 'ic ic--sm i-calendar', go: pick('TRE20') }],
         euNome: nm || 'Minha conta', euIni: U.ini(nm || 'Conta'), euFirst: fn(nm || 'Conta'),
         eu: [{ l: 'Ver meu perfil público', ic: 'ic ic--sm i-eye', go: pub }, { l: 'Editar perfil', ic: 'ic ic--sm i-edit', go: pick('@onboarding', { flow: 'treinador' }) }, { l: 'Conta e segurança', ic: 'ic ic--sm i-settings', go: pick('TMENU') }],
         sair: function () { ctx.setUi({ menu: '' }); GO('@sair'); },
-        hasFirst: !!first, first: first || { name: '', why: '', when: '', act: '', ini: '', go: function () {} },
+        hasFirst: !!first, first: first || { name: '', why: '', when: '', act: '', ini: '', go: function () {}, peek: function () {} },
         mine: mine, rest: rest, hasRest: rest.length > 0, hasMine: mine.length > 0, allClear: !mine.length && !empty && !failed,
         theirs: theirs, hasTheirs: theirs.length > 0, qCount: U.plural(mine.length + theirs.length, 'aluno', 'alunos'), noQueue: !rest.length && !theirs.length,
         empty: empty, next: next,
@@ -114,7 +125,7 @@ REG.screen({
         kpis: kpis,
         counts: U.plural(act, 'aluno ativo', 'alunos ativos') + (paused ? ' · ' + U.plural(paused, 'pausado', 'pausados') : '') + ' · ' + U.plural(R.length, 'pedido aguardando', 'pedidos aguardando'), hasCounts: !empty,
         invite: function () { ctx.go('REL01'); }, goAlunos: function () { ctx.go('H04'); }, goAgenda: function () { ctx.go('TRE20'); }, goMsgs: function () { ctx.go('TRE25'); }, goConteudo: function () { ctx.go('H06'); }, goInsights: function () { ctx.go('H08'); }, goMoney: function () { ctx.go('H09R'); },
-        refresh: function () { ctx.setUi({ apAsked: false, wkAsked: false, capAsked: false }); if (window.__refreshLinks) window.__refreshLinks(); ctx.toast('Atualizado às ' + U.now() + '.'); }
+        refresh: function () { ctx.setUi({ apAsked: false, wkAsked: false, capAsked: false, pvAsked: false }); if (window.__refreshLinks) window.__refreshLinks(); ctx.toast('Atualizado às ' + U.now() + '.'); }
       };
     }
     var go = function (to, p) { return function () { ctx.go(to, p || {}); }; };

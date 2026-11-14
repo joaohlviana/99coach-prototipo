@@ -254,6 +254,14 @@ REG.screen({
       })(),
       lastT: (function () { var x = (ui.sess || []).slice().sort(function (a, b) { return String(b.submitted_at).localeCompare(String(a.submitted_at)); })[0]; return x ? 'Treino registrado em ' + new Date(x.submitted_at).toLocaleDateString('pt-BR') : 'Nenhum treino registrado ainda'; })(),
       lastX: (ui.sess || []).length ? U.plural((ui.sess || []).length, 'registro', 'registros') + ' até agora' : 'Aparece aqui quando você concluir uma sessão.',
+      week7: (function () {
+        var now = new Date(), d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7)), n = 0, L = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+        var days = L.map(function (k, i) { var d = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + i), key = d.toDateString();
+          var done = (ui.sess || []).some(function (x) { return x.submitted_at && new Date(x.submitted_at).toDateString() === key; }), today = key === now.toDateString(); if (done) n++;
+          return { k: k, cls: 'al-wk__d' + (done ? ' is-done' : '') + (today ? ' is-today' : ''), aria: d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' }) + (done ? ': treino registrado' : ': sem registro') }; });
+        var f = function (d) { return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); };
+        return { days: days, sum: U.plural(n, 'treino registrado', 'treinos registrados') + ' nesta semana', range: f(d0) + ' a ' + f(new Date(d0.getFullYear(), d0.getMonth(), d0.getDate() + 6)) };
+      })(),
       goTreinos: function () { GO('ALU06'); },
       msgT: note ? 'Recado de ' + tf : 'Nenhuma mensagem nova', msgX: note ? String(note.body).slice(0, 80) : 'Fale com ' + tf + ' pela conversa.',
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},

@@ -543,9 +543,9 @@
         <sc-if value="{{v.real}}" hint-placeholder-val="{{ false }}">
           <div class="hj-bar">
             <div class="t1-search hj-bar__q">
-              <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" aria-label="Buscar aluno" placeholder="Buscar aluno pelo nome" value="{{v.q}}" onInput="{{v.setQ}}"></div>
+              <div class="input input--search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input type="search" aria-label="Buscar aluno ou treino" placeholder="Buscar aluno ou treino" value="{{v.q}}" onInput="{{v.setQ}}"></div>
               <sc-if value="{{v.hasFound}}" hint-placeholder-val="{{ false }}"><div class="card t1-search__res" role="list"><sc-for list="{{v.found}}" as="f" hint-placeholder-count="2"><button type="button" class="t1-search__it" role="listitem" onClick="{{f.go}}"><span class="t1-grow"><b>{{f.name}}</b><span class="mod-small mod-muted">{{f.sub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-for></div></sc-if>
-              <sc-if value="{{v.noFound}}" hint-placeholder-val="{{ false }}"><div class="card t1-search__res"><p class="mod-small">Nenhum aluno com “{{v.qText}}”. <button type="button" class="t1-link" onClick="{{v.clearQ}}">Limpar busca</button></p></div></sc-if>
+              <sc-if value="{{v.noFound}}" hint-placeholder-val="{{ false }}"><div class="card t1-search__res"><p class="mod-small">Nenhum aluno ou treino com “{{v.qText}}”. <button type="button" class="t1-link" onClick="{{v.clearQ}}">Limpar busca</button></p></div></sc-if>
             </div>
             <button type="button" class="t1-icbtn" onClick="{{v.bell}}" aria-label="Avisos" title="Avisos"><i class="ic ic--sm i-bell" aria-hidden="true"></i></button>
             <div class="hj-pop">
@@ -566,14 +566,14 @@
                 <div class="mod-row"><button type="button" class="btn btn--primary btn--md" onClick="{{v.next.go}}">{{v.next.act}}</button></div></section></sc-if>
               <sc-if value="{{v.hasFirst}}" hint-placeholder-val="{{ false }}"><section class="mod-card t1-first" aria-label="Primeira pendência">
                 <div class="t1-first__top"><span class="av av--sm">{{v.first.ini}}</span><span class="label">Primeira pendência</span><span class="t1-first__tag is-me">Aguarda você</span></div>
-                <div class="hj-first"><b>{{v.first.name}}</b><span>{{v.first.why}}</span><span class="t1-q__m">{{v.first.when}}</span></div>
+                <div class="hj-first"><button type="button" class="v4-reset hj-name" onClick="{{v.first.peek}}"><b>{{v.first.name}}</b></button><span>{{v.first.why}}</span><span class="t1-q__m">{{v.first.when}}</span></div>
                 <div class="mod-row"><button type="button" class="btn btn--primary btn--sm" onClick="{{v.first.go}}">{{v.first.act}}</button></div>
               </section></sc-if>
               <sc-if value="{{v.allClear}}" hint-placeholder-val="{{ false }}"><section class="mod-card t1-first t1-first--ok" aria-label="Pendências"><div class="t1-first__top"><i class="ic ic--sm i-checksq" aria-hidden="true"></i><span class="label">Tudo em dia</span></div><p class="t1-first__d">Nenhum pedido sem resposta, nenhuma preparação para revisar e nenhum aluno sem treino.</p></section></sc-if>
               <section class="mod-card" aria-labelledby="hj-mine">
                 <div class="mod-card__h"><b id="hj-mine">Alunos que precisam de ação</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goAlunos}}">Ver alunos</button></div>
-                <sc-if value="{{v.hasRest}}" hint-placeholder-val="{{ false }}"><ul class="t1-q" role="list"><sc-for list="{{v.rest}}" as="m" hint-placeholder-count="2"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><b>{{m.name}}</b><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--outline btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
-                <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><span class="label">Aguardando o aluno</span><ul class="t1-q" role="list"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><b>{{m.name}}</b><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
+                <sc-if value="{{v.hasRest}}" hint-placeholder-val="{{ false }}"><ul class="t1-q" role="list"><sc-for list="{{v.rest}}" as="m" hint-placeholder-count="2"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><button type="button" class="v4-reset hj-name" onClick="{{m.peek}}"><b>{{m.name}}</b></button><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--outline btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
+                <sc-if value="{{v.hasTheirs}}" hint-placeholder-val="{{ false }}"><span class="label">Aguardando o aluno</span><ul class="t1-q" role="list"><sc-for list="{{v.theirs}}" as="m" hint-placeholder-count="1"><li class="t1-q__r"><span class="av av--sm">{{m.ini}}</span><div class="t1-grow t1-q__t"><button type="button" class="v4-reset hj-name" onClick="{{m.peek}}"><b>{{m.name}}</b></button><span>{{m.why}}</span><span class="t1-q__m">{{m.when}}</span></div><div class="t1-q__a"><button type="button" class="btn btn--ghost btn--sm" onClick="{{m.go}}">{{m.act}}</button></div></li></sc-for></ul></sc-if>
                 <sc-if value="{{v.noQueue}}" hint-placeholder-val="{{ false }}"><div class="hj-emp"><i class="ic ic--sm i-users" aria-hidden="true"></i><b>Ninguém na fila</b><span>Quando um aluno pedir acompanhamento, responder a preparação ou registrar um treino, ele aparece aqui.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.invite}}">Convidar aluno</button></div></sc-if>
               </section>
               <section class="mod-card" aria-label="Retomar trabalho">
@@ -601,6 +601,12 @@
               </section>
             </div>
           </div>
+          <sc-if value="{{v.hasPeek}}" hint-placeholder-val="{{ false }}"><div class="hj-peek__bg" onClick="{{v.closePeek}}"></div><aside class="hj-peek" role="dialog" aria-modal="true" aria-label="Ficha de {{v.pk.name}}">
+            <div class="hj-peek__h"><span class="av">{{v.pk.ini}}</span><div class="t1-grow"><b>{{v.pk.name}}</b><span class="{{v.pk.stCls}}">{{v.pk.st}}</span></div><button type="button" class="t1-icbtn" onClick="{{v.closePeek}}" aria-label="Fechar ficha"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></div>
+            <sc-if value="{{v.pk.hasPend}}" hint-placeholder-val="{{ false }}"><div class="hj-peek__sec"><span class="label">Pendências</span><ul><sc-for list="{{v.pk.pend}}" as="e" hint-placeholder-count="1"><li>{{e.x}}</li></sc-for></ul></div></sc-if>
+            <dl class="hj-peek__kv"><sc-for list="{{v.pk.rows}}" as="r" hint-placeholder-count="4"><div><dt>{{r.k}}</dt><dd>{{r.v}}</dd></div></sc-for></dl>
+            <div class="hj-peek__a"><button type="button" class="btn btn--primary btn--md" onClick="{{v.pk.open}}">Abrir aluno</button><button type="button" class="btn btn--outline btn--md" onClick="{{v.pk.chat}}">Conversar</button></div>
+          </aside></sc-if>
           <div class="hj-strip"><i class="ic ic--sm i-card" aria-hidden="true"></i><span class="t1-grow"><b>Recebimentos</b> Receba dos alunos pelo 99coach.</span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.goMoney}}">Ver recebimentos</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.refresh}}">Atualizar</button></div>
         </sc-if>
         <sc-if value="{{v.isNew}}" hint-placeholder-val="{{ false }}">

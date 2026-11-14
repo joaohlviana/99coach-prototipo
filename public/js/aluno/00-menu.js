@@ -12,7 +12,7 @@ REG.screen({
         // produto: só o que existe de verdade
         { title: 'Meu acompanhamento', items: [row('Meu acompanhamento', linked ? 'Treino, registro, evolução e conversa' : 'Pedidos e como começar', 'calendar', 'semvinculo')] },
         { title: 'Descobrir', items: [row('Encontrar treinador', 'Buscar por modalidade e cidade', 'search', '@home'), row('Favoritos', window.FAV ? U.plural(window.FAV.count(), 'treinador salvo', 'treinadores salvos') + ' ' + window.FAV.where() : 'Treinadores salvos', 'heart', 'PUB07')] },
-        { title: 'Conta', items: [row('Avisos', 'Novidades da sua conta e o que avisar', 'bell', 'AVISOS'), row('Meus dados e segurança', 'Baixar cópia · sair dos outros aparelhos · excluir conta', 'file', 'ACC13R'), row('Sair da conta', 'Encerra a sessão neste aparelho', 'logout', '@sair')] }
+        { title: 'Conta', items: [row('Avisos', 'Novidades da sua conta e o que avisar', 'bell', 'AVISOS'), window.CONTA.presenceRow(ctx), row('Meus dados e segurança', 'Baixar cópia · sair dos outros aparelhos · excluir conta', 'file', 'ACC13R'), row('Sair da conta', 'Encerra a sessão neste aparelho', 'logout', '@sair')] }
       ] : [
         { title: 'Meu acompanhamento', items: [row('Minhas contratações', U.plural(act, 'contratação', 'contratações'), 'card', 'H11')].concat(linked ? [row('Meus programas', 'Retomar de onde parou', 'book', 'ALU06'), row('Responder formulário', 'Check-in semanal pendente', 'file', 'ALU08')] : []) },
         { title: 'Descobrir', items: [row('Encontrar treinador', 'Buscar por modalidade e cidade', 'search', '@home'), row('Favoritos', 'Treinadores e programas salvos', 'heart', 'PUB07')] },
