@@ -356,6 +356,14 @@
           <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não salvo</b>{{v.err}}</div></div></sc-if>
           <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.save}}">{{v.saveLabel}}</button></div>
         </section>
+        <section class="card onb-sec" aria-labelledby="ag-ex"><h2 class="onb-h2" id="ag-ex">Dias bloqueados</h2><p class="mod-small mod-muted">Folga, viagem ou feriado: nesses dias nenhum horário é oferecido. O que já está marcado continua marcado.</p>
+          <div class="pg-grid"><div class="field"><label class="field__label" for="ag-ex-d">Data</label><div class="input"><input id="ag-ex-d" type="date" value="{{v.exDay}}" onInput="{{v.setExDay}}"></div></div>
+            <div class="field" style="grid-column: span 2"><label class="field__label" for="ag-ex-n">Motivo (opcional, só você vê)</label><div class="input"><input id="ag-ex-n" type="text" maxlength="120" value="{{v.exNote}}" onInput="{{v.setExNote}}"></div></div></div>
+          <sc-if value="{{v.hasExErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.exErr}}</span></sc-if>
+          <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--outline btn--md" onClick="{{v.addEx}}">{{v.exLabel}}</button></div>
+          <sc-if value="{{v.exFail}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Não deu para carregar os dias bloqueados agora.</p></sc-if>
+          <sc-if value="{{v.hasExs}}" hint-placeholder-val="{{ false }}"><ol class="onb-secs"><sc-for list="{{v.exs}}" as="e" hint-placeholder-count="1"><li><div class="onb-secs__r"><span class="onb-secs__ic" aria-hidden="true"><i class="ic ic--sm i-calendar"></i></span><span class="onb-secs__t"><b>{{e.when}}</b><sc-if value="{{e.hasNote}}" hint-placeholder-val="{{ false }}"><span>{{e.note}}</span></sc-if></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{e.del}}">Liberar</button></div></li></sc-for></ol></sc-if>
+        </section>
       </sc-if>
 
       <!-- REL10 · Aluno real (vínculo no servidor) -->
