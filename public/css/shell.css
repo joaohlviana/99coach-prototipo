@@ -298,3 +298,5 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .fx-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 110px;gap:10px;align-items:end}
 .fx-row__l{font-size:14px;font-weight:600;padding-bottom:12px}
 @media (max-width:600px){.fx-row{grid-template-columns:1fr 1fr}.fx-row__l{grid-column:span 2;padding-bottom:0}}
+.cp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;flex-basis:100%}
+.cp-row .input{flex:1 1 180px;max-width:260px}
