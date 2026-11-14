@@ -2,7 +2,7 @@
 // Sem profissional presencial ali, a página não existe (404). Online não entra como se fosse da cidade.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao, Paginacao } from '../../../components/Shell.js';
-import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo } from '../../../lib/catalogo.js';
+import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo, cidadesProximas } from '../../../lib/catalogo.js';
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -48,6 +48,10 @@ export function Cidade({ k, pagina }) {
         <ul className="ssr-list">{naPagina.map((t) => <Cartao key={t.id} t={t} />)}</ul>
         <Paginacao base={base} pagina={pagina} paginas={paginas} total={itens.length} ini={ini} n={naPagina.length} />
       </section>
+      {(() => { const perto = cidadesProximas(k); return perto.length ? (
+        <section aria-labelledby="h-perto"><h2 id="h-perto">Cidades próximas de {curta(cid.label)}</h2>
+          <ul className="ssr-chips">{perto.map((c) => <li key={c.slug}><a href={'/cidade/' + c.slug}>{c.label} <small>~{c.km} km · {plural(c.n, 'profissional', 'profissionais')}</small></a></li>)}</ul>
+        </section>) : null; })()}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(trilha).replace(/</g, '\\u003c') }} />
     </Shell>
   );

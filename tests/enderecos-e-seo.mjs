@@ -57,5 +57,6 @@ g = await get('/treinadores/musculacao/sao-paulo-sp');
 console.log('h1 com o serviço buscado:', /<h1>Personal trainer de musculação em São Paulo<\/h1>/.test(g.h), '| cabeçalhos de segurança:', /frame-ancestors 'none'/.test(g.csp));
 g = await get('/cidade/sao-paulo-sp');
 console.log('página da cidade:', g.st === 200, /Personal trainer e aulas em/.test(g.h), /href="\/treinadores\/musculacao\/sao-paulo-sp"/.test(g.h), '| cidade sem ninguém é 404:', (await get('/cidade/nao-existe-xx')).st === 404);
+console.log('cidades próximas com distância:', /Cidades próximas de/.test(g.h), /~<!-- -->\d+<!-- --> km|~\d+ km/.test(g.h));
 g = await get('/sitemap.xml'); console.log('sitemap tem cidades:', /\/cidade\/sao-paulo-sp</.test(g.h));
 await b.close();
