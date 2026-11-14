@@ -318,6 +318,34 @@ class Component extends DCLogic {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
       ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', crumbSportHref: cr && cr.slug ? '/treinadores/' + cr.slug : '/', crumbCityHref: cr && cr.slug && cr.city ? '/treinadores/' + cr.slug + '/' + sl(cr.city) : '/', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !!(x.pitch || x.bio), fmtIc: 'ic ic--sm ' + (/Presencial/.test(x.formats || '') ? 'i-pin' : 'i-monitor'), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
       menuOpen: String(st.sheet === 'menu'), openSearch: () => window.NAV.toSearch(this), openSaved: open('saved'), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: open('pro'), openAcct: open('acct'), openMenu: open('menu'), openHelp: open('ajuda'),
+      // programas publicados pelo treinador (do servidor), com compra pelo Stripe
+      ...(() => {
+        const slugP = x && x.id && !document.documentElement.classList.contains('demo') ? x.id : '';
+        if (slugP && st.progFor !== slugP && window.CONTA) {
+          st.progFor = slugP;
+          window.CONTA.db('GET', 'programs?select=id,title,weeks,workouts,access_months,price_cents,description,trainers!inner(slug)&status=eq.publicado&trainers.slug=eq.' + encodeURIComponent(slugP) + '&order=title.asc')
+            .then((r) => this.setState({ progs: r.ok && Array.isArray(r.data) ? r.data : [] }));
+        }
+        const pl = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+        const MSG = { ja_tem_acesso: 'Você já tem acesso a este programa. Abra em "Meus programas" na sua área.', programa_proprio: 'Este programa é seu.', vendedor_sem_recebimento: 'O treinador ainda não ativou o recebimento pelo 99coach. Nada foi cobrado.', programa_indisponivel: 'Este programa não está mais à venda.', aguardando_confirmacao: 'Já existe um pagamento deste programa aguardando confirmação (boleto ou Pix).', politica_pendente: 'A venda está pausada no momento. Nada foi cobrado.' };
+        const buy = (pg) => () => {
+          const C = window.CONTA; if (st.progBusy) return;
+          if (!C || !C.session()) return window.NAV.go('onboarding', { flow: 'entrar' }, this);
+          this.setState({ progBusy: pg.id, progMsg: '' });
+          C.rpc('buy_program', { p_program: pg.id, p_idem: C.intent('prog:' + pg.id) }).then((r) => {
+            const o = r.ok ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
+            if (!o || o.outcome !== 'aguardando_pagamento') return this.setState({ progBusy: '', progMsg: MSG[o && o.outcome] || 'Não foi possível abrir a compra agora. Nada foi cobrado.' });
+            return C.fn('pagamentos', { acao: 'checkout', intent: o.intent }).then((c) => {
+              const d = (c.ok && c.data) || {};
+              if (d.ok && d.url) { location.href = d.url; return; }
+              this.setState({ progBusy: '', progMsg: d.motivo === 'vendedor_sem_recebimento' ? MSG.vendedor_sem_recebimento : 'Não foi possível abrir o pagamento agora. Nada foi cobrado.' });
+            });
+          });
+        };
+        const progs = (st.progs || []).map((pg) => ({ title: pg.title, sub: pl(pg.weeks, 'semana', 'semanas') + ' · ' + pl(pg.workouts, 'treino', 'treinos') + ' · acesso por ' + pl(pg.access_months, 'mês', 'meses'), desc: pg.description || '', hasDesc: !!pg.description,
+          label: st.progBusy === pg.id ? 'Abrindo pagamento…' : 'Comprar por R$ ' + (pg.price_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }), buy: buy(pg) }));
+        return { rprogs: progs, hasRprogs: progs.length > 0, progMsg: st.progMsg || '', hasProgMsg: !!st.progMsg };
+      })(),
       removed, showProfile: !removed, note, t, showSocial: !own || preview,
       favOn: String(!!st.fav), favIc: st.fav ? 'color: var(--brand)' : '', favLabel: st.fav ? 'Salvo' : 'Salvar', toggleFav, favNote: !!st.favNote, undoFav: () => set({ fav: false, favNote: false }), openShare: open('share', { copied: false }),
       claimable: !own, openClaim: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('claim', { claim: x.imported ? 'inicio' : 'conflito' }), openExt: x.imported ? igGo : open('ext'),

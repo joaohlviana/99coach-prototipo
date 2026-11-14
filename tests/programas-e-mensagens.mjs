@@ -24,6 +24,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   if (/\/storage\/v1\/object\/chat-anexos\//.test(u.pathname)) { srv.calls.push('upload:' + rq.method() + ':' + (rq.headers()['content-type'] || '')); return j({ Key: 'ok' }); }
   if (path === 'rpc/send_message') { const m = { id: 'm9', side: 'treinador', body: body.p_body, client_id: body.p_client_id, created_at: iso(0), read_at: null, edited_at: null, retracted_at: null }; srv.msgs.push(m); return j({ outcome: 'entregue', id: 'm9', at: m.created_at }); }
   if (path === 'rpc/attach_to_message') { const m = srv.msgs.find((x) => x.id === body.p_message); m.attachment_path = body.p_path; m.attachment_name = body.p_name; m.attachment_type = body.p_type; srv.calls.push('attach:' + /^L1\//.test(body.p_path)); return j({ id: m.id }); }
+  if (path === 'rpc/my_programs') return j(srv.mine || []);
   if (path === 'messages') return j(srv.msgs.slice().reverse());
   if (path === 'rpc/edit_message') { const m = srv.msgs.find((x) => x.id === body.p_id); m.body = body.p_body; m.edited_at = iso(0); srv.calls.push('edit'); return j({ id: m.id }); }
   if (path === 'rpc/retract_message') { const m = srv.msgs.find((x) => x.id === body.p_id); m.body = 'Mensagem retirada'; m.retracted_at = iso(0); srv.calls.push('retract'); return j({ id: m.id }); }
@@ -45,7 +46,7 @@ const press = async (re, sel) => { for (const h of await p.$$(sel || '#conteudo 
 // 1. programas
 await p.evaluate(() => GO('PROGR')); await p.waitForTimeout(1200);
 let t = await T();
-console.log('1 programas vazio e honesto:', /Nenhum programa ainda/.test(t), /venda pelo site ainda não está ligada/.test(t));
+console.log('1 programas vazio e honesto:', /Nenhum programa ainda/.test(t), /Programa publicado aparece no seu perfil público com o botão de compra/.test(t));
 await press(/Novo programa/); await press(/^Salvar$/);
 console.log('  valida antes de gravar:', /Dê um nome ao programa/.test(await T()), srv.progs.length === 0);
 await p.fill('#pg-t', 'Força em 8 semanas'); await p.fill('#pg-w', '8'); await p.fill('#pg-k', '24'); await p.fill('#pg-m', '6'); await p.fill('#pg-p', '197,00');
@@ -72,5 +73,11 @@ await inp.setInputFiles({ name: 'planilha.exe', mimeType: 'application/x-msdownl
 console.log('3 anexo de tipo errado é recusado:', /Envie imagem \(JPG, PNG ou WebP\) ou PDF/.test(await T()), !srv.calls.some((c) => /^upload/.test(c)));
 await (await p.$('input[type=file].onb-file__in')).setInputFiles({ name: 'Avaliação física.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 teste') }); await p.waitForTimeout(1500); t = await T();
 console.log('  PDF enviado e ligado à mensagem:', srv.calls.includes('upload:POST:application/pdf'), srv.calls.includes('attach:true'), /Anexo: Avaliação física\.pdf/.test(t), /PDF · abrir/i.test(t));
+// 4. aluno: Meus programas mostra o comprado e abre o conteúdo
+await p.evaluate(() => { localStorage.setItem('c99.sessao', JSON.stringify({ access_token: 't', refresh_token: 'r', user: { id: 'a1', email: 'a1@x.com' } })); const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'aluno', ''), { name: 'Caio Prado', dadosSaved: true, conta: true, step: 'pronto', scn: '' })); });
+srv.mine = [{ order: 'O1', program: 'P0', title: 'Força em 8 semanas', trainer: 'Marina Duarte', weeks: 8, workouts: 24, description: 'Base de força', content: 'Semana 1: agachamento 3x8', until: '2027-05-14T00:00:00Z' }];
+await p.reload({ waitUntil: 'load' }); await p.waitForTimeout(1500); await p.evaluate(() => GO('MPROG')); await p.waitForTimeout(1200); t = await T();
+console.log('4 meus programas:', /Força em 8 semanas/.test(t), /de Marina Duarte · 8 semanas · 24 treinos · acesso até 14\/05\/2027/.test(t));
+await press(/^Abrir programa$/); console.log('  conteúdo abre:', /Semana 1: agachamento 3x8/.test(await T()));
 console.log('errs', errs);
 await b.close();

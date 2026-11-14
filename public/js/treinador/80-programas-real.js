@@ -1,5 +1,5 @@
 /* PROGR · Programas (conta real): o treinador cria, publica e retira programas, gravados no servidor (tabela programs).
-   A venda pelo site ainda não está ligada: a tela diz isso em vez de prometer. Nada de programa de exemplo. */
+   Programa publicado aparece no perfil público com compra pelo Stripe. Nada de programa de exemplo. */
 REG.screen({
   page: 'treinador', key: 'programasreal', id: 'PROGR', title: 'Programas', nav: 'programas', wide: true, back: 'TMENU',
   vals: function (ctx) {
@@ -10,7 +10,7 @@ REG.screen({
       C.db('GET', 'trainers?select=id,status&user_id=eq.' + encodeURIComponent(uid || '')).then(function (r) {
         var t = r.ok && r.data && r.data[0];
         if (!t) return ctx.setUi({ list: null, noTrainer: r.ok });
-        C.db('GET', 'programs?select=id,slug,title,weeks,workouts,access_months,price_cents,status&trainer_id=eq.' + t.id + '&order=title.asc').then(function (p) { ctx.setUi({ tid: t.id, tPub: t.status === 'publicado', list: p.ok ? (p.data || []) : null }); });
+        C.db('GET', 'programs?select=id,slug,title,weeks,workouts,access_months,price_cents,status,description,content&trainer_id=eq.' + t.id + '&order=title.asc').then(function (p) { ctx.setUi({ tid: t.id, tPub: t.status === 'publicado', list: p.ok ? (p.data || []) : null }); });
       });
     };
     if (C && C.session() && !ui.asked) load();
@@ -24,7 +24,7 @@ REG.screen({
       if (!w || !k || !m) return ctx.setUi({ ferr: 'Informe semanas, treinos e meses de acesso (números maiores que zero).' });
       if (c < 100) return ctx.setUi({ ferr: 'Informe o preço em reais (mínimo R$ 1,00).' });
       if (ui.saving) return; ctx.setUi({ saving: true, ferr: '' });
-      var body = { title: title, weeks: w, workouts: k, access_months: m, price_cents: c };
+      var body = { title: title, weeks: w, workouts: k, access_months: m, price_cents: c, description: String(f.desc || '').trim().slice(0, 600) || null, content: String(f.content || '').trim().slice(0, 20000) || null };
       var req = ui.editId ? C.db('PATCH', 'programs?id=eq.' + ui.editId, body)
         : C.db('POST', 'programs', Object.assign({ trainer_id: ui.tid, slug: slug(title) + '-' + Math.random().toString(36).slice(2, 7), status: 'rascunho' }, body));
       req.then(function (r) {
@@ -39,9 +39,9 @@ REG.screen({
     var rows = (ui.list || []).map(function (p) {
       var st = ST[p.status] || [p.status, 'badge badge--plain'];
       return { title: p.title, st: st[0], stCls: st[1], sub: U.plural(p.weeks, 'semana', 'semanas') + ' · ' + U.plural(p.workouts, 'treino', 'treinos') + ' · acesso por ' + U.plural(p.access_months, 'mês', 'meses') + ' · ' + money(p.price_cents),
-        canPub: p.status !== 'publicado', pub: function () { ctx.ask({ title: 'Publicar "' + p.title + '"?', lines: ['O programa passa a constar como publicado no seu catálogo.', 'A compra pelo site ainda não está ligada: por enquanto ninguém consegue pagar por ele aqui.'], ok: 'Publicar', onOk: setStatus(p, 'publicado', 'Programa publicado.') }); },
+        canPub: p.status !== 'publicado', pub: function () { ctx.ask({ title: 'Publicar "' + p.title + '"?', lines: ['O programa aparece no seu perfil público com o botão de compra.', 'Quem comprar recebe acesso ao conteúdo pelo prazo definido. O pagamento cai na sua conta do Stripe, com a comissão de 5%.', p.content ? 'O conteúdo já está escrito.' : 'Atenção: o conteúdo ainda está vazio. Escreva antes de publicar.'], ok: 'Publicar', onOk: setStatus(p, 'publicado', 'Programa publicado.') }); },
         canRetire: p.status === 'publicado', retire: setStatus(p, 'retirado', 'Programa retirado.'),
-        edit: function () { ctx.setUi({ open: true, editId: p.id, ferr: '', f: { title: p.title, weeks: String(p.weeks), workouts: String(p.workouts), months: String(p.access_months), price: (p.price_cents / 100).toFixed(2).replace('.', ',') } }); },
+        edit: function () { ctx.setUi({ open: true, editId: p.id, ferr: '', f: { title: p.title, weeks: String(p.weeks), workouts: String(p.workouts), months: String(p.access_months), price: (p.price_cents / 100).toFixed(2).replace('.', ','), desc: p.description || '', content: p.content || '' } }); },
         canDel: p.status === 'rascunho', del: function () { ctx.ask({ title: 'Apagar o rascunho "' + p.title + '"?', lines: ['O rascunho é apagado da sua conta. Não dá para desfazer.'], ok: 'Apagar rascunho', danger: true, onOk: function () { C.db('DELETE', 'programs?id=eq.' + p.id + '&status=eq.rascunho').then(function (r) { ctx.toast(r.ok ? 'Rascunho apagado.' : 'Não foi possível apagar agora.'); load(); }); } }); } };
     });
     return {
@@ -49,6 +49,7 @@ REG.screen({
       rows: rows, hasRows: rows.length > 0, empty: Array.isArray(ui.list) && !rows.length,
       open: !!ui.open, closed: !ui.open, formTitle: ui.editId ? 'Editar programa' : 'Novo programa',
       start: function () { ctx.setUi({ open: true, editId: '', f: {}, ferr: '' }); }, cancel: function () { ctx.setUi({ open: false, editId: '', f: {}, ferr: '' }); },
+      fDesc: f.desc || '', fContent: f.content || '', setDesc: set('desc'), setContent: set('content'),
       fTitle: f.title || '', fWeeks: f.weeks || '', fWorkouts: f.workouts || '', fMonths: f.months || '', fPrice: f.price || '',
       setTitle: set('title'), setWeeks: set('weeks'), setWorkouts: set('workouts'), setMonths: set('months'), setPrice: set('price'),
       save: save, saveLabel: ui.saving ? 'Salvando…' : 'Salvar', ferr: ui.ferr || '', hasFerr: !!ui.ferr,

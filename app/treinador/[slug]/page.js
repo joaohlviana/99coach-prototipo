@@ -4,6 +4,7 @@
 import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
 import Visita from '../../../components/Visita.js';
+import Programas from '../../../components/Programas.js';
 import { treinador, esportesDe, lista, slug as slugify, curta, SITE, publicadoAgora, treinadorAgora, servicoDe, cidadeUF, caber, resumo, nomeLimpo } from '../../../lib/catalogo.js';
 
 export const revalidate = 300;
@@ -83,6 +84,7 @@ export default async function Page({ params }) {
           <p><a href={'/app#publico-pedir-' + t.id}>Pedir acompanhamento</a></p>
         </section>
       )}
+      <Programas slug={t.id} />
       {esp.length ? <section aria-labelledby="h-esp"><h2 id="h-esp">Modalidades</h2>
         <ul className="ssr-chips">{esp.map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + (cid ? '/' + cid : '')}>{s.label}{cid ? ' em ' + curta(t.city) : ''}</a></li>)}</ul></section> : null}
       {parecidos.length ? <section aria-labelledby="h-par"><h2 id="h-par">Outros profissionais{principal ? ' de ' + principal.label : ''}{cid ? ' em ' + curta(t.city) : ''}</h2>

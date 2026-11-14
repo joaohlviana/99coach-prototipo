@@ -30,6 +30,16 @@
         <sc-if value="{{hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Esta tela falhou ao montar</b>{{err}}</div></div></sc-if>
       <!-- AMENU · Conta da aluna -->
       <!-- ALU00 · Conta real: sem treinador, preparação, treino atribuído, execução e evolução -->
+      <sc-if value="{{is.meusprogramas}}" hint-placeholder-val="{{ false }}">
+        <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Meus programas</h1><p class="pghead__sub">Programas que você comprou. O acesso vale até a data indicada em cada um.</p></div></div>
+        <sc-if value="{{v.loading}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Carregando…</p></sc-if>
+        <sc-if value="{{v.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não deu para carregar seus programas agora</b>Isso não quer dizer que você não tem nenhum.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.reload}}">Tentar de novo</button></div></sc-if>
+        <sc-if value="{{v.empty}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-book" aria-hidden="true"></i></span><b>Nenhum programa ainda</b><span>Programas aparecem no perfil de cada treinador.</span><button type="button" class="btn btn--outline btn--sm" onClick="{{v.find}}">Encontrar treinador</button></div></sc-if>
+        <sc-if value="{{v.hasRows}}" hint-placeholder-val="{{ false }}"><sc-for list="{{v.rows}}" as="r" hint-placeholder-count="1"><section class="card onb-sec" aria-label="{{r.title}}"><div class="mod-card__h"><div><h2 class="onb-h2">{{r.title}}</h2><p class="mod-small mod-muted">{{r.sub}}</p></div><button type="button" class="btn btn--outline btn--sm" aria-expanded="{{r.open}}" onClick="{{r.toggle}}">{{r.toggleLabel}}</button></div>
+          <sc-if value="{{r.hasDesc}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{r.desc}}</p></sc-if>
+          <sc-if value="{{r.hasContent}}" hint-placeholder-val="{{ false }}"><div class="prog-content">{{r.content}}</div></sc-if>
+          <sc-if value="{{r.noContent}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">O treinador ainda não escreveu o conteúdo deste programa. Fale com ele pelo perfil.</p></sc-if></section></sc-for></sc-if>
+      </sc-if>
       <sc-if value="{{is.semvinculo}}" hint-placeholder-val="{{ false }}">
         <sc-if value="{{v.hasBar}}" hint-placeholder-val="{{ false }}"><div class="hj-bar hj-bar--end">
           <button type="button" class="t1-icbtn" onClick="{{v.bar.bell}}" aria-label="Avisos" title="Avisos"><i class="ic ic--sm i-bell" aria-hidden="true"></i></button>

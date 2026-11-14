@@ -249,6 +249,11 @@
       </div>
     </section>
 
+    <sc-if value="{{hasRprogs}}" hint-placeholder-val="{{ false }}"><section id="programas-venda" class="vf-sec vfp-sec" aria-labelledby="h-pgv"><div class="sec-head"><div><h2 id="h-pgv" class="sec-title sec-title--nonum">Programas</h2></div></div>
+      <p class="mod-small mod-muted">Planos prontos para seguir no seu ritmo, sem acompanhamento individual. Acesso pelo período indicado; garantia de 7 dias.</p>
+      <ul class="vfp-progs"><sc-for list="{{rprogs}}" as="g" hint-placeholder-count="1"><li class="card"><b>{{g.title}}</b><span class="mod-small mod-muted">{{g.sub}}</span><sc-if value="{{g.hasDesc}}" hint-placeholder-val="{{ false }}"><span class="mod-small">{{g.desc}}</span></sc-if><button type="button" class="btn btn--primary btn--md" onClick="{{g.buy}}">{{g.label}}</button></li></sc-for></ul>
+      <sc-if value="{{hasProgMsg}}" hint-placeholder-val="{{ false }}"><p class="mod-small" role="status">{{progMsg}}</p></sc-if></section></sc-if>
+
     <!-- Perguntas frequentes (G19 · faq) -->
     <sc-if value="{{sFaq}}" hint-placeholder-val="{{ false }}"><section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
       <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2></div></div>

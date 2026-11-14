@@ -168,7 +168,7 @@
       tabs: [['Hoje', 'home', 'H10', 'hoje'], ['Treinos', 'dumbbell', 'ALU06', 'treinos'], ['Evolução', 'trend', 'H10E', 'evolucao'], ['Mensagens', 'message', 'ALU05', 'mensagens'], ['Conta', 'user', 'amenu', 'conta']],
       tabOf: { contratacoes: 'conta', buscar: 'conta' },
       sideReal: [{ sec: 'Meu acompanhamento', items: [['Hoje', 'home', 'H10', 'hoje'], ['Treinos', 'dumbbell', 'ALU06', 'treinos'], ['Evolução', 'trend', 'H10E', 'evolucao'], ['Mensagens', 'message', 'ALU05', 'mensagens', 'amsg']] },
-        { sec: 'Conta', items: [['Encontrar treinador', 'search', '@home', 'buscar'], ['Favoritos', 'heart', 'PUB07', 'salvos'], ['Conta', 'user', 'amenu', 'conta']] }]
+        { sec: 'Conta', items: [['Meus programas', 'book', 'MPROG', 'programas'], ['Encontrar treinador', 'search', '@home', 'buscar'], ['Favoritos', 'heart', 'PUB07', 'salvos'], ['Conta', 'user', 'amenu', 'conta']] }]
     },
     publico: {
       label: 'Navegação pública', me: null,

@@ -88,3 +88,8 @@ html.app-on #ssr{display:none}
 .ssr-busca{display:flex;gap:8px;margin-top:16px;max-width:620px}
 .ssr-busca input{flex:1;min-height:48px;border-radius:999px;border:0;padding:0 20px;font:inherit;font-size:16px}
 .ssr-busca button{min-height:48px;padding:0 22px;border-radius:999px;border:0;background:var(--brand,#DF0A3D);color:#fff;font-weight:700;cursor:pointer}
+.ssr-progs{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.ssr-progs li{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid rgba(18,18,20,.12);border-radius:14px;background:#fff}
+.ssr-progs b{font-size:16px}.ssr-progs small{color:#5c5c66}.ssr-progs span{font-size:14px;color:#3b3b44}
+.ssr-progs button{margin-top:8px;align-self:flex-start;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:#121214;color:#fff;font:600 14px inherit;cursor:pointer}
+.ssr-progs button:disabled{opacity:.6;cursor:default}
