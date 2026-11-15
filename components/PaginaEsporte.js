@@ -47,7 +47,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
   const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
-  const route = { name: 'esporte', params: { mod: esp.label, city: cid ? cid.label : '', fmt: online ? 'Online' : (cid ? 'Presencial' : 'Qualquer') } };
+  const route = { name: 'esporte', params: { slug: esp.slug, mod: esp.label, city: cid ? cid.label : '', fmt: online ? 'Online' : (cid ? 'Presencial' : 'Qualquer') } };
   const ld = {
     '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: itens.length,
     itemListElement: naPagina.map((t, i) => ({ '@type': 'ListItem', position: ini + i + 1, url: SITE + '/treinador/' + t.id, name: t.name }))

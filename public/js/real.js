@@ -99,7 +99,7 @@
     },
     // Perfil público, no formato da página de Perfil
     perfil: function (id) {
-      var t = byId[id]; if (!t) return null;
+      var t = byId[id]; if (!t) { if (window.__sliceReady && window.__sliceReady() && REAL.needAll) REAL.needAll(); return null; }
       var d = details[id] || {}, first = t.name.split(' ')[0];
       var fm = t.pres && t.onl ? 'Presencial e online' : (t.pres ? 'Presencial' : (t.onl ? 'Online' : ''));
       var where = (d.serviceArea || []).map(function (w) { return [w.label, w.value]; });
@@ -338,7 +338,8 @@
     };
   })();
   window.__afterRender = function (page, root) {
-    if (PUBLIC[page]) ensureBase();
+    // modalidade pede a própria fatia (REAL.need); perfil aberto a partir de uma fatia já tem o que precisa
+    if (PUBLIC[page] && page !== 'esporte' && !(page === 'perfil' && window.__sliceLoaded && window.__sliceLoaded())) ensureBase();
     if (!window.STORE) return;
     applyMe();
     if (window.__sheetFocus) window.__sheetFocus();
@@ -460,8 +461,30 @@
   var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
   function ensureBase() { if (baseAsked) return; baseAsked = true; fetchBase(); }
   REAL.ensure = ensureBase;
+  // fatias: página de modalidade e perfil baixam só o necessário; o catálogo inteiro fica para a página inicial
+  var slices = {}, sliceRows = [];
+  function fetchSlice(url, key) {
+    if (baseAsked || slices[key]) return; slices[key] = 'carregando';
+    if (LOADST.base !== 'ok') LOADST.base = 'carregando';
+    fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (baseAsked && LOADST.base === 'ok') return;
+      if (!d || !Array.isArray(d.items)) { slices[key] = null; if (!sliceRows.length) LOADST.base = 'falha'; rerender(); return; }
+      slices[key] = 'ok'; sliceRows = sliceRows.concat(d.items);
+      var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(sliceRows)); LOADST.base = 'ok'; rerender();
+    }).catch(function () { slices[key] = null; if (!sliceRows.length) LOADST.base = 'falha'; rerender(); });
+  }
+  var SLUG = {}; Object.keys(LABEL).forEach(function (k) { SLUG[LABEL[k]] = k; });
+  // a vitrine pede a modalidade que está mostrando; sem fatia conhecida, cai no catálogo inteiro
+  REAL.need = function (modLabel) { if (baseAsked) return; var k = SLUG[modLabel]; if (k) fetchSlice('/dados/esporte/' + encodeURIComponent(k), 'e:' + k); else ensureBase(); };
+  REAL.needAll = ensureBase;
+  // alguma fatia pedida (mesmo ainda chegando) / alguma fatia já chegou
+  window.__sliceLoaded = function () { return Object.keys(slices).length > 0; };
+  window.__sliceReady = function () { return Object.keys(slices).some(function (k) { return slices[k] === 'ok'; }) && !Object.keys(slices).some(function (k) { return slices[k] === 'carregando'; }); };
   var first = (window.__ROUTE && window.__ROUTE.name) || (/^#?([a-z]+)/.exec(location.hash || '') || [])[1] || 'home';
-  if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
+  var rp = (window.__ROUTE && window.__ROUTE.params) || {};
+  if (first === 'esporte' && rp.slug) fetchSlice('/dados/esporte/' + encodeURIComponent(rp.slug), 'e:' + rp.slug);
+  else if (first === 'perfil' && rp.id && /^\/treinador\//.test(location.pathname)) fetchSlice('/dados/treinador/' + encodeURIComponent(rp.id), 'p:' + rp.id);
+  else if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
 
   // ---------- favoritos ----------
   // Visitante: ficam neste aparelho. Com conta: ficam na conta (servidor) e valem em qualquer aparelho.
