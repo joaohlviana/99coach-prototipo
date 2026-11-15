@@ -79,7 +79,7 @@
               <p class="vfp-line">{{vrole}}</p>
               <div class="vfp-chips"><sc-for list="{{t.chips}}" as="c" hint-placeholder-count="2"><span class="{{c.cls}}"><sc-if value="{{c.seal}}" hint-placeholder-val="{{ false }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if><sc-if value="{{c.noSeal}}" hint-placeholder-val="{{ true }}"><i class="{{c.ic}}"></i></sc-if>{{c.t}}</span></sc-for></div>
               <ul class="vfp-facts">
-                <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if></li>
+                <li><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><button type="button" class="tc__rate v4-reset" onClick="{{goRev}}" aria-label="Nota {{t.avg}} de 5, {{t.n}} avaliações. Ver avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.avg}}<small>({{t.n}} avaliações)</small></button></sc-if><sc-if value="{{t.noRating}}" hint-placeholder-val="{{ false }}"><span class="mod-muted">Ainda sem avaliações</span></sc-if></li>
                 <sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><li><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></li></sc-if>
                 <sc-if value="{{t.formats}}" hint-placeholder-val="{{ true }}"><li><i class="{{fmtIc}}" aria-hidden="true"></i>{{t.formats}}</li></sc-if>
                 <sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><li><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</li></sc-if>
@@ -138,6 +138,7 @@
           <sc-if value="{{A.hasSecondary}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block v4-wrapbtn" onClick="{{A.go2}}">{{A.label2}}</button></sc-if>
           <sc-if value="{{showMsg}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></sc-if>
           <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
+          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram abre fora da 99Coach ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
         </div>
         </sc-if>
       </aside>
@@ -168,7 +169,7 @@
 
     <!-- Programas: Card/Programa (G17 · pc) + comparação com o acompanhamento (G11) -->
     <sc-if value="{{sPg}}" hint-placeholder-val="{{ true }}"><section id="programas" class="vf-sec vfp-sec" aria-labelledby="h-pg">
-      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas</h2><p class="sec-sub">Compra única, acesso por 12 meses.</p></div></div>
+      <div class="sec-head"><div><h2 id="h-pg" class="sec-title sec-title--nonum">Programas</h2><p class="sec-sub">Conteúdo pronto, compra única, acesso por 12 meses. Não inclui acompanhamento individual.</p></div></div>
       <sc-if value="{{hasProgs}}" hint-placeholder-val="{{ true }}"><div class="vfp-pg">
         <sc-for list="{{progs}}" as="p" hint-placeholder-count="1">
         <div class="{{p.cls}}"><img src="{{p.img}}" alt="Capa do programa {{p.title}}">
@@ -197,7 +198,7 @@
 
     <!-- Avaliações: número (G08) + distribuição (barra) + Avaliação (G18 · rev) -->
     <section id="avaliacoes" class="vf-sec vfp-sec" aria-labelledby="h-av">
-      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2></div></div></sc-if>
+      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2><p class="sec-sub">Só de alunos com contratação concluída pela 99Coach.</p></div></div></sc-if>
       <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
       <div class="vfp-rev">
         <div class="card vfp-card">
@@ -217,7 +218,7 @@
 
     <!-- Atendimento: chave e valor (G08) · agenda por dia (G05/G07) · contato (G10 · linhas) -->
     <section id="atendimento" class="vf-sec vfp-sec" aria-labelledby="h-at">
-      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2></div></div>
+      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2><p class="sec-sub">Onde, quando e como falar com {{t.first}}.</p></div></div>
       <div class="vfp-g3">
         <div class="card vfp-card">
           <h3 class="vfp-h4"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Onde atende</h3>
@@ -241,7 +242,8 @@
           <h3 class="vfp-h4"><i class="ic ic--sm i-message" aria-hidden="true"></i>Mensagens e contato</h3>
           <div>
             <sc-if value="{{canMsg}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Mensagens pela 99Coach</b><span>Para tirar dúvidas. Mensagem não é contratação.</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{openMsg}}">Enviar</button></div></sc-if>
-            <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Contato direto com o profissional</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
+            <sc-if value="{{noMsg}}" hint-placeholder-val="{{ false }}"><div class="vfp-crow"><div><b>Sem mensagens pela 99Coach</b><span>Perfis importados não recebem mensagens nem contratações.</span></div></div></sc-if>
+            <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Abre fora da 99Coach</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
             <sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>É o seu perfil?</b><span>Reivindique ou recupere o acesso</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openClaim}}">É meu perfil</button></div></sc-if>
             <div class="vfp-crow"><div><b>Compartilhar perfil</b><span>Copie o link para mandar a alguém</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openShare}}"><i class="ic ic--xs i-share" aria-hidden="true"></i>Copiar</button></div>
           </div>
@@ -256,21 +258,21 @@
 
     <!-- Perguntas frequentes (G19 · faq) -->
     <sc-if value="{{sFaq}}" hint-placeholder-val="{{ false }}"><section id="perguntas" class="vf-sec vfp-sec" aria-labelledby="h-fq">
-      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2></div></div>
+      <div class="sec-head"><div><h2 id="h-fq" class="sec-title sec-title--nonum">Perguntas frequentes</h2><p class="sec-sub">{{faqSub}}</p></div></div>
       <div class="card vfp-faq"><div class="faq"><sc-for list="{{faqs}}" as="f" hint-placeholder-count="4"><div class="faq__item"><button type="button" class="faq__q" aria-expanded="{{f.exp}}" onClick="{{f.pick}}"><span>{{f.q}}</span><i class="ic ic--sm i-chev-d" aria-hidden="true" style="{{f.rot}}"></i></button><sc-if value="{{f.open}}" hint-placeholder-val="{{ false }}"><div class="faq__a"><p>{{f.a}}</p><span class="badge badge--plain">{{f.who}}</span></div></sc-if></div></sc-for></div></div>
     </section></sc-if>
 
     <!-- Parecidos em Londrina (G17 · treinador em lista, mesmo card da Home VFINAL) -->
     <section class="vf-sec" aria-labelledby="h-par">
-      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2></div></div>
+      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2><p class="sec-sub">Para comparar. Sua escolha neste perfil continua salva.</p></div></div>
       <ul class="vf-g4"><sc-for list="{{others}}" as="o" hint-placeholder-count="4"><li class="vf-tc card" aria-label="{{o.name}}">
         <div class="vf-tc__m"><a class="v4-ph" href="{{o.href}}" data-spa="1" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></a></div>
         <div class="vf-tc__b">
           <span class="tc__sport">{{o.sport}}</span>
           <div class="vf-tc__row"><a class="tc__name" href="{{o.href}}" data-spa="1" onClick="{{o.open}}"><span>{{o.name}}</span><sc-if value="{{o.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></a><sc-if value="{{o.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{o.avg}} de 5, {{o.n}} avaliações"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{o.avg}}<small>({{o.n}})</small></span></sc-if></div>
-          <span class="vf-meta">{{o.role}}</span>
+          <span class="vf-meta">{{o.role}}<sc-if value="{{o.noRating}}" hint-placeholder-val="{{ false }}"> · ainda sem avaliações</sc-if></span>
           <span class="{{o.avCls}} v4-bw">{{o.avText}}</span>
-          <div class="vf-tc__f"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{o.price}} <small>{{o.unit}}</small></b><span>{{o.offName}}</span></span></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{o.open}}">Ver perfil</button></div>
+          <div class="vf-tc__f"><sc-if value="{{o.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{o.price}} <small>{{o.unit}}</small></b><span>{{o.offName}}</span></span></sc-if><sc-if value="{{o.noPrice}}" hint-placeholder-val="{{ false }}"><span class="vf-price"><span>Sem serviço publicado</span></span></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{o.open}}">Ver perfil</button></div>
         </div>
       </li></sc-for></ul>
     </section>
@@ -280,12 +282,14 @@
   <!-- Rodapé do DS (.ftr) com botões no lugar de links — o mesmo da Home VFINAL -->
   <footer class="ftr" style="margin-top: 96px">
     <div class="wrap"><div class="ftr__grid">
-      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{openLang}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d" aria-hidden="true"></i></button></div>
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><p class="ftr-langs" style="display:flex;gap:12px;margin:16px 0 8px;font-size:14px"><b lang="pt-BR">Português</b><a href="/en" hreflang="en" lang="en">English</a><a href="/es" hreflang="es" lang="es">Español</a></p><p class="t2" style="font-size:12px;line-height:1.5;max-width:280px">Valores em reais (R$). Contas, pagamentos e atendimento no Brasil, em qualquer idioma.</p></div>
       <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{openSearch}}">Treinadores</button><button type="button" onClick="{{openSearch}}">Esportes</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
       
+      <div class="ftr__col"><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/esportes">Todos os esportes</a></div>
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{goHelp}}">Central de ajuda</button><button type="button" onClick="{{goHelpPay}}">Pagamentos e reembolsos</button></div>
     </div></div>
+    <div class="wrap"><div class="ftr__word" aria-hidden="true">99Coach · mais que treino</div></div>
     <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><div class="v4-row" style="gap: 20px"><button type="button" onClick="{{goHelpPriv}}">Privacidade</button><button type="button" onClick="{{goHelpTerms}}">Termos</button><button type="button" onClick="{{goHelpCookies}}">Cookies</button></div></div></div>
   </footer>
 

@@ -77,7 +77,7 @@ class Component extends DCLogic {
     const sl = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     const crGo = (withCity) => () => { if (!cr || !cr.slug) return window.NAV.toSearch(this); location.assign('/treinadores/' + cr.slug + (withCity && cr.city ? '/' + sl(cr.city) : '')); };
     const ctxLabel = x.pending ? '' : cr && cr.sport ? cr.sport + (cr.city ? ' · ' + cr.city.split(',')[0] : (x.formats === 'Online' ? ' · online' : '')) : window.NAV.ctxLabel() + (st.vaga ? ' · Aceita novos alunos' : '');
-    const AV = (y) => y.avail === 'aceita' ? ['badge badge--ok', 'ic ic--xs i-check', 'Aceita novos alunos · informado em ' + y.availDate] : y.avail === 'nao' ? ['badge badge--warn', 'ic ic--xs i-pause', 'Não aceita novos alunos · informado em ' + y.availDate] : y.avail === 'importado' ? ['trust trust--decl', 'ic ic--xs i-link', 'Perfil importado · não reivindicado'] : ['badge badge--plain', 'ic ic--xs i-info', 'Disponibilidade não informada'];
+    const AV = (y) => y.avail === 'aceita' ? ['badge badge--ok', 'ic ic--xs i-check', 'Aceita novos alunos · informado em ' + y.availDate] : y.avail === 'nao' ? ['badge badge--warn', 'ic ic--xs i-pause', 'Não aceita novos alunos · informado em ' + y.availDate] : ['badge badge--plain', 'ic ic--xs i-info', 'Disponibilidade não informada'];
     const toggleFav = (e) => set({ fav: !st.fav, favNote: !st.fav, ty: yOf(e) + 52 });
 
     // ---------- confiança ----------
@@ -91,14 +91,14 @@ class Component extends DCLogic {
     const av = AV(x);
     const chips = [];
     if (x.pending) { /* carregando: nenhuma afirmação */ }
-    else if (x.imported) chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-link', t: 'Perfil importado', seal: false, noSeal: true });
+    else if (x.imported) chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-link', t: 'Perfil não reivindicado · dados públicos', seal: false, noSeal: true });
     else chips.push({ cls: 'trust trust--owner', ic: 'ic ic--xs i-user', t: 'Titularidade confirmada', seal: false, noSeal: true });
     if (x.cref === 'ver') chips.push({ cls: 'trust trust--ver', ic: '', t: 'CREF verificado', seal: true, noSeal: false });
     else if (x.cref === 'inf') chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', t: 'CREF informado', seal: false, noSeal: true });
     const t = Object.assign({}, x, {
       hasPhoto: !!x.photo, noPhoto: !x.photo, avCls: av[0], avIc: av[1], avText: av[2], hasRating: !!x.avg, noRating: !x.avg, nLabel: x.n === 1 ? '1 avaliação' : x.n + ' avaliações',
       noRatingText: x.imported ? 'Perfis importados não recebem avaliações.' : (x.realLive ? 'Ainda sem avaliações. Só quem teve acompanhamento com ' + x.first + ' pela 99Coach pode avaliar; nenhuma nota aparece até lá.' : 'Só alunos com contratação concluída pela 99Coach podem avaliar. Nenhuma nota aparece até lá.'),
-      trust: trust, chips: chips, verified: x.cref === 'ver', showAv: x.avail !== 'importado', hasBio: !!x.bio, hasExt: !!x.ext, hasMap: !!x.map,
+      trust: trust, chips: chips, verified: x.cref === 'ver', showAv: !x.pending, formats: x.formats || (x.pending ? '' : 'Atendimento não informado'), lang: x.lang || (x.pending ? '' : 'Atende em português'), pitch: x.pitch || x.bio || (x.pending || !x.role ? '' : x.role + (x.city ? ' em ' + x.city : '') + '.'), hasBio: !!x.bio, hasExt: !!x.ext, hasMap: !!x.map,
       hasCreds: x.creds.length > 0, noCreds: x.creds.length === 0, noCredsTitle: x.imported ? 'Credenciais não exibidas' : 'Sem credencial informada', noCredsText: x.imported ? 'Perfis importados não mostram formação nem registro profissional até a reivindicação.' : x.first + ' ainda não informou CREF ou formação. Pergunte antes de contratar.',
       creds: x.creds.map((c) => ({ k: c[0], v: c[1], st: c[2], cls: 'badge ' + (c[3] ? 'badge--ok' : 'badge--plain'), ic: 'ic ic--sm ' + (c[3] ? 'i-shield' : 'i-file') })),
       where: x.where.map((w) => ({ k: w[0], v: w[1] })),
@@ -312,11 +312,11 @@ class Component extends DCLogic {
 
     // seção vazia não aparece para visitante: só o dono vê o que falta preencher
     const mine = own || ownReal;
-    const anchors = [['Sobre', 'visao'], ['Serviços', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => mine || !((l === 'Sobre' && !(x.pitch || x.bio || x.creds.length || x.avg)) || (l === 'Serviços' && !offers.length) || (l === 'Programas' && !progs.length) || (l === 'Avaliações' && !x.avg) || (l === 'Perguntas' && x.id !== 'rafael'))).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
+    const anchors = [['Visão geral', 'visao'], ['Ofertas', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
 
     return {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
-      ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', crumbSportHref: cr && cr.slug ? '/treinadores/' + cr.slug : '/', crumbCityHref: cr && cr.slug && cr.city ? '/treinadores/' + cr.slug + '/' + sl(cr.city) : '/', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !!(x.pitch || x.bio), fmtIc: 'ic ic--sm ' + (/Presencial/.test(x.formats || '') ? 'i-pin' : 'i-monitor'), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
+      ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', crumbSportHref: cr && cr.slug ? '/treinadores/' + cr.slug : '/', crumbCityHref: cr && cr.slug && cr.city ? '/treinadores/' + cr.slug + '/' + sl(cr.city) : '/', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !x.pending, fmtIc: 'ic ic--sm ' + (/Presencial/.test(x.formats || '') ? 'i-pin' : 'i-monitor'), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
       menuOpen: String(st.sheet === 'menu'), openSearch: () => window.NAV.toSearch(this), openSaved: open('saved'), openLogin: () => window.NAV.go('onboarding', { flow: 'entrar' }, this), openPro: open('pro'), openAcct: open('acct'), openMenu: open('menu'), openHelp: open('ajuda'),
       // abertura do perfil (a mesma marcação da página do servidor, para não contar duas vezes)
       ...(() => { if (x && x.id && !x.pending && window.TRACK && !document.documentElement.classList.contains('demo')) { try { if (!sessionStorage.getItem('c99.visto.' + x.id)) { sessionStorage.setItem('c99.visto.' + x.id, '1'); window.TRACK('trainer.profile_viewed', { trainer_slug: x.id }); } } catch (_) {} } return {}; })(),
@@ -352,14 +352,14 @@ class Component extends DCLogic {
       favOn: String(!!st.fav), favIc: st.fav ? 'color: var(--brand)' : '', favLabel: st.fav ? 'Salvo' : 'Salvar', toggleFav, favNote: !!st.favNote, undoFav: () => set({ fav: false, favNote: false }), openShare: open('share', { copied: false }),
       claimable: !own, openClaim: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('claim', { claim: x.imported ? 'inicio' : 'conflito' }), openExt: x.imported ? igGo : open('ext'),
       anchors, bioOpen: !!st.bio, bioExp: String(!!st.bio), bioLabel: st.bio ? 'Ler menos' : 'Ler mais', toggleBio: () => set({ bio: !st.bio }),
-      sSlots: mine || x.id === 'rafael', sFaq: x.id === 'rafael', sMsgNo: false,
-      sCred: mine || x.creds.length > 0, sAvr: mine || !!x.avg, sOf: mine || offers.length > 0, sPg: mine || progs.length > 0, sAvHead: mine || !!x.avg, sTwo: mine || x.creds.length > 0 || !!x.avg,
+      sSlots: true, sFaq: !x.pending, sMsgNo: false,
+      sCred: true, sAvr: true, sOf: true, sPg: true, sAvHead: true, sTwo: true,
       svcSub, hasOffers: offers.length > 0, noOffers: offers.length === 0, offers, noOffersTitle, noOffersText,
       hasProgs: progs.length > 0, noProgs: progs.length === 0, progs, noProgsText: x.imported ? 'Perfis importados não mostram programas.' : 'Quando houver, programas de compra única aparecem aqui com duração, preço e prazo de acesso.',
       showSlots: x.id === 'rafael', noSlots: x.id !== 'rafael', noSlotsText: x.avail === 'nao' ? 'O Gabriel não está recebendo novos alunos; a agenda não é exibida.' : x.imported ? 'Perfis importados não mostram agenda.' : x.first + ' não publicou agenda. Os horários são combinados depois da contratação ou do aceite.', slotDays, mapOff: !st.map, mapOn: !!st.map, loadMap: () => set({ map: true }),
       reviews, revBtn: x.reviews.length > 3, revBtnLabel: st.revMore ? 'Mostrar menos' : 'Mostrar mais avaliações', moreRev: () => set({ revMore: !st.revMore }), goRev: () => { set({ sec: 'Avaliações' }); goSec('avaliacoes'); },
       openFix: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('fix'), openReport: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('report'),
-      hasA: !!A, A: A || {}, goSvc: () => { set({ sec: 'Serviços' }); goSec('ofertas'); }, showPicker, picker, barOn, others,
+      hasA: !!A, A: A || {}, goSvc: () => { set({ sec: 'Ofertas' }); goSec('ofertas'); }, showPicker, picker, barOn, others,
       sheetOn: !!raw, sh, close, payOpts, dlgCls: 'card v4-sheet' + (st.sheet === 'menu' ? ' v4-sheet--menu' : ''), sheetTop: st.y + 'px', toastTop: st.ty + 'px',
       vline: LINE[x.id] || (x.role + ' · ' + x.city), vrole: x.role + ' · ' + x.city + ({ rafael: ' · Centro e Zona Sul', gabriel: ' · Gleba Palhano', carolina: ' · Zona Sul' }[x.id] || ''), dist, how, hasHow: how.length > 0, faqs,
       faqSub: x.id === 'rafael' ? 'Respostas escritas pelo Rafael. Regras de pagamento e reembolso são da 99Coach.' : 'Regras da 99Coach, válidas para qualquer perfil.',
@@ -373,7 +373,7 @@ class Component extends DCLogic {
       mrole: x.role, mcity: x.city + ({ rafael: ' · Centro e Zona Sul', gabriel: ' · Gleba Palhano', carolina: ' · Zona Sul' }[x.id] || ''),
       mcref: { on: x.cref === 'ver' || x.cref === 'inf', ver: x.cref === 'ver', inf: x.cref === 'inf', t: x.cref === 'ver' ? 'CREF ' + x.crefNum : 'CREF informado · não verificado' },
       mchips: x.role.replace(/^Treinadora? de /, '').split(/ e |, /).filter(Boolean).concat([x.formats.replace(' (informação pública)', '')]),
-      showMstats: !!x.avg || x.progs.length > 0,
+      showMstats: true,
       mstats: [
         { v: x.avg ? '★ ' + x.avg : 'Sem nota', k: 'nota' },
         { v: x.n ? String(x.n) : 'Nenhuma', k: 'avaliações' },
