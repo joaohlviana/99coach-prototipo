@@ -8,8 +8,8 @@
   var day = function (d) { return d ? new Date(d).toLocaleDateString('pt-BR') : '—'; };
   var money = function (c) { return c == null ? 'a confirmar' : 'R$ ' + (Number(c) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); };
   var n = function (v) { return Number(v || 0).toLocaleString('pt-BR'); };
-  var TABS = [['resumo', 'Visão geral'], ['contas', 'Contas'], ['avaliacoes', 'Avaliações'], ['pagamentos', 'Pagamentos'], ['exclusoes', 'Exclusões'], ['filas', 'Filas de pedidos']];
-  var FN = { resumo: ['admin_overview', {}], avaliacoes: ['admin_reviews', { p_limit: 100 }], pagamentos: ['admin_payments', { p_limit: 100 }], exclusoes: ['admin_deletions', { p_limit: 100 }] };
+  var TABS = [['resumo', 'Visão geral'], ['contas', 'Contas'], ['avaliacoes', 'Avaliações'], ['pagamentos', 'Pagamentos'], ['exclusoes', 'Exclusões'], ['saude', 'Saúde do sistema'], ['filas', 'Filas de pedidos']];
+  var FN = { resumo: ['admin_overview', {}], avaliacoes: ['admin_reviews', { p_limit: 100 }], pagamentos: ['admin_payments', { p_limit: 100 }], exclusoes: ['admin_deletions', { p_limit: 100 }], saude: ['admin_health', {}] };
 
   window.ADMP = function (ctx) {
     var ui = ctx.ui, tab = ui.pnTab || 'resumo', data = ui.pnData || {}, busy = ui.pnBusy || {}, errs = ui.pnErr || {};
@@ -56,7 +56,11 @@
     return {
       show: true, at: ui.pnAt || '',
       tabs: TABS.map(function (t) { var on = tab === t[0]; return { label: t[1], on: String(on), cls: 'chip' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ pnTab: t[0] }); } }; }),
-      isResumo: tab === 'resumo', isContas: tab === 'contas', isAval: tab === 'avaliacoes', isPag: tab === 'pagamentos', isExc: tab === 'exclusoes', isFilas: tab === 'filas', notFilas: tab !== 'filas',
+      isResumo: tab === 'resumo', isContas: tab === 'contas', isAval: tab === 'avaliacoes', isPag: tab === 'pagamentos', isExc: tab === 'exclusoes', isSaude: tab === 'saude',
+      saude: (function () { var h = data.saude || {}, it = (Array.isArray(h) ? h[0] || {} : h).items || [];
+        var L = it.map(function (x) { return { t: x.title, n: String(x.n), ok: !!x.ok, cls: x.ok ? 'badge badge--ok' : 'badge badge--risk', st: x.ok ? 'Ok' : 'Atenção', fix: x.ok ? '' : x.fix + (x.since ? ' Desde ' + new Date(x.since).toLocaleString('pt-BR') + '.' : ''), hasFix: !x.ok }; });
+        var bad = L.filter(function (x) { return !x.ok; }).length, at = (Array.isArray(h) ? h[0] || {} : h).checkedAt;
+        return { items: L, has: L.length > 0, summary: L.length ? (bad ? U.plural(bad, 'ponto pede atenção', 'pontos pedem atenção') : 'Tudo em ordem') + (at ? ' · conferido às ' + new Date(at).toTimeString().slice(0, 5) : '') : '', allOk: L.length > 0 && !bad }; })(), isFilas: tab === 'filas', notFilas: tab !== 'filas',
       loading: !!busy[tab] && data[tab] === undefined, err: errs[tab] || '', hasErr: !!errs[tab], reload: function () { var e = Object.assign({}, ui.pnErr || {}); e[tab] = ''; ctx.setUi({ pnErr: e }); load(tab, true); },
       kpisGente: [kpi('Contas', n(o.contas), n(o.contas_7d) + ' nos últimos 7 dias'), kpi('Treinadores publicados', n(o.treinadores_publicados), n(o.treinadores_rascunho) + ' em rascunho'), kpi('Perfis importados', n(o.perfis_importados), 'ainda não reivindicados'), kpi('Contas bloqueadas', n(o.contas_bloqueadas)), kpi('Com duas etapas', n(o.duas_etapas))],
       kpisUso: [kpi('Acompanhamentos ativos', n(o.acompanhamentos_ativos), n(o.acompanhamentos_pausados) + ' pausados'), kpi('Pedidos aguardando', n(o.pedidos_pendentes)), kpi('Treinos registrados', n(o.treinos_registrados_7d), 'últimos 7 dias'), kpi('Mensagens', n(o.mensagens_7d), 'últimos 7 dias'), kpi('Avaliações', n(o.avaliacoes), n(o.avaliacoes_ocultas) + ' ocultas'), kpi('E-mail de avisos ligado', n(o.email_avisos_ligado), 'contas')],

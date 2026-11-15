@@ -23,6 +23,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   if (p === 'rpc/admin_set_block') { srv.block = body; srv.users.find((x) => x.id === body.p_user).bloqueada = body.p_blocked; return j(200, { ok: true }); }
   if (p === 'rpc/admin_reviews') return j(200, srv.revs);
   if (p === 'rpc/admin_set_review') { srv.revs.find((x) => x.id === body.p_review).status = body.p_hidden ? 'oculta' : 'publicada'; return j(200, { ok: true }); }
+  if (p === 'rpc/admin_health') return j(200, { checkedAt: '2026-11-15T10:00:00Z', items: [{ key: 'tarefas', title: 'Tarefas agendadas com falha (24 h)', n: 0, ok: true, fix: 'x' }, { key: 'boleto_parado', title: 'Boletos ou Pix aguardando confirmação há mais de 3 dias', n: 2, ok: false, fix: 'Normalmente vencem sozinhos; se pagos, confira o aviso do Stripe.' }] });
   if (p === 'rpc/admin_payments') return j(200, { pedidos: [{ valor: 20000, status: 'pago', item: 'Acompanhamento mensal', comprador: 'Caio', treinador: 'Marina Duarte', em: '2026-11-12T10:00:00Z', pago_em: '2026-11-12T10:02:00Z', meio: 'card', ambiente: 'live', comissao: 1000, tarifa: 838, liquido: 18162, reembolsado: 0, recebivel: 'a liberar', acesso: 'liberado' }], avisos_com_problema: [{ status: 'divergente', tipo: 'checkout.session.completed', nota: 'valor diferente do pedido', em: '2026-11-12T11:00:00Z', aviso: 'evt_1' }], contas: [{ treinador: 'Marina Duarte', ambiente: 'live', cobra: true, repassa: true, cadastro_enviado: true, atualizado: '2026-11-12T09:00:00Z' }] });
   if (p === 'rpc/admin_deletions') return j(200, [{ status: 'solicitado', nome: 'Rui', pedida: '2026-11-11T10:00:00Z', concluida: null, retencao: [{ item: 'pagamentos', prazo_dias: 1825, motivo: 'obrigação fiscal' }] }]);
   if (/^rpc\/admin_.*queue/.test(p)) return j(200, []);
@@ -61,6 +62,8 @@ console.log('4 pagamentos:', /R\$ 200,00 · Pago · Acompanhamento mensal/.test(
 // 5. exclusões
 await press(/^Exclusões$/); await p.waitForTimeout(1200); t = await txt();
 console.log('5 exclusões:', /em prazo de arrependimento · Rui/.test(t), /Fica retido: pagamentos \(1825 dias\): obrigação fiscal/.test(t));
+await press(/^Saúde do sistema$/); await p.waitForTimeout(1200); t = await txt();
+console.log('5b saúde do sistema:', /1 ponto pede atenção/.test(t), /Boletos ou Pix aguardando confirmação há mais de 3 dias/.test(t), /Normalmente vencem sozinhos/.test(t), /Tarefas agendadas com falha/.test(t));
 // 6. filas continuam
 await press(/^Filas de pedidos$/); await p.waitForTimeout(1000); t = await txt();
 console.log('6 filas antigas na aba própria:', /Correção e retirada/.test(t), /Conferência de CREF/.test(t));
