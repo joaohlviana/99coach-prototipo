@@ -5,7 +5,7 @@ export const revalidate = 86400;
 export const metadata = {
   title: { absolute: 'Personal trainer e aulas perto de você ou online | 99coach' },
   description: 'Encontre personal trainer e professores por esporte e cidade, presencial ou online. Compare perfis, peça acompanhamento e treine pelo app.',
-  alternates: { canonical: '/' }
+  alternates: { canonical: '/', languages: { 'pt-BR': '/', en: '/en', es: '/es', 'x-default': '/' } }
 };
 
 export default function Home() {

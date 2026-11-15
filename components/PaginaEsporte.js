@@ -3,6 +3,7 @@
 // número só quando confirmado pelo catálogo; nenhum texto local inventado.
 import { notFound } from 'next/navigation';
 import Shell, { Cartao, Paginacao } from './Shell.js';
+import { idiomas } from '../lib/i18n.js';
 import { esporte, cidade, lista, cidadesDo, esportes, plural, curta, nomeUF, SITE, servicoDe, semTreino, cidadeUF, caber, resumo } from '../lib/catalogo.js';
 
 const POR_PAGINA = 36;
@@ -36,7 +37,7 @@ export function dados(esporteSlug, ondeSlug, pagina = 1) {
 
 export function metadados(d) {
   if (!d) return { title: 'Página não encontrada', robots: { index: false } };
-  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
+  return { title: d.titulo, description: d.descricao, alternates: { canonical: d.caminho, languages: idiomas(d.caminho) }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: d.titulo, description: d.descricao, url: d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {

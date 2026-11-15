@@ -1,0 +1,22 @@
+// Páginas públicas em inglês e espanhol: respondem traduzidas, marcam o idioma e ligam as versões entre si (hreflang).
+const B = 'http://localhost:5173';
+const get = async (u) => { const r = await fetch(B + u); return { s: r.status, h: await r.text() }; };
+const fs = await import('node:fs');
+const cat = JSON.parse(fs.readFileSync(new URL('../public/data/treinadores.json', import.meta.url), 'utf8'));
+const rows = cat.items || cat.trainers || cat, r0 = (Array.isArray(rows) ? rows : [])[0];
+const slug = Array.isArray(r0) ? r0[0] : (r0 && (r0.slug || r0.id));
+let x = await get('/en');
+console.log('1 inicio en:', x.s === 200, /id="ssr"[^>]*lang="en"/.test(x.h), /Personal trainers/.test(x.h));
+x = await get('/es');
+console.log('  inicio es:', x.s === 200, /id="ssr"[^>]*lang="es"/.test(x.h), /Entrenadores/.test(x.h));
+x = await get('/en/treinadores/judo');
+console.log('2 modalidade en:', x.s === 200, /Judo coaches/.test(x.h), /hrefLang="pt-BR"/i.test(x.h), /hrefLang="es"/i.test(x.h));
+x = await get('/en/treinador/' + slug);
+console.log('3 perfil en:', x.s === 200, /hrefLang="x-default"/i.test(x.h), /\/en\/treinador\//.test(x.h));
+x = await get('/es/treinador/' + slug);
+console.log('  perfil es:', x.s === 200, /lang="es"/.test(x.h));
+console.log('4 idioma invalido 404:', (await get('/fr')).s === 404, (await get('/en/treinadores/naoexiste')).s === 404);
+x = await get('/treinadores/judo');
+console.log('5 pt aponta para en/es:', /hrefLang="en" href="[^"]*\/en\/treinadores\/judo"/i.test(x.h));
+x = await get('/');
+console.log('  inicio pt aponta para en:', /hrefLang="en"/i.test(x.h));

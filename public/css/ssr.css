@@ -93,3 +93,4 @@ html.app-on #ssr{display:none}
 .ssr-progs b{font-size:16px}.ssr-progs small{color:#5c5c66}.ssr-progs span{font-size:14px;color:#3b3b44}
 .ssr-progs button{margin-top:8px;align-self:flex-start;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:#121214;color:#fff;font:600 14px inherit;cursor:pointer}
 .ssr-progs button:disabled{opacity:.6;cursor:default}
+.ssr-lang{margin:0 0 12px;font-size:13px}

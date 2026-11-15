@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
 import Visita from '../../../components/Visita.js';
 import Programas from '../../../components/Programas.js';
+import { idiomas } from '../../../lib/i18n.js';
 import { treinador, esportesDe, lista, slug as slugify, curta, SITE, publicadoAgora, treinadorAgora, servicoDe, cidadeUF, caber, resumo, nomeLimpo } from '../../../lib/catalogo.js';
 
 export const revalidate = 300;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }) {
   if (!d || (await publicadoAgora(d.t.id)) === false) return { title: 'Perfil não encontrado', robots: { index: false } };
   const { t, esp } = d;
   const { titulo, descricao } = textos(t, esp);
-  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + (t.canon || t.id) }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
+  return { title: titulo, description: descricao, alternates: { canonical: '/treinador/' + (t.canon || t.id), languages: idiomas('/treinador/' + (t.canon || t.id)) }, openGraph: { siteName: '99coach', locale: 'pt_BR', title: titulo, description: descricao, url: '/treinador/' + t.id, type: 'profile', images: [t.photo ? { url: t.photo, alt: 'Foto de ' + t.name } : { url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] }, twitter: { card: t.photo ? 'summary' : 'summary', title: titulo, description: descricao, ...(t.photo ? { images: [t.photo] } : {}) } };
 }
 
 export default async function Page({ params }) {
