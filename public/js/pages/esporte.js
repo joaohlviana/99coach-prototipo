@@ -130,7 +130,7 @@ class Component extends DCLogic {
     };
     const favs = st.favs || {};
     const toggleFav = (t) => () => { const on = !!favs[t.id]; const nf = Object.assign({}, favs); if (on) delete nf[t.id]; else nf[t.id] = true; set({ favs: nf, toast: { kind: on ? 'rem' : 'add', id: t.id } }); };
-    const openP = (t) => () => (window.NAV.has(t.id) ? window.NAV.go('perfil', { id: t.id }, this, { back: t.id }) : set({ open: t.id, sheet: '' }));
+    const openP = (t) => () => (window.TRACK && window.TRACK('showcase.card_clicked', { trainer_slug: t.id, position: shown.indexOf(t) + 1 }), window.NAV.has(t.id) ? window.NAV.go('perfil', { id: t.id }, this, { back: t.id }) : set({ open: t.id, sheet: '' }));
     const mapOn = st.view === 'mapa' && mapToggle;
     const mapIds = mapOn ? shown.filter((t) => t.pos && has(t.fmts, 'Presencial') && t.city === st.city) : [];
     const mkNum = {}; mapIds.forEach((t, i) => { mkNum[t.id] = String(i + 1); });
@@ -139,7 +139,7 @@ class Component extends DCLogic {
       const recent = t.pub && (Date.now() - new Date(t.pub).getTime()) < 30 * 864e5;
       return saved ? 'Você salvou' : (online && has(t.fmts, 'Online') ? 'Atende online' : (st.city && has(t.fmts, 'Presencial') && t.city === st.city ? 'Atende em ' + cityShort(st.city) : ((t.mods || []).indexOf(st.mod) >= 0 ? 'Atende ' + st.mod : (recent ? 'Publicado recentemente' : ''))));
     };
-    const hideOf = (t) => () => { const h = Object.assign({}, HID); h[t.id] = 1; saveHid(h); set({ hidUndo: { id: t.id, name: t.name } }); };
+    const hideOf = (t) => () => { if (window.TRACK) window.TRACK('showcase.card_dismissed', { trainer_slug: t.id }); const h = Object.assign({}, HID); h[t.id] = 1; saveHid(h); set({ hidUndo: { id: t.id, name: t.name } }); };
     const cards = shown.map((t) => {
       const of = offerOf(t), on = !!favs[t.id], isBack = st.back === t.id, isSel = mapOn && st.sel === t.id;
       const reason = whyOf(t, on);

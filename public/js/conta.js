@@ -253,7 +253,7 @@
     acceptInvite: function (code) { var k = 'accept:' + String(code).toUpperCase(); return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: intent(k) }).then(function (r) { if (r.ok) window.TRACK('relationship.activated', { origin: 'convite' }, 'acc:' + String(code).toUpperCase());
       // só o aceite concluído encerra a intenção; qualquer outro resultado (idade, e-mail, vagas) pode ser tentado de novo com chave nova
       var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; delete pend[k]; return r; }); },
-    markEmailVerified: function () { return db('POST', 'rpc/mark_email_verified', {}); },
+    markEmailVerified: function () { return db('POST', 'rpc/mark_email_verified', {}).then(function (r) { if (r.ok) window.TRACK('identity.verified', { method: 'email' }, 'idv'); return r; }); },
     // vínculos em que esta conta é aluno ou treinador
     links: function () {
       if (!sess) return Promise.resolve([]);
@@ -280,7 +280,7 @@
     reviewPrep: function (link) { var k = 'review:' + link; return db('POST', 'rpc/review_prep', { p_link: link, p_idem: intent(k) }).then(function (r) { delete pend[k]; return r; }); },
     assignWorkout: function (link, title, sessions, version) {
       var body = { p_link: link, p_title: title, p_template: 'manual', p_sessions: sessions, p_schedule: null, p_idem: 'assign:' + link + ':v' + (version || 0) + ':' + hash(JSON.stringify([title, sessions])) };
-      return db('POST', 'rpc/assign_workout', body);
+      return db('POST', 'rpc/assign_workout', body).then(function (r) { if (r.ok) window.TRACK('workout.assigned', {}); return r; });
     },
     submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }).then(function (r) { if (r.ok) window.TRACK('workout.completed', { sets: Array.isArray(logs) ? logs.length : ((logs && logs.sets) || []).length }, 'wk:' + key); return r; }); },
     sessions: function (link) { return db('GET', 'sessions?select=id,session_key,status,started_at,submitted_at:received_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name,rpe,duration_s,distance_m),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
@@ -312,10 +312,10 @@
       });
     },
     cancelRequest: function (id) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: 'cancelado', p_idem: 'cancel:' + id }); },
-    declineRequest: function (id, reason) { return db('POST', 'rpc/decline_request', { p_id: id, p_reason: reason, p_idem: 'decide:' + id + ':recusado' }); },
+    declineRequest: function (id, reason) { return db('POST', 'rpc/decline_request', { p_id: id, p_reason: reason, p_idem: 'decide:' + id + ':recusado' }).then(function (r) { if (r.ok) window.TRACK('training_request.resolved', { decision: 'recusado' }, 'rq:' + id); return r; }); },
     prepMore: function (link, note) { return db('POST', 'rpc/request_prep_more', { p_link: link, p_note: note }); },
     // aceitar: o pedido aceito inicia o acompanhamento quando não há cobrança pelo app; havendo cobrança, o aluno paga primeiro
-    decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }).then(function (r) {
+    decideRequest: function (id, decision) { return db('POST', 'rpc/decide_request', { p_id: id, p_decision: decision, p_idem: 'decide:' + id + ':' + decision }).then(function (r) { if (r.ok) window.TRACK('training_request.resolved', { decision: decision }, 'rq:' + id);
       var d = (r.ok && r.data && (Array.isArray(r.data) ? r.data[0] : r.data)) || {};
       if (!r.ok || decision !== 'aceito' || d.status !== 'aceito') return r;
       return db('POST', 'rpc/activate_accepted_request', { p_request: id }).then(function (a) { r.start = a.ok ? (a.data || {}) : { outcome: 'falhou' }; return r; });
@@ -336,7 +336,7 @@
     }); },
     // ---------- vínculo: pausar, retomar, encerrar (com motivo; nada é apagado) ----------
     changeLink: function (link, action, reason, note) {
-      var go = function (a) { var k = 'link:' + link + ':' + a; return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: intent(k) }).then(settle(k)); };
+      var go = function (a) { var k = 'link:' + link + ':' + a; return db('POST', 'rpc/change_link', { p_link: link, p_action: a, p_reason: reason, p_note: note || null, p_idem: intent(k) }).then(settle(k)).then(function (r) { if (r && r.ok && /encerr/.test(a)) window.TRACK('relationship.ended', { reason: reason || null }, 'end:' + link); return r; }); };
       var ALT = { pausar: 'pausado', retomar: 'retomado', encerrar: 'encerrado' };
       return go(action).then(function (r) { return (!r.ok && !r.offline && ALT[action] && /action|ação|acao|invalid|inválid/i.test(r.msg || '')) ? go(ALT[action]) : r; });
     },
@@ -437,6 +437,7 @@
         var d = r.data || {};
         if (r.ok && d.access_token) keep({ access_token: d.access_token, refresh_token: d.refresh_token, user: { id: d.user && d.user.id, email: d.user && d.user.email } });
         r.session = !!(r.ok && d.access_token);
+        if (r.ok && !(d.identities && d.identities.length === 0)) window.TRACK('client.registered', { method: 'email' });
         r.exists = /already registered|already exists/i.test(r.msg || '') || (r.ok && !d.access_token && d.identities && d.identities.length === 0);
         return r;
       });

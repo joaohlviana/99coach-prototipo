@@ -43,7 +43,7 @@ REG.screen({
       var note = String(ui.proof || '').trim();
       if (note.length < 10) return ctx.setUi({ cerr: ERR.prova_curta });
       ctx.setUi({ cbusy: true, cerr: '' });
-      C.confirmAdult().then(function () { var ck = 'claim:' + slug; return C.rpc('request_claim', { p_slug: slug, p_note: note, p_idem: C.intent(ck) }).then(C.settle(ck)); }).then(function (r) {
+      C.confirmAdult().then(function () { var ck = 'claim:' + slug; window.TRACK && window.TRACK('trainer.claim_started', {}, 'claim:' + slug); return C.rpc('request_claim', { p_slug: slug, p_note: note, p_idem: C.intent(ck) }).then(C.settle(ck)); }).then(function (r) {
         var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
         if (!r.ok || !d) return ctx.setUi({ cbusy: false, cerr: why(r) });
         ctx.setUi({ cbusy: false, claimed: d.status === 'ja_tem_titular' ? 'Este perfil já tem titular. Se ele é seu, peça revisão pela Ajuda.' : 'Pedido enviado' + (d.protocol ? ' · protocolo ' + d.protocol : '') + '. A equipe revisa as provas antes de transferir o perfil; você recebe a resposta na sua conta.' });

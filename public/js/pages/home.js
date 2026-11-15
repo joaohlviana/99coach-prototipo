@@ -12,6 +12,7 @@ class Component extends DCLogic {
       code: 0, loc: 0, pedCanceled: false, sx: null, sxq: '', sxIa: false, sxTab: 'Treinadores', sxR1: true, sxR2: true, sxY: 150, sxX: 40, sxW: 640 };
   }
   renderVals() {
+    if (window.TRACK) window.TRACK('showcase.viewed', { place: 'home' }, 'home');
     const B = (id) => Component.img(id), set = (p) => { if (p && p.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(p.favs); this.setState(p); };
     if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
     const S = this.state;

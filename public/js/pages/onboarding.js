@@ -118,6 +118,8 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state;
     const set = (o) => this.setState(o);
+    // medição: cada etapa vista uma vez por aba; o começo do cadastro de treinador uma vez
+    if (window.TRACK && !st.scn) { window.TRACK('onboarding.step_viewed', { flow: st.flow || '', step: String(st.step || st.sec || '') }, 'onb:' + st.flow + ':' + (st.step || st.sec || '')); if (st.flow === 'treinador') window.TRACK('trainer.onboarding_started', {}, 'tos'); }
     const IMG = window.__IMG || {};
     const toast = (m) => set({ toast: m });
     const top = () => { try { window.scrollTo(0, 0); } catch (_) {} };
