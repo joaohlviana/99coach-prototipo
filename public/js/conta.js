@@ -114,6 +114,16 @@
     try { history.replaceState(null, '', location.pathname + location.search + '#onboarding-' + flow); } catch (_) { location.hash = '#onboarding-' + flow; }
   })();
 
+  // Medição de uso (eventos do plano): só o nome do evento e propriedades sem dado pessoal; nunca quebra a tela.
+  // Uma vez por combinação e por aba, para não inflar contagens com recarregamentos.
+  window.TRACK = function (name, props, onceKey) {
+    try {
+      if (document.documentElement.classList.contains('demo')) return;
+      if (onceKey) { var k = 'c99.ev.' + onceKey; if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); }
+      fetch(URL0 + '/rest/v1/funnel_events', { method: 'POST', keepalive: true, headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ event_name: /\.v\d+$/.test(name) ? name : name + '.v1', channel: 'web', locale: 'pt-BR', properties: props || {} }) }).catch(function () {});
+    } catch (_) {}
+  };
   var CONTA = {
     // grava o perfil do treinador no servidor (mesmas tabelas e campos do site): trainers, trainer_sports e a oferta principal
     saveTrainer: function (st) {
@@ -240,7 +250,7 @@
     myInvites: function () { return db('GET', 'invites?select=code,recipient_name,recipient_email,service,status,created_at,expires_at,accepted_at,generation&order=created_at.desc&limit=200'); },
     inviteLink: function (code) { return location.origin + '/app#publico-convite-' + String(code).replace('-', ''); },
     invitePreview: function (code) { return db('POST', 'rpc/invite_preview', { p_code: code }); },
-    acceptInvite: function (code) { var k = 'accept:' + String(code).toUpperCase(); return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: intent(k) }).then(function (r) {
+    acceptInvite: function (code) { var k = 'accept:' + String(code).toUpperCase(); return db('POST', 'rpc/accept_invite', { p_code: code, p_idem: intent(k) }).then(function (r) { if (r.ok) window.TRACK('relationship.activated', { origin: 'convite' }, 'acc:' + String(code).toUpperCase());
       // só o aceite concluído encerra a intenção; qualquer outro resultado (idade, e-mail, vagas) pode ser tentado de novo com chave nova
       var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null; delete pend[k]; return r; }); },
     markEmailVerified: function () { return db('POST', 'rpc/mark_email_verified', {}); },
@@ -272,7 +282,7 @@
       var body = { p_link: link, p_title: title, p_template: 'manual', p_sessions: sessions, p_schedule: null, p_idem: 'assign:' + link + ':v' + (version || 0) + ':' + hash(JSON.stringify([title, sessions])) };
       return db('POST', 'rpc/assign_workout', body);
     },
-    submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }); },
+    submitSession: function (link, key, logs) { return db('POST', 'rpc/submit_session', { p_link: link, p_key: key, p_logs: logs, p_idem: 'submit:' + key }).then(function (r) { if (r.ok) window.TRACK('workout.completed', { sets: Array.isArray(logs) ? logs.length : ((logs && logs.sets) || []).length }, 'wk:' + key); return r; }); },
     sessions: function (link) { return db('GET', 'sessions?select=id,session_key,status,started_at,submitted_at:received_at,app_state,set_logs(item,set_no,reps,load_kg,exercise_id,exercise_name,rpe,duration_s,distance_m),session_comments(id,side,body,created_at)&link_id=eq.' + encodeURIComponent(link)); },
     // ---------- pedidos de acompanhamento (pedido não é vínculo; o treinador decide) ----------
     createRequest: function (slug, message, search) {
@@ -280,7 +290,7 @@
       return db('GET', 'trainers?select=id,offers(id,key)&slug=eq.' + encodeURIComponent(slug)).then(function (r) {
         var t = r.ok && r.data && r.data[0]; if (!t) return { ok: false, msg: 'Perfil não encontrado.' };
         var of = (t.offers || []).filter(function (o) { return o.key === 'principal'; })[0];
-        return db('POST', 'requests', { trainer_id: t.id, student_id: sess.user.id, offer_id: of ? of.id : null, message: message || null, search_sport: (search && search.esporte) || null, search_city: (search && search.cidade) || null }).then(function (x) {
+        return db('POST', 'requests', { trainer_id: t.id, student_id: sess.user.id, offer_id: of ? of.id : null, message: message || null, search_sport: (search && search.esporte) || null, search_city: (search && search.cidade) || null }).then(function (x) { if (x && x.ok) window.TRACK('training_request.started', { source: search && search.esporte ? 'vitrine' : 'perfil' });
           if (!x.ok && /requests_one_pending|duplicate/i.test(x.raw || x.msg || '')) { x.ok = true; x.already = true; }
           return x;
         });
@@ -357,7 +367,7 @@
     // retira o perfil da busca (volta a rascunho; nada é apagado)
     unpublish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'rascunho' }) : Promise.resolve({ ok: false, nosession: true }); },
     // publica o perfil (passa a aparecer na busca do site)
-    publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }) : Promise.resolve({ ok: false, nosession: true }); },
+    publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }).then(function (r) { if (r.ok) window.TRACK('trainer.published', {}); return r; }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },
     // leitura pública (o que qualquer visitante pode ver), sem depender de conta
     pub: function (path) { return call('GET', '/rest/v1/' + path); },

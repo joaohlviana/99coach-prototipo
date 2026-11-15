@@ -158,6 +158,7 @@ class Component extends DCLogic {
     });
     // produto: o estado vem do carregamento de verdade. Lista vazia enquanto carrega não é "nenhum treinador"; falha não é vazio.
     if (!document.documentElement.classList.contains('demo') && window.REAL && window.REAL.need) window.REAL.need(st.mod);
+    if (window.TRACK) window.TRACK('catalog.search_performed', { sport: st.mod || '', city: st.city || '', format: st.fmt || '' }, 'busca:' + [st.mod, st.city, st.fmt].join('|'));
     const CAT = !document.documentElement.classList.contains('demo') && window.REAL && window.REAL.status ? window.REAL.status() : null;
     const loading = st.load === 'loading' || (!!CAT && n === 0 && CAT.base === 'carregando');
     const showFail = !loading && !!CAT && n === 0 && (CAT.base === 'falha' || CAT.live === 'falha');
