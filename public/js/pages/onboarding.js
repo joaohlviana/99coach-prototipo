@@ -854,7 +854,7 @@ class Component extends DCLogic {
       goHome: () => NAV && NAV.go('home', {}, this), goLogin: () => { set(this.base('entrar', '')); top(); },
       intents, intentErr: st.intentErr, continueIntent, conta, f, c, d, k, g, pb, h, iv, cv, p, a, inv, stu, cad, sx, b, ph, ap, at, sv, pg, av, pay, pro,
       pronto: PR,
-      goHoje: go('hoje'), goCad: go('cad'), viewProfile: () => { if (st.pubSlug) { location.href = '/treinador/' + encodeURIComponent(st.pubSlug); return; } NAV && NAV.go('perfil', { id: 'thiago' }, this); }, goPub: go('pub'), goPublicado: go('publicado'), goConvidar: goInvite, goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
+      goHoje: go('hoje'), goCad: () => { if (+cad.done > 0 && window.TRACK) window.TRACK('onboarding.resume_clicked', { flow: 'treinador', sections_done: +cad.done }); go('cad')(); }, viewProfile: () => { if (st.pubSlug) { location.href = '/treinador/' + encodeURIComponent(st.pubSlug); return; } NAV && NAV.go('perfil', { id: 'thiago' }, this); }, goPub: go('pub'), goPublicado: go('publicado'), goConvidar: goInvite, goConta: go('acct'), ct, cx, lg, sg, pv, sh: shs, nt, goPrep: go('prep', { prepQ: 0 }),
       prepLater: () => { set({ step: 'alunoHoje', toast: 'Tudo bem. A preparação fica salva em Hoje.' }); top(); },
       copy: () => { if (st.pubSlug) { try { navigator.clipboard.writeText(location.origin + '/treinador/' + st.pubSlug).catch(() => {}); } catch (_) {} return toast('Link do perfil copiado.'); } toast('Copiado. (Demonstração: a área de transferência pode estar bloqueada nesta janela.)'); },
       msg: () => (window.GO ? window.GO(student ? 'ALU05' : 'TRE25') : toast('Mensagens ainda não estão disponíveis.')),

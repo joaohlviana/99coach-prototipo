@@ -124,6 +124,24 @@
         body: JSON.stringify({ event_name: /\.v\d+$/.test(name) ? name : name + '.v1', channel: 'web', locale: 'pt-BR', properties: props || {} }) }).catch(function () {});
     } catch (_) {}
   };
+  // cartão da vitrine visto: metade do cartão na tela; uma vez por perfil e por página nesta visita
+  (function () {
+    if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return;
+    var SEL = 'a.v4-hit[href^="/treinador/"], a.tc__name[href^="/treinador/"]', seen = new WeakSet();
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return; io.unobserve(e.target);
+        var slug = decodeURIComponent((e.target.getAttribute('href') || '').split('/')[2] || '');
+        if (!slug) return;
+        var all = [].slice.call(document.querySelectorAll(SEL)).map(function (x) { return x.getAttribute('href'); }).filter(function (h, i, arr) { return arr.indexOf(h) === i; });
+        window.TRACK('showcase.card_impressed', { trainer_slug: slug, position: all.indexOf(e.target.getAttribute('href')) + 1, page: location.pathname.split('/')[1] || 'inicio' }, 'imp:' + location.pathname + ':' + slug);
+      });
+    }, { threshold: 0.5 });
+    var scan = function () { [].forEach.call(document.querySelectorAll(SEL), function (el) { if (!seen.has(el)) { seen.add(el); io.observe(el); } }); };
+    var t = 0, mo = new MutationObserver(function () { clearTimeout(t); t = setTimeout(scan, 300); });
+    var start = function () { scan(); mo.observe(document.body, { childList: true, subtree: true }); };
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  })();
   var CONTA = {
     // grava o perfil do treinador no servidor (mesmas tabelas e campos do site): trainers, trainer_sports e a oferta principal
     saveTrainer: function (st) {
