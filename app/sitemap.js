@@ -21,7 +21,7 @@ export default function sitemap() {
   return out.map((e) => {
     const cam = e.url.slice(SITE.length) || '/';
     if (cam === '/') return { ...e, alternates: { languages: { 'pt-BR': SITE + '/', en: SITE + '/en', es: SITE + '/es' } } };
-    if (/^\/(treinadores|treinador)\//.test(cam)) return { ...e, alternates: { languages: abs(idiomas(cam)) } };
+    if (/^\/(treinadores|treinador|cidade)\//.test(cam)) return { ...e, alternates: { languages: abs(idiomas(cam)) } };
     return e;
   });
 }

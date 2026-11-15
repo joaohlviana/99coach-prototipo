@@ -18,5 +18,7 @@ console.log('  perfil es:', x.s === 200, /lang="es"/.test(x.h));
 console.log('4 idioma invalido 404:', (await get('/fr')).s === 404, (await get('/en/treinadores/naoexiste')).s === 404);
 x = await get('/treinadores/judo');
 console.log('5 pt aponta para en/es:', /hrefLang="en" href="[^"]*\/en\/treinadores\/judo"/i.test(x.h));
+x = await get('/en/cidade/londrina-pr');
+console.log('6 cidade en:', x.s === 200, /Personal trainers and coaches in Londrina/.test(x.h), (await get('/es/cidade/naoexiste')).s === 404);
 x = await get('/');
 console.log('  inicio pt aponta para en:', /hrefLang="en"/i.test(x.h));
