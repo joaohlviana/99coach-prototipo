@@ -111,7 +111,7 @@
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
         return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
           crumb: { sport: LABEL[t.sports[0]] || '', slug: (t.raw || [])[0] || '', city: t.pres ? t.city : '' },
-          avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: (d.revStats && d.revStats.n) ? (d.revStats.sum / d.revStats.n).toFixed(1).replace('.', ',') : '', n: d.revStats ? d.revStats.n : 0, revDist: d.revStats ? d.revStats.dist : null, ext: d.externalHandle || '',
+          avail: d.availability === 'aceita' ? 'aceita' : (d.availability === 'sem_vaga' ? 'nao' : 'desconhecida'), availDate: d.availOn ? d.availOn.split('-').reverse().slice(0, 2).join('/') : '', imported: false, demo: !!d.demo, realLive: true, receives: !!(d.receivesRequests || (live[id] && live[id].receivesRequests)), cref: d.crefStatus === 'verificado' ? 'ver' : (d.credentials && d.credentials.length ? 'inf' : 'nao'), avg: (d.revStats && d.revStats.n) ? (d.revStats.sum / d.revStats.n).toFixed(1).replace('.', ',') : '', n: d.revStats ? d.revStats.n : 0, revDist: d.revStats ? d.revStats.dist : null, ext: d.externalHandle || '',
           offerTxt: of ? (of.title || 'Acompanhamento') + ' · ' + (price ? price + (of.unit ? ' / ' + ({ mes: 'mês', sessao: 'sessão', aula: 'aula' }[of.unit] || of.unit) : '') : 'Sob consulta') : 'Condições combinadas no pedido',
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: d.reviews || [] };
       }
@@ -390,7 +390,7 @@
       if (!d) { delete details[id]; save('c99.perfis', details); if (byId[id]) { items = items.filter(function (x) { return x.id !== id; }); delete byId[id]; cache = {}; } (window.__RETIRADOS = window.__RETIRADOS || {})[id] = 1; rerender(); return; }
       var offers = (d.offers || []).filter(function (o) { return o.status === 'publicada'; }).sort(function (a, b) { return (b.headline ? 1 : 0) - (a.headline ? 1 : 0) || (a.sort || 0) - (b.sort || 0); })
         .map(function (o) { return { title: o.title, priceCents: o.price_cents, unit: o.unit }; });
-      keep({ role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',
+      keep({ demo: d.origin === 'demonstracao', role: d.role_line || '', pitch: d.pitch || '', bio: d.bio || '', externalHandle: d.external_handle || '', imported: d.origin === 'importado',
         receivesRequests: d.origin !== 'importado' && d.availability !== 'sem_vaga', availability: d.availability || 'desconhecida', availOn: d.availability_informed_on || '', crefStatus: d.cref_status || '', offers: offers, credentials: d.cref && d.cref_status !== 'nao_informado' ? [{ kind: 'CREF', status: d.cref_status }] : [],
         // avaliações reais: só de quem teve acompanhamento; sem avaliação não há nota
         reviews: (d.reviews || []).filter(function (v) { return v && v.rating >= 1 && v.rating <= 5; }).sort(function (a, b) { return String(b.created_at).localeCompare(String(a.created_at)); }).slice(0, 30).map(function (v) { return [v.author_name || 'Aluno', 'Acompanhamento' + (v.period ? ' · desde ' + v.period : ''), v.rating, v.body || '', v.reply || '']; }),
@@ -423,7 +423,7 @@
       });
     };
     // perfis publicados por quem se cadastrou no app vêm do banco; a API antiga só entra se o banco não responder
-    var fromDb = !window.CONTA || !window.CONTA.pub ? Promise.resolve(false) : window.CONTA.pub('trainers?select=slug,name,initials,photo_url,specialty,formats,published_at,cities(name,uf),trainer_sports(sport_slug),offers(title,price_cents,unit,status,headline)&status=eq.publicado&origin=neq.importado&order=published_at.desc&limit=200').then(function (r) {
+    var fromDb = !window.CONTA || !window.CONTA.pub ? Promise.resolve(false) : window.CONTA.pub('trainers?select=slug,name,initials,photo_url,specialty,formats,published_at,cities(name,uf),trainer_sports(sport_slug),offers(title,price_cents,unit,status,headline)&status=eq.publicado&origin=eq.cadastro&order=published_at.desc&limit=200').then(function (r) {
       var L = r.ok && Array.isArray(r.data) ? r.data.filter(function (t) { return t && t.slug && t.name; }) : [];
       L.forEach(function (t) {
         var of = (t.offers || []).filter(function (o) { return o.status === 'publicada'; });

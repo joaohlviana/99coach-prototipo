@@ -301,6 +301,7 @@ class Component extends DCLogic {
     if (ownReal) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-user', title: 'Este é o seu perfil público', sub: 'Abaixo, o que visitantes veem. Pedidos de acompanhamento chegam no seu painel.', hasBtn: true, btn: 'Editar perfil', go: () => window.NAV.go('onboarding', { flow: 'treinador' }, this) };
     else if (own && !preview) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-user', title: 'Este é o seu perfil público', sub: 'Você está conectado como Rafael Lima. Abaixo, o que visitantes veem.', hasBtn: true, btn: 'Ver como visitante', go: () => set({ preview: true }) };
     else if (preview) note = { on: true, cls: 'alert alert--info', ic: 'ic ic--sm i-eye', title: 'Prévia como visitante', sub: 'Nada foi alterado ou publicado. As ações ficam desativadas na prévia.', hasBtn: true, btn: 'Sair da prévia', go: () => set({ preview: false }) };
+    else if (x.demo) note = { on: true, cls: 'alert alert--warn', ic: 'ic ic--sm i-info', title: 'Perfil de teste', sub: 'Dados inventados para conferir as telas da 99coach. Não é um profissional real e não aparece na busca.', hasBtn: false };
     else if (st.user === 'ana') note = { on: true, cls: 'alert alert--ok', ic: 'ic ic--sm i-check', title: 'Você acompanha com o Rafael desde 02/09/2026', sub: 'Acompanhamento online · próxima cobrança em 02/11/2026.', hasBtn: false };
 
     // ---------- índice de cenários ----------

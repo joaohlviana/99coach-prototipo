@@ -12,7 +12,7 @@ const PAGE = 1000;
 const sel = 'slug,name,initials,photo_url,specialty,formats,published_at,origin,external_handle,cities(name,uf),trainer_sports(sport_slug)';
 
 async function page(from) {
-  const u = `${URL0}/rest/v1/trainers?select=${encodeURIComponent(sel)}&status=eq.publicado&order=slug.asc`;
+  const u = `${URL0}/rest/v1/trainers?select=${encodeURIComponent(sel)}&status=eq.publicado&origin=neq.demonstracao&order=slug.asc`;
   for (let t = 0; t < 4; t++) {
     const r = await fetch(u, { headers: { apikey: KEY, Range: `${from}-${from + PAGE - 1}`, 'Range-Unit': 'items', Prefer: 'count=exact' } }).catch(() => null);
     if (r && (r.ok || r.status === 206)) return { rows: await r.json(), total: Number((r.headers.get('content-range') || '').split('/')[1]) || null };
