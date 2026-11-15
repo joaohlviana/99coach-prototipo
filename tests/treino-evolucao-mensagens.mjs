@@ -77,12 +77,15 @@ t = await txt(tr); console.log('  revisada → pode montar:', /Nome do treino/i.
 await tr.fill('#rx-title', 'Força A'); await tr.fill('#rx-n0', 'Agachamento livre'); await tr.fill('#rx-s0', '3'); await tr.fill('#rx-r0', '10'); await tr.fill('#rx-l0', '40');
 await click(tr, /Adicionar exercício/); await tr.waitForTimeout(150);
 await tr.fill('#rx-n1', 'Supino reto'); await tr.fill('#rx-s1', '2'); await tr.fill('#rx-r1', '8');
+await click(tr, /Superssérie com o exercício anterior/); await tr.waitForTimeout(150);
 await click(tr, /^Atribuir treino$/); await tr.waitForTimeout(400); await tr.locator('.mod-sheet button', { hasText: /^Atribuir treino$/ }).click(); await tr.waitForTimeout(1200);
 console.log('  atribuído:', L1.workouts[0] && L1.workouts[0].title, 'v' + (L1.workouts[0] && L1.workouts[0].current_version), JSON.stringify(L1.workouts[0].workout_versions[0].sessions[0].items.map((i) => [i.exerciseId, i.sets, i.reps, i.loadKg])));
+console.log('  superssérie gravada no segundo exercício:', !L1.workouts[0].workout_versions[0].sessions[0].items[0].superWith && L1.workouts[0].workout_versions[0].sessions[0].items[1].superWith === true);
 // 3. aluno executa
 await al.evaluate(() => CONTA.links().then(() => NAV.go('aluno', {}, null))); await al.waitForTimeout(900);
 t = await txt(al); console.log('3 aluno vê treino:', /FORÇA A/i.test(t), /Agachamento livre/.test(t), /Começar treino/.test(t));
 await click(al, /Começar treino/); await al.waitForTimeout(300);
+console.log('  aluno vê a superssérie:', /Superssérie A1 · siga direto para o próximo/i.test(await txt(al)), /Superssérie A2 · descanse depois deste/i.test(await txt(al)));
 await click(al, /Concluir sessão/); await al.waitForTimeout(200);
 console.log('  sem marcar série:', /Marque pelo menos uma série/.test(await txt(al)));
 // a tela se redesenha ao marcar (aparece o descanso): busca o botão de novo a cada clique
