@@ -318,3 +318,8 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .ag-cal__bl{font-size:12px;font-weight:600;color:var(--brand-text)}
 .ag-cal__none{font-size:12px;color:var(--text-3)}
 @media (max-width:900px){.ag-cal{grid-template-columns:minmax(0,1fr)}.ag-cal__d{min-height:0}}
+
+/* contraste (WCAG 2.2 AA): verde de "ok" um tom mais escuro em selos pequenos */
+html .badge.badge--ok,html .t3-diff--add .badge,html .t2-save.is-ok{color:#065F46}
+/* celular: a tabela de alunos dá lugar aos cartões (a regra genérica de tabela vinha depois e reabria a tabela, com rolagem lateral) */
+@media (max-width:599px){.mod-table.t1-tbl[data-t=table]{display:none}}
