@@ -331,3 +331,6 @@ html body .vf-tc__b{padding:12px 2px 0}
 @media (max-width:640px){html body .vf-tc__m{aspect-ratio:auto;min-height:0;height:116px}html body .vf-tc__b{padding:0 0 0 12px}}
 html body .ssr-card{background:none;border:0;padding:8px 0}
 @media (hover:hover) and (pointer:fine){html body #ssr .ssr-list>li:hover{box-shadow:none;border-color:transparent}}
+html body .vfe .vf-tc__m .tc__badge.tc__badge--imp.tag--white{display:inline-flex;font-size:12px}
+@media (min-width:641px){html body .vfe .vf-tc__b .tc__badge--imp.v4-bbadge{display:none!important}}
+@media (max-width:640px){html body .vfe .vf-tc__m .tc__badge.tc__badge--imp.tag--white{display:none}}

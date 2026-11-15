@@ -140,6 +140,7 @@
                 <sc-if value="{{t.hasReason}}" hint-placeholder-val="{{ true }}"><span class="vf-meta vf-why"><i class="ic ic--xs i-check" aria-hidden="true"></i> {{t.reason}}</span></sc-if>
                 <div class="vf-tc__f">
                   <sc-if value="{{t.hasOffer}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offerName}}</span></span></sc-if>
+                  <sc-if value="{{t.noOffer}}" hint-placeholder-val="{{ false }}"><span class="vf-meta">Sem serviço publicado</span></sc-if>
                   <sc-if value="{{t.mapBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{t.locate}}" aria-label="Mostrar {{t.name}} no mapa"><i class="ic ic--xs i-pin"></i>{{t.mapNum}}</button></sc-if>
                 </div>
               </div>
