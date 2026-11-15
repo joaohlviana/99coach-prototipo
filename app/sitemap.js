@@ -1,3 +1,4 @@
+import { idiomas } from '../lib/i18n.js';
 import { SITE, esportes, cidadesDo, cidades, lista, todos, atualizadoEm } from '../lib/catalogo.js';
 
 // Só páginas que existem de verdade: esporte com treinadores, esporte × cidade com pelo menos 1 presencial,
@@ -15,5 +16,12 @@ export default function sitemap() {
   out.push({ url: `${SITE}/cidades`, lastModified: quando, changeFrequency: 'weekly', priority: 0.6 });
   cidades(1).forEach((c) => out.push({ url: `${SITE}/cidade/${c.slug}`, lastModified: quando, changeFrequency: 'weekly', priority: 0.6 }));
   todos().filter((t) => !t.canon).forEach((t) => out.push({ url: `${SITE}/treinador/${t.id}`, lastModified: t.pub ? new Date(t.pub) : quando, changeFrequency: 'monthly', priority: 0.4 }));
-  return out;
+  // versões em inglês e espanhol: só as páginas que têm tradução (início, modalidades e perfis), ligadas por hreflang
+  const abs = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, SITE + v]));
+  return out.map((e) => {
+    const cam = e.url.slice(SITE.length) || '/';
+    if (cam === '/') return { ...e, alternates: { languages: { 'pt-BR': SITE + '/', en: SITE + '/en', es: SITE + '/es' } } };
+    if (/^\/(treinadores|treinador)\//.test(cam)) return { ...e, alternates: { languages: abs(idiomas(cam)) } };
+    return e;
+  });
 }
