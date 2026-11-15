@@ -305,3 +305,4 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .vfp-progs li{display:flex;flex-direction:column;gap:6px;padding:18px}
 .vfp-progs li b{font-size:16px}
 .vfp-progs .btn{margin-top:8px;align-self:flex-start}
+.hj-pst{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}

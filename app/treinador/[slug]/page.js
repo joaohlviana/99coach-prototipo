@@ -75,7 +75,7 @@ export default async function Page({ params }) {
       <section aria-labelledby="h-orig" className="ssr-aviso">
           <h2 id="h-orig">Contato</h2>
           {t.ig ? <p><a href={'https://www.instagram.com/' + t.ig + '/'} rel="noopener" target="_blank">Falar com {t.name.split(' ')[0]} no Instagram (@{t.ig})</a></p> : null}
-          <p>Perfil importado de dados públicos, ainda não confirmado por {t.name.split(' ')[0]}. É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar</a>.</p>
+          <p>Perfil importado de dados públicos{t.pub ? ' coletados em ' + t.pub.split('-').reverse().join('/') : ''}, ainda não confirmado por {t.name.split(' ')[0]}. É você, ou há algo errado? <a href={'/app#publico-perfilpedido-' + t.id}>Corrigir, retirar ou reivindicar</a>.</p>
         </section>
       ) : (
         <section aria-labelledby="h-ped" className="ssr-aviso">

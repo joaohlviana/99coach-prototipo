@@ -116,7 +116,7 @@
           pitch: d.pitch || (t.spec ? first + ' atende ' + t.spec + (t.city ? ' em ' + t.city : ' online') + '.' : ''), bio: d.bio || '', offers: [], progs: [], creds: [], where: where, map: '', reviews: d.reviews || [] };
       }
       return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: t.spec || 'Treinador', city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
-        avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: d.externalHandle || t.ext || '', crumb: { sport: LABEL[t.sports[0]] || '', slug: (t.raw || [])[0] || '', city: t.pres ? t.city : '' },
+        avail: 'importado', imported: true, collected: t.pub || '', cref: 'na', avg: '', n: 0, ext: d.externalHandle || t.ext || '', crumb: { sport: LABEL[t.sports[0]] || '', slug: (t.raw || [])[0] || '', city: t.pres ? t.city : '' },
         // bio, frase e cargo importados não são exibidos: não há como garantir que estão atualizados
         pitch: '', bio: '',
         offers: [], progs: [], creds: [], where: where, map: '', reviews: [] };

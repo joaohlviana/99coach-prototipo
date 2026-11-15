@@ -53,7 +53,13 @@ REG.screen({
       var st0 = (window.STORE && window.STORE.loadOnb('treinador')) || {};
       var failed = !!(C.syncFailed && C.syncFailed());
       var empty = !L.length && !R.length && !failed;
-      var next = !st0.published ? { t: 'Publicar seu perfil', x: 'Só perfil publicado aparece na busca.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
+      // situação do perfil no servidor (vale mais que o que este aparelho lembra)
+      if (!ui.tsAsked) { ctx.setUi({ tsAsked: true }); C.db('GET', 'trainers?select=status,slug&user_id=eq.' + encodeURIComponent((C.user() || {}).id || '')).then(function (r) { ctx.setUi({ ts: r.ok ? ((r.data || [])[0] || { status: 'sem_perfil' }) : null }); }); }
+      var srvSt = ui.ts && ui.ts.status, published = srvSt ? srvSt === 'publicado' : !!st0.published;
+      var PST = { publicado: ['Perfil publicado', 'badge badge--ok'], rascunho: ['Perfil em rascunho', 'badge badge--plain'], retirado: ['Perfil retirado da busca', 'badge badge--warn'], sem_perfil: ['Sem perfil de treinador', 'badge badge--plain'] };
+      var pst = srvSt ? PST[srvSt] || [srvSt, 'badge badge--plain'] : null;
+      var next = srvSt === 'retirado' ? { t: 'Seu perfil está fora da busca', x: 'Você retirou o perfil. Alunos atuais continuam; novos pedidos não chegam. Publique de novo pelo cadastro quando quiser.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
+        : !published ? { t: 'Publicar seu perfil', x: 'Só perfil publicado aparece na busca.', act: 'Ver meu cadastro', go: function () { GO('@onboarding', { flow: 'treinador' }); } }
         : { t: 'Convidar seu primeiro aluno', x: 'Ele aceita uma vez e o vínculo fica pronto. O convite vale 7 dias.', act: 'Convidar aluno', go: function () { GO('REL01'); } };
       // ----- painel completo: pendência principal, fila, mensagens e pedidos, rascunhos e resumo do negócio -----
       var ini = function (n) { return U.ini(n || 'Aluno'); };
@@ -107,6 +113,7 @@ REG.screen({
         });
       };
       return {
+        pst: pst ? pst[0] : '', pstCls: pst ? pst[1] : '', hasPst: !!pst, goPub: function () { if (published && ui.ts && ui.ts.slug) location.href = '/treinador/' + encodeURIComponent(ui.ts.slug); else GO('@onboarding', { flow: 'treinador' }); }, pstAct: published ? 'Ver perfil público' : 'Abrir cadastro',
         isNew: false, notNew: false, real: true, date: window.TODAY(), hello: 'Olá, ' + fn(st0.name || t.first),
         rSub: failed ? 'Não foi possível atualizar agora. A lista abaixo pode estar desatualizada.' : (mine.length ? U.plural(mine.length, 'pendência sua', 'pendências suas') + ' agora' : (empty ? 'Sua conta está pronta.' : 'Tudo em dia: nada depende de você agora.')),
         q: ui.q || '', setQ: function (e) { ctx.setUi({ q: U.val(e) }); }, clearQ: function () { ctx.setUi({ q: '' }); }, qText: ui.q || '',
@@ -120,14 +127,14 @@ REG.screen({
         hasFirst: !!first, first: first || { name: '', why: '', when: '', act: '', ini: '', go: function () {}, peek: function () {} },
         mine: mine, rest: rest, hasRest: rest.length > 0, hasMine: mine.length > 0, allClear: !mine.length && !empty && !failed,
         theirs: theirs, hasTheirs: theirs.length > 0, qCount: U.plural(mine.length + theirs.length, 'aluno', 'alunos'), noQueue: !rest.length && !theirs.length,
-        empty: empty, next: next,
+        empty: empty, next: next, showNext: empty || srvSt === 'retirado',
         ag: ag0, hasAg: ag0.length > 0, noAg: !ag0.length && !ui.apErr, agErr: !!ui.apErr,
         box: box, hasBox: box.length > 0, noBox: !box.length,
         drafts: drafts, hasDrafts: drafts.length > 0, noDrafts: !drafts.length,
         kpis: kpis,
         counts: U.plural(act, 'aluno ativo', 'alunos ativos') + (paused ? ' · ' + U.plural(paused, 'pausado', 'pausados') : '') + ' · ' + U.plural(R.length, 'pedido aguardando', 'pedidos aguardando'), hasCounts: !empty,
         invite: function () { ctx.go('REL01'); }, goAlunos: function () { ctx.go('H04'); }, goAgenda: function () { ctx.go('TRE20'); }, goMsgs: function () { ctx.go('TRE25'); }, goConteudo: function () { ctx.go('H06'); }, goInsights: function () { ctx.go('H08'); }, goMoney: function () { ctx.go('H09R'); },
-        refresh: function () { ctx.setUi({ apAsked: false, wkAsked: false, capAsked: false, pvAsked: false }); if (window.__refreshLinks) window.__refreshLinks(); ctx.toast('Atualizado às ' + U.now() + '.'); }
+        refresh: function () { ctx.setUi({ apAsked: false, wkAsked: false, capAsked: false, pvAsked: false, tsAsked: false }); if (window.__refreshLinks) window.__refreshLinks(); ctx.toast('Atualizado às ' + U.now() + '.'); }
       };
     }
     var go = function (to, p) { return function () { ctx.go(to, p || {}); }; };

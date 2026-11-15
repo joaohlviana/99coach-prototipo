@@ -19,7 +19,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   if (path === 'requests') return j(200, srv.reqs);
   if (path === 'appointments') return srv.apFail ? j(500, { message: 'falha' }) : j(200, srv.appts);
   if (path === 'profiles') return j(200, /id=in/.test(u.search) ? [{ id: 'a1', display_name: 'Caio Prado' }, { id: 'a2', display_name: 'Bia Lima' }, { id: 'a3', display_name: 'Davi Reis' }, { id: 'a4', display_name: 'Eva Nunes' }] : [{ id: 'tr', roles: ['treinador'] }]);
-  if (path === 'trainers') return j(200, [{ id: 'T1' }]);
+  if (path === 'trainers') return j(200, [{ id: 'T1', status: srv.tst, slug: 'marina' }]);
   return j(200, []);
 });
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
@@ -57,5 +57,7 @@ console.log('3 agenda indisponível:', /Não deu para carregar a agenda agora/.t
 srv.apFail = false; srv.reqs = []; srv.links = [lk('L4', 'a4', 'assigned', 'ativo', true)]; srv.appts = [];
 t = await openHoje();
 console.log('4 tudo em dia:', /Tudo em dia/.test(t), /Nenhum horário marcado para hoje/.test(t), /1 aluno ativo · 0 pedidos aguardando/.test(t));
+srv.tst = 'retirado'; t = await openHoje();
+console.log('5 situação do perfil vem do servidor:', /Perfil retirado da busca/i.test(t), /Seu perfil está fora da busca/.test(t));
 console.log('errs', errs);
 await b.close();

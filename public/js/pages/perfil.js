@@ -82,7 +82,7 @@ class Component extends DCLogic {
 
     // ---------- confiança ----------
     const trust = [];
-    if (x.imported) trust.push({ ic: 'ic ic--sm i-link', icCls: 'lrow__ic', title: 'Perfil importado, não reivindicado', text: 'Criado em 02/10/2026 a partir de dados públicos. Ninguém confirmou a titularidade; não há contratação, mensagens nem agenda pela 99Coach.' });
+    if (x.imported) trust.push({ ic: 'ic ic--sm i-link', icCls: 'lrow__ic', title: 'Perfil importado, não reivindicado', text: (x.collected ? 'Dados coletados de fonte pública em ' + x.collected.split('-').reverse().join('/') + '. ' : (x.realLive === undefined && document.documentElement.classList.contains('demo') ? 'Criado em 02/10/2026 a partir de dados públicos. ' : 'Criado a partir de dados públicos. ')) + 'Ninguém confirmou a titularidade; não há contratação, mensagens nem agenda pela 99Coach.' });
     else trust.push({ ic: 'ic ic--sm i-user', icCls: 'lrow__ic', title: 'Titularidade confirmada', text: 'Conta administrada por ' + x.name + ', confirmada em ' + x.own + ' pelo método oficial de verificação do perfil. Nova confirmação em ' + x.ownNext + '.' });
     if (x.cref === 'ver') trust.push({ ic: 'ic ic--sm i-shield', icCls: 'lrow__ic', title: 'CREF verificado', text: x.crefNum + ', conferido na fonte oficial em ' + x.crefDate + '. Válido até ' + x.crefUntil + '.' });
     else if (x.cref === 'inf') trust.push({ ic: 'ic ic--sm i-file', icCls: 'lrow__ic', title: 'CREF informado, ainda não verificado', text: x.crefNum + ' foi digitado pela treinadora. A 99Coach ainda não conferiu na fonte oficial.' });
