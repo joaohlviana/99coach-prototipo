@@ -370,6 +370,12 @@
           <sc-if value="{{v.hasErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>Não salvo</b>{{v.err}}</div></div></sc-if>
           <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.save}}">{{v.saveLabel}}</button></div>
         </section>
+        <section class="card onb-sec" aria-labelledby="ag-cal"><div class="mod-card__h"><h2 class="onb-h2" id="ag-cal">Semana de {{v.calRange}}</h2><span class="mod-row"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.prevWk}}" aria-label="Semana anterior">‹ Anterior</button><sc-if value="{{v.notThis}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.thisWk}}">Esta semana</button></sc-if><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.nextWk}}" aria-label="Próxima semana">Próxima ›</button></span></div>
+          <ol class="ag-cal"><sc-for list="{{v.cal}}" as="d" hint-placeholder-count="7"><li class="{{d.cls}}"><b>{{d.name}} <span>{{d.date}}</span></b>
+            <sc-if value="{{d.isBlocked}}" hint-placeholder-val="{{ false }}"><span class="ag-cal__bl">{{d.blocked}}</span></sc-if>
+            <sc-if value="{{d.hasItems}}" hint-placeholder-val="{{ false }}"><sc-for list="{{d.items}}" as="i" hint-placeholder-count="1"><span class="ag-cal__it">{{i.t}}</span></sc-for></sc-if>
+            <sc-if value="{{d.hasFree}}" hint-placeholder-val="{{ false }}"><span class="ag-cal__free">{{d.free}}</span></sc-if>
+            <sc-if value="{{d.none}}" hint-placeholder-val="{{ false }}"><span class="ag-cal__none">Sem atendimento</span></sc-if></li></sc-for></ol></section>
         <section class="card onb-sec" aria-labelledby="ag-tz"><h2 class="onb-h2" id="ag-tz">Fuso horário</h2><p class="mod-small mod-muted">Os horários acima valem neste fuso. Depois de trocar, toque em "Salvar disponibilidade".</p>
           <div class="seg" role="group" aria-label="Fuso horário" style="flex-wrap: wrap; gap: 8px"><sc-for list="{{v.zones}}" as="z" hint-placeholder-count="4"><button type="button" class="{{z.cls}}" aria-pressed="{{z.on}}" onClick="{{z.pick}}">{{z.label}}</button></sc-for></div></section>
         <section class="card onb-sec" aria-labelledby="ag-ex"><h2 class="onb-h2" id="ag-ex">Dias bloqueados</h2><p class="mod-small mod-muted">Folga, viagem ou feriado: nesses dias nenhum horário é oferecido. O que já está marcado continua marcado.</p>

@@ -55,7 +55,24 @@ REG.screen({
     var exs = (ui.ex || []).map(function (e) { var p2 = e.day.split('-'), dt = new Date(Number(p2[0]), Number(p2[1]) - 1, Number(p2[2]));
       return { when: dt.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }), note: e.note || '', hasNote: !!e.note,
         del: function () { C.db('DELETE', 'availability_exceptions?trainer_id=eq.' + ui.tid + '&day=eq.' + e.day).then(function (r) { ctx.toast(r.ok ? 'Dia liberado de novo.' : 'Não foi possível liberar agora.'); loadEx(); }); } }; });
+    // calendário da semana: horários marcados, janelas livres e dias bloqueados, lado a lado
+    var wo = ui.wo || 0, now0 = new Date(), mon = new Date(now0.getFullYear(), now0.getMonth(), now0.getDate() - ((now0.getDay() + 6) % 7) + wo * 7);
+    var blocked = {}; (ui.ex || []).forEach(function (e) { blocked[e.day] = e.note || 'Bloqueado'; });
+    var ymd = function (d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); };
+    var cal = [0, 1, 2, 3, 4, 5, 6].map(function (i) {
+      var d = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i), key = ymd(d), wd = i + 1, r = day(wd);
+      var its = (ui.appts || []).filter(function (a) { return ymd(new Date(new Date(a.starts_at).toLocaleString('en-US', { timeZone: TZ }))) === key; })
+        .sort(function (a, b) { return String(a.starts_at).localeCompare(String(b.starts_at)); })
+        .map(function (a) { return { t: new Date(a.starts_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ' · ' + (nameOf[a.link_id] || 'Aluno') }; });
+      var isToday = key === ymd(now0), bl = blocked[key];
+      return { name: d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''), date: ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2),
+        cls: 'ag-cal__d' + (isToday ? ' is-today' : '') + (bl ? ' is-blocked' : ''), items: its, hasItems: its.length > 0,
+        free: !bl && r.on ? 'Livre ' + r.from + '–' + r.to : '', hasFree: !bl && r.on, blocked: bl ? 'Bloqueado' + (bl !== 'Bloqueado' ? ' · ' + bl : '') : '', isBlocked: !!bl,
+        none: !bl && !r.on && !its.length };
+    });
+    var lastDay = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6);
     return {
+      cal: cal, calRange: mon.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' a ' + lastDay.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), prevWk: function () { ctx.setUi({ wo: wo - 1 }); }, nextWk: function () { ctx.setUi({ wo: wo + 1 }); }, thisWk: function () { ctx.setUi({ wo: 0 }); }, notThis: wo !== 0,
       exs: exs, hasExs: exs.length > 0, exFail: ui.ex === null, exDay: ui.exDay || '', exNote: ui.exNote || '', setExDay: function (e) { ctx.setUi({ exDay: U.val(e), exErr: '' }); }, setExNote: function (e) { ctx.setUi({ exNote: U.val(e) }); },
       addEx: addEx, exLabel: ui.exBusy ? 'Bloqueando…' : 'Bloquear dia', exErr: ui.exErr || '', hasExErr: !!ui.exErr,
       loading: !!ui.loading, loadErr: !!ui.loadErr, tz: 'Fuso: ' + tzName,

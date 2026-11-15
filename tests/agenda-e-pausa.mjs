@@ -67,6 +67,10 @@ t = await txt(al); console.log('  marcado:', srv.appts.length, /marcado por voc�
 await tr.evaluate(() => { NAV.go('treinador', { s: 'hoje' }, null); }); await tr.waitForTimeout(200);
 await tr.evaluate(() => GO('TRE20')); await tr.waitForTimeout(800);
 console.log('  treinador vê:', /Caio Prado/.test(await txt(tr)));
+{ const cal = await tr.evaluate(() => { const L = [...document.querySelectorAll('.ag-cal__d')]; return { n: L.length, appt: L.some((d) => /Caio Prado/.test(d.innerText)), free: L.some((d) => /Livre 07:00–12:00/.test(d.innerText)) }; });
+  console.log('  calendário da semana:', cal.n === 7, '| livre na segunda:', cal.free);
+  await click(tr, /Próxima/); await tr.waitForTimeout(300); const c2 = await tr.evaluate(() => [...document.querySelectorAll('.ag-cal__d')].some((d) => /Caio Prado/.test(d.innerText)));
+  console.log('  horário marcado aparece numa das duas semanas:', cal.appt || c2); await click(tr, /Esta semana/); }
 // 3. pausa (com nome alternativo da ação), retomada, encerramento
 await tr.evaluate(() => GO('H05', { id: 'lk_L1' })); await tr.waitForTimeout(800);
 await click(tr, /^Pausar$/); await tr.waitForTimeout(200);

@@ -306,3 +306,15 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .vfp-progs li b{font-size:16px}
 .vfp-progs .btn{margin-top:8px;align-self:flex-start}
 .hj-pst{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* calendário da semana do treinador */
+.ag-cal{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.ag-cal__d{display:flex;flex-direction:column;gap:6px;min-height:120px;padding:10px;border:1px solid var(--line-2);border-radius:var(--r-sm);min-width:0}
+.ag-cal__d>b{font-size:13px;text-transform:capitalize}.ag-cal__d>b span{font-weight:400;color:var(--text-3)}
+.ag-cal__d.is-today{border-color:var(--brand)}
+.ag-cal__d.is-blocked{background:var(--paper-2)}
+.ag-cal__it{font-size:12px;padding:4px 6px;border-radius:6px;background:var(--ink,#121214);color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-cal__free{font-size:12px;color:var(--text-2)}
+.ag-cal__bl{font-size:12px;font-weight:600;color:var(--brand-text)}
+.ag-cal__none{font-size:12px;color:var(--text-3)}
+@media (max-width:900px){.ag-cal{grid-template-columns:minmax(0,1fr)}.ag-cal__d{min-height:0}}
