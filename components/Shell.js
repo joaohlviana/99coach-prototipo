@@ -44,6 +44,8 @@ export default function Shell({ route, children, soServidor }) {
       {soServidor ? null : <script dangerouslySetInnerHTML={{ __html: "(function(){var d=document.documentElement;d.classList.add('app-wait');setTimeout(function(){if(!d.classList.contains('app-on'))d.classList.add('app-off')},6000)})();" }} />}
       {/* conteúdo do servidor: fica visível até o app ligar e continua no HTML para leitores e buscadores */}
       <div id="ssr" className={soServidor ? "ssr ssr--solo" : "ssr"}>
+        {/* foto que não carrega some e ficam as iniciais (sem ícone de imagem quebrada) */}
+        <script dangerouslySetInnerHTML={{ __html: "document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av'))t.style.visibility='hidden'},true);" }} />
         <a className="ssr-skip" href="#conteudo-ssr">Pular para o conteúdo</a>
         <Topo />
         <main id="conteudo-ssr">{children}</main>

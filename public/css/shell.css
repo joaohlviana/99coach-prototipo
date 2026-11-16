@@ -381,3 +381,23 @@ html body .cs-row--wide b{font-weight:700}
 html body #app .sx-pill .sx-field,html body #app .sx-pill .sx-field:focus,html body #app .sx-pill .sx-field:focus-visible{background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;-webkit-appearance:none;appearance:none}
 html body #app .sx-pill:focus-within{box-shadow:0 0 0 3px rgba(18,18,20,.10)}
 html body #app .vf-hsl b{color:var(--fg,#121214)}
+
+/* ===== ajustes de celular (revisão das páginas públicas) ===== */
+@media (max-width:640px){
+  /* lista: selo do cartão inteiro, sem cortar */
+  html body #app .vfe-mstat{font-size:10px;letter-spacing:.04em;overflow:visible;text-overflow:clip;max-width:none}
+  /* paginação: começa na página 1 e rola para o lado */
+  html body #app .vfe-pager{align-items:stretch}
+  html body #app .vfe-pager .pager{width:max-content;max-width:100%;margin:0 auto;overflow-x:auto;justify-content:flex-start;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  html body #app .vfe-pager .pager::-webkit-scrollbar{display:none}
+  /* busca do topo: sem setas, para caber o nome da modalidade */
+  html body #app .vfe-msearch__b .vf-hsb>.i-chev-d{display:none}
+  html body #app .vfe-msearch__b .vf-hsb{padding:0 8px;gap:8px}
+  html body #app .vfe-msearch__b{height:50px}
+  /* perfil: cartões de "Outros profissionais" sem vazio no meio */
+  html body #app .vfp .vf-g4{align-items:start}
+  html body #app .vfp .vf-tc__b{flex:0 0 auto}
+  /* rodapé: a frase grande cabe inteira */
+  html body .v4 .ftr__word,html body .ftr__word{font-size:8.3vw!important;line-height:1;padding:14px 0 12px;white-space:nowrap;overflow:hidden}
+}
+@media (max-width:640px){html body #app .vfe-pager{min-width:0;max-width:100%;overflow:hidden}html body #app .vfe-pager .pager{max-width:calc(100vw - 32px)}}
