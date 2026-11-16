@@ -414,3 +414,10 @@ html body .v4-sheet .v4-list>.v4-lrow .lrow__ic{width:36px;height:36px}
   html body #app .vfm-bar .vfm-logo{width:98px;height:auto;max-width:none}
   html body #app .vfp-mstats b{font-size:17px}
 }
+/* áreas com login no celular: descrições dos menus em duas linhas (sem reticências) e agenda com os três campos lado a lado */
+@media (max-width:640px){
+  html body #app .onb-secs__t span{white-space:normal;overflow:visible;text-overflow:clip}
+  html body #app .onb-secs__r:has(>.field){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;align-items:end}
+  html body #app .onb-secs__r:has(>.field)>:not(.field){grid-column:1/-1}
+  html body #app .onb-secs__r:has(>.field) .input{min-width:0}
+}

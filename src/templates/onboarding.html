@@ -417,7 +417,7 @@
           <section class="card onb-sec" aria-label="Instagram">
             <sc-if value="{{g.s.intro}}" hint-placeholder-val="{{ true }}">
               <div class="field"><label class="field__label" for="ci-h">Seu perfil no Instagram</label><div class="input"><i class="ic ic--sm i-instagram" aria-hidden="true"></i><input id="ci-h" type="text" value="{{g.handle}}" onInput="{{g.setHandle}}"></div></div>
-              <ol class="onb-steps"><li><span class="onb-steps__n">1</span><div><b>Copie a mensagem</b><span class="v4-sub">Ela tem um código de referência.</span></div></li><li><span class="onb-steps__n">2</span><div><b>Envie de {{g.handle}} para @99coach.oficial</b><span class="v4-sub">Conta oficial da 99Coach para receber a prova.</span></div></li><li><span class="onb-steps__n">3</span><div><b>Volte e cole o código que respondermos</b><span class="v4-sub">Não pedimos sua senha nem o código de login do Instagram.</span></div></li></ol>
+              <ol class="onb-steps"><li><span class="onb-steps__n">1</span><div><b>Copie a mensagem</b><span class="v4-sub">Ela tem um código de referência.</span></div></li><li><span class="onb-steps__n">2</span><div><b>Envie {{g.fromTxt}} para @99coach.oficial</b><span class="v4-sub">Conta oficial da 99Coach para receber a prova.</span></div></li><li><span class="onb-steps__n">3</span><div><b>Volte e cole o código que respondermos</b><span class="v4-sub">Não pedimos sua senha nem o código de login do Instagram.</span></div></li></ol>
               <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{g.copyMsg}}">Copiar mensagem</button></div>
             </sc-if>
             <sc-if value="{{g.s.instr}}" hint-placeholder-val="{{ false }}">
@@ -476,7 +476,7 @@
           <sc-if value="{{pro.s.offer}}" hint-placeholder-val="{{ true }}">
             <section class="onb-pro" aria-label="Pro">
               <span class="label onb-today__d">Opcional</span><b class="d3 onb-today__t">Pro</b>
-              <ul class="onb-pro__l"><li>Até 50 alunos ativos</li><li>6.000 créditos de IA por mês, inclusive no anual</li><li>R$ 99/mês ou R$ 990/ano</li><li>Não compra posição na busca nem selo</li></ul>
+              <ul class="onb-pro__l"><li>Até 50 alunos ativos</li><li>R$ 99/mês ou R$ 990/ano</li><li>Não compra posição na busca nem selo</li></ul>
               <div class="v4-row"><button type="button" class="btn btn--white" onClick="{{pro.start}}">Experimentar 7 dias</button></div>
             </section>
           </sc-if>

@@ -1,6 +1,19 @@
 PAGES.onboarding = { Comp: (function () {
 class Component extends DCLogic {
-  constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); if (!p.scn && !this.state.dadosSaved && !this.state.real && this.state.step !== 'codigo' && window.CONTA) Object.assign(this.state, { name: '', email: '', code: '' }); }
+  constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); if (!p.scn && !this.state.dadosSaved && !this.state.real && this.state.step !== 'codigo' && window.CONTA) Object.assign(this.state, { name: '', email: '', code: '' }); this.semExemplo(p); }
+  // conta real nunca herda os textos de exemplo do protótipo (Instagram, título, nome de recebedor, convidado, horário do rascunho)
+  semExemplo(p) {
+    try {
+      if ((p && p.scn) || document.documentElement.classList.contains('demo')) return;
+      const s = this.state, n = new Date();
+      if (s.ig === '@thiago.treina') s.ig = '';
+      if (s.title === 'Treinador de CrossFit e Funcional') s.title = '';
+      if (s.payName === 'Thiago Pereira' && s.name !== 'Thiago Pereira') s.payName = s.name || '';
+      if (s.invName === 'Ana Carvalho') s.invName = '';
+      if (s.pgDraft && s.pgDraft.title === 'CrossFit do zero') s.pgDraft = { title: '', weeks: '', workouts: '', price: '' };
+      if (s.savedAt === '09:12' && s.version === 1) s.savedAt = ('0' + n.getHours()).slice(-2) + ':' + ('0' + n.getMinutes()).slice(-2);
+    } catch (_) {}
+  }
 
 
   // Cadastro preenchido de exemplo (cenários “Cadastro preenchido”, “Perfil publicado”)
@@ -297,7 +310,7 @@ class Component extends DCLogic {
 
     const g = {
       s: { intro: !st.igStep, instr: st.igStep === 'instr', wait: st.igStep === 'wait', code: st.igStep === 'code', ok: st.igStep === 'ok', review: st.igStep === 'review' },
-      handle: st.ig, setHandle: (ev) => set({ ig: val(ev) }),
+      handle: st.ig, fromTxt: String(st.ig || '').trim() ? 'de ' + String(st.ig).trim() : 'do seu perfil', setHandle: (ev) => set({ ig: val(ev) }),
       copyMsg: () => set({ igStep: 'instr', toast: 'Mensagem copiada. (Demonstração: a área de transferência pode estar bloqueada.)' }),
       openIg: () => set({ igStep: 'wait', toast: 'Demonstração: o Instagram não é aberto e nenhuma mensagem é enviada.' }),
       haveCode: () => set({ igStep: 'code', igCode: '481270', igWrong: false }), cancel: () => set({ igStep: '', toast: 'Confirmação cancelada. Nada mudou no perfil.' }),
@@ -352,7 +365,7 @@ class Component extends DCLogic {
       s: { offer: !st.pro || st.pro === 'canceled', review: st.pro === 'review', active: st.pro === 'active' },
       current: st.pro === 'active' ? 'Pro · teste de 7 dias' : 'Essencial', currentSub: st.pro === 'active' ? 'Até 50 alunos ativos · 750 créditos no teste' : 'Grátis · até 3 alunos ativos · perfil, convites, treinos e vendas',
       badge: st.pro === 'active' ? 'Teste ativo' : (st.pro === 'canceled' ? 'Renovação cancelada' : 'Plano atual'), badgeCls: 'badge ' + (st.pro === 'active' ? 'badge--ok' : 'badge--plain'),
-      start: () => set({ pro: 'review', proOk: false, proErr: false }), back: () => set({ pro: '' }),
+      start: () => (REALP ? window.GO('ASSIN') : set({ pro: 'review', proOk: false, proErr: false })), back: () => set({ pro: '' }),
       cycles: [['mensal', 'Mensal · R$ 99'], ['anual', 'Anual · R$ 990']].map(([kk, l]) => ({ label: l, on: String(st.proCycle === kk), cls: 'seg__it' + (st.proCycle === kk ? ' is-on' : ''), pick: () => set({ proCycle: kk }) })),
       rows: [{ k: 'Teste', v: '7 dias · 750 créditos de IA' }, { k: 'Começa', v: '26/10/2026 às 09:20 (Brasília)' }, { k: 'Termina', v: '02/11/2026 às 09:20' }, { k: 'Primeira cobrança', v: cyc ? 'R$ 990,00 em 02/11/2026 · anual' : 'R$ 99,00 em 02/11/2026 · mensal' }, { k: 'Depois', v: cyc ? 'Renova todo ano · 6.000 créditos por mês' : 'Renova todo mês · 6.000 créditos por mês' }, { k: 'Cancelar', v: 'No painel, a qualquer momento; no teste, nada é cobrado' }],
       okOn: String(!!st.proOk), okCls: 'check' + (st.proOk ? ' is-on' : ''), toggleOk: () => set({ proOk: !st.proOk, proErr: false }), err: !!st.proErr,
@@ -605,6 +618,10 @@ class Component extends DCLogic {
     const openSh = (s) => () => set({ dSheet: s, dd: null });
     const d = {
       rootCls: 'cv' + (dd ? ' has-dd' : ''),
+      // seção "Básico" do cadastro: modalidades, cidade e formato ligados ao que a pessoa já informou
+      sports: MODS.concat(modsOn.filter((kk) => MODS.indexOf(kk) < 0)).map((kk) => { const isOn = !!st.sports[kk]; return { label: SPORT[kk] || kk, on: String(isOn), cls: 'chip' + (isOn ? ' is-on' : ''), pick: pickMod(kk) }; }),
+      city: st.city || '', setCity: (e) => set({ city: val(e), dErr: false }),
+      fmts: [['pres', 'Presencial', 'onl'], ['onl', 'Online', 'pres']].map(([kk, l, other]) => ({ label: l, on: String(!!st[kk]), cls: 'chip' + (st[kk] ? ' is-on' : ''), pick: () => { if (st[kk] && !st[other]) return toast('É preciso pelo menos um formato: marque o outro antes de tirar este.'); set({ [kk]: !st[kk], dErr: false }); } })),
       mods: MODS.map(modItem).concat(modsOn.filter((kk) => MODS.indexOf(kk) < 0).map(modItem)), modCount, modCountCap: modCount.charAt(0).toUpperCase() + modCount.slice(1), modErr: !!st.dErr && !modsOn.length,
       moreMods: moreList.map(modItem), moreNone: !moreList.length, modQ: st.modQ || '', setModQ: (e) => set({ modQ: val(e) }),
       openMore: openSh('more'), openHelp: openSh('help'), openBack: openSh('back'), openSkip: openSh('skip'), openReview: openSh('review'),
