@@ -33,6 +33,9 @@ export default function Shell({ route, children, soServidor }) {
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';';
   return (
     <>
+      {/* com o app a caminho, a versão do servidor fica escondida (sem troca de tela visível); continua no HTML para
+          leitores e buscadores e volta a aparecer se o app falhar ou passar de 6 s */}
+      {soServidor ? null : <script dangerouslySetInnerHTML={{ __html: "(function(){var d=document.documentElement;d.classList.add('app-wait');setTimeout(function(){if(!d.classList.contains('app-on'))d.classList.add('app-off')},6000)})();" }} />}
       {/* conteúdo do servidor: fica visível até o app ligar e continua no HTML para leitores e buscadores */}
       <div id="ssr" className={soServidor ? "ssr ssr--solo" : "ssr"}>
         <a className="ssr-skip" href="#conteudo-ssr">Pular para o conteúdo</a>

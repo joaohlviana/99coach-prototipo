@@ -46,6 +46,7 @@
     <!-- Trilha com voltar (G16) -->
     <div class="v4-crumbs">
       <button type="button" class="btn btn--ghost btn--sm" onClick="{{openSearch}}"><i class="ic ic--xs i-arrow-l" aria-hidden="true"></i>Voltar para a busca</button>
+      <sc-if value="{{hasCrumbSport}}" hint-placeholder-val="{{ true }}"><span class="tag tag--mono">{{ctxLabel}}</span></sc-if>
       <nav class="v4-trail" aria-label="Você está em"><a class="v4-reset" href="/" data-spa="1" onClick="{{openHome}}">Início</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i><sc-if value="{{hasCrumbSport}}" hint-placeholder-val="{{ true }}"><a class="v4-reset" href="{{crumbSportHref}}" data-spa="1" onClick="{{goCrumbSport}}">{{crumbSport}}</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><sc-if value="{{hasCrumbCity}}" hint-placeholder-val="{{ true }}"><a class="v4-reset" href="{{crumbCityHref}}" data-spa="1" onClick="{{goCrumbCity}}">{{crumbCity}}</a><i class="ic ic--xs i-chev-r" aria-hidden="true"></i></sc-if><b aria-current="page">{{t.name}}</b></nav>
     </div>
 

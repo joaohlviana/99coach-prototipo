@@ -94,3 +94,8 @@ html.app-on #ssr{display:none}
 .ssr-progs button{margin-top:8px;align-self:flex-start;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:#121214;color:#fff;font:600 14px inherit;cursor:pointer}
 .ssr-progs button:disabled{opacity:.6;cursor:default}
 .ssr-lang{margin:0 0 12px;font-size:13px}
+/* enquanto o app carrega: nada da versão do servidor na tela, só um indicador discreto (aparece depois de 400 ms) */
+html.app-wait:not(.app-on):not(.app-off) #ssr:not(.ssr--solo){visibility:hidden}
+html.app-wait:not(.app-on):not(.app-off) body::after{content:"";position:fixed;left:50%;top:45vh;width:28px;height:28px;margin-left:-14px;border-radius:50%;border:3px solid rgba(18,18,20,.12);border-top-color:#DF0A3D;opacity:0;animation:appwait-in .2s .4s forwards,appwait-spin .8s linear infinite}
+@keyframes appwait-in{to{opacity:1}}@keyframes appwait-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){html.app-wait:not(.app-on):not(.app-off) body::after{animation:appwait-in .2s .4s forwards}}

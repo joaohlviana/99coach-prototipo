@@ -423,7 +423,7 @@
       });
     };
     // perfis publicados por quem se cadastrou no app vêm do banco; a API antiga só entra se o banco não responder
-    var fromDb = !window.CONTA || !window.CONTA.pub ? Promise.resolve(false) : window.CONTA.pub('trainers?select=slug,name,initials,photo_url,specialty,formats,published_at,cities(name,uf),trainer_sports(sport_slug),offers(title,price_cents,unit,status,headline)&status=eq.publicado&origin=eq.cadastro&order=published_at.desc&limit=200').then(function (r) {
+    var fromDb = !window.CONTA || !window.CONTA.pub ? Promise.resolve(false) : window.CONTA.pub('trainers?select=slug,name,initials,photo_url,specialty,formats,published_at,cities(name,uf),trainer_sports(sport_slug),offers(title,price_cents,unit,status,headline)&status=eq.publicado&' + (function () { var m = /^\/treinador\/([a-z0-9-]+)$/.exec(location.pathname); return m ? 'or=(origin.eq.cadastro,and(origin.eq.demonstracao,slug.eq.' + m[1] + '))' : 'origin=eq.cadastro'; })() + '&order=published_at.desc&limit=200').then(function (r) {
       var L = r.ok && Array.isArray(r.data) ? r.data.filter(function (t) { return t && t.slug && t.name; }) : [];
       L.forEach(function (t) {
         var of = (t.offers || []).filter(function (o) { return o.status === 'publicada'; });
