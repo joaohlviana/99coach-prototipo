@@ -10,7 +10,7 @@ export default function ShellIdioma({ l, children }) {
   const x = tr(l);
   return (
     <div id="ssr" className="ssr ssr--solo" lang={x.htmlLang}>
-      <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang=' + JSON.stringify(x.htmlLang) + ";document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av'))t.style.visibility='hidden'},true);" }} />
+      <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang=' + JSON.stringify(x.htmlLang) + ";document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av,.ssr-perfil'))t.style.visibility='hidden'},true);" }} />
       <a className="ssr-skip" href="#conteudo-ssr">{x.skip}</a>
       <header className="ssr-top">
         <a className="ssr-logo" href={'/' + l} aria-label={'99coach, ' + x.home}><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>

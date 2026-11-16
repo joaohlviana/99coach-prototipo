@@ -154,3 +154,5 @@ html body .ssr-card{display:flex;flex-direction:column;gap:10px;background:none;
   .ssr-foot__word{font-size:7.2vw;line-height:1;padding-top:20px}
   .ssr-foot__grid{gap:22px 16px}
 }
+/* cartão da lista: a linha inteira leva ao perfil */
+.ssr-card{position:relative}.ssr-card div a::after{content:"";position:absolute;inset:0}

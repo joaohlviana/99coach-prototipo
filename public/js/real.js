@@ -492,6 +492,7 @@
   var rp = (window.__ROUTE && window.__ROUTE.params) || {};
   if (first === 'esporte' && rp.slug) fetchSlice('/dados/esporte/' + encodeURIComponent(rp.slug), 'e:' + rp.slug);
   else if (first === 'perfil' && rp.id && /^\/treinador\//.test(location.pathname)) fetchSlice('/dados/treinador/' + encodeURIComponent(rp.id), 'p:' + rp.id);
+  else if (first === 'publico' && /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.test(location.hash || '')) { var mh = /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.exec(location.hash); fetchSlice('/dados/treinador/' + encodeURIComponent(mh[2]), 'p:' + mh[2]); }
   else if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
 
   // ---------- favoritos ----------

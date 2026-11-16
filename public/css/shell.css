@@ -401,3 +401,16 @@ html body #app .vf-hsl b{color:var(--fg,#121214)}
   html body .v4 .ftr__word,html body .ftr__word{font-size:8.3vw!important;line-height:1;padding:14px 0 12px;white-space:nowrap;overflow:hidden}
 }
 @media (max-width:640px){html body #app .vfe-pager{min-width:0;max-width:100%;overflow:hidden}html body #app .vfe-pager .pager{max-width:calc(100vw - 32px)}}
+/* "Pular para o conteúdo" não ocupa espaço no topo (só aparece com o teclado) */
+html body #app .v4-skip{position:absolute!important;left:16px;top:-60px;z-index:70}
+html body #app .v4-skip:focus{top:12px}
+/* janelas com lista (modalidade, salvos): linhas compactas, sem cartão em cada item */
+html body .v4-sheet .v4-list{gap:0}
+html body .v4-sheet .v4-list>.v4-lrow{border:0;border-bottom:1px solid var(--line-2,#ECE9E4);border-radius:10px;box-shadow:none;background:none;padding:6px 8px;min-height:52px}
+html body .v4-sheet .v4-list>.v4-lrow:last-child{border-bottom:0}
+html body .v4-sheet .v4-list>.v4-lrow.is-on{background:var(--paper,#F4F2EE);border-bottom-color:transparent}
+html body .v4-sheet .v4-list>.v4-lrow .lrow__ic{width:36px;height:36px}
+@media (max-width:640px){
+  html body #app .vfm-bar .vfm-logo{width:98px;height:auto;max-width:none}
+  html body #app .vfp-mstats b{font-size:17px}
+}

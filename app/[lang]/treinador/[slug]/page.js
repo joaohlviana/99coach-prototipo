@@ -43,7 +43,7 @@ export default async function Page({ params }) {
       {t.importado ? (
         <section aria-labelledby="h-orig" className="ssr-aviso"><h2 id="h-orig">{x.contact}</h2>
           {t.ig ? <p><a href={'https://www.instagram.com/' + t.ig + '/'} rel="noopener" target="_blank">{x.igTalk(primeiro, t.ig)}</a></p> : null}
-          <p>{x.imported(primeiro, data)} <a href={'/app#publico-perfilpedido-' + t.id}>{x.correct}</a>.</p></section>
+          <p>{x.imported(primeiro, data)} <a href={'/app#publico-perfilpedido-' + t.id}>{x.correct}</a></p></section>
       ) : (
         <section aria-labelledby="h-ped" className="ssr-aviso"><h2 id="h-ped">{x.coaching}</h2><p>{x.coachingP(primeiro)}</p><p><a href={'/app#publico-pedir-' + t.id}>{x.askCoaching}</a></p></section>
       )}
