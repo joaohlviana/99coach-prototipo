@@ -14,13 +14,13 @@ export default function ShellIdioma({ l, children }) {
       <a className="ssr-skip" href="#conteudo-ssr">{x.skip}</a>
       <header className="ssr-top">
         <a className="ssr-logo" href={'/' + l} aria-label={'99coach, ' + x.home}><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
-        <form className="ssr-search" action="/buscar" method="get" role="search"><span aria-hidden="true">⌕</span><input name="q" type="search" placeholder={x.search} aria-label={x.searchLabel} /></form>
+        <form className="ssr-search" action="/buscar" method="get" role="search"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><input name="q" type="search" placeholder={x.search} aria-label={x.searchLabel} /></form>
         <nav aria-label="Main">
           <a href={'/' + l}>{x.navCoaches}</a>
           <a href={'/' + l + '#sports'}>{x.navSports}</a>
           <a href="/app#onboarding-treinador">{x.navIamCoach}</a>
-          <a className="ssr-btn" href="/app#onboarding-entrar">{x.navLogin}</a>
         </nav>
+        <a className="ssr-btn" href="/app#onboarding-entrar">{x.navLogin}</a>
       </header>
       <main id="conteudo-ssr">
         <p className="ssr-note ssr-lang">{x.appNote} <a href="/" hrefLang="pt-BR" lang="pt-BR">Português</a> · <a href="/en" hrefLang="en" lang="en">English</a> · <a href="/es" hrefLang="es" lang="es">Español</a></p>

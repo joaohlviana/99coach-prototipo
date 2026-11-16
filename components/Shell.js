@@ -5,13 +5,13 @@ export function Topo() {
   return (
     <header className="ssr-top">
       <a className="ssr-logo" href="/" aria-label="99coach, página inicial"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
-      <form className="ssr-search" action="/buscar" method="get" role="search"><span aria-hidden="true">⌕</span><input name="q" type="search" placeholder="Nome, modalidade ou cidade" aria-label="Buscar treinador por nome, modalidade ou cidade" /></form>
+      <form className="ssr-search" action="/buscar" method="get" role="search"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><input name="q" type="search" placeholder="Nome, modalidade ou cidade" aria-label="Buscar treinador por nome, modalidade ou cidade" /></form>
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>
         <a href="/app#onboarding-treinador">Sou treinador</a>
-        <a className="ssr-btn" href="/app#onboarding-entrar">Entrar</a>
       </nav>
+      <a className="ssr-btn" href="/app#onboarding-entrar">Entrar</a>
     </header>
   );
 }

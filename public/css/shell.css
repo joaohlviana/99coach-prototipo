@@ -334,3 +334,9 @@ html body .ssr-card{background:none;border:0;padding:8px 0}
 html body .vfe .vf-tc__m .tc__badge.tc__badge--imp.tag--white{display:inline-flex;font-size:12px}
 @media (min-width:641px){html body .vfe .vf-tc__b .tc__badge--imp.v4-bbadge{display:none!important}}
 @media (max-width:640px){html body .vfe .vf-tc__m .tc__badge.tc__badge--imp.tag--white{display:none}}
+
+/* trilha do perfil: links, setas e nome na mesma linha de base */
+html body .v4-trail a.v4-reset{display:inline-flex;align-items:center;text-decoration:none}
+html body .v4-trail .ic{flex:none}
+/* busca do topo: respiro entre a lupa e o texto */
+html body #app .hdr__search .vf-hs{margin-left:8px}
