@@ -340,3 +340,24 @@ html body .v4-trail a.v4-reset{display:inline-flex;align-items:center;text-decor
 html body .v4-trail .ic{flex:none}
 /* busca do topo: respiro entre a lupa e o texto */
 html body #app .hdr__search .vf-hs{margin-left:8px}
+
+/* seletor de cidade: campo com um só contorno, lista compacta em linhas e contagem com nome */
+html body .cs-sheet .input--search{border:1.5px solid var(--line-2,#D9D6D0);background:#fff;transition:border-color .15s,box-shadow .15s}
+html body .cs-sheet .input--search:focus-within{border-color:var(--ink,#121214);box-shadow:0 0 0 3px rgba(18,18,20,.08)}
+html body .cs-sheet .input--search input,html body .cs-sheet .input--search input:focus,html body .cs-sheet .input--search input:focus-visible{outline:0!important;box-shadow:none!important;border:0;background:transparent}
+html body .cs-geo{display:flex;align-items:center;gap:12px;width:100%;margin:12px 0 4px;padding:12px 14px;border:0;border-radius:14px;background:var(--paper,#F4F2EE);text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:52px}
+html body .cs-geo .ic{color:var(--brand,#DF0A3D);flex:none}
+html body .cs-geo span{display:flex;flex-direction:column;gap:1px;min-width:0}
+html body .cs-geo b{font-size:15px}html body .cs-geo small{font-size:12.5px;color:var(--text-3,#71717A)}
+html body .cs-lab{margin:16px 2px 6px;font-family:var(--font-mono,ui-monospace,monospace);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A)}
+html body .cs-sheet .v4-list{display:block;gap:0}
+html body .cs-row{display:flex;align-items:center;gap:12px;width:100%;min-height:48px;padding:8px 10px;border:0;border-bottom:1px solid var(--line-2,#ECE9E4);border-radius:10px;background:none;text-align:left;font:inherit;color:inherit;cursor:pointer}
+html body .cs-row:last-child{border-bottom:0}
+html body .cs-row__t{display:flex;flex-direction:column;min-width:0;flex:1}
+html body .cs-row__t b{font-size:15px;font-weight:600}html body .cs-row__t small{font-size:12.5px;color:var(--text-3,#71717A)}
+html body .cs-row__n{flex:none;font-size:13px;color:var(--text-3,#71717A);white-space:nowrap}
+html body .cs-row__ok{flex:none;visibility:hidden;color:var(--ink,#121214)}
+html body .cs-row.is-on{background:var(--paper,#F4F2EE);border-bottom-color:transparent}
+html body .cs-row.is-on b{font-weight:700}html body .cs-row.is-on .cs-row__ok{visibility:visible}
+@media (hover:hover){html body .cs-row:hover,html body .cs-geo:hover{background:var(--paper-2,#EDEAE5)}}
+html body .cs-sheet .v4-sheet__bd{scrollbar-width:thin}
