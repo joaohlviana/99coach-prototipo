@@ -77,7 +77,8 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
       </section>
       {!online && nOnline > 0 ? <section aria-labelledby="h-on"><h2 id="h-on">Também online</h2><p><a href={'/treinadores/' + esp.slug + '/online'}>{plural(nOnline, 'treinador atende', 'treinadores atendem')} {esp.label} online</a></p></section> : null}
       {cidades.length ? <section aria-labelledby="h-cid"><h2 id="h-cid">{esp.label} em outras cidades</h2>
-        <ul className="ssr-chips">{cidades.map((c) => <li key={c.slug}><a href={'/treinadores/' + esp.slug + '/' + c.slug}>{c.label} <small>{c.n}</small></a></li>)}</ul></section> : null}
+        <ul className="ssr-chips">{cidades.slice(0, 24).map((c) => <li key={c.slug}><a href={'/treinadores/' + esp.slug + '/' + c.slug}>{c.label} <small>{c.n}</small></a></li>)}</ul>
+        {cidades.length > 24 ? <details className="ssr-mais"><summary>Ver mais {cidades.length - 24} cidades</summary><ul className="ssr-chips">{cidades.slice(24).map((c) => <li key={c.slug}><a href={'/treinadores/' + esp.slug + '/' + c.slug}>{c.label} <small>{c.n}</small></a></li>)}</ul></details> : null}</section> : null}
       <section aria-labelledby="h-out"><h2 id="h-out">Outros esportes{cid ? ' em ' + curta(cid.label) : ''}</h2>
         <ul className="ssr-chips">{outros.filter((s) => !cid || lista(s.slug, cid.slug).length > 0).map((s) => <li key={s.slug}><a href={'/treinadores/' + s.slug + (cid ? '/' + cid.slug : '')}>{s.label}</a></li>)}</ul></section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />

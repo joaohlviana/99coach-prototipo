@@ -1,5 +1,10 @@
 // Moldura das páginas públicas em inglês e espanhol: só o HTML do servidor (leve). As ações levam ao app, em português.
-import { t as tr } from '../lib/i18n.js';
+import { t as tr, esporteNome } from '../lib/i18n.js';
+
+const F = {
+  en: { tag: 'Compare coaches, sports and formats to choose with confidence.', train: 'Train', coaches: 'For coaches', helpH: 'Help' },
+  es: { tag: 'Compara profesionales, deportes y formatos para elegir con claridad.', train: 'Entrenar', coaches: 'Para entrenadores', helpH: 'Ayuda' }
+};
 
 export default function ShellIdioma({ l, children }) {
   const x = tr(l);
@@ -22,11 +27,17 @@ export default function ShellIdioma({ l, children }) {
         {children}
       </main>
       <footer className="ssr-foot">
-        <a href="/cidades">{x.cities}</a>
-        <a href="/app#publico-ajuda">{x.help}</a>
-        <a href="/app#publico-ajuda-termos">{x.terms}</a>
-        <a href="/app#publico-ajuda-privacidade">{x.privacy}</a>
-        <span className="ssr-foot__m"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="71" height="18" /> © 2026</span>
+        <div className="ssr-foot__grid">
+          <div className="ssr-foot__brand"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="110" height="28" />
+            <p>{F[l].tag}</p>
+            <p className="ssr-foot__langs">{[['pt-BR', '/', 'Português'], ['en', '/en', 'English'], ['es', '/es', 'Español']].map(([k, h, n]) => k === l ? <b key={k} lang={k}>{n}</b> : <a key={k} href={h} hrefLang={k} lang={k}>{n}</a>)}</p></div>
+          <div><b>{F[l].train}</b><a href={'/' + l}>{x.navCoaches}</a><a href={'/' + l + '#sports'}>{x.navSports}</a><a href="/cidades" hrefLang="pt-BR">{x.cities}</a></div>
+          <div><b>{F[l].coaches}</b><a href="/app#onboarding-treinador">{x.navIamCoach}</a><a href="/app#onboarding-entrar">{x.navLogin}</a></div>
+          <div><b>{x.navSports}</b>{['musculacao', 'funcional', 'pilates', 'corrida'].map((k) => <a key={k} href={'/' + l + '/treinadores/' + k}>{esporteNome(l, k, k)}</a>)}</div>
+          <div><b>{F[l].helpH}</b><a href="/app#publico-ajuda">{x.help}</a><a href="/app#publico-ajuda-termos">{x.terms}</a><a href="/app#publico-ajuda-privacidade">{x.privacy}</a></div>
+        </div>
+        <div className="ssr-foot__word" aria-hidden="true">99Coach</div>
+        <span className="ssr-foot__m">© 2026 99coach</span>
       </footer>
     </div>
   );
@@ -37,7 +48,7 @@ export function CartaoIdioma({ l, t }) {
   const onde = [t.pres ? x.inPersonIn(t.city) : '', t.onl ? x.onlineCard : ''].filter(Boolean).join(' · ') || (t.city ? t.city : x.noPlace);
   return (
     <li className="ssr-card">
-      <span className="ssr-av" aria-hidden="true">{t.ini || t.name.slice(0, 1)}{t.photo ? <img src={t.photo} alt="" width="48" height="48" loading="lazy" decoding="async" /> : null}</span>
+      <a className="ssr-ph" href={'/' + l + '/treinador/' + t.id} tabIndex={-1} aria-hidden="true"><span>{t.ini || t.name.slice(0, 1)}</span>{t.photo ? <img src={t.photo} alt="" width="320" height="320" loading="lazy" decoding="async" /> : null}</a>
       <div><a href={'/' + l + '/treinador/' + t.id}><b>{t.name}</b></a>{t.spec ? <span lang="pt-BR">{t.spec}</span> : null}<span>{onde}</span></div>
     </li>
   );

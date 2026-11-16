@@ -99,3 +99,38 @@ html.app-wait:not(.app-on):not(.app-off) #ssr:not(.ssr--solo){visibility:hidden}
 html.app-wait:not(.app-on):not(.app-off) body::after{content:"";position:fixed;left:50%;top:45vh;width:28px;height:28px;margin-left:-14px;border-radius:50%;border:3px solid rgba(18,18,20,.12);border-top-color:#DF0A3D;opacity:0;animation:appwait-in .2s .4s forwards,appwait-spin .8s linear infinite}
 @keyframes appwait-in{to{opacity:1}}@keyframes appwait-spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){html.app-wait:not(.app-on):not(.app-off) body::after{animation:appwait-in .2s .4s forwards}}
+
+/* ===== páginas do servidor no padrão do design system ===== */
+/* topo: navegação em grupo arredondado, como no app */
+.ssr-top nav{background:#fff;border-radius:999px;padding:4px;box-shadow:0 1px 2px rgba(18,18,20,.06)}
+.ssr-top nav a{min-height:40px;padding:8px 16px}
+.ssr-top nav a.ssr-btn{padding:8px 20px}
+/* cartão de treinador: foto grande arredondada e texto direto sobre o fundo */
+.ssr-list,.ssr--solo .ssr-list{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:28px 20px}
+html body .ssr-card{display:flex;flex-direction:column;gap:10px;background:none;border:0;padding:0;border-radius:0}
+.ssr-ph{position:relative;display:flex!important;align-items:center;justify-content:center;aspect-ratio:1/1;width:100%;border-radius:20px;overflow:hidden;background:#E4E1DC;min-height:0!important}
+.ssr-ph span{font-family:var(--font-display,Anton,Impact,sans-serif);font-size:44px;color:#55525B;text-transform:uppercase}
+.ssr-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ssr-card div{padding:0 2px}
+.ssr-card div a{min-height:0;font-size:16px;line-height:1.3}
+@media (max-width:640px){.ssr-list,.ssr--solo .ssr-list{grid-template-columns:1fr;gap:14px}html body .ssr-card{flex-direction:row;align-items:center;gap:14px}.ssr-ph{width:84px;flex:none}.ssr-ph span{font-size:26px}}
+@media (hover:hover) and (pointer:fine){html body #ssr .ssr-list>li:hover{translate:none}#ssr .ssr-card:hover .ssr-ph{box-shadow:0 10px 28px -14px rgba(18,18,20,.45)}}
+/* paginação: página atual escura, as outras claras */
+.ssr-pages a{background:#fff;color:var(--fg,#121214)!important;font-weight:600}
+.ssr-pages b{background:var(--ink,#121214);color:#fff;border-color:transparent}
+.ssr-pages a[rel]{background:var(--ink,#121214);color:#fff!important;padding:0 18px}
+/* cidades recolhidas */
+.ssr-mais{margin-top:12px}.ssr-mais summary{cursor:pointer;display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(18,18,20,.16);font-weight:600;font-size:14px;list-style:none}.ssr-mais summary::-webkit-details-marker{display:none}.ssr-mais[open] summary{margin-bottom:12px}
+/* rodapé do design system */
+.ssr-foot,.ssr--solo .ssr-foot{display:block;background:var(--ink,#121214);color:rgba(255,255,255,.72);border:0;border-radius:28px;padding:40px 32px 24px;margin-top:64px;font-size:14px;overflow:hidden}
+.ssr-foot__grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:28px}
+.ssr-foot__grid>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ssr-foot__grid b{font-family:var(--font-mono,ui-monospace,monospace);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;margin-bottom:8px}
+.ssr-foot a,.ssr--solo .ssr-foot a{color:rgba(255,255,255,.72);text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.ssr-foot a:hover{color:#fff}
+.ssr-foot__brand img{filter:brightness(0) invert(1);height:28px;width:auto;align-self:flex-start;margin-bottom:14px}
+.ssr-foot__brand p{margin:0 0 10px;max-width:280px;line-height:1.6}
+.ssr-foot__langs{display:flex;gap:14px;align-items:center}.ssr-foot__langs b{font-family:inherit;font-size:14px;letter-spacing:0;text-transform:none;margin:0}
+.ssr-foot__word{font-family:var(--font-display,Anton,Impact,sans-serif);font-size:clamp(56px,11vw,150px);line-height:.8;text-transform:uppercase;white-space:nowrap;color:rgba(255,255,255,.06);padding-top:28px;overflow:hidden}
+.ssr-foot__m{display:block;border-top:1px solid rgba(255,255,255,.1);margin-top:12px;padding-top:16px;font-size:13px}
+@media (max-width:860px){.ssr-foot__grid{grid-template-columns:1fr 1fr}.ssr-foot__brand{grid-column:1/-1}}

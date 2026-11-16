@@ -19,11 +19,17 @@ export function Topo() {
 export function Rodape() {
   return (
     <footer className="ssr-foot">
-      <a href="/cidades">Cidades</a>
-      <a href="/app#publico-ajuda">Central de ajuda</a>
-      <a href="/app#publico-ajuda-termos">Termos</a>
-      <a href="/app#publico-ajuda-privacidade">Privacidade</a>
-      <span className="ssr-foot__m"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="71" height="18" /> © 2026</span>
+      <div className="ssr-foot__grid">
+        <div className="ssr-foot__brand"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="110" height="28" />
+          <p>Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p>
+          <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href="/en" hrefLang="en" lang="en">English</a><a href="/es" hrefLang="es" lang="es">Español</a></p></div>
+        <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a></div>
+        <div><b>Para treinadores</b><a href="/app#onboarding-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
+        <div><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/treinadores/corrida">Corrida</a></div>
+        <div><b>Ajuda</b><a href="/app#publico-ajuda">Central de ajuda</a><a href="/app#publico-ajuda-termos">Termos</a><a href="/app#publico-ajuda-privacidade">Privacidade</a></div>
+      </div>
+      <div className="ssr-foot__word" aria-hidden="true">99Coach · mais que treino</div>
+      <span className="ssr-foot__m">© 2026 99coach</span>
     </footer>
   );
 }
@@ -58,7 +64,7 @@ export function Cartao({ t }) {
   const onde = [t.pres ? 'Presencial em ' + t.city : '', t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
   return (
     <li className="ssr-card">
-      <span className="ssr-av" aria-hidden="true">{t.ini || t.name.slice(0, 1)}{t.photo ? <img src={t.photo} alt="" width="48" height="48" loading="lazy" decoding="async" /> : null}</span>
+      <a className="ssr-ph" href={'/treinador/' + t.id} tabIndex={-1} aria-hidden="true"><span>{t.ini || t.name.slice(0, 1)}</span>{t.photo ? <img src={t.photo} alt="" width="320" height="320" loading="lazy" decoding="async" /> : null}</a>
       <div>
         <a href={'/treinador/' + t.id}><b>{t.name}</b></a>
         {t.spec ? <span>{t.spec}</span> : null}
