@@ -2,6 +2,7 @@
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const L1 = { id: 'L1', status: 'ativo', origin: 'convite', prep: 'assigned', answers: {}, created_at: '2026-11-01T12:00:00Z', student_id: 'al', trainers: { slug: 'marina', name: 'Marina Duarte', user_id: 'tr' }, workouts: [] };
+const D2 = (h) => new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 11) + h + ':00:00Z';
 const srv = { rules: [], appts: [], log: [], linkCalls: [] };
 async function mk(who, tok, uid) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } });
@@ -25,7 +26,7 @@ async function mk(who, tok, uid) {
     if (path === 'trainers') return j(200, [{ id: 'T1' }]);
     if (path === 'availability_rules') return j(200, srv.rules.map((r) => ({ weekday: r.weekday, start_min: r.startMin, end_min: r.endMin, slot_min: r.slotMin, tz: 'America/Sao_Paulo' })));
     if (path === 'rpc/set_availability') { srv.rules = body.p_rules; return j(200, null); }
-    if (path === 'rpc/free_slots') return j(200, srv.rules.length ? [{ starts_at: '2026-11-11T10:00:00Z', ends_at: '2026-11-11T11:00:00Z', tz: 'America/Sao_Paulo' }, { starts_at: '2026-11-11T11:00:00Z', ends_at: '2026-11-11T12:00:00Z', tz: 'America/Sao_Paulo' }] : []);
+    if (path === 'rpc/free_slots') return j(200, srv.rules.length ? [{ starts_at: D2('10'), ends_at: D2('11'), tz: 'America/Sao_Paulo' }, { starts_at: D2('11'), ends_at: D2('12'), tz: 'America/Sao_Paulo' }] : []);
     if (path === 'rpc/book_slot') { if (L1.status !== 'ativo') return j(200, { outcome: 'vinculo_pausado' }); srv.appts.push({ id: 'A1', link_id: 'L1', starts_at: body.p_starts_at, ends_at: body.p_starts_at, tz: 'America/Sao_Paulo', status: 'marcado', booked_by: 'aluno' }); return j(200, { outcome: 'marcado', id: 'A1' }); }
     if (path === 'appointments') return j(200, srv.appts.filter((a) => a.status === 'marcado'));
     if (path === 'rpc/cancel_appointment') { srv.appts.forEach((a) => { if (a.id === body.p_id) a.status = 'cancelado'; }); return j(200, null); }
