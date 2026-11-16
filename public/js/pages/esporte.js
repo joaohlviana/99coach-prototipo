@@ -4,7 +4,7 @@ PAGES.esporte = { Comp: (function () {
 class Component extends DCLogic {
   static img(id) { return window.__IMG[id] || ''; }
 
-  constructor(props) { super(props); this.state = Object.assign({}, this.base(), (props && props.init) || {}); try { if (!Component.__cap && typeof document !== 'undefined' && document.addEventListener) { Component.__cap = 1; document.addEventListener('click', (e) => { try { const t = e.target; const el = (t && t.closest && t.closest('button,a,[role=switch]')) || t; const r = el.getBoundingClientRect(); Component.__y = Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) {} }, true); } } catch (_) {} }
+  constructor(props) { super(props); this.state = Object.assign({}, this.base(), (props && props.init) || {}); try { const mu = /[?&]uf=([a-z]{2})(&|$)/i.exec(location.search); if (mu && props && props.init && !props.init.city && /^\/treinadores\/[^/]+\/?$/.test(location.pathname)) { this.state.city = 'UF:' + mu[1].toUpperCase(); this.state.fmt = 'Presencial'; } } catch (_) {} try { if (!Component.__cap && typeof document !== 'undefined' && document.addEventListener) { Component.__cap = 1; document.addEventListener('click', (e) => { try { const t = e.target; const el = (t && t.closest && t.closest('button,a,[role=switch]')) || t; const r = el.getBoundingClientRect(); Component.__y = Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) {} }, true); } } catch (_) {} }
   base() { return { scen: 'londrina', mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial', lang: 'Qualquer', avail: false, sort: 'rel', sortInfo: false, page: 1, more: 0, view: 'lista', mapCap: 'off', load: 'ok', removed: false, sheet: '', pend: null, favs: {}, toast: null, sel: '', open: '', back: '', faq: 0, seo: false, codeSent: false, auth: 'login', loc: '', info: '', prog: -1, dd: '', foco: '', area: '' }; }
   renderVals() {
     if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
@@ -32,12 +32,19 @@ class Component extends DCLogic {
     const SPL = window.SPORTS.ordered(window.REAL && window.REAL.sportCounts());
     const MODS = SPL.map((x) => x.label);
     const NEAR = { 'Tamarana, PR': 'Londrina, PR' };
-    const cityShort = (c) => (c || '').split(',')[0];
+    // cidade pode ser um estado inteiro: "UF:PR"
+    const UFN = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
+    const UFA = { AC: 'no', AP: 'no', AM: 'no', BA: 'na', CE: 'no', DF: 'no', ES: 'no', MA: 'no', PA: 'no', PB: 'na', PR: 'no', PI: 'no', RJ: 'no', RN: 'no', RS: 'no', TO: 'no' };
+    const isUf = (c) => /^UF:/.test(c || '');
+    const cityShort = (c) => isUf(c) ? (UFN[c.slice(3)] || c.slice(3)) : (c || '').split(',')[0];
+    const cityFull = (c) => isUf(c) ? cityShort(c) + ' (estado todo)' : (c || '');
+    const emC = (c) => ' ' + ((isUf(c) && UFA[c.slice(3)]) || 'em') + ' ';
+    const inCity = (tc, c) => !c || (isUf(c) ? String(tc || '').slice(-4) === ', ' + c.slice(3) : tc === c);
     const has = (a, x) => (a || []).indexOf(x) >= 0;
     const match = (t, s) => {
       if (!has(t.mods, s.mod)) return false;
       if (s.removed && t.id === 'diego') return false;
-      const pres = has(t.fmts, 'Presencial') && (!s.city || t.city === s.city);
+      const pres = has(t.fmts, 'Presencial') && inCity(t.city, s.city);
       const onl = has(t.fmts, 'Online');
       if (s.fmt === 'Presencial' && !pres) return false;
       if (s.fmt === 'Online' && !onl) return false;
@@ -65,12 +72,12 @@ class Component extends DCLogic {
 
     // título e contexto
     const online = st.fmt === 'Online';
-    const h1 = online ? 'Treinadores de ' + st.mod + ' online' : (st.city ? 'Treinadores de ' + st.mod + ' em ' + cityShort(st.city) : 'Treinadores de ' + st.mod);
+    const h1 = online ? 'Treinadores de ' + st.mod + ' online' : (st.city ? 'Treinadores de ' + st.mod + emC(st.city) + cityShort(st.city) : 'Treinadores de ' + st.mod);
     const fmtWord = { Presencial: 'presencial', Online: 'online', Qualquer: 'qualquer formato' }[st.fmt];
-    const cityLabel = online ? 'Qualquer lugar (online)' : (st.city ? st.city : 'Escolha uma cidade');
+    const cityLabel = online ? 'Qualquer lugar (online)' : (st.city ? cityFull(st.city) : 'Todo o Brasil');
     const ctxShort = (online ? 'online' : (st.city ? cityShort(st.city) + ' · ' + fmtWord : 'todas as cidades · ' + fmtWord));
     const langTxt = st.lang !== 'Qualquer' ? ' · atende em ' + st.lang.toLowerCase() : '';
-    const ctxLine = st.mod + ' · ' + (online ? 'online' : (st.city || 'sem cidade') + ' · ' + fmtWord) + langTxt + (st.avail ? ' · aceita novos alunos' : '');
+    const ctxLine = st.mod + ' · ' + (online ? 'online' : (cityFull(st.city) || 'sem cidade') + ' · ' + fmtWord) + langTxt + (st.avail ? ' · aceita novos alunos' : '');
     let lede;
     if (online) lede = 'Acompanhamento a distância, com o treino no app.';
     else if (st.city) lede = '';
@@ -125,14 +132,14 @@ class Component extends DCLogic {
     const offerOf = (t) => {
       if (online) return t.onl || null;
       if (st.fmt === 'Presencial') return t.pres || null;
-      const presOk = has(t.fmts, 'Presencial') && (!st.city || t.city === st.city);
+      const presOk = has(t.fmts, 'Presencial') && inCity(t.city, st.city);
       return (presOk && t.pres) || t.onl || t.pres || null;
     };
     const favs = st.favs || {};
     const toggleFav = (t) => () => { const on = !!favs[t.id]; const nf = Object.assign({}, favs); if (on) delete nf[t.id]; else nf[t.id] = true; set({ favs: nf, toast: { kind: on ? 'rem' : 'add', id: t.id } }); };
     const openP = (t) => () => (window.TRACK && window.TRACK('showcase.card_clicked', { trainer_slug: t.id, position: shown.indexOf(t) + 1 }), window.NAV.has(t.id) ? window.NAV.go('perfil', { id: t.id }, this, { back: t.id }) : set({ open: t.id, sheet: '' }));
     const mapOn = st.view === 'mapa' && mapToggle;
-    const mapIds = mapOn ? shown.filter((t) => t.pos && has(t.fmts, 'Presencial') && t.city === st.city) : [];
+    const mapIds = mapOn ? shown.filter((t) => t.pos && has(t.fmts, 'Presencial') && inCity(t.city, st.city)) : [];
     const mkNum = {}; mapIds.forEach((t, i) => { mkNum[t.id] = String(i + 1); });
     // motivo do cartão: um dos seis permitidos pelo plano, e só quando o fato existe no dado usado na seleção
     const whyOf = (t, saved) => {
@@ -216,7 +223,7 @@ class Component extends DCLogic {
     const pg = st.prog >= 0 ? Object.assign({}, PG[st.prog], { n: String(PG[st.prog].n) }) : PG[0];
 
     // conteúdo local
-    const presHere = T.filter((t) => has(t.mods, st.mod) && has(t.fmts, 'Presencial') && st.city && t.city === st.city);
+    const presHere = T.filter((t) => has(t.mods, st.mod) && has(t.fmts, 'Presencial') && st.city && inCity(t.city, st.city));
     const sess = presHere.filter((t) => t.pres && t.pres[2] === '/ sessão').map((t) => parseInt(t.pres[1].replace(/\D/g, ''), 10));
     const facts = [];
     let edA, edB, localTxt;
@@ -249,7 +256,7 @@ class Component extends DCLogic {
     // buscas relacionadas: só destinos com resultado
     const R = [];
     if (!online) R.push([st.mod + ' online', { fmt: 'Online', city: '' }]);
-    MODS.filter((m) => m !== st.mod).forEach((m) => R.push([m + (st.city && !online ? ' em ' + cityShort(st.city) : (online ? ' online' : '')), { mod: m }]));
+    MODS.filter((m) => m !== st.mod).forEach((m) => R.push([m + (st.city && !online ? emC(st.city) + cityShort(st.city) : (online ? ' online' : '')), { mod: m }]));
     const rel = R.map(([label, o]) => ({ label, n: countFor(Object.assign({ lang: 'Qualquer', avail: false, removed: false }, o)), pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) })).filter((r) => r.n > 0).map((r) => Object.assign(r, { n: r.n + (r.n === 1 ? ' treinador' : ' treinadores') }));
     const ftrLinks = [['CrossFit em Londrina', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }], ['Musculação em Londrina', { mod: 'Musculação', city: 'Londrina, PR', fmt: 'Presencial' }], ['CrossFit online', { mod: 'CrossFit', city: '', fmt: 'Online' }]].map(([label, o]) => ({ label, pick: () => change(Object.assign({ lang: 'Qualquer', avail: false }, o)) }));
 
@@ -284,7 +291,7 @@ class Component extends DCLogic {
     const locGo = () => { set({ loc: 'busy' }); const only = [...new Set(T.filter((t) => t.city && has(t.fmts, 'Presencial')).map((t) => t.city))]; if (!window.GEO) return set({ loc: 'denied' }); window.GEO.locate({ only }).then((r) => change({ city: r.match || r.city, fmt: st.fmt === 'Online' ? 'Presencial' : st.fmt, sheet: '', loc: '', locNote: r.match && r.match !== r.city ? 'Você está em ' + r.city.split(',')[0] + '; a cidade mais perto com treinador é ' + r.match.split(',')[0] + ' (' + r.matchKm + ' km).' : '' }), () => set({ loc: 'denied' })); };
     const V3 = {
       scens, reset, seoOpen: st.seo, toggleSeo: () => set({ seo: !st.seo }), seoToggleLabel: st.seo ? ' · ocultar campos' : ' · ver campos', seoIndex: seoOk ? 'indexar' : 'não indexar', seoPillCls: 'e-pill ' + (seoOk ? 'e-pill--ok' : 'e-pill--no'), seoWhy, seoTitle, seoDesc, seoCrumb,
-      h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? ' em ' + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Escolha uma cidade'), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
+      h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? emC(st.city) + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Todo o Brasil'), hasCity: !!st.city && !online, clearCity: () => change({ city: '', fmt: 'Qualquer', cuf: '' }), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
       cityPickCls: 'e-pick' + (!st.city && !online ? ' is-empty' : ''),
       crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? st.city : st.mod),
       fmtSeg, sortSeg, viewSeg, mapToggle, sortInfo: st.sortInfo, toggleSortInfo: () => set({ sortInfo: !st.sortInfo }),
@@ -339,7 +346,7 @@ class Component extends DCLogic {
       if (sessP.length) kpis.push({ n: 'R$ ' + Math.min.apply(null, sessP), l: 'A partir de · sessão', ncls: 'kpi__n' });
       else if (mesP.length) kpis.push({ n: 'R$ ' + Math.min.apply(null, mesP), l: 'A partir de · mês', ncls: 'kpi__n' });
     }
-    const eyebrow4 = '+ Modalidade · ' + (online ? 'online' : (st.city ? st.city + ' · ' + fmtWord : 'todas as cidades'));
+    const eyebrow4 = '+ Modalidade · ' + (online ? 'online' : (st.city ? cityFull(st.city) + ' · ' + fmtWord : 'todas as cidades'));
 
     // cards de treinador (G17 · .tc)
     const isVer = (t) => t.trust.some((x) => /verificado/.test(x[0]) && !/não verificado|ainda não/.test(x[0]));
@@ -369,11 +376,14 @@ class Component extends DCLogic {
     if (loading) countT = 'Buscando treinadores…';
     else if (st.load === 'total' && n > 0) { countB = 'Pelo menos ' + shown.length; countT = ' treinadores · total ainda em contagem'; }
     else if (n === 0) countT = 'Nenhum treinador com estes filtros';
-    else { countB = String(n); countT = (n === 1 ? ' treinador de ' : ' treinadores de ') + st.mod + (online ? ' online' : (st.city ? ' em ' + cityShort(st.city) + ' · ' + fmtWord : ' · ' + fmtWord)); }
+    else { countB = String(n); countT = (n === 1 ? ' treinador de ' : ' treinadores de ') + st.mod + (online ? ' online' : (st.city ? emC(st.city) + cityShort(st.city) + ' · ' + fmtWord : ' · ' + fmtWord)); }
 
     // barra de filtros (G19)
     const fmtL = { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' };
-    const cityMenu = ((window.REAL && window.REAL.cities(st.city, st.cq)) || [['Londrina, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil · 50 km de Londrina']]).concat([['', 'Todas as cidades e o online']]).map(([c, sub]) => { const on = !online && st.city === c; const k = countFor({ city: c, fmt: c ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); return { label: c || 'Qualquer cidade', sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), cls3: 'cs-row' + (on ? ' is-on' : ''), nTxt: k + (k === 1 ? ' treinador' : ' treinadores'), sub2: /Brasil$/.test(sub) ? '' : String(sub).replace(/^.*Brasil · /, ''), hasSub2: !/Brasil$/.test(sub), pick: () => change({ city: c, fmt: c ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '' }) }; });
+    const cuf = st.cuf || '', cqOn = !!(st.cq || '').trim();
+    const cityBase = (window.REAL && window.REAL.cities(st.city && !isUf(st.city) ? st.city : '', st.cq, cuf)) || [['Londrina, PR', ''], ['Tamarana, PR', '50 km de Londrina']];
+    const cityMenu = (cqOn ? [] : [['', 'Presencial e online']].concat(cuf ? [['UF:' + cuf, 'Todas as cidades do estado']] : [])).concat(cityBase).map(([c, sub]) => { const on = !online && (st.city || '') === c; const k = countFor({ city: c, fmt: c ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); const s2 = /Brasil$/.test(sub) ? '' : String(sub || '').replace(/^.*Brasil · /, ''); return { label: c === '' ? 'Todo o Brasil' : (isUf(c) ? cityShort(c) + ' · estado todo' : c), sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), cls3: 'cs-row' + (on ? ' is-on' : '') + (c === '' || isUf(c) ? ' cs-row--wide' : ''), nTxt: k + (k === 1 ? ' treinador' : ' treinadores'), sub2: s2, hasSub2: !!s2, pick: () => change({ city: c, fmt: c ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '', cuf: '', cq: '' }) }; });
+    const ufChips = ((window.REAL && window.REAL.ufs && window.REAL.ufs()) || []).map(([uf]) => ({ label: uf, title: UFN[uf] || uf, on: String(cuf === uf), cls: 'chip' + (cuf === uf ? ' is-on' : ''), pick: () => set({ cuf: cuf === uf ? '' : uf, cq: '' }) }));
     const fmtMenu = [['Presencial', 'Encontro no local combinado'], ['Online', 'Treino e conversa pelo app'], ['Qualquer', 'Presencial e online juntos, identificados']].map(([k, sub]) => ({ label: fmtL[k], sub, on: String(st.fmt === k), cls: 'menu__it' + (st.fmt === k ? ' is-on' : ''), pick: () => change({ fmt: k }) }));
     const langMenu = ['Qualquer', 'Português', 'Inglês', 'Espanhol'].map((k) => ({ sub: k === 'Qualquer' ? 'Sem filtro de idioma' : 'Atendimento em ' + k.toLowerCase(), label: k === 'Qualquer' ? 'Qualquer idioma' : k, on: String(st.lang === k), cls: 'menu__it' + (st.lang === k ? ' is-on' : ''), pick: () => change({ lang: k }), k: k })).filter((o) => o.k === 'Qualquer' || o.on === 'true' || countFor({ lang: o.k }) > 0);
     const totalAny = countFor({ lang: 'Qualquer' });
@@ -408,8 +418,8 @@ class Component extends DCLogic {
       sports4, scens4, kpis, hasKpis: kpis.length > 0, bannerImg: HERO(st.mod).img, heroCls: 'vfe-hero' + (HERO(st.mod).art ? ' vfe-hero--art' : ''), tint4: '--tint: ' + tintOf(st.mod), eyebrow4,
       cards4, countB, countT, hasCountB: !!countB,
       ddCity: dd === 'city', ddFmt: dd === 'fmt', ddLang: dd === 'lang', ddSort: dd === 'sort', ddSortC: dd === 'sortc', tgCity: tg('city'), tgFmt: tg('fmt'), tgLang: tg('lang'), tgSort: tg('sort'), tgSortC: tg('sortc'),
-      cq: st.cq || '', setCq: (e) => set({ cq: e && e.target ? e.target.value : '' }), noCity: !!(st.cq || '').trim() && cityMenu.length <= 1, cityMenu, cityLab: (st.cq || '').trim() ? 'Cidades encontradas' : 'Cidades com mais treinadores de ' + st.mod, fmtMenu, langMenu, showLang, hasQ: qchips4.length > 0, showAvail: qchips4.length > 0, showFmt: true, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',
-      cityFddCls: 'fdd' + (st.city && !online ? ' is-set' : ''), cityFddTxt: online ? 'Cidade: não se aplica (online)' : (st.city ? 'Cidade: ' + st.city : 'Escolha uma cidade'),
+      cq: st.cq || '', setCq: (e) => set({ cq: e && e.target ? e.target.value : '' }), noCity: cqOn && cityMenu.length === 0, cityMenu, cityLab: cqOn ? 'Cidades encontradas' : (cuf ? 'Cidades · ' + (UFN[cuf] || cuf) : 'Onde'), ufChips, hasUfs: ufChips.length > 0 && !cqOn, fmtMenu, langMenu, showLang, hasQ: qchips4.length > 0, showAvail: qchips4.length > 0, showFmt: true, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',
+      cityFddCls: 'fdd' + (st.city && !online ? ' is-set' : ''), cityFddTxt: online ? 'Cidade: não se aplica (online)' : (st.city ? 'Cidade: ' + cityFull(st.city) : 'Escolha uma cidade'),
       fmtFddTxt: 'Formato: ' + fmtL[st.fmt], langFddCls: 'fdd' + (st.lang !== 'Qualquer' ? ' is-set' : ''), langFddTxt: st.lang === 'Qualquer' ? 'Idioma do atendimento' : 'Idioma: ' + st.lang,
       pFmt4, pLang4, pSwCls: 'switch' + (pend.avail ? ' is-on' : ''), modOpts4,
       pages4, prevCls4: 'v4-pgb' + (page <= 1 ? ' is-dis' : ''), nextCls4: 'v4-pgb' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
@@ -459,7 +469,7 @@ class Component extends DCLogic {
       rootCls: 'w v4 vfe' + (sheet || st.open ? ' has-sheet' : ''), sheetTop: sy + 'px', syVar: '--sy: ' + sy + 'px', toastTop: (this.__ty || 160) + 'px',
       impNote: res.some((t) => t.imported), 
       focoChips, hasFoco: focoChips.length > 2 || !!st.foco, showArea, areaMenu, ddArea: dd === 'area', tgArea: tg('area'), areaFddCls: 'fdd' + (st.area ? ' is-set' : ''), areaFddTxt: st.area ? 'Região: ' + st.area : 'Bairro ou região',
-      nearChips, hasNear: nearChips.length > 0, nearTitle: online ? 'Outras modalidades online' : (st.city ? 'Perto de ' + cityShort(st.city) + ' e outras modalidades' : 'Outras modalidades'),
+      nearChips, hasNear: nearChips.length > 0, nearTitle: online ? 'Outras modalidades online' : (st.city && !isUf(st.city) ? 'Perto de ' + cityShort(st.city) + ' e outras modalidades' : 'Outras modalidades'),
       fmtSeg4, ranges, showPrices, priceTitle, priceNote, isLondrina,
       seeEmpty: () => set(Object.assign(this.base(), { favs: st.favs, scen: 'tamarana', city: 'Tamarana, PR' })), seeOnline: () => change({ fmt: 'Online', city: '' }),
       openOrdem: () => set({ sheet: 'info', info: 'ordem', dd: '' }), isHasFavs: Object.keys(favs).length > 0,

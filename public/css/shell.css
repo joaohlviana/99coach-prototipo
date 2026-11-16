@@ -361,3 +361,23 @@ html body .cs-row.is-on{background:var(--paper,#F4F2EE);border-bottom-color:tran
 html body .cs-row.is-on b{font-weight:700}html body .cs-row.is-on .cs-row__ok{visibility:visible}
 @media (hover:hover){html body .cs-row:hover,html body .cs-geo:hover{background:var(--paper-2,#EDEAE5)}}
 html body .cs-sheet .v4-sheet__bd{scrollbar-width:thin}
+/* busca do topo (lista): dois campos com rótulo que ocupam a largura toda, e botão de limpar a cidade */
+html body #app .hdr__search.vf-hsearch,html body #app .vfe-msearch__b{display:flex;align-items:stretch;padding:0 6px;gap:0;height:52px;background:#fff}
+html body #app .vf-hsb{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px;padding:0 12px;border:0;background:none;border-radius:999px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-height:0;height:auto}
+html body #app .vf-hsb>.ic:first-child{flex:none;color:var(--text-3,#71717A)}
+html body #app .vf-hsb>.i-chev-d{flex:none;margin-left:auto;color:var(--text-3,#71717A)}
+html body #app .vf-hsl{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+html body #app .vf-hsl small{font-family:var(--font-mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A)}
+html body #app .vf-hsl b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #app .vf-hsep{align-self:center;width:1px;height:26px;background:var(--line-2,#E4E1DC);flex:none}
+html body #app .vf-hclr{flex:none;align-self:center;width:32px;height:32px;border-radius:50%;border:0;background:var(--paper,#F1EFEB);display:grid;place-items:center;cursor:pointer;color:var(--fg,#121214);margin-left:2px}
+@media (hover:hover){html body #app .vf-hsb:hover{background:var(--paper,#F4F2EE)}html body #app .vf-hclr:hover{background:#E4E1DC}}
+/* estados no seletor de cidade */
+html body .cs-ufs{display:flex;align-items:center;gap:6px;overflow-x:auto;margin:14px -2px 0;padding:2px}
+html body .cs-ufs__l{flex:none;font-family:var(--font-mono,ui-monospace,monospace);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A);margin-right:4px}
+html body .cs-ufs .chip{flex:none;min-height:36px;padding:0 12px;font-size:13px}
+html body .cs-row--wide b{font-weight:700}
+/* busca da página inicial: o campo não mostra caixa própria dentro da pílula */
+html body #app .sx-pill .sx-field,html body #app .sx-pill .sx-field:focus,html body #app .sx-pill .sx-field:focus-visible{background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;-webkit-appearance:none;appearance:none}
+html body #app .sx-pill:focus-within{box-shadow:0 0 0 3px rgba(18,18,20,.10)}
+html body #app .vf-hsl b{color:var(--fg,#121214)}

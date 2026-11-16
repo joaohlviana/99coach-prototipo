@@ -236,7 +236,7 @@
     if (name === 'home') return '/';
     if (name === 'esporte') {
       var e = st || (props && props.init) || {};
-      return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (e.city ? '/' + slug(e.city) : ''));
+      return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (/^UF:/.test(e.city || '') ? '?uf=' + e.city.slice(3).toLowerCase() : (e.city ? '/' + slug(e.city) : '')));
     }
     if (name === 'perfil' && props && props.rid) return '/treinador/' + encodeURIComponent(props.rid);
     return '/app#' + token(name, props);
@@ -325,7 +325,7 @@
     syncUrl: function () {
       if (!window.__NEXT || !cur || cur.name !== 'esporte' || !cur.comp || !cur.comp.state) return;
       var u = urlFor('esporte', (entries[cur.key] || {}).props, cur.comp.state);
-      if (u !== location.pathname) { try { history.replaceState(history.state, '', u); } catch (_) {} }
+      if (u !== location.pathname + (/[?&]uf=/.test(location.search) ? location.search : '')) { try { history.replaceState(history.state, '', u); } catch (_) {} }
       // mesmo título que o servidor entrega para este endereço
       var e = cur.comp.state, T0 = window.__T0 || (window.__T0 = { path: location.pathname, title: document.title });
       // no endereço em que a pessoa chegou vale o título do servidor; ao trocar esporte ou cidade, um título simples e correto
