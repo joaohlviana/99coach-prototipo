@@ -79,7 +79,8 @@ class Component extends DCLogic {
   base(flow, scn) {
     const s = {
       flow: flow, scn: scn || '', step: 'conta', intent: flow === 'aluno' ? 'aluno' : (flow === 'treinador' ? 'treinador' : ''), intentErr: false,
-      name: flow === 'aluno' ? 'Marina Costa' : 'Thiago Pereira', email: flow === 'aluno' ? 'marina@email.com' : (flow === 'convite' ? 'ana@email.com' : 'thiago@email.com'),
+      // site de verdade: nome e e-mail começam vazios em qualquer caminho (inclusive Entrar → Criar conta); exemplos só na demonstração
+      name: !document.documentElement.classList.contains('demo') ? '' : (flow === 'aluno' ? 'Marina Costa' : 'Thiago Pereira'), email: !document.documentElement.classList.contains('demo') ? '' : (flow === 'aluno' ? 'marina@email.com' : (flow === 'convite' ? 'ana@email.com' : 'thiago@email.com')),
       terms: false, termsErr: false, emailExists: false, code: '482913', codeErr: false, codeExp: false, session: false,
       sports: { crossfit: true, funcional: true }, city: 'Londrina, PR', pres: true, onl: true, langs: { pt: true }, dadosSaved: false,
       title: 'Treinador de CrossFit e Funcional', pitch: '', bio: '', since: '', photoUrl: '', photoOk: false, photoErr: false,

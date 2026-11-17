@@ -779,7 +779,19 @@
           <!-- contato: abre caso com protocolo -->
           <sc-if value="{{v.isContact}}" hint-placeholder-val="{{ false }}">
             <div><button type="button" class="btn btn--ghost btn--sm p2-backlink" onClick="{{v.toIndex}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Ajuda</button></div>
-            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Falar com o suporte</h1><p class="pghead__sub">Abrir um caso não significa que ele já foi resolvido. Você recebe um protocolo para acompanhar.</p></div></div>
+            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Falar com o suporte</h1><sc-if value="{{v.demoSupport}}" hint-placeholder-val="{{ false }}"><p class="pghead__sub">Abrir um caso não significa que ele já foi resolvido. Você recebe um protocolo para acompanhar.</p></sc-if><sc-if value="{{v.realSupport}}" hint-placeholder-val="{{ true }}"><p class="pghead__sub">Por enquanto o atendimento é feito pelo Instagram oficial da 99Coach.</p></sc-if></div></div>
+            <sc-if value="{{v.realSupport}}" hint-placeholder-val="{{ true }}"><div class="mod-grid2">
+              <section class="card onb-sec" aria-label="Como falar com a equipe"><h2 class="onb-h2">Mande uma mensagem direta</h2>
+                <p class="p2-p">Escreva para <b>@99coach.oficial</b> no Instagram contando o que aconteceu e, se for o caso, o endereço da página. Respondemos por lá.</p>
+                <p class="p2-p">Nunca envie senha, código de verificação nem dados de cartão.</p>
+                <div class="onb-actions"><a class="btn btn--primary btn--lg" href="https://www.instagram.com/99coach.oficial/" target="_blank" rel="noopener">Abrir @99coach.oficial<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></a></div>
+              </section>
+              <aside class="mod-col" aria-label="Outros caminhos">
+                <section class="card onb-sec"><h2 class="onb-h2">Corrigir ou remover um perfil</h2><p class="p2-p">Use o botão na página do próprio perfil: o pedido gera um protocolo e não precisa de conta.</p></section>
+                <section class="card onb-sec"><h2 class="onb-h2">Pagamentos</h2><p class="p2-p">Cobrança, cancelamento e reembolso seguem a mesma regra da oferta.</p><button type="button" class="btn btn--outline" onClick="{{v.openPay}}">Ler Pagamentos e reembolsos</button></section>
+              </aside>
+            </div></sc-if>
+            <sc-if value="{{v.demoSupport}}" hint-placeholder-val="{{ false }}">
             <div class="mod-grid2">
               <section class="card onb-sec" aria-label="Sua solicitação">
                 <sc-if value="{{v.notSending}}" hint-placeholder-val="{{ true }}">
@@ -798,6 +810,7 @@
                 <section class="card onb-sec"><h2 class="onb-h2">Antes de enviar</h2><p class="p2-p">Cobrança, cancelamento e reembolso seguem a mesma regra da oferta.</p><button type="button" class="btn btn--outline" onClick="{{v.openPay}}">Ler Pagamentos e reembolsos</button></section>
               </aside>
             </div>
+            </sc-if>
           </sc-if>
 
           <!-- acompanhamento do caso -->

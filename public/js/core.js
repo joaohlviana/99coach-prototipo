@@ -278,7 +278,8 @@
         var demoOn = document.documentElement.classList.contains('demo');
         var allowed = function (it) { return demoOn || it[2] !== 'H15'; };
         var side = ((R && !document.documentElement.classList.contains('demo') && R.sideReal) || (R && R.side) || []).map(function (g) { return { sec: g.sec, items: g.items.filter(allowed).map(mk) }; });
-        var top = (R && R.top || []).map(function (it) { var on = it[2] === navKey; return { label: it[0], cls: 'v4-reset mod-top__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: function () { GO(it[1]); } }; });
+        // Programas só aparece no menu quando houver programas publicados (hoje só na demonstração)
+        var top = (R && R.top || []).filter(function (it) { return it[2] !== 'programas' || document.documentElement.classList.contains('demo'); }).map(function (it) { var on = it[2] === navKey; return { label: it[0], cls: 'v4-reset mod-top__it' + (on ? ' is-on' : ''), cur: on ? 'page' : 'false', go: function () { GO(it[1]); } }; });
         var scens = scr ? [['', scr.normal || 'Uso normal']].concat(scr.scens).map(function (sc) {
           var on = (st.scn || '') === sc[0];
           return { label: sc[1], cls: 'chip' + (on ? ' is-on' : ''), on: String(on), pick: function () { c.setState({ scn: sc[0], sheet: null, toast: '', ui: {} }); } };

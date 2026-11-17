@@ -16,13 +16,13 @@
       ], links: [['Privacidade e dados', 'ACC13']] },
     { id: 'perfil', cat: 'conta', title: 'Perfis criados de fonte pública', version: '12/10/2026', lead: 'Alguns perfis são montados com informações públicas, como Instagram, antes de o treinador entrar na 99Coach.',
       sections: [
-        { id: 'origem', h: 'De onde vêm os dados', body: 'Mostramos a fonte e a data da coleta em cada perfil importado. Publicamos só nome, modalidade e região aproximada.' },
+        { id: 'origem', h: 'De onde vêm os dados', body: 'Usamos só o que o próprio profissional já publicou: nome, foto e perfil do Instagram, modalidades e cidade. Cada perfil importado vem marcado como montado com dados públicos. Não publicamos endereço, telefone, preço nem avaliações.' },
         { id: 'corrigir', h: 'Corrigir ou retirar', body: 'Qualquer pessoa citada pode pedir correção ou retirada, sem criar conta. Você recebe um protocolo para acompanhar.' },
         { id: 'reivindicar', h: 'Reivindicar', body: 'Reivindicar é diferente de retirar: você assume o perfil e passa a editá-lo. Excluir uma conta é outro pedido.' }
       ], links: [['Corrigir perfil', 'PUB12']] },
     { id: 'termos', cat: 'politicas', title: 'Termos de uso', version: '15/09/2026', lead: 'Regras de uso da 99Coach para alunos, treinadores e visitantes.',
       sections: [
-        { id: 'quem', h: 'Quem pode usar', body: 'Pessoas a partir de 18 anos, ou com autorização do responsável quando a oferta permitir.' },
+        { id: 'quem', h: 'Quem pode usar', body: 'Pessoas a partir de 18 anos. Para criar a conta, você confirma a idade no cadastro.' },
         { id: 'contratacao', h: 'Contratações', body: 'O acompanhamento é combinado entre aluno e treinador. Pagamento, cancelamento e reembolso seguem o artigo Pagamentos e reembolsos.' },
         { id: 'conteudo', h: 'Conteúdo publicado', body: 'Quem publica responde pelo que publica. Denúncias abrem um caso com protocolo.' }
       ], links: [] },
@@ -71,6 +71,7 @@
       var sending = scn === 'enviando';
 
       var open = function (id, sec) { return function () { ctx.setUi({ view: 'art', art: id, sec: sec || '', lang: 'pt', why: false }); }; };
+      try { var want = window.__NEXT ? '/app#publico-ajuda' + (view === 'art' ? '-' + artId : '') : null; if (want && (location.pathname + location.hash) !== want && /^#publico-ajuda/.test(location.hash || '#publico-ajuda')) history.replaceState(history.state, '', want); } catch (_) {}
       var toIndex = function () { ctx.setUi({ view: 'index' }); };
       var cont = function () { if (ctx.p.from) ctx.go(ctx.p.from, ctx.p.fromParams || {}); else ctx.back(); };
       var nav = function (to) { return function () { if (to === '@servico') ctx.go('@servico', { offer: 'online' }); else if (to === 'PUB12') ctx.go('PUB12'); else ctx.go(to); }; };
@@ -130,6 +131,8 @@
       });
 
       return {
+        // suporte de verdade, por enquanto, é o Instagram oficial; o formulário com protocolo só existe na demonstração
+        demoSupport: document.documentElement.classList.contains('demo'), realSupport: !document.documentElement.classList.contains('demo'),
         isIndex: view === 'index', isArt: view === 'art', isContact: view === 'contact', isTrack: view === 'track',
         alerts: alerts, hasAlerts: alerts.length > 0,
         // índice

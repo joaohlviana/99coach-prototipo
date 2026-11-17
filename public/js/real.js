@@ -343,6 +343,7 @@
     var sheet = function () { return document.querySelector('#app [role="dialog"][aria-modal="true"]'); };
     document.addEventListener('click', function (e) { if (!sheet()) opener = e.target && e.target.closest ? e.target.closest('button,a,[tabindex]') : null; }, true);
     document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { var lay = document.querySelector('#app .sx-layer'); if (lay) { var cl = lay.querySelector('.sx-dclose, .sx-cancel'); if (cl && (cl.offsetParent || lay.querySelector('.sx-cancel'))) { e.preventDefault(); var inp = document.querySelector('#app .sx-field'); (cl.offsetParent ? cl : lay.querySelector('.sx-cancel')).click(); setTimeout(function () { var f = document.querySelector('#app .sx-field'); if (f && f.offsetParent) f.focus(); }, 30); return; } } }
       var sh = sheet(); if (!sh) return;
       if (e.key === 'Escape') { var x = sh.querySelector('[aria-label="Fechar"]') || document.querySelector('#app .v4-scrim'); if (x) { e.preventDefault(); x.click(); } return; }
       if (e.key !== 'Tab') return;

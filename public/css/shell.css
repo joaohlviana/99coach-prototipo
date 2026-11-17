@@ -524,3 +524,8 @@ html body #app .vfe-pickcity:hover{border-style:solid;color:var(--fg)}
 html body #app .btn--danger{background:transparent;border:1px solid #B42318;color:#B42318}
 html body #app .btn--danger:hover{background:#B42318;color:#fff}
 
+/* aceite dos termos: a caixa marca o aceite; os nomes dos documentos são links de verdade (abrem em outra aba, o formulário fica preservado) */
+html body #app .onb-checkrow--docs{cursor:default}
+html body #app .onb-checkbox{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;margin:-12px -10px -12px -12px;padding:0;border:0;background:none;cursor:pointer}
+html body #app .onb-terms-hit{cursor:pointer}
+html body #app .onb-checkrow--docs a{color:var(--fg);text-decoration:underline;text-underline-offset:3px}

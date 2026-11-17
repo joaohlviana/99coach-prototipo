@@ -40,5 +40,5 @@ export async function proxy(req) {
 }
 
 export const config = {
-  matcher: [{ source: '/treinadores/:esporte', has: [{ type: 'query', key: 'uf' }] }, '/((?!_next|api|app$|app/|auth|dados|shell|img|fonts|css|js|data|treinadores|treinador/|cidade/|cidades$|buscar|en$|en/|es$|es/|sitemap|robots|llms|manifest|icon|apple-icon|favicon|next-loader|og-)[^.]+)']
+  matcher: [{ source: '/treinadores/:esporte', has: [{ type: 'query', key: 'uf' }] }, '/((?!_next|api|app$|app/|auth|dados|shell|img|fonts|css|js|data|treinadores|treinador/|cidade/|cidades$|esportes$|estado/|buscar|en$|en/|es$|es/|sitemap|robots|llms|manifest|icon|apple-icon|favicon|next-loader|og-)[^.]+)']
 };
