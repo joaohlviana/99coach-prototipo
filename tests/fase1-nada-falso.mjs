@@ -70,11 +70,13 @@ await al.evaluate(() => NAV.go('publico', { s: 'programas' }, null)); await al.w
 console.log('  tela pública de exemplo fechada:', await al.evaluate(() => location.pathname === '/' || /home/.test(location.hash) || !/Programas/.test(document.getElementById('app').innerText.slice(0, 300))));
 // 5. treinador: convites do servidor, revogar de verdade
 srv.links = [];
-srv.invites = [{ code: 'ABCD-EFGH', recipient_name: 'Bia Lima', recipient_email: null, service: null, status: 'pendente', created_at: '2026-11-10T10:00:00Z', expires_at: '2026-11-17T10:00:00Z', accepted_at: null, generation: 1 },
+// datas relativas a hoje: o convite pendente vence daqui a 5 dias
+const VENCE = new Date(Date.now() + 5 * 864e5); const VENCE_TXT = VENCE.toLocaleDateString('pt-BR');
+srv.invites = [{ code: 'ABCD-EFGH', recipient_name: 'Bia Lima', recipient_email: null, service: null, status: 'pendente', created_at: new Date(Date.now() - 2 * 864e5).toISOString(), expires_at: VENCE.toISOString(), accepted_at: null, generation: 1 },
   { code: 'ZZZZ-YYYY', recipient_name: 'Davi Reis', status: 'aceito', created_at: '2026-11-01T10:00:00Z', expires_at: '2026-11-08T10:00:00Z', accepted_at: '2026-11-02T10:00:00Z', generation: 1 }];
 const tr = await mk('tr', 'treinador');
 await tr.evaluate(() => NAV.go('treinador', { s: 'convites' }, null)); await tr.waitForTimeout(1200); t = await txt(tr);
-console.log('5 convites do servidor:', /Bia Lima/.test(t), /vale até 17\/11\/2026/i.test(t), /Aceitos \(1\)/.test(t));
+console.log('5 convites do servidor:', /Bia Lima/.test(t), t.includes('vale até ' + VENCE_TXT), /Aceitos \(1\)/.test(t));
 await press(tr, /^Revogar$/); await press(tr, /^Revogar convite$/, '.mod-sheet button'); await tr.waitForTimeout(800); t = await txt(tr);
 console.log('  revogou no servidor:', srv.calls.includes('revoke_invite'), /Vencidos e revogados \(1\)/.test(t));
 await tr.evaluate(() => NAV.go('treinador', { s: 'menu' }, null)); await tr.waitForTimeout(600); t = await txt(tr);
