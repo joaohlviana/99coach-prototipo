@@ -53,7 +53,7 @@
     <sc-if value="{{note.on}}" hint-placeholder-val="{{ false }}"><div class="{{note.cls}} vfp-note"><i class="{{note.ic}}"></i><div style="flex: 1"><b>{{note.title}}</b>{{note.sub}}</div><sc-if value="{{note.hasBtn}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{note.go}}">{{note.btn}}</button></sc-if></div></sc-if>
 
     <!-- Celular: barra iOS, capa em sangria com o nome sobre a foto, abas sublinhadas fixas -->
-    <div class="vfp-ios"><button type="button" class="vfp-ios__b" aria-label="Voltar para a busca: {{ctxLabel}}" onClick="{{openSearch}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><b>{{t.name}}</b><button type="button" class="vfp-ios__b" aria-label="Compartilhar perfil" onClick="{{openShare}}"><i class="ic ic--sm i-share" aria-hidden="true"></i></button></div>
+    <div class="vfp-ios"><button type="button" class="vfp-ios__b" aria-label="Voltar para a busca: {{ctxLabel}}" onClick="{{openSearch}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i></button><button type="button" class="vf-ioslogo" onClick="{{goHome}}" aria-label="99Coach, página inicial"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button><button type="button" class="vfp-ios__b" aria-label="Compartilhar perfil" onClick="{{openShare}}"><i class="ic ic--sm i-share" aria-hidden="true"></i></button></div>
     <div class="vfp-mhero">
       <sc-if value="{{t.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{t.photo}}" alt="Foto de perfil de {{t.name}}"></sc-if>
       <sc-if value="{{t.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="vfp-mhero__ini" role="img" aria-label="Sem foto de perfil">{{t.ini}}</span></sc-if>

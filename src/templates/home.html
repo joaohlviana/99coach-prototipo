@@ -30,7 +30,6 @@
         <span class="vfm-eb2">Marketplace de treinadores</span>
         <h1 id="vfm-h1" class="vfm-h1b"><span>{{h1a}}</span> <em>{{h1b}}</em></h1>
         <p class="vfm-lede2">Por esporte e cidade, presencial ou online.</p>
-        <div class="vfm-proof"><span class="tag tag--glass">Ninguém paga para subir</span></div>
       </div>
     </section>
     <section class="vfm-hero vfm-qwrap" aria-label="Buscar treinadores">
@@ -39,7 +38,6 @@
         <button type="button" class="vfm-qtx" onClick="{{openSx}}" aria-haspopup="dialog"><b>{{sportLabel}} · {{cityShort}}</b><span>{{modeLabel}} · toque para buscar</span></button>
         <button type="button" class="qbar__btn vfm-qbtn" onClick="{{doSearch}}">Buscar<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
       </div>
-      <p class="vfm-hint">Buscar não pede cadastro. A ordem nunca é paga.</p>
     </section>
 
     <!-- Barra de esportes com os ícones do DS -->
@@ -65,7 +63,7 @@
       <!-- Treinadores para a sua busca: linhas (máx. 4) -->
       <section class="vfm-sec" id="treinadores-app" aria-labelledby="vfm-t">
         <div class="vfm-head"><h2 id="vfm-t" class="vfm-title">Treinadores para a sua busca</h2></div>
-        <p class="vfm-sub">{{tSub}} · <button type="button" class="vfm-u" onClick="{{openOrder}}">por que estes?</button></p>
+        <p class="vfm-sub">{{tSub}}<button type="button" class="vfm-u vfm-why-b" onClick="{{openOrder}}">Por que estes?</button></p>
         <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>Escolha uma cidade</b><span>Sem cidade não existe “perto de você”.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
         <sc-if value="{{tEmpty}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-search" aria-hidden="true"></i><b>Ninguém com estes filtros</b><span>{{emptyText}}</span><div class="vfm-row-btns"><sc-for list="{{alts}}" as="a" hint-placeholder-count="2"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div></sc-if>
         <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">

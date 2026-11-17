@@ -446,3 +446,34 @@ html body #app input.sx-min{background:transparent!important;box-shadow:none!imp
 html body #app .cs-in input::-webkit-search-cancel-button{display:none}
 /* Frase grande do rodapé: cabe inteira em qualquer largura */
 html body #app .v4 .ftr__word{font-size:min(105px,7.2vw)}
+
+/* Barra do celular nas páginas de treinadores e de perfil: a marca no centro, entre voltar e a ação */
+html body #app .vf-ioslogo{justify-self:center;display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 12px;border:0;background:transparent;cursor:pointer}
+html body #app .vf-ioslogo img{height:24px;width:auto;display:block}
+
+/* Página inicial no celular: hero mais baixo e legível, coração do topo em botão, espaços regulares */
+@media (max-width:599px){
+  html body #app .vfm-hero2{min-height:400px;border-radius:0 0 28px 28px}
+  html body #app .vfm-hero2__media img{object-position:62% 18%}
+  html body #app .vfm-hero2__media::after{background:linear-gradient(180deg,rgba(14,14,16,0) 0%,rgba(14,14,16,0) 30%,rgba(14,14,16,.72) 56%,rgba(14,14,16,.96) 78%,rgb(14,14,16) 100%)}
+  html body #app .vfm-hero2__in{padding:20px 20px 60px;gap:10px}
+  html body #app .vfm-h1b{font-size:46px;line-height:.92}
+  html body #app .vfm-lede2{font-size:15px;max-width:none;color:rgba(255,255,255,.8)}
+  html body #app .vfm-qwrap{margin-top:-30px}
+  html body #app .vfm-bar--pub{padding:0 12px 0 16px}
+  html body #app .vfm-bar__r{gap:8px}
+  html body #app .vfm-bar__r .vfm-ib{width:40px;height:40px;border-radius:50%;background:var(--paper);box-shadow:var(--sh-card);display:inline-flex;align-items:center;justify-content:center}
+  html body #app .vfm-bar__r .vfm-ib .ic{width:20px;height:20px}
+  html body #app .vfm-bar__r .vfm-enter{height:40px;padding:0 16px}
+  html body #app .vfm-rail{padding:20px 16px 0}
+  html body #app .vfm-sec{padding-top:32px}
+  html body #app .vfm-sub{margin-top:4px}
+  html body #app .vfm-why-b{display:block;margin-top:6px}
+}
+@media (max-width:599px){
+  html body #app .vfm-hero2__in{padding-left:16px;padding-right:16px}
+  html body #app .vfm-bar__r .vfm-enter{min-height:40px;height:40px}
+  html body #app #treinadores-app{padding-top:24px}
+  html body #app .vfm-why-b{margin-top:0;min-height:28px}
+}
+@media (max-width:599px){html body #app #vfm-pro{margin:6px 0 10px}}
