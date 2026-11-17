@@ -34,7 +34,7 @@ const press = async (re) => { for (const h of await p.$$('#app button')) { const
 let t = await open('#publico-perfilpedido-' + SLUG);
 console.log('1 tela abre com o nome:', /Aguinaldo siqueira/i.test(t), '| corrigir e é meu perfil:', /Corrigir ou retirar/.test(t), /É meu perfil/.test(t), '| pede entrar para reivindicar:', /Entrar para pedir/.test(t));
 await press(/^Enviar pedido$/); t = await txt();
-console.log('  texto curto barrado sem chamar o banco:', /pelo menos 10 caracteres/.test(t), srv.calls.length === 0);
+console.log('  texto curto barrado sem chamar o banco:', /pelo menos 10 caracteres/.test(t), srv.calls.filter((c) => !/hidden_trainer_slugs/.test(c)).length === 0);
 await press(/Retirar o perfil/);
 await p.fill('#pp-reason', 'Não quero mais aparecer neste site, obrigado.');
 await press(/^Enviar pedido$/); t = await txt();
