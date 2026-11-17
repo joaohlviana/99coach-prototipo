@@ -6,7 +6,8 @@ class Component extends DCLogic {
 
   constructor(props) { super(props); const p = props || {}; this.state = Object.assign(Component.init(p.scen || 'primeira'), p.init || {}); }
   static init(scen) {
-    return { scen: scen, sport: 'crossfit', city: scen === 'semloc' ? null : (scen === 'semres' ? 'Tamarana, PR' : 'Londrina, PR'), mode: 'presencial',
+    const prd = !document.documentElement.classList.contains('demo');
+    return { scen: scen, sport: 'crossfit', city: prd ? null : (scen === 'semloc' ? null : (scen === 'semres' ? 'Tamarana, PR' : 'Londrina, PR')), mode: prd ? 'qualquer' : 'presencial',
       favs: (scen === 'retorno' || scen === 'vinculo' || scen === 'dois') ? { rafael: true, larissa: true } : {}, hidden: {},
       sheet: null, sd: null, y: 120, toast: null, ty: 0, link: 0, retry: false, loadingP: false, retCleared: false, recentCleared: false,
       code: 0, loc: 0, pedCanceled: false, sx: null, sxq: '', sxIa: false, sxTab: 'Treinadores', sxR1: true, sxR2: true, sxY: 150, sxX: 40, sxW: 640 };
@@ -49,9 +50,13 @@ class Component extends DCLogic {
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
     const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: goSport(id) }));
 
+    const PRD = !document.documentElement.classList.contains('demo');
+    // cidade escolhida fica guardada (cookie); a primeira leitura desta tela não grava nada
+    if (PRD && window.ONDE) { const c0 = S.city || ''; if (this.__c0 === undefined) this.__c0 = c0; else if (this.__c0 !== c0) { this.__c0 = c0; window.ONDE.set(c0); } }
+    const cityTxt = !S.city ? (PRD ? 'Todo o Brasil' : 'sem cidade') : (/^UF:/.test(S.city) ? S.city.slice(3) : S.city);
     const CIT = (window.REAL && window.REAL.cities(S.city, S.cq)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
-    const cities = CIT.map(([c, n]) => ({ label: c, note: n, cls: 'opt' + (S.city === c ? ' is-on' : ''), pick: () => set({ city: c, hidden: {}, sheet: null, loc: 0, cq: '' }), pick2: () => set({ city: c, hidden: {} }) }));
-    const cityLabel = S.city || 'Escolher cidade';
+    const cities = (PRD && !S.cq ? [['', 'Brasil']] : []).concat(CIT).map(([c, n]) => ({ label: c || 'Todo o Brasil', note: n, cls: 'opt' + ((S.city || '') === c ? ' is-on' : ''), pick: () => set({ city: c || null, hidden: {}, sheet: null, loc: 0, cq: '' }), pick2: () => set({ city: c || null, hidden: {} }) }));
+    const cityLabel = PRD ? cityTxt : (S.city || 'Escolher cidade');
     const modeLabel = { presencial: 'Presencial', online: 'Online', qualquer: 'Qualquer formato' }[S.mode];
     const setMode = (m) => () => set({ mode: m, hidden: {}, toast: null });
 
@@ -74,16 +79,16 @@ class Component extends DCLogic {
     // treinadores reais (base importada); os de exemplo ficam só para as situações de demonstração
     const T = (window.REAL && window.REAL.home()) || TD;
     const byId = (id) => T.find((t) => t.id === id) || TD.find((t) => t.id === id);
-    const inCity = (t) => !!S.city && t.city === S.city;
+    const inCity = (t) => !S.city ? (PRD && !!t.city) : (/^UF:/.test(S.city) ? String(t.city || '').slice(-4) === ', ' + S.city.slice(3) : t.city === S.city);
     const sportOk = (t) => t.sports.indexOf(S.sport) >= 0;
     const visitor = ['vinculo', 'dois', 'pendente'].indexOf(S.scen) < 0, logged = !visitor;
     const offerFor = (t, ctx) => (ctx === 'online' ? t.offO : (ctx === 'presencial' ? t.offP : ((t.pres && inCity(t)) ? t.offP : t.offO))) || null;
-    const ctxLine = sportLabel + ' · ' + (S.city || 'sem cidade') + ' · ' + modeLabel;
+    const ctxLine = sportLabel + ' · ' + cityTxt + ' · ' + modeLabel;
 
     const card = (t, ctx) => {
       const off = t.imp ? null : offerFor(t, ctx), on = !!S.favs[t.id];
       const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || 'Local não informado')));
-      const reason = t.imp ? 'Perfil importado de dados públicos' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + S.city + ' · presencial';
+      const reason = t.imp ? 'Perfil importado de dados públicos' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + (t.city || cityTxt) + ' · presencial';
       return {
         name: t.name, spec: t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
         hasRating: !!t.rating, noRating: !t.rating, rating: t.rating || '', n: String(t.n), nrev: t.n + ' avaliações', verified: t.ver,
@@ -100,21 +105,21 @@ class Component extends DCLogic {
 
     // Vitrine 1
     let main = [], tNoLoc = false;
-    if (S.mode === 'presencial') { if (!S.city) tNoLoc = true; else main = T.filter((t) => t.pres && inCity(t) && sportOk(t)); }
+    if (S.mode === 'presencial') { if (!S.city && !PRD) tNoLoc = true; else main = T.filter((t) => t.pres && inCity(t) && sportOk(t)); }
     else if (S.mode === 'online') main = T.filter((t) => t.onl && sportOk(t));
     else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl));
     const tEmpty = !tNoLoc && main.length === 0, tHas = main.length > 0;
     const tlist = main.slice(0, 4).map((t) => card(t, S.mode));
     const nTot = main.length;
-    const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + S.city.replace(', PR', '') : 'Treinadores de ' + sportLabel);
-    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : (tHas ? nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ' + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? 'presencial em ' + S.city + ' e online' : 'presencial')) + ' · ordem por relevância' : 'Nenhum perfil com esta combinação.');
+    const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + cityTxt.replace(', PR', '') : 'Treinadores de ' + sportLabel);
+    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : (tHas ? (PRD && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' ? '' : nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ') + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? (S.city ? 'presencial em ' + cityTxt + ' e online' : 'presencial e online') : (S.city ? 'presencial' : 'presencial, em todo o Brasil'))) + ' · ordem por relevância' : 'Nenhum perfil com esta combinação.');
     const nearCity = S.city === 'Tamarana, PR' ? 'Londrina, PR (cerca de 50 km)' : 'Londrina, PR';
     const alts = [
       { label: 'Ver quem atende online', go: setMode('online') },
       { label: 'Mudar para ' + nearCity, go: () => set({ city: 'Londrina, PR', hidden: {}, toast: null }) },
       { label: 'Escolher outra modalidade', go: open('sport') }
     ];
-    const emptyText = S.mode === 'online' ? 'Ninguém oferece ' + sportLabel + ' online por enquanto.' : 'Ninguém atende ' + sportLabel + ' presencialmente em ' + S.city + '. Não mostramos profissionais de outra cidade como se atendessem aí.';
+    const emptyText = S.mode === 'online' ? 'Ninguém oferece ' + sportLabel + ' online por enquanto.' : (S.city ? 'Ninguém atende ' + sportLabel + ' presencialmente em ' + cityTxt + '. Não mostramos profissionais de outra cidade como se atendessem aí.' : 'Ninguém atende ' + sportLabel + ' presencialmente por enquanto.');
 
     // Vitrine 2: o formato complementar
     let altList = [], altTitle = '', altSub = '', altAll = '';
@@ -314,11 +319,11 @@ class Component extends DCLogic {
       openHist: info('Histórico neste aparelho', ['Você autorizou guardar a última busca e os perfis vistos por 30 dias.', 'Limpar a busca não apaga seus salvos nem acompanhamentos. Você pode desligar o histórico a qualquer momento em Conta.']),
       // hero
       showHero, heroCls, h1a: 'Encontre seu', h1b: 'treinador.',
-      sportLabel, cityLabel, cityCls: 'v4-fv' + (S.city ? '' : ' is-empty'), cityShort: (S.city || 'sem cidade').replace(', PR', ''), modeLabel,
+      sportLabel, cityLabel, cityCls: 'v4-fv' + (S.city || PRD ? '' : ' is-empty'), cityShort: (PRD ? cityTxt.split(',')[0] : (S.city || 'sem cidade').replace(', PR', '')), modeLabel,
       segP: 'seg__it' + (S.mode === 'presencial' ? ' is-on' : ''), segO: 'seg__it' + (S.mode === 'online' ? ' is-on' : ''), segQ: 'seg__it' + (S.mode === 'qualquer' ? ' is-on' : ''),
       prP: String(S.mode === 'presencial'), prO: String(S.mode === 'online'), prQ: String(S.mode === 'qualquer'),
       modeP: setMode('presencial'), modeO: setMode('online'), modeQ: setMode('qualquer'),
-      doSearch: (e) => { if (e && e.preventDefault) e.preventDefault(); try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} if (!S.city && S.mode === 'presencial') { return set({ sheet: 'city', sd: null, y: yOf(e), loc: 0 }); } window.NAV.go('esporte', {}, this); },
+      doSearch: (e) => { if (e && e.preventDefault) e.preventDefault(); try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} if (!S.city && S.mode === 'presencial' && !PRD) { return set({ sheet: 'city', sd: null, y: yOf(e), loc: 0 }); } window.NAV.go('esporte', {}, this); },
       useLoc: (e) => set({ sheet: 'city', sd: null, y: yOf(e), loc: 1, toast: null }),
       chips, allSports, editSports, goals, cities, cq: S.cq || '', setCq: (e) => set({ cq: (e && e.target && e.target.value) || '' }), noCityQ: !!String(S.cq || '').trim() && !cities.length,
       // topo
@@ -343,7 +348,14 @@ class Component extends DCLogic {
       shSport: sh === 'sport', shCity: sh === 'city', shEdit: sh === 'edit', shTrainer: sh === 'trainer', shWhy: sh === 'why', shOrder: sh === 'order', shProgram: sh === 'program',
       shSaved: sh === 'saved', shAuth: sh === 'auth', shMenu: sh === 'menu', shPedido: sh === 'pedido', shInfo: sh === 'info',
       locAsk: S.loc === 1, locDenied: S.loc === 2, locBtn: S.loc === 0,
-      locStart: () => set({ loc: 1 }), locAllow: (e) => set(Object.assign({ city: 'Londrina, PR', loc: 0, sheet: null, hidden: {} }, toastAt(e, 'Cidade definida pela localização aproximada: Londrina, PR. Seu endereço não é usado.', null))),
+      locStart: () => set({ loc: 1 }), locAllow: PRD ? () => {
+        // localização de verdade: o navegador pergunta; escolhemos a cidade com treinador mais perto
+        if (!window.GEO) return set({ loc: 2 });
+        set({ loc: 3 }); if (window.REAL && window.REAL.ensure) window.REAL.ensure();
+        const lista = () => { const e = (window.REAL && window.REAL.esporte && window.REAL.esporte()) || []; return [...new Set(e.filter((t) => t.city && (t.fmts || []).indexOf('Presencial') >= 0).map((t) => t.city))]; };
+        let n = 0; const vai = () => { if (window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' && n++ < 25) return setTimeout(vai, 200); const only = lista(); window.GEO.locate(only.length ? { only } : {}).then((r) => this.setState({ city: r.match || r.city, loc: 0, sheet: null, hidden: {}, cq: '' }), () => this.setState({ loc: 2 })); };
+        vai();
+      } : (e) => set(Object.assign({ city: 'Londrina, PR', loc: 0, sheet: null, hidden: {} }, toastAt(e, 'Cidade definida pela localização aproximada: Londrina, PR. Seu endereço não é usado.', null))),
       locDeny: () => set({ loc: 2 }), onlyOnline: () => set({ mode: 'online', sheet: null, hidden: {} }),
       tv, ctxLine, tvPhotoTag: '', tvGo: tvT && window.NAV.has(tvT.id) ? () => window.NAV.go('perfil', { id: tvT.id }, this) : goto('Perfil de ' + (tvT ? tvT.name : ''), 'o perfil de ' + (tvT ? tvT.name : '') + ''),
       tvFavLabel: tvT && S.favs[tvT.id] ? 'Salvo' : 'Salvar', tvFav: () => tvT && set({ favs: Object.assign({}, S.favs, { [tvT.id]: !S.favs[tvT.id] }) }),

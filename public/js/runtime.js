@@ -182,6 +182,12 @@
   var CLEAN = { home: { sheet: null, sd: null, toast: null, sx: null }, esporte: { sheet: '', open: '', toast: null, dd: '', pend: null }, perfil: { sheet: null }, servico: { sheet: null }, onboarding: { toast: '' }, telas: {}, treinador: { sheet: null, toast: '' }, aluno: { sheet: null, toast: '' }, publico: { sheet: null, toast: '' }, operacao: { sheet: null, toast: '' } };
   var MODP = { treinador: 1, aluno: 1, publico: 1, operacao: 1 };
   var ctx = { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial', avail: false, homeScen: 'primeira', set: false };
+  // cidade escolhida pela pessoa: fica em um cookie por um ano. Sem escolha, o site abre em "Todo o Brasil".
+  var ONDE = window.ONDE = {
+    get: function () { try { var m = /(?:^|; )c99_cidade=([^;]*)/.exec(document.cookie || ''); return m ? decodeURIComponent(m[1]) : ''; } catch (_) { return ''; } },
+    set: function (c) { try { document.cookie = 'c99_cidade=' + encodeURIComponent(c || '') + '; path=/; max-age=31536000; SameSite=Lax'; } catch (_) {} }
+  };
+  function prodCtx() { if (ctx.set || ctx.__c || document.documentElement.classList.contains('demo')) return false; ctx.__c = 1; ctx.city = ONDE.get(); if (!ctx.city) ctx.fmt = 'Qualquer'; return true; }
 
   function modOf(id) { for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][0] === id) return SPORTS[i][1]; return 'CrossFit'; }
   function idOf(mod) { for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][1] === mod) return SPORTS[i][0]; return 'crossfit'; }
@@ -192,8 +198,10 @@
     else if (name === 'perfil' && s.vaga) { ctx = Object.assign({}, ctx, { avail: true }); }
   }
   function propsFor(name, p) {
+    prodCtx();
     if (name === 'home') {
       var init = ctx.set ? { sport: idOf(ctx.mod), city: ctx.city || null, mode: (ctx.fmt || 'Presencial').toLowerCase() } : ((window.STORE && window.STORE.loadPage('home')) || {});
+      if (!ctx.set && !document.documentElement.classList.contains('demo')) { var guardada = ONDE.get(); init = Object.assign({}, init, { city: guardada || null }); if (!guardada) init.mode = 'qualquer'; }
       return { scen: ctx.homeScen || 'primeira', init: init };
     }
     if (name === 'esporte') {

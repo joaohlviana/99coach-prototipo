@@ -9,6 +9,8 @@ class Component extends DCLogic {
   renderVals() {
     if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
     const st = this.state;
+    // cidade escolhida aqui fica guardada (cookie); chegar por um endereço com cidade não grava nada
+    if (window.ONDE && !document.documentElement.classList.contains('demo') && st.fmt !== 'Online') { const c0 = st.city || ''; if (this.__c0 === undefined) this.__c0 = c0; else if (this.__c0 !== c0) { this.__c0 = c0; window.ONDE.set(c0); } }
     const set = (o) => { if (o && o.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(o.favs); this.setState(o); };
     const B = (id) => Component.img(id);
     const PER = 8;

@@ -1,4 +1,6 @@
 import Shell from '../components/Shell.js';
+// cópia estática do topo, igual à do app: aparece de imediato enquanto o app carrega
+import espera from '../components/home-espera.js';
 import { esportes, cidadesDo, todos, plural, curta, SITE } from '../lib/catalogo.js';
 
 export const revalidate = 86400;
@@ -12,7 +14,7 @@ export default function Home() {
   const esp = esportes();
   const cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
-    <Shell route={{ name: 'home', params: {} }}>
+    <Shell route={{ name: 'home', params: {} }} espera={espera}>
       <link rel="preload" as="image" href="/img/570416df9063df47.webp" fetchPriority="high" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
         { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/icon.png', sameAs: ['https://www.instagram.com/99coach_'] },

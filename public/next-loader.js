@@ -28,6 +28,6 @@
     document.documentElement.classList.add('app-on');
     // no primeiro toque ou rolagem, as folhas das outras telas públicas começam a baixar: a troca de tela fica imediata
     var fired = false, warm = function () { if (fired) return; fired = true; ['home', 'esporte', 'perfil', 'onboarding', 'publico', 'servico'].forEach(function (n) { var l = document.getElementById('css-' + n); if (l && !l.getAttribute('href') && l.getAttribute('data-href')) l.href = l.getAttribute('data-href'); }); };
-    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) { window.addEventListener(ev, warm, { once: true, passive: true, capture: true }); });
+    ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { window.addEventListener(ev, warm, { once: true, passive: true, capture: true }); });
   }).catch(function () { document.documentElement.classList.add('app-off'); });
 })();

@@ -347,7 +347,7 @@
   })();
   window.__afterRender = function (page, root) {
     // modalidade pede a própria fatia (REAL.need); perfil aberto a partir de uma fatia já tem o que precisa
-    if (PUBLIC[page] && page !== 'esporte' && !(page === 'perfil' && window.__sliceLoaded && window.__sliceLoaded())) ensureBase();
+    if (PUBLIC[page] && page !== 'esporte' && !(page === 'perfil' && window.__sliceLoaded && window.__sliceLoaded())) { if (page === 'home') ensureSoon(); else ensureBase(); }
     if (!window.STORE) return;
     applyMe();
     if (window.__sheetFocus) window.__sheetFocus();
@@ -468,6 +468,9 @@
   var baseAsked = false;
   var PUBLIC = { home: 1, esporte: 1, perfil: 1, servico: 1 };
   function ensureBase() { if (baseAsked) return; baseAsked = true; fetchBase(); }
+  // na página inicial o catálogo inteiro espera o topo aparecer: baixa no primeiro toque/rolagem ou depois de alguns segundos
+  var soon = false;
+  function ensureSoon() { if (baseAsked || soon) return; soon = true; setTimeout(ensureBase, 3500); ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { window.addEventListener(ev, ensureBase, { once: true, passive: true, capture: true }); }); }
   REAL.ensure = ensureBase;
   // fatias: página de modalidade e perfil baixam só o necessário; o catálogo inteiro fica para a página inicial
   var slices = {}, sliceRows = [];
@@ -493,6 +496,7 @@
   if (first === 'esporte' && rp.slug) fetchSlice('/dados/esporte/' + encodeURIComponent(rp.slug), 'e:' + rp.slug);
   else if (first === 'perfil' && rp.id && /^\/treinador\//.test(location.pathname)) fetchSlice('/dados/treinador/' + encodeURIComponent(rp.id), 'p:' + rp.id);
   else if (first === 'publico' && /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.test(location.hash || '')) { var mh = /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.exec(location.hash); fetchSlice('/dados/treinador/' + encodeURIComponent(mh[2]), 'p:' + mh[2]); }
+  else if (first === 'home' && location.pathname === '/') ensureSoon();
   else if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
 
   // ---------- favoritos ----------

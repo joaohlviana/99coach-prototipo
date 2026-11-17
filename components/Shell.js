@@ -37,13 +37,13 @@ export function Rodape() {
 }
 
 // soServidor: página que fica só com o HTML do servidor (leve, sem carregar o app); os links levam às páginas interativas
-export default function Shell({ route, children, soServidor }) {
+export default function Shell({ route, children, soServidor, espera }) {
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';';
   return (
     <>
       {/* com o app a caminho, a versão do servidor fica escondida (sem troca de tela visível); continua no HTML para
           leitores e buscadores e volta a aparecer se o app falhar ou passar de 6 s */}
-      {soServidor ? null : <script dangerouslySetInnerHTML={{ __html: "(function(){var d=document.documentElement;d.classList.add('app-wait');setTimeout(function(){if(!d.classList.contains('app-on'))d.classList.add('app-off')},6000)})();" }} />}
+      {soServidor ? null : <script dangerouslySetInnerHTML={{ __html: "(function(){var d=document.documentElement;d.classList.add('app-wait');" + (espera ? "d.classList.add('tem-espera');" : "") + "setTimeout(function(){if(!d.classList.contains('app-on'))d.classList.add('app-off')},6000)})();" }} />}
       {/* conteúdo do servidor: fica visível até o app ligar e continua no HTML para leitores e buscadores */}
       <div id="ssr" className={soServidor ? "ssr ssr--solo" : "ssr"}>
         {/* foto que não carrega some e ficam as iniciais (sem ícone de imagem quebrada) */}
@@ -60,7 +60,7 @@ export default function Shell({ route, children, soServidor }) {
       </div>
       {/* o app interativo monta aqui; o React não mexe no que estiver dentro */}
       {soServidor ? null : <>
-        <div id="app" lang="pt-BR" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: '' }} />
+        <div id="app" lang="pt-BR" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: espera || '' }} />
         <script dangerouslySetInnerHTML={{ __html: boot }} />
         {/* o app começa a baixar junto com a página: telas e código em paralelo */}
         <link rel="preload" href={'/shell/templates.html?v=' + pacote.v} as="fetch" crossOrigin="anonymous" />

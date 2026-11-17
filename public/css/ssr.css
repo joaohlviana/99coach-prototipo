@@ -166,3 +166,9 @@ html body .ssr-card{display:flex;flex-direction:column;gap:10px;background:none;
   .ssr.ssr--solo{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .ssr--solo .ssr-top>.ssr-btn{display:none}
 }
+/* página inicial: o topo já vem desenhado (cópia do app). Enquanto o app não liga, a versão do servidor não ocupa espaço
+   (continua no HTML para buscadores); se o app falhar, a cópia some e a versão do servidor aparece. */
+html.tem-espera.app-wait body::after{display:none}
+html.tem-espera.app-wait:not(.app-on):not(.app-off) #ssr{display:none}
+html.tem-espera.app-off:not(.app-on) #app [data-espera]{display:none}
+html.tem-espera:not(.espera-ok):not(.app-on) #app [data-espera]{visibility:hidden}

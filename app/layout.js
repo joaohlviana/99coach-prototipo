@@ -25,10 +25,10 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/fonts/Anton-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <script dangerouslySetInnerHTML={{ __html: 'window.__V=' + JSON.stringify(pacote.v) + ';' }} />
         <link rel="stylesheet" href={'/shell/css/core.css' + V} />
-        {/* a folha de cada tela só é baixada quando a tela abre; a da página atual começa já */}
-        {AREAS.map((a) => <link key={a} rel="stylesheet" id={'css-' + a} media="not all" data-href={'/shell/css/' + a + '.css' + V} />)}
         <link rel="stylesheet" id="css-adapt" href={'/shell/css/adapt.css' + V} />
-        <script dangerouslySetInnerHTML={{ __html: "(function(){var p=location.pathname,h=location.hash,n=p==='/'||/^\\/(en|es)\\/?$/.test(p)?'home':/\\/(treinadores|cidade|buscar)(\\/|$)/.test(p)?'esporte':/\\/treinador\\//.test(p)?'perfil':p==='/app'?(/^#(onboarding|publico|esporte|perfil|servico|treinador|aluno|operacao|telas)/.exec(h)||[0,'home'])[1]:'';var l=n&&document.getElementById('css-'+n);if(l)l.href=l.getAttribute('data-href')})();" }} />
+        {/* a folha de cada tela só é baixada quando a tela abre; a da página atual começa já.
+            As etiquetas são criadas por este trecho (fora do React), antes da folha de ajustes, para manter a ordem. */}
+        <script dangerouslySetInnerHTML={{ __html: "(function(){var A=" + JSON.stringify(AREAS) + ",V=" + JSON.stringify(V) + ",ad=document.getElementById('css-adapt'),p=location.pathname,h=location.hash,n=p==='/'||/^\\/(en|es)\\/?$/.test(p)?'home':/\\/(treinadores|cidade|buscar)(\\/|$)/.test(p)?'esporte':/\\/treinador\\//.test(p)?'perfil':p==='/app'?(/^#(onboarding|publico|esporte|perfil|servico|treinador|aluno|operacao|telas)/.exec(h)||[0,'home'])[1]:'';A.forEach(function(a){var l=document.createElement('link');l.rel='stylesheet';l.id='css-'+a;l.media='not all';l.setAttribute('data-href','/shell/css/'+a+'.css'+V);if(a===n){l.href=l.getAttribute('data-href');if(p==='/'){l.media='all';l.setAttribute('blocking','render');l.onload=function(){document.documentElement.classList.add('espera-ok')}}}ad.parentNode.insertBefore(l,ad)})})();" }} />
       </head>
       <body>{children}</body>
     </html>

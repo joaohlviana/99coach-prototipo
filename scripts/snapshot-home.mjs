@@ -1,4 +1,4 @@
-// Gera components/home-espera.html: uma cópia estática do topo da página inicial (barra, hero e busca),
+// Gera components/home-espera.js: uma cópia estática do topo da página inicial (barra, hero e busca),
 // exatamente como o app desenha. O servidor entrega essa cópia e o visitante vê o topo de imediato;
 // quando o app liga, ele redesenha por cima sem mudança visível.
 // Uso: com o site rodando em localhost:5173 →  PW=<caminho do playwright> node scripts/snapshot-home.mjs
@@ -18,6 +18,8 @@ export async function topo(base) {
     // fica só o topo: no celular, barra + hero + busca + modalidades; no computador, cabeçalho + modalidades + hero
     const keep = (el) => el.matches('.vfm, header.hdr, .v4-hero, [class*="v4-hero"], .rail, .vf-rail, nav, .v4-skip') || !!el.querySelector(':scope .v4-hero__img');
     [...c.children].forEach((el) => { if (!keep(el)) el.remove(); });
+    const hero = c.querySelector('.v4-hero');
+    for (let n = hero; n && n !== c; n = n.parentElement) while (n.nextElementSibling) n.nextElementSibling.remove();
     const m = c.querySelector('.vfm');
     if (m) { let cut = false; [...m.children].forEach((el) => { if (cut) el.remove(); else if (el.matches('.vfm-rail')) cut = true; }); }
     // some o que é de sobreposição ou estado
@@ -32,6 +34,8 @@ export async function topo(base) {
 }
 if (process.argv[1] && process.argv[1].endsWith('snapshot-home.mjs')) {
   const html = await topo(process.argv[2]);
-  writeFileSync(new URL('../components/home-espera.html', import.meta.url), html);
-  console.log('home-espera.html:', (html.length / 1024).toFixed(1), 'KB');
+  // a cópia não responde a toque nem é lida por leitores de tela: o conteúdo de verdade está na versão do servidor e, logo depois, no app
+  const pronto = html.replace('<div class="w v4"', '<div class="w v4" inert aria-hidden="true" data-espera');
+  writeFileSync(new URL('../components/home-espera.js', import.meta.url), '// Gerado por scripts/snapshot-home.mjs: não edite à mão.\nexport default ' + JSON.stringify(pronto) + ';\n');
+  console.log('home-espera.js:', (html.length / 1024).toFixed(1), 'KB');
 }
