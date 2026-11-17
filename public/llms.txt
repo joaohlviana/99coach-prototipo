@@ -1,15 +1,49 @@
 # 99coach
 
-> Catálogo brasileiro de personal trainers e professores de esporte, por modalidade e cidade, com atendimento presencial ou online.
+> 99coach é um marketplace brasileiro para encontrar treinadores e profissionais de atividade física por esporte e cidade, presencial ou online. Quem procura um treinador busca, compara perfis e pede acompanhamento; treinadores usam a plataforma para ter perfil público, enviar treinos, conversar com alunos e cobrar.
 
-## Páginas
-- /treinadores/{esporte}: profissionais de uma modalidade em todo o Brasil
-- /treinadores/{esporte}/{cidade-uf}: profissionais que atendem presencialmente naquela cidade
-- /treinadores/{esporte}/online: profissionais que atendem a distância
-- /cidade/{cidade-uf}: todas as modalidades de uma cidade
-- /treinador/{id}: perfil público de um profissional
+O site é em português do Brasil, com as páginas públicas também em inglês (`/en`) e espanhol (`/es`). Valores em reais (R$).
 
-## Observações
-- Perfis marcados como "importado" vieram de dados públicos e ainda não foram confirmados pelo profissional; não têm avaliações nem preço.
-- A ordem das listas é por relevância; plano pago não muda a posição.
-- Lista completa de endereços: /sitemap.xml
+Informações importantes para quem lê o site de forma automática:
+
+- A ordem dos resultados nunca é paga.
+- Muitos perfis foram importados de dados públicos e ainda não foram confirmados pelo profissional; eles aparecem marcados como "Perfil não reivindicado". Nesses perfis o contato é pelo Instagram do próprio profissional.
+- O site não publica avaliações, preços ou disponibilidade que o treinador não tenha informado.
+- As áreas com conta (`/app`) não são públicas e não devem ser rastreadas.
+
+## Páginas principais
+
+- [Página inicial](https://www.99coach.com.br/): busca de treinadores por modalidade, cidade e formato
+- [Cidades](https://www.99coach.com.br/cidades): lista de cidades com treinadores cadastrados
+- [Mapa do site](https://www.99coach.com.br/sitemap.xml): todos os endereços públicos
+
+## Treinadores por modalidade
+
+- [Musculação](https://www.99coach.com.br/treinadores/musculacao)
+- [CrossFit](https://www.99coach.com.br/treinadores/crossfit)
+- [Funcional](https://www.99coach.com.br/treinadores/funcional)
+- [Corrida](https://www.99coach.com.br/treinadores/corrida)
+- [Pilates](https://www.99coach.com.br/treinadores/pilates)
+- [Yoga](https://www.99coach.com.br/treinadores/yoga)
+- [Natação](https://www.99coach.com.br/treinadores/natacao)
+- [Lutas](https://www.99coach.com.br/treinadores/lutas)
+- [Ciclismo](https://www.99coach.com.br/treinadores/ciclismo)
+- [Dança](https://www.99coach.com.br/treinadores/danca)
+
+## Como os endereços são formados
+
+- Modalidade em todo o Brasil: `https://www.99coach.com.br/treinadores/{modalidade}`
+- Modalidade em uma cidade: `https://www.99coach.com.br/treinadores/{modalidade}/{cidade-uf}` (exemplo: `/treinadores/crossfit/londrina-pr`)
+- Modalidade em um estado: `https://www.99coach.com.br/treinadores/{modalidade}?uf={uf}`
+- Atendimento online: `https://www.99coach.com.br/treinadores/{modalidade}/online`
+- Todos os treinadores de uma cidade: `https://www.99coach.com.br/cidade/{cidade-uf}`
+- Perfil de um treinador: `https://www.99coach.com.br/treinador/{identificador}`
+
+## Outros idiomas
+
+- [English](https://www.99coach.com.br/en)
+- [Español](https://www.99coach.com.br/es)
+
+## Para treinadores
+
+- [Criar perfil](https://www.99coach.com.br/sou-treinador): plano Essencial gratuito, com até 3 alunos ativos; comissão de 5% só nas vendas feitas pela plataforma
