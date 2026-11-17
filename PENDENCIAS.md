@@ -204,6 +204,7 @@ As funções do Supabase leem estes segredos. Coloque-os em Supabase, Edge Funct
 | `RESEND_API_KEY` e `AVISOS_FROM` | envio de e-mails da função `enviar-avisos` |
 | `SITE_URL` | `https://www.99coach.com.br` |
 | `ANTHROPIC_API_KEY` | só quando as funções de IA forem ligadas; hoje ficam desligadas no site |
+| `YOUTUBE_API_KEY` | sugestões automáticas de vídeo nos exercícios (função `videos-exercicio`). Chave da YouTube Data API v3 criada no Google Cloud Console, restrita a essa API. Sem ela, o app mostra o botão “Buscar no YouTube” e o treinador cola o link |
 
 Depois, um agente faz um pagamento de teste com cartão de teste do Stripe (`4242 4242 4242 4242`) e confere a assinatura, o recebimento e o aviso.
 
@@ -288,7 +289,21 @@ Quando o painel de administração recoloca no site um perfil pausado:
 - Leitura completa com leitor de tela (VoiceOver e NVDA).
 - Monitorar erros no ar: na Vercel, Observability e Runtime Errors. Em 17/11 houve erro 500 em páginas estáticas por causa de um fetch sem cache; já foi corrigido e a versão nova não registrou erros.
 
-### 2.13 Limpeza do repositório **[AGENTE]**
+### 2.13 Vídeos dos exercícios: o que falta **[DONO] + [AGENTE]**
+
+Pronto em 17/11:
+- **Na tela do exercício, o treinador escolhe o vídeo de três jeitos:** sugestões automáticas do YouTube, link colado do YouTube ou vídeo próprio (MP4, MOV ou WebM, até 100 MB).
+- **Onde fica salvo:** a escolha fica na biblioteca da conta (`trainer_library`) e vale em qualquer aparelho. Ela vai junto no treino atribuído (`items[].video`), e o aluno vê com o botão “Ver vídeo”.
+- **Arquivos enviados:** ficam no bucket público `exercicio-videos`, na pasta do próprio treinador.
+- **Função do Supabase:** `videos-exercicio`.
+
+Falta:
+1. **[DONO]** Colocar o segredo `YOUTUBE_API_KEY` (veja a 2.4). A cota grátis dá cerca de 100 buscas por dia. O app guarda cada busca por 7 dias no aparelho.
+2. **[AGENTE]** Se a cota apertar, guardar as buscas no banco por nome de exercício: uma tabela de cache lida pela função antes de chamar o YouTube.
+3. **[AGENTE]** Treinos atribuídos antes de escolher o vídeo não recebem o vídeo sozinhos. É preciso atribuir de novo.
+4. **[AGENTE]** Testar o envio de vídeo grande em celular de verdade, com rede lenta.
+
+### 2.14 Limpeza do repositório **[AGENTE]**
 
 - A pasta `undefined/` na raiz (capturas de tela soltas, não versionadas) pode ser apagada depois de conferir que não é usada.
 - A pasta `out/` tem capturas versionadas antigas; avaliar se ainda servem.
@@ -306,5 +321,9 @@ Quando o painel de administração recoloca no site um perfil pausado:
   - topo instantâneo e imagem leve no celular;
   - Lighthouse no computador: 98 de desempenho e 100 de acessibilidade.
 - **Remover perfil:** perfil importado e sem dono sai do ar na hora; o painel tem "Recolocar no site" e "Excluir de vez".
-- **Auditoria de 17/11:** F01, F02, F04 a F09, F11 a F14 corrigidos. F03 depende da 2.1 e F10 depende da 2.2.
+- **Auditoria de 17/11:**
+  - F01, F02, F04 a F09 e F11 a F23 corrigidos.
+  - F03 depende da 2.1 e F10 depende da 2.2.
+  - F17: a regra de recebimentos é cobrança real pelo Stripe; o formulário de CPF e Pix ficou só na demonstração.
+  - F19: o convite exige o perfil publicado. A tela agora avisa antes de tentar.
 - **`llms.txt`:** com links, como pede a auditoria de navegação por agentes.

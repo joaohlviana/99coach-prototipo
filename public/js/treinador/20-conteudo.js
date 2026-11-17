@@ -36,14 +36,14 @@ REG.screen({
       var r = T.rot(rid); if (!r) return '';
       var c = { id: DB.uid('r'), name: r.name + ' (cópia)', folder: r.folder, student: '', status: 'rascunho', version: 1, savedAt: T.stamp(), lastSection: (r.sessions[0] || {}).id || 's1', sessions: T.clone(T.sessions(rid)) };
       DB.rotinas.push(c);
-      DB.t3_versoes[c.id] = [{ v: 1, author: 'Você', date: c.savedAt, reason: 'Duplicada de “' + r.name + '” sem alunos, resultados ou publicação', snap: T.clone(c.sessions) }];
+      T.vers()[c.id] = [{ v: 1, author: 'Você', date: c.savedAt, reason: 'Duplicada de “' + r.name + '” sem alunos, resultados ou publicação', snap: T.clone(c.sessions) }];
       return c.id;
     };
     var create = function () {
       var f = pastaIds.indexOf(folder) >= 0 ? folder : '';
       var r = { id: DB.uid('r'), name: 'Nova rotina', folder: f, student: '', status: 'rascunho', version: 1, savedAt: T.stamp(), lastSection: 's1', sessions: [{ id: 's1', name: 'Sessão A', items: [] }] };
       DB.rotinas.push(r);
-      DB.t3_versoes[r.id] = [{ v: 1, author: 'Você', date: r.savedAt, reason: 'Criação', snap: T.clone(r.sessions) }];
+      T.vers()[r.id] = [{ v: 1, author: 'Você', date: r.savedAt, reason: 'Criação', snap: T.clone(r.sessions) }];
       GO('TRE14', { id: r.id, sessao: 's1', nova: '1' });
     };
     var openRot = function (r) { GO('TRE14', { id: r.id, sessao: r.lastSection || '' }); };
@@ -148,6 +148,8 @@ REG.screen({
       q: q, setQ: function (e) { set({ q: U.val(e) }); }, clearQ: function () { set({ q: '' }); }, hasQ: !!q,
       onKey: function (e) { if (e && e.key === 'Escape') set({ q: '' }); },
       goEx: function () { GO('TRE10', q ? { q: q } : {}); }, goForms: function () { GO('TRE04'); },
+      // a biblioteca geral de formulários ainda é só da demonstração; na conta real o formulário é criado na ficha de cada aluno
+      hasForms: document.documentElement.classList.contains('demo'), eyebrow: document.documentElement.classList.contains('demo') ? 'Rotinas · exercícios · formulários' : 'Rotinas e exercícios',
       create: create,
       hasPara: !!para, noPara: !para, paraName: para ? para.name : '', paraFirst: para ? para.first : '', paraWeek: para && para.week ? 'semana ' + (para.week + 1) + ' de ' : '',
       paraBtn: picked ? 'Adicionar 1 rotina ao treino de ' + (para ? para.first : '') : 'Escolha uma rotina',

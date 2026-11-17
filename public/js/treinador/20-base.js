@@ -38,6 +38,9 @@
   DB.seed('t3_drafts', {});
   DB.seed('t3_conflitos', {});
   DB.seed('t3_rotMeta', { r1: { assigned: 4 }, r2: { assigned: 2 } });
+  // histórico de versões das rotinas: sempre existe (vazio fora da demonstração), senão criar a primeira rotina quebra
+  T3.vers = function () { if (!DB.t3_versoes || typeof DB.t3_versoes !== 'object') DB.t3_versoes = {}; return DB.t3_versoes; };
+  T3.vers();
   (function () {
     var r1src = DB.find('rotinas', 'r1'); if (!r1src) return; // fora da demonstração as rotinas de exemplo já foram removidas
     var r1 = clone(r1src.sessions);
@@ -68,7 +71,7 @@
   T3.sessions = function (rid) { var d = T3.draft(rid), r = T3.rot(rid); return d ? d.sessions : (r ? r.sessions : []); };
   T3.versions = function (rid) {
     var r = T3.rot(rid); if (!r) return [];
-    if (!DB.t3_versoes[rid]) DB.t3_versoes[rid] = [{ v: r.version, author: 'Você', date: r.savedAt, reason: r.status === 'rascunho' ? 'Rascunho inicial' : 'Versão atual', snap: clone(r.sessions) }];
+    if (!T3.vers()[rid]) DB.t3_versoes[rid] = [{ v: r.version, author: 'Você', date: r.savedAt, reason: r.status === 'rascunho' ? 'Rascunho inicial' : 'Versão atual', snap: clone(r.sessions) }];
     return DB.t3_versoes[rid];
   };
   // grava nova versão (salvar rascunho, restaurar, resolver conflito); não altera atribuição nem sessões concluídas
@@ -76,7 +79,7 @@
     var r = T3.rot(rid); if (!r) return 0;
     T3.versions(rid);
     r.sessions = clone(sessions); r.version += 1; r.savedAt = T3.stamp();
-    DB.t3_versoes[rid].push({ v: r.version, author: author || 'Você', date: r.savedAt, reason: reason || 'Ajustes', snap: clone(sessions) });
+    T3.vers()[rid] = T3.vers()[rid] || []; DB.t3_versoes[rid].push({ v: r.version, author: author || 'Você', date: r.savedAt, reason: reason || 'Ajustes', snap: clone(sessions) });
     delete DB.t3_drafts[rid];
     return r.version;
   };

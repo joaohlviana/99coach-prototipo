@@ -46,7 +46,7 @@
         return { l: DEF[k][0], n: n, base: base, extra: extra.join(' '), hasExtra: !!extra.length, def: function () { ctx.ask({ title: DEF[k][0], lines: [DEF[k][1], 'Período: ' + day(m.period.from) + ' a ' + day(m.period.to) + '. Calculado às ' + new Date(m.computed_at).toTimeString().slice(0, 5) + '.'], ok: 'Entendi', cancel: false }); } };
       });
       var nosrc = Object.keys(NOSRC).filter(function (k) { return !by[k] || by[k].status === 'unavailable'; }).map(function (k) { return NOSRC[k]; });
-      if (by.TM11 && by.TM11.status === 'unavailable') nosrc.push('Receita (pagamentos pelo 99coach ainda em modo de teste)');
+      if (by.TM11 && by.TM11.status === 'unavailable') nosrc.push('Receita (ainda sem vendas pagas pelo 99coach)');
       // funil: aberturas do perfil → pedidos recebidos → aceitos → acompanhamentos iniciados, no mesmo período
       var fk = 'fn' + per;
       if (!ui[fk] && !ui['busy' + fk]) {

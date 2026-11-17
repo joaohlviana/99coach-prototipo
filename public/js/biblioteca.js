@@ -25,19 +25,20 @@
     try { return LS.getItem('c99.contaIniciada') === '1'; } catch (_) { return false; }
   }
 
-  // o que vai para a conta em cada tipo (exercícios: só os próprios e os favoritos do catálogo; o catálogo 99Coach não é copiado)
+  // o que vai para a conta em cada tipo (exercícios: os próprios, e do catálogo só o que é do treinador: favorito e vídeo escolhido;
+  // o catálogo 99Coach em si não é copiado)
   function localDoc(kind) {
     var a = Array.isArray(window.DB[kind]) ? window.DB[kind] : [];
     if (kind !== 'exercicios') return a;
-    return a.filter(function (e) { return e && (e.own || e.fav); }).map(function (e) { return e.own ? e : { id: e.id, ref: true, fav: true }; });
+    return a.filter(function (e) { return e && (e.own || e.fav || e.video); }).map(function (e) { if (e.own) return e; var r = { id: e.id, ref: true, fav: !!e.fav }; if (e.video) r.video = e.video; return r; });
   }
   function applyDoc(kind, doc) {
     if (!Array.isArray(doc)) return;
     if (kind !== 'exercicios') { window.DB[kind] = doc; return; }
-    var favs = {}, own = [];
-    doc.forEach(function (e) { if (!e) return; if (e.ref) favs[e.id] = true; else own.push(e); });
+    var refs = {}, own = [];
+    doc.forEach(function (e) { if (!e) return; if (e.ref) refs[e.id] = e; else own.push(e); });
     var cat = (window.DB.exercicios || []).filter(function (e) { return e && !e.own; });
-    cat.forEach(function (e) { e.fav = !!favs[e.id]; });
+    cat.forEach(function (e) { var r = refs[e.id]; e.fav = !!(r && r.fav !== false); if (r && r.video) e.video = r.video; else delete e.video; });
     window.DB.exercicios = cat.concat(own);
   }
   // conflito de verdade (outro aparelho gravou e este também mudou): nada é descartado. Item que só existe aqui é mantido;
@@ -101,7 +102,7 @@
     var mu = meta();
     if (mu.uid && mu.uid !== st.uid) {
       ['rotinas', 'formularios', 'pastas'].forEach(function (k) { window.DB[k] = []; });
-      window.DB.exercicios = (window.DB.exercicios || []).filter(function (e) { return e && !e.own; }); window.DB.exercicios.forEach(function (e) { e.fav = false; });
+      window.DB.exercicios = (window.DB.exercicios || []).filter(function (e) { return e && !e.own; }); window.DB.exercicios.forEach(function (e) { e.fav = false; delete e.video; });
       mu = { limpo: 1 }; if (window.STORE) window.STORE.saveDb(true);
     }
     mu.uid = st.uid; setMeta(mu);

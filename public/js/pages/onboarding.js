@@ -67,10 +67,10 @@ class Component extends DCLogic {
     if (st.since) creds.push(['Experiência', 'Treina alunos desde ' + st.since, 'Declarada pelo treinador', 0]);
     const where = [];
     if (st.pres) where.push(['Presencial', (st.city || '') + (regions ? ' — ' + regions + ' (regiões informadas)' : '') + (on(st.places).length ? ' · ' + on(st.places).map((x) => PLC[x]).join(', ') : '')]);
-    if (st.onl) where.push(['Online', st.onlineScope === 'estado' ? 'Só no Paraná, com treino no app da 99Coach' : 'Todo o Brasil, com treino no app da 99Coach']);
+    if (st.onl) where.push(['Online', st.onlineScope === 'estado' ? 'Só no estado' + ((/,\s*([A-Z]{2})$/.exec(st.city || '') || [])[1] ? ' (' + /,\s*([A-Z]{2})$/.exec(st.city)[1] + ')' : '') + ', com treino no app da 99Coach' : 'Todo o Brasil, com treino no app da 99Coach']);
     where.push(['Idioma', langs ? langs.charAt(0).toUpperCase() + langs.slice(1) : 'Não informado']);
-    const tr = { id: 'thiago', name: st.name, first: first, photo: st.photoOk ? st.photoUrl : '', ini: ini, role: st.title || 'Treinador', city: st.city, formats: st.pres && st.onl ? 'Presencial e online' : (st.pres ? 'Presencial' : 'Online'), lang: 'Atende em ' + (langs || 'português'),
-      avail: st.avail === 'sim' ? 'aceita' : (st.avail === 'nao' ? 'nao' : 'desconhecida'), availDate: '26/10', own: '26/10/2026', ownNext: '10/2027', cref: st.cref ? 'inf' : 'nao', crefNum: st.cref, avg: '', n: 0,
+    const tr = { id: 'thiago', crumb: { sport: on(st.sports).map((x) => SP[x])[0] || '', slug: on(st.sports)[0] || '', city: st.pres ? (st.city || '') : '' }, name: st.name, first: first, photo: st.photoOk ? st.photoUrl : '', ini: ini, role: st.title || 'Treinador', city: st.city, formats: st.pres && st.onl ? 'Presencial e online' : (st.pres ? 'Presencial' : 'Online'), lang: 'Atende em ' + (langs || 'português'),
+      avail: st.avail === 'sim' ? 'aceita' : (st.avail === 'nao' ? 'nao' : 'desconhecida'), availDate: document.documentElement.classList.contains('demo') ? '26/10' : new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), own: document.documentElement.classList.contains('demo') ? '26/10/2026' : '', ownNext: document.documentElement.classList.contains('demo') ? '10/2027' : '', cref: st.cref ? 'inf' : 'nao', crefNum: st.cref, avg: '', n: 0,
       pitch: st.pitch || (first + ' ainda não escreveu a apresentação.'), bio: st.bio, offers: offers, progs: progs, ext: st.igStep === 'ok' ? st.ig : '', creds: creds, where: where, map: st.pres && regions ? regions + ' de ' + (st.city || '').split(',')[0] : '', reviews: [] };
     return { tr: tr, of: of, line: on(st.sports).map((x) => SP[x]).join(' e ') + (regions ? ' · ' + regions : '') + ' · ' + (st.city || '').split(',')[0] };
   }
@@ -352,6 +352,9 @@ class Component extends DCLogic {
       if (ob) { this.__oa = true; setTimeout(() => { if (ob.name && !this.state.name) this.setState({ name: ob.name }); finishReal(ob.role, ob.email, !ob.role); }, 0); }
     }
     const pay = {
+      // conta real: o cadastro de recebimento é feito pelo Stripe na tela Recebimentos (o formulário de CPF e Pix é só da demonstração)
+      real: !document.documentElement.classList.contains('demo') && !st.scn, demo: document.documentElement.classList.contains('demo') || !!st.scn,
+      openReal: () => { if (window.GO) window.GO('H09R'); },
       s: { intro: !st.payout, wait: st.payout === 'wait', ok: st.payout === 'ok' },
       types: [['pf', 'Pessoa física', 'Recebe no seu CPF', 'user'], ['pj', 'Pessoa jurídica', 'Recebe no CNPJ da empresa', 'bank']].map(([kk, t, s2, ic]) => ({ title: t, sub: s2, ic: 'ic ic--sm i-' + ic, on: String(st.payType === kk), cls: 'ocard onb-choice' + (st.payType === kk ? ' is-on' : ''), pick: () => set({ payType: kk }) })),
       nameLabel: st.payType === 'pj' ? 'Razão social' : 'Nome completo', docLabel: st.payType === 'pj' ? 'CNPJ' : 'CPF', docPh: st.payType === 'pj' ? '00.000.000/0000-00' : '000.000.000-00',
@@ -743,6 +746,9 @@ class Component extends DCLogic {
     const SESS = [['Chrome · macOS', 'Londrina, PR · agora', 'monitor', true], ['iPhone · app 99Coach', 'São Paulo, SP · há 3 dias', 'monitor', false], ['Android · navegador', 'Curitiba, PR · há 12 dias', 'monitor', false]];
     const live = SESS.map((s2, i) => [s2, i]).filter(([, i]) => !st.sessEnded[i]);
     const sg = {
+      // fora da demonstração não há aparelhos nem 2 etapas inventados: a tela leva para os dados reais da conta
+      real: !document.documentElement.classList.contains('demo') && !st.scn, demo: document.documentElement.classList.contains('demo') || !!st.scn,
+      openReal: () => { if (window.GO) window.GO('@publico', { s: 'meusdados' }); },
       mfaOn: String(!!st.mfa), mfaCls: 'switch onb-switch' + (st.mfa ? ' is-on' : ''), mfaSub: st.mfa ? 'Ativa · código por e-mail ao entrar em aparelho novo' : 'Desligada · recomendamos manter ligada',
       toggleMfa: () => set(st.mfa ? { sessConfirm: 'mfa', sessCode: '' } : { mfa: true, toast: 'Verificação em 2 etapas ativada.' }),
       sessions: live.map(([s2, i]) => ({ name: s2[0], meta: s2[1], ic: 'ic ic--sm i-' + s2[2], current: s2[3], canEnd: !s2[3], end: () => set({ sessConfirm: i, sessCode: '' }) })),

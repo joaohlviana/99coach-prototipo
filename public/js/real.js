@@ -22,8 +22,8 @@
   function foto(v) { return !v ? '' : (/^https?:/.test(v) ? v : FOTOS + (v.indexOf('legado/') === 0 ? v : 'legado/' + v)); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
-    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
-    return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
+    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '', own: !!r[9] && r[9] !== 'importado' };
+    return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '', own: r.imported === false };
   }
   // perfis tirados do ar depois do último build (pedido de remoção ou decisão da equipe) somem na hora
   var HID = {}, lastRows = null;
@@ -126,7 +126,8 @@
       if (!where.length) { if (t.pres && t.city) where.push(['Presencial', t.city]); if (t.onl) where.push(['Online', 'Informado no perfil']); if (!where.length) where.push(['Local', 'Não informado']); }
       if (d.externalHandle) where.push(['Contato público', 'Instagram ' + d.externalHandle + ' (abre fora da 99Coach)']);
       if (!details[id]) fetchDetail(id);
-      if (live[id] || d.imported === false) {
+      // perfil criado no cadastro (não importado) nunca aparece como importado, mesmo antes dos detalhes chegarem
+      if (live[id] || d.imported === false || t.own) {
         var of = (d.offers || [])[0] || (live[id] && (live[id].headlineOffers || [])[0]) || null;
         var price = of && of.price != null ? of.price : (of && of.priceCents != null ? 'R$ ' + (of.priceCents / 100).toLocaleString('pt-BR') : null);
         return { id: id, name: t.name, first: first, photo: t.photo, ini: t.ini, role: (d.role || 'Treinador'), city: t.city || (t.onl ? 'Atende online' : 'Local não informado'), formats: fm, lang: '',
@@ -236,7 +237,7 @@
   window.__resetLocalData = function () {
     if (!window.DB) return;
     OWN.concat(['contratacoes', 'meusTreinos', 'a2_pedidos', 'a2_pedidosAcomp', 'a2_reembolsos', 'pastas']).forEach(function (k) { if (Array.isArray(window.DB[k])) window.DB[k] = []; });
-    if (Array.isArray(window.DB.exercicios)) { window.DB.exercicios = window.DB.exercicios.filter(function (e) { return e && !e.own; }); window.DB.exercicios.forEach(function (e) { e.fav = false; }); }
+    if (Array.isArray(window.DB.exercicios)) { window.DB.exercicios = window.DB.exercicios.filter(function (e) { return e && !e.own; }); window.DB.exercicios.forEach(function (e) { e.fav = false; delete e.video; }); }
     window.__myRequests = []; STORE._last = '';
   };
 

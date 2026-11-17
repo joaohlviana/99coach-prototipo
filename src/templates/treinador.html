@@ -516,15 +516,16 @@
         <sc-if value="{{v.isForm}}" hint-placeholder-val="{{ true }}">
           <sc-if value="{{v.fail}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="t1-grow"><b>Não foi possível criar o convite</b>Seus dados continuam aqui. Nenhum convite foi criado.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retry}}">Tentar de novo</button></div></sc-if>
           <sc-if value="{{v.unknown}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="t1-grow"><b>Resultado desconhecido</b>A conexão caiu antes da confirmação. Consulte antes de criar de novo, para não duplicar.</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.consult}}">Consultar de novo</button></div></sc-if>
-          <sc-if value="{{v.showValidity}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="t1-grow"><b>Validade de 7 dias</b>O link vence em 02/11. Não tem relação com o teste do Pro.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.validityWhy}}">Saiba por quê</button></div></sc-if>
+          <sc-if value="{{v.needPublish}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="t1-grow"><b>Publique seu perfil para convidar</b>{{v.needPublishTxt}}<div class="t3-alact"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goPublish}}">Ir para o perfil</button></div></div></div></sc-if>
+          <sc-if value="{{v.showValidity}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="t1-grow"><b>Validade de 7 dias</b>O link vence em {{v.expPreview}}. Não tem relação com o teste do Pro.</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.validityWhy}}">Saiba por quê</button></div></sc-if>
 
           <section class="card onb-sec" aria-label="Dados do convite">
             <div class="field"><label class="field__label" for="t1-nome">Nome do aluno</label><div class="{{v.nameCls}}"><input id="t1-nome" type="text" autocomplete="off" value="{{v.nome}}" onInput="{{v.setNome}}"></div><sc-if value="{{v.hasNameErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.nameErr}}</span></sc-if></div>
             <sc-if value="{{v.hasDup}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn"><i class="ic ic--sm i-users" aria-hidden="true"></i><div class="t1-grow"><b>Mesmo nome de alguém da sua carteira</b>{{v.dupTxt}}</div><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.openDup}}">Abrir aluno</button></div></sc-if>
-            <div class="field"><label class="field__label" for="t1-contato">E-mail ou celular (opcional)</label><div class="{{v.contactCls}}"><input id="t1-contato" type="text" inputmode="email" autocomplete="off" placeholder="nome@email.com ou (43) 99999-0000" value="{{v.contato}}" onInput="{{v.setContato}}" aria-describedby="t1-contato-h"></div><sc-if value="{{v.hasContactErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.contactErr}}</span></sc-if><span class="field__help" id="t1-contato-h">Serve para identificar quem aceitou. Nenhuma mensagem é enviada sozinha.</span></div>
+            <div class="field"><label class="field__label" for="t1-contato">{{v.contactLabel}}</label><div class="{{v.contactCls}}"><input id="t1-contato" type="text" inputmode="email" autocomplete="off" placeholder="nome@email.com ou (43) 99999-0000" value="{{v.contato}}" onInput="{{v.setContato}}" aria-describedby="t1-contato-h"></div><sc-if value="{{v.hasContactErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.contactErr}}</span></sc-if><span class="field__help" id="t1-contato-h">Serve para identificar quem aceitou. Nenhuma mensagem é enviada sozinha.</span></div>
             <div class="field"><span class="field__label">Serviço (opcional)</span><div class="onb-chips" role="group" aria-label="Serviço"><sc-for list="{{v.svcs}}" as="s" hint-placeholder-count="3"><button type="button" class="{{s.cls}}" aria-pressed="{{s.on}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for></div><span class="field__help">O convite cria o vínculo. Proposta de preço e preparação ficam em telas próprias.</span></div>
             <div class="field"><label class="field__label" for="t1-msg">Mensagem opcional</label><div class="input input--area"><textarea id="t1-msg" rows="3" placeholder="{{v.msgPh}}" value="{{v.msg}}" onInput="{{v.setMsg}}"></textarea></div><span class="field__help">Sem dados de saúde: o link pode aparecer em prévias de outros apps.</span></div>
-            <div class="kv t1-kv"><div class="kv__r"><span>Validade</span><b>7 dias · até 02/11</b></div><div class="kv__r"><span>Depois de criar</span><b>Copie o link ou envie pelo WhatsApp</b></div></div>
+            <div class="kv t1-kv"><div class="kv__r"><span>Validade</span><b>7 dias · até {{v.expPreview}}</b></div><div class="kv__r"><span>Depois de criar</span><b>Copie o link ou envie pelo WhatsApp</b></div></div>
           </section>
           <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{v.create}}">Criar convite</button><button type="button" class="btn btn--ghost btn--lg btn--block" onClick="{{v.goAlunos}}">Voltar aos alunos</button></div>
         </sc-if>
@@ -1384,14 +1385,14 @@
       <!-- H06 · Conteúdo (TRE13 · biblioteca de rotinas e pastas) -->
       <sc-if value="{{is.conteudo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead t3-head">
-          <div class="pghead__txt"><span class="eyebrow">Rotinas · exercícios · formulários</span><h1 class="pghead__title">Conteúdo</h1><p class="pghead__sub"></p></div>
+          <div class="pghead__txt"><span class="eyebrow">{{v.eyebrow}}</span><h1 class="pghead__title">Conteúdo</h1><p class="pghead__sub"></p></div>
           <div class="pghead__act"><button type="button" class="btn btn--primary" onClick="{{v.create}}"><i class="ic ic--sm i-plus" aria-hidden="true"></i>Nova rotina</button></div>
         </div>
 
         <sc-if value="{{v.notEmpty}}" hint-placeholder-val="{{ true }}">
         <div class="t3-searchrow">
           <div class="input input--search t3-search"><i class="ic ic--sm i-search" aria-hidden="true"></i><input id="t3-h06-q" type="search" placeholder="Buscar em rotinas" aria-label="Buscar em rotinas" value="{{v.q}}" onInput="{{v.setQ}}" onKeyDown="{{v.onKey}}"><sc-if value="{{v.hasQ}}" hint-placeholder-val="{{ false }}"><button type="button" class="icon-btn t3-x" aria-label="Limpar busca" onClick="{{v.clearQ}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if></div>
-          <div class="seg seg--fit seg--sm t3-seg" role="group" aria-label="Tipo de conteúdo"><button type="button" class="seg__it is-on" aria-pressed="true">Rotinas</button><button type="button" class="seg__it" aria-pressed="false" onClick="{{v.goEx}}">Exercícios</button><button type="button" class="seg__it" aria-pressed="false" onClick="{{v.goForms}}">Formulários</button></div>
+          <div class="seg seg--fit seg--sm t3-seg" role="group" aria-label="Tipo de conteúdo"><button type="button" class="seg__it is-on" aria-pressed="true">Rotinas</button><button type="button" class="seg__it" aria-pressed="false" onClick="{{v.goEx}}">Exercícios</button><sc-if value="{{v.hasForms}}" hint-placeholder-val="{{ true }}"><button type="button" class="seg__it" aria-pressed="false" onClick="{{v.goForms}}">Formulários</button></sc-if></div>
         </div>
         </sc-if>
 
@@ -1419,7 +1420,7 @@
             <section class="mod-card t3-only-desk" aria-label="Atalhos">
               <b>Atalhos</b>
               <button type="button" class="v4-reset lrow" onClick="{{v.goEx}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-dumbbell"></i></span><span class="lrow__t"><b>Exercícios</b><span>{{v.exSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
-              <button type="button" class="v4-reset lrow" onClick="{{v.goForms}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-file"></i></span><span class="lrow__t"><b>Formulários</b><span>{{v.formSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+              <sc-if value="{{v.hasForms}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset lrow" onClick="{{v.goForms}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-file"></i></span><span class="lrow__t"><b>Formulários</b><span>{{v.formSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
             </section>
           </aside>
 
@@ -1486,7 +1487,7 @@
 
             <div class="t3-only-mob mod-list">
               <button type="button" class="v4-reset lrow" onClick="{{v.goEx}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-dumbbell"></i></span><span class="lrow__t"><b>Exercícios</b><span>{{v.exSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
-              <button type="button" class="v4-reset lrow" onClick="{{v.goForms}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-file"></i></span><span class="lrow__t"><b>Formulários</b><span>{{v.formSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button>
+              <sc-if value="{{v.hasForms}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset lrow" onClick="{{v.goForms}}"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-file"></i></span><span class="lrow__t"><b>Formulários</b><span>{{v.formSub}}</span></span><i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></sc-if>
             </div>
           </div>
         </div>
@@ -1628,9 +1629,37 @@
         <div class="mod-grid2">
           <div class="mod-col">
             <section class="card t3-media" aria-label="Demonstração">
-              <sc-if value="{{v.isVideo}}" hint-placeholder-val="{{ true }}"><div class="t3-media__box"><button type="button" class="t3-media__play" aria-label="Reproduzir demonstração de {{v.name}}" onClick="{{v.play}}"><i class="ic i-play" aria-hidden="true"></i></button><span class="t3-media__cap">Vídeo de demonstração · os mesmos passos estão em texto abaixo</span></div></sc-if>
+              <sc-if value="{{v.vidYt}}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{v.notPlaying}}" hint-placeholder-val="{{ true }}"><div class="t3-media__box t3-vbox"><img class="t3-vbox__img" src="{{v.vidThumb}}" alt="" loading="lazy"><button type="button" class="t3-media__play" aria-label="Reproduzir vídeo de {{v.name}}" onClick="{{v.play}}"><i class="ic i-play" aria-hidden="true"></i></button></div></sc-if>
+                <sc-if value="{{v.playing}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-vbox"><iframe class="t3-vbox__fr" src="{{v.vidEmbed}}" title="Vídeo: {{v.vidTitle}}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div></sc-if>
+              </sc-if>
+              <sc-if value="{{v.vidFile}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-vbox"><video class="t3-vbox__fr" src="{{v.vidUrl}}" controls preload="metadata" playsinline></video></div></sc-if>
+              <sc-if value="{{v.isVideo}}" hint-placeholder-val="{{ false }}"><sc-if value="{{v.hasVid}}" hint-placeholder-val="{{ true }}"><div class="t3-vmeta"><span class="t3-vmeta__t"><b>{{v.vidTitle}}</b><span>{{v.vidSrc}} · os mesmos passos estão em texto abaixo</span></span><sc-if value="{{v.canPick}}" hint-placeholder-val="{{ true }}"><span class="t3-vmeta__a"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.openPick}}">{{v.pickLabel}}</button><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.removeVid}}">Retirar</button></span></sc-if></div></sc-if></sc-if>
               <sc-if value="{{v.isImg}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box"><i class="ic i-camera" aria-hidden="true"></i><span class="t3-media__cap">Foto da posição final · descrição: {{v.name}} executado com {{v.equip}}</span></div></sc-if>
-              <sc-if value="{{v.noMedia}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-media__box--off"><i class="ic i-file" aria-hidden="true"></i><span class="t3-media__cap">Sem vídeo · siga a instrução em texto</span></div></sc-if>
+              <sc-if value="{{v.noMedia}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-media__box--off"><i class="ic i-play" aria-hidden="true"></i><span class="t3-media__cap">Este exercício ainda não tem vídeo</span><sc-if value="{{v.canPick}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--white btn--sm" onClick="{{v.openPick}}">Escolher vídeo</button></sc-if></div></sc-if>
+              <sc-if value="{{v.pick}}" hint-placeholder-val="{{ false }}">
+                <div class="t3-vpick" role="region" aria-label="Escolher vídeo">
+                  <div class="t3-vpick__h"><b>Vídeo de {{v.name}}</b><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.closePick}}">Fechar</button></div>
+                  <div class="onb-chips" role="group" aria-label="Como escolher"><sc-for list="{{v.tabs}}" as="t" hint-placeholder-count="3"><button type="button" class="{{t.cls}}" aria-pressed="{{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+                  <sc-if value="{{v.tabAuto}}" hint-placeholder-val="{{ true }}">
+                    <sc-if value="{{v.sbusy}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted" role="status">Procurando vídeos de “{{v.name}}” no YouTube…</p></sc-if>
+                    <sc-if value="{{v.hasSugs}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Sugestões do YouTube para “{{v.name}}”. Confira se o vídeo mostra a execução que você ensina antes de escolher.</p><div class="t3-vsugs"><sc-for list="{{v.sugs}}" as="g" hint-placeholder-count="4"><div class="t3-vsugw"><button type="button" class="{{g.cls}}" aria-pressed="{{g.on}}" onClick="{{g.choose}}"><img src="{{g.thumb}}" alt="" loading="lazy"><span><b>{{g.title}}</b><small>{{g.channel}}</small></span></button><a class="onb-link mod-small" href="{{g.preview}}" target="_blank" rel="noopener">Assistir no YouTube ↗</a></div></sc-for></div></sc-if>
+                    <sc-if value="{{v.sNoKey}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Abra a busca pronta no YouTube, escolha um vídeo, copie o link e cole na aba “Link do YouTube”.</p><a class="btn btn--outline btn--sm" href="{{v.ytSearch}}" target="_blank" rel="noopener">Buscar “{{v.name}}” no YouTube ↗</a></sc-if>
+                    <sc-if value="{{v.sNone}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Nenhum vídeo encontrado automaticamente. Busque no YouTube e cole o link.</p><a class="btn btn--outline btn--sm" href="{{v.ytSearch}}" target="_blank" rel="noopener">Buscar no YouTube ↗</a></sc-if>
+                    <sc-if value="{{v.sErr}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">{{v.sErrMsg}}</p><div class="t3-alact"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.retrySearch}}">Tentar de novo</button><a class="btn btn--ghost btn--sm" href="{{v.ytSearch}}" target="_blank" rel="noopener">Buscar no YouTube ↗</a></div></sc-if>
+                  </sc-if>
+                  <sc-if value="{{v.tabLink}}" hint-placeholder-val="{{ false }}">
+                    <div class="field"><label class="field__label" for="t3-vlink">Link do vídeo no YouTube</label><div class="input"><input id="t3-vlink" type="url" inputmode="url" autocomplete="off" placeholder="https://youtu.be/…" value="{{v.link}}" onInput="{{v.setLink}}" aria-invalid="{{v.hasLerr}}"></div></div>
+                    <sc-if value="{{v.hasLerr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.lerr}}</span></sc-if>
+                    <button type="button" class="btn btn--primary btn--sm" aria-disabled="{{v.lbusy}}" onClick="{{v.useLink}}">{{v.linkLabel}}</button>
+                  </sc-if>
+                  <sc-if value="{{v.tabFile}}" hint-placeholder-val="{{ false }}">
+                    <p class="mod-small mod-muted">MP4, MOV ou WebM, até 100 MB. O vídeo fica na sua conta e aparece para os seus alunos nos treinos.</p>
+                    <label class="btn btn--primary btn--sm onb-file" aria-disabled="{{v.ubusy}}"><input type="file" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" class="onb-file__in" onChange="{{v.onFile}}"><i class="ic ic--xs i-upload" aria-hidden="true"></i>{{v.uLabel}}</label>
+                    <sc-if value="{{v.hasUerr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.uerr}}</span></sc-if>
+                  </sc-if>
+                </div>
+              </sc-if>
               <sc-if value="{{v.mFail}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-media__box--off"><i class="ic i-alert" aria-hidden="true"></i><span class="t3-media__cap">A mídia não carregou</span><button type="button" class="btn btn--white btn--sm" onClick="{{v.retryMedia}}">Tentar de novo</button></div></sc-if>
               <sc-if value="{{v.mDenied}}" hint-placeholder-val="{{ false }}"><div class="t3-media__box t3-media__box--off"><i class="ic i-lock" aria-hidden="true"></i><span class="t3-media__cap">Mídia não exibida: sem autorização de uso</span></div></sc-if>
             </section>
@@ -1692,12 +1721,15 @@
         </section>
 
         <section class="card onb-sec" aria-label="Mídia opcional">
-          <div class="mod-between"><h2 class="onb-h2">Mídia opcional</h2><span class="badge badge--plain">Opcional</span></div>
+          <div class="mod-between"><h2 class="onb-h2">Vídeo opcional</h2><span class="badge badge--plain">Opcional</span></div>
+          <sc-if value="{{v.realMedia}}" hint-placeholder-val="{{ false }}"><p class="mod-small mod-muted">Depois de salvar, escolha o vídeo na página do exercício: sugestões do YouTube, um link do YouTube ou um vídeo seu (até 100 MB).</p></sc-if>
+          <sc-if value="{{v.demoMedia}}" hint-placeholder-val="{{ true }}">
           <sc-if value="{{v.mNone}}" hint-placeholder-val="{{ true }}"><p class="mod-small mod-muted">Vídeo ou foto ajudam, mas não são obrigatórios. Envie só mídia sua ou com autorização.</p><button type="button" class="btn btn--outline" onClick="{{v.addMedia}}"><i class="ic ic--sm i-upload" aria-hidden="true"></i>Adicionar vídeo ou foto</button></sc-if>
           <sc-if value="{{v.mBad}}" hint-placeholder-val="{{ false }}"><div class="lrow"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-alert"></i></span><span class="lrow__t"><b>treino.heic</b><span>Formato não aceito</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.removeMedia}}">Remover</button></div><sc-if value="{{v.hasEMedia}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.eMedia}}</span></sc-if></sc-if>
           <sc-if value="{{v.mProc}}" hint-placeholder-val="{{ false }}"><div class="lrow"><span class="spin" aria-hidden="true"></span><span class="lrow__t"><b>wall-ball.mp4</b><span>Processando · você pode salvar agora</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.checkMedia}}">Consultar de novo</button></div></sc-if>
           <sc-if value="{{v.mOk}}" hint-placeholder-val="{{ false }}"><div class="lrow"><span class="lrow__ic" aria-hidden="true"><i class="ic ic--sm i-play"></i></span><span class="lrow__t"><b>wall-ball.mp4</b><span>Pronto · visível só para seus alunos</span></span><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.removeMedia}}">Remover</button></div></sc-if>
           <sc-if value="{{v.hasMedia}}" hint-placeholder-val="{{ false }}"><div class="field"><label class="field__label" for="t3-nx-alt">Descrição da mídia <i>*</i></label><div class="{{v.cAlt}}"><input id="t3-nx-alt" type="text" placeholder="O que o vídeo mostra, passo a passo" value="{{v.mediaAlt}}" onInput="{{v.setAlt}}"></div><span class="field__help">Para quem não pode ver ou ouvir. Legendas passam por revisão técnica.</span><sc-if value="{{v.hasEAlt}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.eAlt}}</span></sc-if></div></sc-if>
+        </sc-if>
         </section>
 
         <section class="card onb-sec" aria-label="Escopo">

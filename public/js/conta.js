@@ -258,9 +258,11 @@
     createInvite: function (o) {
       if (!sess) return Promise.resolve({ ok: false, nosession: true });
       var code = CONTA.newCode();
-      return db('GET', 'trainers?select=id&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) {
+      return db('GET', 'trainers?select=id,status&user_id=eq.' + encodeURIComponent(sess.user.id)).then(function (r) {
         var t = r.ok && r.data && r.data[0];
-        if (!t) return { ok: false, msg: 'Publique ou salve seu perfil de treinador antes de convidar.' };
+        if (!t) return { ok: false, needPublish: true, msg: 'Crie e publique seu perfil de treinador antes de convidar alunos.' };
+        // regra do servidor: só perfil publicado convida (o aluno abre o convite e vê quem é você)
+        if (t.status !== 'publicado') return { ok: false, needPublish: true, msg: 'Para convidar, publique seu perfil primeiro: o aluno abre o convite e vê o seu perfil. Publique em Perfil e volte aqui.' };
         return db('POST', 'invites', { code: code, trainer_id: t.id, kind: 'individual', recipient_name: o.name || null, recipient_email: o.email || null, service: o.service || null, message: o.message || null }, 'return=representation').then(function (x) { x.code = code; x.expiresAt = x.ok && x.data && x.data[0] ? x.data[0].expires_at : null; return x; });
       });
     },
@@ -297,6 +299,8 @@
     answerPrep: function (link, key, value, done) { return db('POST', 'rpc/answer_prep', { p_link: link, p_key: key, p_value: value, p_done: !!done, p_idem: 'prep:' + link + ':' + key + ':' + hash(value) + ':' + (done ? 1 : 0) }); },
     reviewPrep: function (link) { var k = 'review:' + link; return db('POST', 'rpc/review_prep', { p_link: link, p_idem: intent(k) }).then(function (r) { delete pend[k]; return r; }); },
     assignWorkout: function (link, title, sessions, version) {
+      // o vídeo escolhido pelo treinador para cada exercício vai junto: o aluno vê no treino
+      if (window.VID && Array.isArray(sessions)) sessions = sessions.map(function (x) { return Object.assign({}, x, { items: (x.items || []).map(function (it) { var v = it.video || window.VID.of(it.exerciseId); var o = Object.assign({}, it); if (v) o.video = v; else delete o.video; return o; }) }); });
       var body = { p_link: link, p_title: title, p_template: 'manual', p_sessions: sessions, p_schedule: null, p_idem: 'assign:' + link + ':v' + (version || 0) + ':' + hash(JSON.stringify([title, sessions])) };
       return db('POST', 'rpc/assign_workout', body).then(function (r) { if (r.ok) window.TRACK('workout.assigned', {}); return r; });
     },
@@ -383,7 +387,9 @@
     // conta 18+ (regra de mercado): registrada no perfil
     confirmAdult: function () { return sess ? db('PATCH', 'profiles?id=eq.' + encodeURIComponent(sess.user.id), { adult_confirmed_at: new Date().toISOString() }) : Promise.resolve({ ok: false }); },
     // retira o perfil da busca (volta a rascunho; nada é apagado)
-    unpublish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'rascunho' }) : Promise.resolve({ ok: false, nosession: true }); },
+    unpublish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'rascunho' }, 'return=representation').then(function (r) {
+      // some na hora também neste aparelho (listas e endereço público); o servidor esconde o endereço para todos em até 5 minutos
+      var row = r.ok && Array.isArray(r.data) ? r.data[0] : null; if (row && row.slug && window.REAL && window.REAL.hide) window.REAL.hide(row.slug); return r; }) : Promise.resolve({ ok: false, nosession: true }); },
     // publica o perfil (passa a aparecer na busca do site)
     publish: function () { return sess ? db('PATCH', 'trainers?user_id=eq.' + encodeURIComponent(sess.user.id), { status: 'publicado' }).then(function (r) { if (r.ok) window.TRACK('trainer.published', {}); return r; }) : Promise.resolve({ ok: false, nosession: true }); },
     session: function () { return sess; },
@@ -402,6 +408,7 @@
       return fetch(URL0 + '/storage/v1/object/sign/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ expiresIn: 300 }) })
         .then(function (r) { return r.ok ? r.json() : null; }, function () { return null; }).then(function (d) { var u = d && (d.signedURL || d.signedUrl); return u ? URL0 + '/storage/v1' + u : ''; });
     },
+    publicUrl: function (bucket, path) { return URL0 + '/storage/v1/object/public/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'); },
     fileDel: function (bucket, path) {
       if (!sess) return Promise.resolve({ ok: false });
       return fetch(URL0 + '/storage/v1/object/' + bucket + '/' + path.split('/').map(encodeURIComponent).join('/'), { method: 'DELETE', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token } }).then(function (r) { return { ok: r.ok }; }, function () { return { ok: false }; });

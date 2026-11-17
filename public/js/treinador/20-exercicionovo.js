@@ -96,6 +96,7 @@ REG.screen({
       measures: MEAS.map(function (m) { var on = f.measure === m[0]; return { label: m[1], cls: 'seg__it' + (on ? ' is-on' : ''), on: String(on), pick: function () { setF('measure', m[0]); } }; }),
       unitHelp: 'Unidade: ' + unit + '. A carga é prescrita no treino, em kg ou lb.',
       instr: f.instr, setInstr: function (e) { setF('instr', U.val(e)); }, eInstr: shown('instr'), hasEInstr: !!shown('instr'), cInstr: 'input input--area' + (shown('instr') ? ' is-err' : ''),
+      realMedia: !document.documentElement.classList.contains('demo'), demoMedia: document.documentElement.classList.contains('demo'),
       mNone: media === 'none', mProc: media === 'processing', mOk: media === 'ok', mBad: media === 'invalid', hasMedia: media !== 'none' && media !== 'invalid',
       addMedia: function () { setF('media', 'processing'); },
       checkMedia: function () { setF('media', 'ok'); },

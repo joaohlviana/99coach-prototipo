@@ -30,6 +30,7 @@ REG.screen({
       ctx.setUi({ busy: true, fail: false });
       var o = T.offer(f.svc), email = /@/.test(f.contato) ? f.contato.trim() : null;
       window.CONTA.createInvite({ name: f.nome.trim(), email: email, service: o ? o.name : null, message: f.msg || null }).then(function (r) {
+        if (!r.ok && r.needPublish) { ctx.setUi({ busy: false, needPublish: r.msg }); return; }
         if (!r.ok) { ctx.setUi({ busy: false, fail: true }); ctx.toast(r.offline ? 'Sem conexão: o convite não foi criado. Tente de novo.' : 'O servidor não criou o convite: ' + (r.msg || ('erro ' + r.status))); return; }
         doCreate();
         var cv0 = DB.t1_convites[0]; cv0.code = r.code; cv0.server = true;
@@ -67,6 +68,9 @@ REG.screen({
       contactCls: 'input' + (contactErr ? ' is-err' : ''), nameCls: 'input' + (nameErr ? ' is-err' : ''),
       svcs: svcs,
       hasDup: !!dup && !cv, dupTxt: dup ? 'Já existe ' + (dup.status === 'convite' ? 'um convite' : 'um vínculo') + ' com ' + dup.name + ' (' + T.status(dup).label.toLowerCase() + '). Se for outra pessoa, siga em frente.' : '', openDup: function () { if (dup) ctx.go('H05', { id: dup.id }); },
+      needPublish: !!ui.needPublish && !cv, needPublishTxt: ui.needPublish || '', goPublish: function () { GO('@onboarding', { flow: 'treinador' }); },
+      contactLabel: realAcct ? 'E-mail do aluno' : 'E-mail ou celular (opcional)',
+      expPreview: realAcct ? (function () { var d = new Date(Date.now() + 7 * 864e5); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2); })() : '02/11',
       showValidity: scn === 'validade', validityWhy: function () { ctx.toast('O link vale 7 dias para não ficar circulando. Depois disso, reemita em Convites: um link novo, sem reaproveitar o vencido.'); },
       fail: !!ui.fail, retry: doCreate,
       unknown: !!ui.unknown, consult: function () { doCreate(); ctx.toast('Consultamos: o convite foi criado uma vez só.'); },

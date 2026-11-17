@@ -447,6 +447,11 @@
         <!-- Recebimentos -->
         <sc-if value="{{sx.is.recebimentos}}" hint-placeholder-val="{{ false }}">
           <section class="card onb-sec" aria-label="Recebimentos">
+            <sc-if value="{{pay.real}}" hint-placeholder-val="{{ false }}">
+              <ul class="onb-inc"><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Necessário só para vender serviços e programas pela 99Coach</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Cobranças de verdade pelo Stripe, direto na sua conta; a 99Coach fica com 5% por venda</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Seus dados bancários e documentos são pedidos pelo próprio Stripe, nunca aqui</li></ul>
+              <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{pay.openReal}}">Ativar em Recebimentos</button></div>
+            </sc-if>
+            <sc-if value="{{pay.demo}}" hint-placeholder-val="{{ true }}">
             <sc-if value="{{pay.s.intro}}" hint-placeholder-val="{{ true }}">
               <ul class="onb-inc"><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Necessário para vender serviços e programas pela 99Coach</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Comissão de 5% por venda; taxas do processamento aparecem separadas</li><li><i class="ic ic--xs i-check" aria-hidden="true"></i>Publicar o perfil e convidar alunos não dependem disto</li></ul>
               <div class="field"><span class="field__label" id="cr-lt">Você recebe como</span><div class="onb-choices" role="radiogroup" aria-labelledby="cr-lt"><sc-for list="{{pay.types}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><i class="{{o.ic}}" aria-hidden="true"></i><b>{{o.title}}</b><span>{{o.sub}}</span></button></sc-for></div></div>
@@ -464,6 +469,7 @@
             </sc-if>
             <sc-if value="{{pay.s.ok}}" hint-placeholder-val="{{ false }}">
               <div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Vendas habilitadas</b>Os pagamentos de alunos caem em Recebimentos, com bruto, taxas e líquido separados.</div></div>
+            </sc-if>
             </sc-if>
           </section>
         </sc-if>
@@ -589,6 +595,14 @@
 
         <!-- ACC12 · segurança e sessões -->
         <sc-if value="{{cx.is.seguranca}}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{sg.real}}" hint-placeholder-val="{{ false }}">
+          <section class="card onb-sec" aria-label="Segurança da conta">
+            <h2 class="onb-h2">Segurança e aparelhos</h2>
+            <p class="v4-sub">A verificação em 2 etapas e os aparelhos conectados à sua conta ficam em “Meus dados e segurança”, com os dados reais da sua conta.</p>
+            <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{sg.openReal}}">Abrir Meus dados e segurança</button></div>
+          </section>
+          </sc-if>
+          <sc-if value="{{sg.demo}}" hint-placeholder-val="{{ true }}">
           <section class="card onb-sec" aria-label="Acesso">
             <h2 class="onb-h2">Acesso</h2>
             <div class="kv"><div class="kv__r"><span>E-mail</span><b>{{ct.email}}</b></div><div class="kv__r"><span>Entrar com</span><b>Código por e-mail · Google</b></div></div>
@@ -605,6 +619,7 @@
               <div class="field onb-narrow"><label class="field__label" for="cg-c">Código</label><div class="input onb-codebox"><input id="cg-c" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{sg.code}}" onInput="{{sg.setCode}}"></div></div>
               <div class="v4-row"><button type="button" class="btn btn--primary" onClick="{{sg.confirm}}">Confirmar</button><button type="button" class="btn btn--ghost" onClick="{{sg.cancel}}">Cancelar</button></div>
             </section>
+          </sc-if>
           </sc-if>
         </sc-if>
 

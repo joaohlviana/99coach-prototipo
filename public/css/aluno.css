@@ -1768,3 +1768,6 @@ button.a1-tree__it:hover{background:var(--paper-2)}
 }
 
 [data-t=table]{display:table;width:100%;border-collapse:collapse}[data-t=thead]{display:table-header-group}[data-t=tbody]{display:table-row-group}[data-t=tfoot]{display:table-footer-group}[data-t=tr]{display:table-row}[data-t=td],[data-t=th]{display:table-cell}[data-t=th]{font-weight:700;text-align:left}
+/* vídeo do exercício escolhido pelo treinador */
+.a1-vid{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;margin-top:8px}
+.a1-vid iframe,.a1-vid video{position:absolute;inset:0;width:100%;height:100%;border:0}

@@ -435,7 +435,10 @@
     if (hsh === 'esporte') name = 'esporte';
     else if (hsh.indexOf('servico') === 0) { name = 'servico'; params = { offer: hsh.split('-')[1] || 'online' }; }
     else if (hsh.indexOf('onboarding') === 0) { name = 'onboarding'; params = { flow: hsh.split('-')[1] || 'treinador', scn: hsh.split('-')[2] || '' }; }
-    else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = /^(pedir|perfilpedido)$/.test(hp[1] || '') ? { s: hp[1], id: hp.slice(2).join('-'), scn: '' } : { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' }; }
+    else if (MODP[hsh.split('-')[0]]) { var hp = hsh.split('-'); name = hp[0]; params = /^(pedir|perfilpedido)$/.test(hp[1] || '') ? { s: hp[1], id: hp.slice(2).join('-'), scn: '' } : { s: hp[1] || '', id: hp[2] || '', scn: hp[3] || '' };
+      // identificador com hífens (vínculo, pedido: UUID completo) não pode ser cortado no primeiro hífen ao recarregar
+      var mu = /^((?:[a-z]{1,4}_)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:-(.*))?$/i.exec(hp.slice(2).join('-'));
+      if (mu && params.s) { params.id = mu[1]; params.scn = mu[2] || ''; } }
     else if (hsh.indexOf('telas') === 0) { name = 'telas'; params = { id: hsh.split('-')[1] || '' }; }
     else if (hsh.indexOf('perfil') === 0) { name = 'perfil'; params = { id: hsh.slice(7) || 'rafael' }; }
     var g0 = guard(name, params), moved = g0[0] !== name; name = g0[0]; params = g0[1];
