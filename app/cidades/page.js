@@ -21,7 +21,7 @@ export default function Cidades() {
       </section>
       {ufs.map((uf) => (
         <section key={uf} aria-labelledby={'uf-' + uf}>
-          <h2 id={'uf-' + uf}>{uf}</h2>
+          <h2 id={'uf-' + uf}><a href={'/estado/' + porUF.get(uf)[0].label.slice(-2).toLowerCase()}>{uf}</a></h2>
           <ul className="ssr-chips">{porUF.get(uf).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR')).map((c) => <li key={c.slug}><a href={'/cidade/' + c.slug}>{c.label.split(',')[0]} <small>{c.n}</small></a></li>)}</ul>
         </section>
       ))}

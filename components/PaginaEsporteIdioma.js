@@ -3,7 +3,7 @@
 import { notFound } from 'next/navigation';
 import ShellIdioma, { CartaoIdioma, PaginacaoIdioma } from './ShellIdioma.js';
 import { dados } from './PaginaEsporte.js';
-import { lista, cidadesDo, esportes, curta, SITE } from '../lib/catalogo.js';
+import { lista, cidadesDo, esportes, curta, SITE, nomeDoUF, cidadesDoUF } from '../lib/catalogo.js';
 import { t as tr, esporteNome, servico, idiomas, ok } from '../lib/i18n.js';
 
 const POR_PAGINA = 36;
@@ -12,8 +12,9 @@ export function metadadosIdioma(l, esporteSlug, ondeSlug, pagina = 1) {
   const d = ok(l) ? dados(esporteSlug, ondeSlug, pagina) : null;
   if (!d) return { title: 'Not found', robots: { index: false } };
   const x = tr(l), nome = esporteNome(l, d.esp.slug, d.esp.label), serv = servico(l, d.esp.slug, d.esp.label);
-  const titulo = (d.online ? x.onlineOf(serv) : (d.cid ? x.inCity(serv, curta(d.cid.label)) : serv)) + (pagina > 1 ? x.page(pagina) : '');
-  const descricao = d.online ? x.whoOnline(nome) : x.sportDesc(serv, d.itens.length, d.cid ? d.cid.label : '');
+  const lugar = d.cid ? curta(d.cid.label) : (d.uf ? nomeDoUF(d.uf) : '');
+  const titulo = (d.online ? x.onlineOf(serv) : (lugar ? x.inCity(serv, lugar) : serv)) + (pagina > 1 ? x.page(pagina) : '');
+  const descricao = d.online ? x.whoOnline(nome) : x.sportDesc(serv, d.itens.length, d.cid ? d.cid.label : (d.uf ? nomeDoUF(d.uf) : ''));
   return { title: titulo, description: descricao, alternates: { canonical: '/' + l + d.caminho, languages: idiomas(d.caminho) },
     openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: titulo, description: descricao, url: '/' + l + d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
@@ -22,11 +23,13 @@ export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina =
   if (!ok(l)) notFound();
   const d = dados(esporteSlug, ondeSlug, pagina);
   if (!d) notFound();
-  const x = tr(l), { esp, online, cid, itens, paginas } = d;
+  const x = tr(l), { esp, online, itens, paginas } = d;
+  // estado entra como um "lugar" (nome e endereço próprios), com as mesmas regras da cidade
+  const cid = d.cid || (d.uf ? { label: nomeDoUF(d.uf), slug: d.uf } : null);
   const nome = esporteNome(l, esp.slug, esp.label), serv = servico(l, esp.slug, esp.label);
   const h1 = online ? x.onlineOf(serv) : (cid ? x.inCity(serv, curta(cid.label)) : serv);
   const ini = (pagina - 1) * POR_PAGINA, naPagina = itens.slice(ini, ini + POR_PAGINA);
-  const cidades = cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug);
+  const cidades = d.uf ? cidadesDoUF(d.uf, esp.slug) : cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
   const pre = '/' + l + '/treinadores/';

@@ -1,4 +1,4 @@
-// Seletor de cidade: Todo o Brasil, estado inteiro, limpar cidade e endereço com estado (?uf=).
+// Seletor de cidade: Todo o Brasil, estado inteiro, limpar cidade e endereço com estado (/treinadores/yoga/pr; o antigo ?uf= redireciona).
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1280, height: 860 } });
@@ -19,7 +19,7 @@ const rows = await p.evaluate(() => [...document.querySelectorAll('.cs-row')].ma
 console.log('3 estado filtra as cidades:', /Paraná · estado todo/.test(rows[1] || ''), rows.slice(2).every((r) => /, PR /.test(r)), rows.length > 3);
 await p.evaluate(() => { const r = [...document.querySelectorAll('.cs-row')].find((e) => /estado todo/.test(e.innerText)); if (r) r.click(); });
 await p.waitForTimeout(1500);
-console.log('4 estado inteiro:', path() === '/treinadores/yoga?uf=pr', /NO PARANÁ/i.test(await txt('#app h1')), /ONDE Paraná/i.test(await txt('#app .vf-hsearch')));
+console.log('4 estado inteiro:', path() === '/treinadores/yoga/pr', /NO PARANÁ/i.test(await txt('#app h1')), /ONDE Paraná/i.test(await txt('#app .vf-hsearch')));
 const cidades = await p.evaluate(() => [...document.querySelectorAll('#app .vf-tc .vf-meta')].map((e) => e.innerText).filter((x) => /, [A-Z]{2}/.test(x)));
 console.log('  só profissionais do estado:', cidades.length > 0 && cidades.every((x) => /, PR/.test(x)));
 await p.click('#app .vf-hclr');
