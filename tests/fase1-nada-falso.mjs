@@ -76,7 +76,7 @@ srv.invites = [{ code: 'ABCD-EFGH', recipient_name: 'Bia Lima', recipient_email:
   { code: 'ZZZZ-YYYY', recipient_name: 'Davi Reis', status: 'aceito', created_at: '2026-11-01T10:00:00Z', expires_at: '2026-11-08T10:00:00Z', accepted_at: '2026-11-02T10:00:00Z', generation: 1 }];
 const tr = await mk('tr', 'treinador');
 await tr.evaluate(() => NAV.go('treinador', { s: 'convites' }, null)); await tr.waitForTimeout(1200); t = await txt(tr);
-console.log('5 convites do servidor:', /Bia Lima/.test(t), t.includes('vale até ' + VENCE_TXT), /Aceitos \(1\)/.test(t));
+console.log('5 convites do servidor:', /Bia Lima/.test(t), t.toLowerCase().includes('vale até ' + VENCE_TXT), /Aceitos \(1\)/.test(t));
 await press(tr, /^Revogar$/); await press(tr, /^Revogar convite$/, '.mod-sheet button'); await tr.waitForTimeout(800); t = await txt(tr);
 console.log('  revogou no servidor:', srv.calls.includes('revoke_invite'), /Vencidos e revogados \(1\)/.test(t));
 await tr.evaluate(() => NAV.go('treinador', { s: 'menu' }, null)); await tr.waitForTimeout(600); t = await txt(tr);
