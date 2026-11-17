@@ -14,7 +14,7 @@
   <header class="hdr">
     <div class="wrap hdr__in">
       <button type="button" class="v4-reset vfp-logo" aria-label="99Coach, página inicial" onClick="{{openHome}}"><img class="hdr__logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach"></button>
-      <button type="button" class="hdr__search vf-hsearch" onClick="{{openSearch}}" aria-label="Busca atual: {{ctxLabel}}. Voltar para os resultados"><i class="ic ic--sm i-search" aria-hidden="true"></i><span class="vf-hs">{{ctxLabel}}</span><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
+      <div class="hdr__search vf-hsearch" role="group" aria-label="Busca atual: {{ctxLabel}}"><button type="button" class="vf-hsb vf-hsb--mod" onClick="{{openSearch}}" aria-label="Modalidade: {{hMod}}. Voltar para os resultados"><i class="ic ic--sm i-search" aria-hidden="true"></i><span class="vf-hsl"><small>Modalidade</small><b>{{hMod}}</b></span><i class="ic ic--xs i-chev-d" aria-hidden="true"></i></button><span class="vf-hsep" aria-hidden="true"></span><button type="button" class="vf-hsb vf-hsb--city" onClick="{{openSearch}}" aria-label="Onde: {{hCity}}. Voltar para os resultados"><i class="ic ic--sm i-pin" aria-hidden="true"></i><span class="vf-hsl"><small>Onde</small><b>{{hCity}}</b></span><i class="ic ic--xs i-chev-d" aria-hidden="true"></i></button></div>
       <nav class="hdr__nav" aria-label="Principal">
         <button type="button" class="hdr__link is-on" onClick="{{openSearch}}">Treinadores</button>
         <button type="button" class="hdr__link" onClick="{{openSearch}}">Esportes</button>

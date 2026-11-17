@@ -271,7 +271,7 @@
               <span class="vf-meta">{{t.where}}</span>
               <sc-if value="{{t.hasWhy2}}" hint-placeholder-val="{{ true }}"><span class="vf-reason {{t.whyCls}}">{{t.why2}}</span></sc-if>
               <sc-if value="{{t.pend}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn" style="align-self: flex-start">Pedido enviado · aguardando resposta</span></sc-if>
-              <div class="vf-tc__f"><sc-if value="{{t.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offName}}</span></span></sc-if><button type="button" class="icon-btn" onClick="{{t.why}}" aria-label="Por que estou vendo {{t.name}}?"><i class="ic ic--sm i-more" aria-hidden="true"></i></button></div>
+              <sc-if value="{{t.hasPrice}}" hint-placeholder-val="{{ true }}"><div class="vf-tc__f"><span class="vf-price"><b>{{t.price}} <small>{{t.unit}}</small></b><span>{{t.offName}}</span></span></div></sc-if>
             </div>
           </article></sc-if>
         </sc-for>

@@ -317,6 +317,8 @@ class Component extends DCLogic {
 
     return {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
+      // cabeçalho igual ao da lista: modalidade e lugar da busca de onde a pessoa veio
+      hMod: (cr && cr.sport) || (ctxLabel.split(' · ')[0] || 'Treinadores'), hCity: cr ? (cr.city ? cr.city.split(',')[0] : (x.formats === 'Online' ? 'Online' : 'Todo o Brasil')) : (ctxLabel.split(' · ')[1] || 'Todo o Brasil'),
       ctxLabel, crumbSport: cr ? cr.sport : 'CrossFit', crumbCity: cr ? cr.city : 'Londrina, PR', crumbSportHref: cr && cr.slug ? '/treinadores/' + cr.slug : '/', crumbCityHref: cr && cr.slug && cr.city ? '/treinadores/' + cr.slug + '/' + sl(cr.city) : '/', hasCrumbSport: !cr || !!cr.sport, hasCrumbCity: !cr || !!cr.city, goCrumbSport: cr ? crGo(false) : () => window.NAV.toSearch(this), goCrumbCity: cr ? crGo(true) : () => window.NAV.toSearch(this), hasPitch: !x.pending, fmtIc: 'ic ic--sm ' + (/Presencial/.test(x.formats || '') ? 'i-pin' : 'i-monitor'), anon: !st.user, signed: !!st.user, userName: U ? U.name : '', userDest: U ? U.dest : '', userIni: U ? U.ini : '', userAv: '', userPhoto: U && U.photo ? U.photo : '', userHasPhoto: !!(U && U.photo), userNoPhoto: !!U && !U.photo, openInbox: open('inbox'), openConta: U ? open('acct') : () => set({ sheet: 'entrar', after: null }), tabOn: !st.sheet,
       // remover: perfil importado e ainda sem dono sai do site na hora (pedido com protocolo; a equipe revisa depois)
       removable: !!(x.imported && window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')),
