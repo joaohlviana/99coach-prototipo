@@ -331,7 +331,7 @@ class Component extends DCLogic {
         const slugP = x && x.id && !document.documentElement.classList.contains('demo') ? x.id : '';
         if (slugP && st.progFor !== slugP && window.CONTA) {
           st.progFor = slugP;
-          window.CONTA.db('GET', 'programs?select=id,title,weeks,workouts,access_months,price_cents,description,trainers!inner(slug)&status=eq.publicado&trainers.slug=eq.' + encodeURIComponent(slugP) + '&order=title.asc')
+          window.CONTA.db('GET', 'programs?select=id,title,goal,format,version,weeks,workouts,access_months,price_cents,description,trainers!inner(slug)&status=eq.publicado&sale_enabled=is.true&trainers.slug=eq.' + encodeURIComponent(slugP) + '&order=title.asc')
             .then((r) => this.setState({ progs: r.ok && Array.isArray(r.data) ? r.data : [] }));
         }
         const pl = (n, a, b) => n + ' ' + (n === 1 ? a : b);
@@ -350,7 +350,7 @@ class Component extends DCLogic {
             });
           });
         };
-        const progs = (st.progs || []).map((pg) => ({ title: pg.title, sub: pl(pg.weeks, 'semana', 'semanas') + ' · ' + pl(pg.workouts, 'treino', 'treinos') + ' · acesso por ' + pl(pg.access_months, 'mês', 'meses'), desc: pg.description || '', hasDesc: !!pg.description,
+        const progs = (st.progs || []).filter((pg) => pg.price_cents).map((pg) => ({ title: pg.title, sub: [pg.format === 'curso' ? 'Curso em vídeo' : 'Programa de sessões', pg.workouts ? pl(pg.workouts, 'sessão', 'sessões') : '', pg.weeks ? pl(pg.weeks, 'semana', 'semanas') : '', 'acesso de 12 meses a partir da liberação', 'acompanhamento individual não incluído'].filter(Boolean).join(' · '), desc: pg.description || pg.goal || '', hasDesc: !!(pg.description || pg.goal),
           label: st.progBusy === pg.id ? 'Abrindo pagamento…' : 'Comprar por R$ ' + (pg.price_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }), buy: buy(pg) }));
         return { rprogs: progs, hasRprogs: progs.length > 0, progMsg: st.progMsg || '', hasProgMsg: !!st.progMsg };
       })(),

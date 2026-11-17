@@ -20,8 +20,8 @@ export default function Programas({ slug }) {
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState('');
   useEffect(() => {
-    fetch(URL0 + '/rest/v1/programs?select=id,title,weeks,workouts,access_months,price_cents,description,trainers!inner(slug)&status=eq.publicado&trainers.slug=eq.' + encodeURIComponent(slug) + '&order=title.asc', { headers: { apikey: KEY } })
-      .then((r) => (r.ok ? r.json() : [])).then((d) => setLista(Array.isArray(d) ? d : []), () => setLista([]));
+    fetch(URL0 + '/rest/v1/programs?select=id,title,goal,format,weeks,workouts,access_months,price_cents,description,trainers!inner(slug)&status=eq.publicado&sale_enabled=is.true&trainers.slug=eq.' + encodeURIComponent(slug) + '&order=title.asc', { headers: { apikey: KEY } })
+      .then((r) => (r.ok ? r.json() : [])).then((d) => setLista(Array.isArray(d) ? d.filter((p) => p.price_cents) : []), () => setLista([]));
   }, [slug]);
   if (!lista || !lista.length) return null;
   const comprar = async (p) => {
@@ -45,12 +45,12 @@ export default function Programas({ slug }) {
   return (
     <section aria-labelledby="h-prog">
       <h2 id="h-prog">Programas</h2>
-      <p>Planos prontos para seguir no seu ritmo. Acesso pelo período indicado, sem acompanhamento individual. Garantia de 7 dias.</p>
+      <p>Planos prontos para seguir no seu ritmo. Pagamento único, acesso de 12 meses a partir da liberação, sem acompanhamento individual. Garantia de 7 dias.</p>
       <ul className="ssr-progs">{lista.map((p) => (
         <li key={p.id}>
           <b>{p.title}</b>
-          <small>{plural(p.weeks, 'semana', 'semanas')} · {plural(p.workouts, 'treino', 'treinos')} · acesso por {plural(p.access_months, 'mês', 'meses')}</small>
-          {p.description ? <span>{p.description}</span> : null}
+          <small>{[p.format === 'curso' ? 'Curso em vídeo' : 'Programa de sessões', p.workouts ? plural(p.workouts, 'sessão', 'sessões') : '', p.weeks ? plural(p.weeks, 'semana', 'semanas') : '', 'acesso de 12 meses a partir da liberação'].filter(Boolean).join(' · ')}</small>
+          {p.description || p.goal ? <span>{p.description || p.goal}</span> : null}
           <button type="button" onClick={() => comprar(p)} disabled={!!busy}>{busy === p.id ? 'Abrindo pagamento…' : 'Comprar por ' + brl(p.price_cents)}</button>
         </li>))}
       </ul>

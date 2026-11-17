@@ -56,5 +56,17 @@
     },
     remove: function (v) { if (v && v.kind === 'arquivo' && v.path && window.CONTA) window.CONTA.fileDel(BUCKET, v.path); }
   };
+  // sessões de um programa no formato de leitura do aluno (também usado na prévia do treinador): exercícios com prescrição e vídeo
+  VID.sessionsView = function (sessions, openIdx, toggle) {
+    return (Array.isArray(sessions) ? sessions : []).map(function (s, i) {
+      var v = VID.valid(s && s.video) ? s.video : null, open = openIdx === i;
+      return { n: String(i + 1), title: (s && s.title) || ('Sessão ' + (i + 1)), text: (s && s.text) || '', hasText: !!(s && s.text),
+        items: ((s && s.items) || []).map(function (it) { var rx = [it.sets ? it.sets + ' séries' : '', it.reps ? it.reps + ' repetições' : '', it.rest ? 'descanso ' + it.rest : ''].filter(Boolean).join(' · ');
+          return { name: it.name || 'Exercício', rx: rx, hasRx: !!rx, note: it.note || '', hasNote: !!it.note }; }),
+        hasItems: !!((s && s.items) || []).length, hasVid: !!v, vidOpen: open && !!v, vidYt: open && !!v && v.kind === 'youtube', vidFile: open && !!v && v.kind === 'arquivo',
+        vidEmbed: open && v && v.kind === 'youtube' ? VID.embed(v.id, true) : '', vidUrl: open && v && v.kind === 'arquivo' ? v.url : '',
+        vidLabel: open ? 'Fechar vídeo' : 'Ver vídeo', vidTitle: 'Vídeo: ' + ((s && s.title) || 'sessão'), toggleVid: function () { toggle(open ? -1 : i); } };
+    });
+  };
   window.VID = VID;
 })();
