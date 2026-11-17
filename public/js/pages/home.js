@@ -205,7 +205,11 @@ class Component extends DCLogic {
       if (u.k === 'ped') return set({ pedCanceled: false, toast: null });
       set({ toast: null }); };
 
-    const ftrLinks = [['CrossFit em Londrina', 'crossfit'], ['Musculação em Londrina', 'musculacao'], ['Corrida em Londrina', 'corrida'], ['Treinadores online', null]].map(([label, id]) => ({ label, go: () => window.NAV.go('esporte', id ? { mod: window.NAV.modOf(id), city: 'Londrina, PR', fmt: 'Presencial' } : { fmt: 'Online' }, this) }));
+    const spSlug = (id) => { const s = window.SPORTS && window.SPORTS.get(window.NAV.modOf(id)); return (s && s.slug) || id; };
+    const linkTo = (href, fn) => ({ href, go: (e) => { if (e && e.preventDefault) e.preventDefault(); fn(); } });
+    // cidades com mais profissionais presenciais no catálogo (lista fixa: não muda a tela enquanto o catálogo carrega)
+    const TOPC = [['São Paulo, SP', 'sao-paulo-sp'], ['Rio de Janeiro, RJ', 'rio-de-janeiro-rj'], ['Curitiba, PR', 'curitiba-pr'], ['Londrina, PR', 'londrina-pr'], ['Goiânia, GO', 'goiania-go'], ['Recife, PE', 'recife-pe'], ['Brasília, DF', 'brasilia-df'], ['Belo Horizonte, MG', 'belo-horizonte-mg'], ['Campinas, SP', 'campinas-sp'], ['Salvador, BA', 'salvador-ba'], ['Fortaleza, CE', 'fortaleza-ce'], ['Maringá, PR', 'maringa-pr']];
+    const ftrLinks = [['Personal trainer de musculação', 'musculacao'], ['Pilates', 'pilates'], ['Treinamento funcional', 'funcional'], ['Treinadores online', 'musculacao', 'Online']].map(([label, id, fmt]) => ({ label, ...linkTo('/treinadores/' + spSlug(id) + (fmt ? '/online' : ''), () => window.NAV.go('esporte', { mod: window.NAV.modOf(id), city: '', fmt: fmt || 'Qualquer' }, this)) })).concat([{ label: 'Todas as cidades', href: '/cidades', go: (e) => { if (e && e.preventDefault) e.preventDefault(); location.href = '/cidades'; } }]);
 
 
     // VFINAL: vitrines da referência
@@ -232,11 +236,12 @@ class Component extends DCLogic {
     const plist4 = PG4.map((p) => Object.assign({}, p, { cover: B(p.cover), open: open('program', Object.assign({}, p, { cover: B(p.cover) })) }));
     const TILES = [['Musculação', 'força e hipertrofia', 'ddc2a85a675b6360b30e74c352a6a43a', 'musculacao'], ['CrossFit', 'LPO, ginástica, WOD', '4f287f956509500f4c89225daef9c5c5', 'crossfit'], ['Yoga e Pilates', 'mobilidade e postura', 'a8e3bd5a89dffa722591b85c65c3dc53', 'pilates'], ['Corrida', 'do 5 km à maratona', 'd7f58212b752ef1353285564cfe093c1', 'corrida'], ['Natação', 'técnica e performance', 'd638b9405ce41661a674fe9a2b40e890', 'natacao'], ['Lutas', 'muay thai, boxe, jiu-jitsu', 'f1d53560db4fc016d4604ed68cf1b86d', 'lutas']];
     const TINT = { musculacao: 'forca', crossfit: 'forca', pilates: 'mente', corrida: 'corrida', natacao: 'agua', lutas: 'lutas' };
-    const sportTiles = TILES.map(([label, sub, img, id]) => ({ label, sub, img: B(img), tint: '--tint: var(--sp-' + TINT[id] + ')', go: () => window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this) }));
+    const sportTiles = TILES.map(([label, sub, img, id]) => ({ label, sub, img: B(img), tint: '--tint: var(--sp-' + TINT[id] + ')', ...linkTo('/treinadores/' + spSlug(id), () => window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this)) }));
     const GUIDES = [['Guia · Musculação', 'Como escolher um personal trainer: 7 perguntas antes de contratar', 'ddc2a85a675b6360b30e74c352a6a43a'], ['Guia · Corrida', 'Planilha ou consultoria? O que faz sentido para a sua primeira prova', 'd7f58212b752ef1353285564cfe093c1'], ['Guia · CrossFit', 'Do primeiro WOD ao Open: quanto tempo leva e com quem treinar', '4f287f956509500f4c89225daef9c5c5']];
     const guides = GUIDES.map(([kind, title, img]) => ({ kind, title, img: B(img), go: info(title, ['Guia editorial: conteúdo de apoio, sem venda dentro do texto.', 'Texto completo ainda não publicado.']) }));
-    const CL = ['Personal trainer em Londrina', 'CrossFit em Londrina', 'Pilates em Londrina', 'Personal trainer em Maringá', 'CrossFit em Maringá', 'Pilates em Maringá', 'Personal trainer em Curitiba', 'CrossFit em Curitiba', 'Pilates em Curitiba', 'Personal trainer em Cambé', 'CrossFit em Cambé', 'Pilates em Cambé'];
-    const cityLinks = CL.map((label) => ({ label, go: () => { const a = label.split(' em '); window.NAV.go('esporte', { mod: a[0] === 'Personal trainer' ? 'Musculação' : a[0], city: a[1] + ', PR', fmt: 'Presencial' }, this); } }));
+    const CL = TOPC.map(([c]) => 'Personal trainer em ' + c.split(',')[0]);
+    // página da cidade (todas as modalidades) é servida pelo servidor: o link abre a página completa
+    const cityLinks = TOPC.map(([c, k]) => ({ label: 'Personal trainer em ' + c.split(',')[0], href: '/cidade/' + k, go: null }));
     const exploreChips = [['Corrida', 'corrida'], ['Yoga e Pilates', 'pilates'], ['Funcional', 'funcional'], ['Lutas', 'lutas'], ['Online', null]].map(([label, id]) => ({ label, go: id ? (() => set({ sport: id, hidden: {}, toast: null })) : (() => set({ mode: 'online', hidden: {}, toast: null })) }));
     const svT = sh === 'svc' ? sd : null;
     const pedLine = S.pedCanceled ? ['Pedido cancelado', 'Cancelado em 26/10. Nada foi cobrado.', 'badge badge--plain'] : ['Aguardando resposta', 'Rafael responde até 28/10.', 'badge badge--warn'];
@@ -371,6 +376,8 @@ class Component extends DCLogic {
       signCoach: () => set({ sd: { why: 'Comece no Essencial: grátis, até 3 alunos ativos. O teste do Pro é opcional e só começa se você ativar.', title: 'Criar meu perfil de treinador', done: 'Criar perfil', ok: 'Conta criada. Próximo passo: completar o mínimo do perfil.' }, code: 0 }),
       menuItems, infoLines: sd.lines || [], infoCta: sd.cta || 'Fechar',
       toastOn: !!S.toast, toastMsg: S.toast ? S.toast.msg : '', toastUndo: !!(S.toast && S.toast.undo), toastTop: S.ty + 'px', doUndo, closeToast: () => set({ toast: null }),
+      // enquanto o catálogo completo chega, os cartões ficam como esqueleto (sem trocar uma lista por outra na frente da pessoa)
+      nearLoad: PRODH && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' ? ' is-load' : '', nearBusy: String(!!(PRODH && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando')),
       ftrLinks, mCities: info('Procure na sua cidade', CL), mPct: (() => { const m = /semana ([0-9]+) de ([0-9]+)/.exec(lk.week || ''); return m ? Math.round(100 * m[1] / m[2]) + '%' : ''; })(), mRing: /semana [0-9]+ de [0-9]+/.test(lk.week || ''), mRingStyle: (() => { const m = /semana ([0-9]+) de ([0-9]+)/.exec(lk.week || ''); const p = m ? Math.round(100 * m[1] / m[2]) : 0; return 'background: conic-gradient(var(--brand) ' + p + '%, var(--ink-3) 0)'; })(), mSvcN: String(svcs.length), mCityN: String(CL.length), cats, svcs, plist4, sportTiles, guides, cityLinks, exploreChips,
       shSvc: sh === 'svc', sv: svT ? Object.assign({}, svT) : { coach: '', first: '', kind: '', title: '', price: '', unit: '', rate: '' },
       svGo: window.NAV.svc(svT) ? () => window.NAV.go(window.NAV.svc(svT).page, window.NAV.svc(svT), this) : goto('Perfil de ' + (svT ? svT.coach : ''), 'o perfil de ' + (svT ? svT.coach : '') + ', com este serviço já escolhido'),

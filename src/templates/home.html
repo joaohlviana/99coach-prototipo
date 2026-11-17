@@ -12,7 +12,7 @@
 
 
   <!-- ============ TELA DE APP (celular < 600) — VITRINE para quem procura treinador (marketplace) ============ -->
-  <div class="vfm" id="conteudo-app">
+  <div class="vfm" id="conteudo-app" role="main">
     <!-- Barra superior: logo · Salvos · Entrar/conta (a navegação é a barra inferior) -->
     <div class="vfm-bar vfm-bar--pub">
       <img class="vfm-logo" src="@@IMG:c994186ea30c1564@@" alt="99Coach">
@@ -25,7 +25,7 @@
 
     <!-- Hero de app: foto em sangria, título grande e busca sobreposta -->
     <section class="vfm-hero2" aria-labelledby="vfm-h1">
-      <div class="vfm-hero2__media"><img src="@@IMG:570416df9063df47@@" alt=""></div>
+      <div class="vfm-hero2__media"><img src="/img/570416df9063df47-m.webp" width="760" height="716" fetchpriority="high" alt=""></div>
       <div class="vfm-hero2__in">
         <span class="vfm-eb2">Marketplace de treinadores</span>
         <h1 id="vfm-h1" class="vfm-h1b"><span>{{h1a}}</span> <em>{{h1b}}</em></h1>
@@ -35,7 +35,7 @@
     <section class="vfm-hero vfm-qwrap" aria-label="Buscar treinadores">
       <div class="qbar vfm-qbar" role="search" aria-label="Buscar treinadores">
         <button type="button" class="qbar__go vfm-qgo" onClick="{{openSx}}" aria-label="Abrir a busca"><i class="ic ic--sm i-search" aria-hidden="true"></i></button>
-        <button type="button" class="vfm-qtx" onClick="{{openSx}}" aria-haspopup="dialog"><b>{{sportLabel}} · {{cityShort}}</b><span>{{modeLabel}} · toque para buscar</span></button>
+        <button type="button" class="vfm-qtx" onClick="{{openSx}}" aria-haspopup="dialog"><b>{{sportLabel}} · {{cityShort}}</b><span>{{modeLabel}}</span></button>
         <button type="button" class="qbar__btn vfm-qbtn" onClick="{{doSearch}}">Buscar<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
       </div>
     </section>
@@ -61,7 +61,7 @@
       </sc-if>
 
       <!-- Treinadores para a sua busca: linhas (máx. 4) -->
-      <section class="vfm-sec" id="treinadores-app" aria-labelledby="vfm-t">
+      <section class="vfm-sec{{nearLoad}}" id="treinadores-app" aria-labelledby="vfm-t">
         <div class="vfm-head"><h2 id="vfm-t" class="vfm-title">Treinadores para a sua busca</h2></div>
         <p class="vfm-sub">{{tSub}}<button type="button" class="vfm-u vfm-why-b" onClick="{{openOrder}}">Por que estes?</button></p>
         <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>Escolha uma cidade</b><span>Sem cidade não existe “perto de você”.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
@@ -119,7 +119,7 @@
       <!-- Explore os esportes -->
       <section class="vfm-sec" aria-labelledby="vfm-e">
         <div class="vfm-head"><h2 id="vfm-e" class="vfm-title">Explore os esportes</h2><button type="button" class="vfm-more" onClick="{{openSports}}">Ver todos<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
-        <div class="vf-track vfm-t44 no-sb"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><button type="button" class="st vfm-st" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span></button></sc-for></div>
+        <div class="vf-track vfm-t44 no-sb"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><a class="st vfm-st" href="{{e.href}}" data-spa="1" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span></a></sc-for></div>
       </section>
 
       <!-- Como funciona -->
@@ -151,7 +151,7 @@
       <!-- Cidades -->
       <section class="vfm-sec" aria-labelledby="vfm-ci">
         <div class="vfm-head"><h2 id="vfm-ci" class="vfm-title">Procure na sua cidade</h2><button type="button" class="vfm-more" onClick="{{mCities}}">Ver {{mCityN}}<i class="ic ic--sm i-chev-r" aria-hidden="true"></i></button></div>
-        <div class="vfm-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><button type="button" class="chip" onClick="{{k.go}}">{{k.label}}</button></sc-for></div>
+        <div class="vfm-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><a class="chip" href="{{k.href}}">{{k.label}}</a></sc-for></div>
       </section>
 
       <div class="vfm-foot"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach"><div><button type="button" onClick="{{openHelp}}">Ajuda</button><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button></div><p class="vfm-langs"><b lang="pt-BR">Português</b><a href="/en" hreflang="en" lang="en">English</a><a href="/es" hreflang="es" lang="es">Español</a></p><span>© 2026</span></div>
@@ -253,7 +253,7 @@
   </sc-if>
 
   <!-- Treinadores para a sua busca (Hub H01) -->
-  <section id="treinadores" class="wrap vf-sec vf-sec--near" aria-labelledby="vf-t-t">
+  <section id="treinadores" class="wrap vf-sec vf-sec--near{{nearLoad}}" aria-labelledby="vf-t-t">
     <div class="vf-sh"><h2 id="vf-t-t" class="sec-title sec-title--sm">Treinadores para a sua busca</h2><p class="vf-shsub">{{tSub}} · <button type="button" class="vf-u" onClick="{{openOrder}}">por que estes?</button></p><button type="button" class="link-arrow vf-shr" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Salvos ({{favN}})</button></div>
     <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}">
       <div class="card empty" style="align-items: flex-start; text-align: left"><i class="ic  i-pin" aria-hidden="true"></i><b>Escolha uma cidade para ver quem atende presencialmente</b><span>Sem cidade, não existe “perto de você”. A localização só é pedida se você tocar em “Usar minha localização”.</span>
@@ -313,7 +313,7 @@
   <!-- Explore os esportes -->
   <section class="wrap vf-sec" aria-labelledby="vf-e-t">
     <div class="sec-head"><div><h2 id="vf-e-t" class="sec-title sec-title--nonum">Explore os esportes</h2></div><button type="button" class="link-arrow" onClick="{{openSports}}">Ver todas as modalidades<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button></div>
-    <div class="vf-g6"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><button type="button" class="st vf-st" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></button></sc-for></div>
+    <div class="vf-g6"><sc-for list="{{sportTiles}}" as="e" hint-placeholder-count="6"><a class="st vf-st" href="{{e.href}}" data-spa="1" style="{{e.tint}}" onClick="{{e.go}}"><img src="{{e.img}}" alt=""><span><b>{{e.label}}</b><small>{{e.sub}}</small></span><span class="st__go" aria-hidden="true"><i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></span></a></sc-for></div>
   </section>
 
   <!-- Como funciona -->
@@ -348,7 +348,7 @@
   <!-- Procure na sua cidade -->
   <section class="wrap vf-sec" aria-labelledby="vf-ci-t">
     <div class="sec-head"><h2 id="vf-ci-t" class="sec-title sec-title--nonum">Procure na sua cidade</h2></div>
-    <div class="vf-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><button type="button" onClick="{{k.go}}">{{k.label}}</button></sc-for></div>
+    <div class="vf-cities"><sc-for list="{{cityLinks}}" as="k" hint-placeholder-count="12"><a href="{{k.href}}">{{k.label}}</a></sc-for></div>
   </section>
   </main>
 
@@ -358,10 +358,10 @@
       <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="ftr-langs" style="display:flex;gap:12px;margin:16px 0 8px;font-size:14px"><b lang="pt-BR">Português</b><a href="/en" hreflang="en" lang="en">English</a><a href="/es" hreflang="es" lang="es">Español</a></p><p class="t2" style="font-size:12px;line-height:1.5;max-width:280px">Valores em reais (R$). Contas, pagamentos e atendimento no Brasil, em qualquer idioma.</p></div>
       <div class="ftr__col"><b>Para treinar</b><button type="button" onClick="{{goTrainers}}">Treinadores</button><button type="button" onClick="{{openSports}}">Esportes</button><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openPanel}}">Entrar no painel</button></div>
-      <div class="ftr__col"><b>Modalidades e cidades</b><sc-for list="{{ftrLinks}}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{f.go}}">{{f.label}}</button></sc-for></div>
+      <div class="ftr__col"><b>Modalidades e cidades</b><sc-for list="{{ftrLinks}}" as="f" hint-placeholder-count="5"><a href="{{f.href}}" data-spa="1" onClick="{{f.go}}">{{f.label}}</a></sc-for></div>
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{openHelp}}">Central de ajuda</button></div>
     </div></div>
-    <div class="wrap"><div class="ftr__word" aria-hidden="true">99Coach · mais que treino</div></div>
+    <div class="wrap"><div class="ftr__word" aria-hidden="true" data-w="99Coach · mais que treino"></div></div>
     <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><div class="v4-row" style="gap: 20px"><button type="button" onClick="{{openPriv}}">Privacidade</button><button type="button" onClick="{{openTerms}}">Termos</button><button type="button" onClick="{{openCookies}}">Cookies</button></div></div></div>
   </footer>
 

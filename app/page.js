@@ -15,7 +15,9 @@ export default function Home() {
   const cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
     <Shell route={{ name: 'home', params: {} }} espera={espera}>
-      <link rel="preload" as="image" href="/img/570416df9063df47.webp" fetchPriority="high" />
+      {/* imagem do topo: versão recortada e menor no celular, inteira no computador */}
+      <link rel="preload" as="image" href="/img/570416df9063df47-m.webp" fetchPriority="high" media="(max-width: 599px)" />
+      <link rel="preload" as="image" href="/img/570416df9063df47.webp" fetchPriority="high" media="(min-width: 600px)" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
         { '@context': 'https://schema.org', '@type': 'Organization', name: '99coach', url: SITE + '/', logo: SITE + '/icon.png', sameAs: ['https://www.instagram.com/99coach_'] },
         { '@context': 'https://schema.org', '@type': 'WebSite', name: '99coach', url: SITE + '/', inLanguage: 'pt-BR', potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: SITE + '/buscar?q={search_term_string}' }, 'query-input': 'required name=search_term_string' } }

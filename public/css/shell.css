@@ -481,3 +481,22 @@ html body #app .vf-ioslogo img{height:24px;width:auto;display:block}
 html body #app .vfm-langs{display:flex;gap:20px;align-items:center;font-size:14px;margin:0}
 html body #app .vfm-langs b{color:var(--fg);font-weight:600}
 html body #app .vfm-langs a{color:var(--text-2);text-decoration:underline;text-underline-offset:3px;min-height:44px;display:inline-flex;align-items:center}
+
+/* Página inicial: links de verdade (esportes, cidades, rodapé) com a mesma aparência dos botões de antes */
+html body #app a.st{text-decoration:none}
+html body #app a.chip{text-decoration:none}
+html body #app .vf-cities a{display:flex;align-items:center;border-bottom:1px solid var(--line-2);padding:12px 0;font-size:14px;color:var(--text-2);text-decoration:none;min-height:44px}
+html body #app .vf-cities a:hover{color:var(--fg)}
+html body #app .ftr__col a{display:block;font-size:14px;color:var(--text-on-dark);margin-bottom:9px;min-height:28px;text-decoration:none}
+html body #app .ftr__col a:hover{color:#fff}
+/* frase decorativa do rodapé: desenhada pelo estilo (não é texto da página; leitores de tela e verificação de contraste ignoram) */
+html body #app .ftr__word::after{content:attr(data-w)}
+/* cartões de treinador em espera: esqueleto no lugar do conteúdo */
+@keyframes c99-sk{0%{opacity:.55}50%{opacity:1}100%{opacity:.55}}
+html body #app .is-load :is(.vf-tc,.vfm-row){pointer-events:none;animation:c99-sk 1.2s ease-in-out infinite}
+html body #app .is-load :is(.vf-tc,.vfm-row) *{visibility:hidden}
+html body #app .is-load .vf-tc{background:var(--paper-2);border-radius:var(--r-card)}
+html body #app .is-load .vfm-row{background:var(--paper-2)}
+@media (prefers-reduced-motion:reduce){html body #app .is-load :is(.vf-tc,.vfm-row){animation:none}}
+/* topo do celular: a imagem já vem recortada no atleta */
+@media (max-width:599px){html body #app .vfm-hero2__media img{object-position:50% 20%}}
