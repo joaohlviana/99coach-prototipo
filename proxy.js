@@ -20,7 +20,10 @@ export async function proxy(req) {
   if (!p.every((x) => /^[a-z0-9-]{1,120}$/.test(x))) return NextResponse.next();
   if (p.length === 1) {
     if (esporte(p[0])) return vai(req, '/treinadores/' + p[0]);
-    if (p[0].length > 2 && (treinador(p[0]) || (await publicadoAgora(p[0])))) return vai(req, '/treinador/' + p[0]);
+    // perfil duplicado (mesmo nome e cidade) vai direto ao perfil principal: um salto só, sem passar por página canônica de outra
+    const t = p[0].length > 2 ? treinador(p[0]) : null;
+    if (t) return vai(req, '/treinador/' + (t.canon || t.id));
+    if (p[0].length > 2 && (await publicadoAgora(p[0]))) return vai(req, '/treinador/' + p[0]);
     return NextResponse.next();
   }
   if (p.length === 2 && esporte(p[0])) {
