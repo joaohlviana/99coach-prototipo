@@ -28,6 +28,8 @@ await p.goto('http://localhost:5173/?demo=0', { waitUntil: 'load' }); await p.wa
 await p.evaluate(() => { localStorage.setItem('c99.sessao', JSON.stringify({ access_token: 't', refresh_token: 'r', user: { id: 'tr', email: 'tr@x.com' } })); const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'treinador', ''), { name: 'Tr', dadosSaved: true, conta: true, step: 'hoje', scn: '' })); });
 await p.reload({ waitUntil: 'load' }); await p.waitForTimeout(1800);
 const visit = async (label, fn) => { await p.evaluate(fn); await p.waitForTimeout(1100); console.log(label, '| executou script:', await p.evaluate(() => window.__x || 0), '| texto aparece escapado:', await p.evaluate(() => /<img src=x/.test(document.getElementById('app').innerText))); };
+// a página inicial só mostra os cartões depois que o catálogo chega (vem no primeiro toque ou rolagem)
+await p.mouse.wheel(0, 20); await p.waitForTimeout(1200);
 await visit('home', () => NAV.go('home', {}, null));
 await visit('esporte', () => NAV.go('esporte', { mod: 'CrossFit', city: '', fmt: 'Qualquer' }, null));
 await visit('perfil', () => NAV.go('perfil', { id: 'mal-1' }, null));
