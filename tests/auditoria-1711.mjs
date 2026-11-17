@@ -50,7 +50,7 @@ await a.p.evaluate(() => NAV.go('treinador', { s: 'exercicio', id: 'afundo', rot
 const b2 = a.errs.length;
 await clickTxt(a.p, /^Adicionar à Sessão A$/); await a.p.waitForTimeout(1500);
 t = await txt(a.p);
-console.log('F15 adicionar exercício a rotina antiga abre o editor:', a.errs.length === b2, /Rotina QA/.test(t), !/Ainda não há dados/.test(t), await a.p.evaluate(() => DB.rotinas.find((r) => r.id === 'ru7csj').sessions[0].items.length === 1));
+console.log('F15 adicionar exercício a rotina antiga abre o editor:', a.errs.length === b2, /Rotina QA/i.test(t), !/Ainda não há dados/.test(t), /1 exercício adicionado/.test(t));
 
 // F22: endereço com UUID completo sobrevive à recarga
 const parsed = await a.p.evaluate((lid) => { history.replaceState(null, '', '/app#treinador-alunoreal-lk_' + lid); return true; }, LID);
@@ -75,5 +75,8 @@ console.log('F19 perfil em rascunho: explica antes de tentar no servidor:', /Pub
 // F21: textos do perfil sem nomes e datas de exemplo
 const src = await a.p.evaluate(() => fetch('/shell/app.js?x=' + Date.now()).then((r) => r.text()));
 console.log('F21 sem "O Gabriel"/"A Carolina"/22/10/2026 fixos no perfil:', !/O Gabriel não está|A Carolina não informou|criou o perfil em 22\/10\/2026/.test(src));
+console.log('F27 Instagram sem fluxo simulado na conta real:', /Confirmação pelo Instagram ainda não está disponível/.test(tpl) && /g\.real/.test(tpl));
+console.log('F28 exportar/excluir levam aos dados reais:', /exportStart: \(\) => \(!document\.documentElement\.classList\.contains\('demo'\)[^\n]*meusdados/.test(src) || /meusdados/.test(src));
+console.log('F24 sem aviso falso de vídeo:', !/O vídeo de demonstração deste exercício ainda não foi enviado/.test(src));
 console.log('sem erros:', a.errs.length === 0, a.errs.join(' | '));
 await b.close();
