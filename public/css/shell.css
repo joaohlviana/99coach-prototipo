@@ -477,3 +477,7 @@ html body #app .vf-ioslogo img{height:24px;width:auto;display:block}
   html body #app .vfm-why-b{margin-top:0;min-height:28px}
 }
 @media (max-width:599px){html body #app #vfm-pro{margin:6px 0 10px}}
+/* Idiomas no rodapé do celular */
+html body #app .vfm-langs{display:flex;gap:20px;align-items:center;font-size:14px;margin:0}
+html body #app .vfm-langs b{color:var(--fg);font-weight:600}
+html body #app .vfm-langs a{color:var(--text-2);text-decoration:underline;text-underline-offset:3px;min-height:44px;display:inline-flex;align-items:center}
