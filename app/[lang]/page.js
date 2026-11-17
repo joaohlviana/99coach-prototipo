@@ -1,7 +1,7 @@
 // Página inicial em inglês ou espanhol (/en, /es).
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import ShellIdioma from '../../components/ShellIdioma.js';
-import { esportes, cidadesDo, todos, curta } from '../../lib/catalogo.js';
+import { esportes, cidadesDo, todos, curta, esporte, treinador, publicadoAgora } from '../../lib/catalogo.js';
 import { ok, t as tr, esporteNome, idiomas } from '../../lib/i18n.js';
 
 export const revalidate = 86400;
@@ -14,7 +14,13 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Home({ params }) {
-  const { lang: l } = await params; if (!ok(l)) notFound();
+  const { lang: l } = await params;
+  if (!ok(l)) {
+    // endereços do site anterior: /{esporte} e /{perfil} ficavam na raiz; levam de vez ao endereço novo
+    if (esporte(l)) permanentRedirect('/treinadores/' + l);
+    if (/^[a-z0-9-]{2,120}$/.test(l) && (treinador(l) || (await publicadoAgora(l)))) permanentRedirect('/treinador/' + l);
+    notFound();
+  }
   const x = tr(l), esp = esportes(), cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
     <ShellIdioma l={l}>

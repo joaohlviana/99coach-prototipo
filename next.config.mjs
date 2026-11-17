@@ -16,7 +16,9 @@ const config = {
       r('/privacidade', '/app#publico-ajuda-privacidade'), r('/cookies', '/app#publico-ajuda-privacidade'), r('/pagamentos-e-reembolsos', '/app#publico-ajuda-pagamentos'),
       r('/remocao', '/app#publico-ajuda'), r('/reivindicar/:slug', '/treinador/:slug'),
       r('/esportes', '/#esportes'), r('/esporte/:slug', '/treinadores/:slug'), r('/busca', '/buscar'),
-      r('/c/:codigo', '/app#publico-convite-:codigo')
+      r('/c/:codigo', '/app#publico-convite-:codigo'),
+      // programas do site anterior: ainda não há página de programa aqui; levam à modalidade do programa
+      r('/programa/lpo-booster', '/treinadores/lpo'), r('/programa/:slug', '/treinadores/crossfit')
     ];
   },
   async headers() {
