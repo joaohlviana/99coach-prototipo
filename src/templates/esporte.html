@@ -214,12 +214,13 @@
   <!-- Rodapé do DS (.ftr) com botões — o mesmo da Home e do Perfil VFINAL -->
   <footer class="ftr">
     <div class="wrap"><div class="ftr__grid">
-      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><button type="button" class="btn btn--glass btn--sm v4-lang" onClick="{{info_regiao}}" aria-label="Idioma e região: Português (Brasil), reais">Português (Brasil) · R$<i class="ic ic--sm i-chev-d"></i></button></div>
+      <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><p class="ftr-langs" style="display:flex;gap:12px;margin:16px 0 8px;font-size:14px"><b lang="pt-BR">Português</b><a href="/en" hreflang="en" lang="en">English</a><a href="/es" hreflang="es" lang="es">Español</a></p><p class="t2" style="font-size:12px;line-height:1.5;max-width:280px">Valores em reais (R$). Contas, pagamentos e atendimento no Brasil, em qualquer idioma.</p></div>
       <div class="ftr__col"><b>Para treinar</b><sc-for list="{{ftrLinks}}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{r.pick}}">{{r.label}}</button></sc-for><button type="button" onClick="{{openSaved}}">Salvos</button></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{info_ajuda}}">Central de ajuda</button></div>
       <div class="ftr__col"><b>Legal</b><button type="button" onClick="{{info_termos}}">Termos de uso</button><button type="button" onClick="{{info_priv}}">Privacidade</button></div>
     </div></div>
+    <div class="wrap"><div class="ftr__word" aria-hidden="true">99Coach · mais que treino</div></div>
     <div class="ftr__bar"><div class="wrap"><span>© 2026 99Coach</span><span>Plano pago do treinador não compra posição, selo nem garantia de clientes.</span></div></div>
   </footer>
 

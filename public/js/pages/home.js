@@ -49,8 +49,8 @@ class Component extends DCLogic {
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
     const goals = [['Ganhar força', 'musculacao', 'Musculação'], ['Condicionamento', 'crossfit', 'CrossFit'], ['Começar a correr', 'corrida', 'Corrida'], ['Mobilidade e postura', 'pilates', 'Pilates']].map(([label, id, to]) => ({ label, to, pick: goSport(id) }));
 
-    const CIT = (window.REAL && window.REAL.cities(S.city)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
-    const cities = CIT.map(([c, n]) => ({ label: c, note: n, cls: 'opt' + (S.city === c ? ' is-on' : ''), pick: () => set({ city: c, hidden: {}, sheet: null, loc: 0 }), pick2: () => set({ city: c, hidden: {} }) }));
+    const CIT = (window.REAL && window.REAL.cities(S.city, S.cq)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
+    const cities = CIT.map(([c, n]) => ({ label: c, note: n, cls: 'opt' + (S.city === c ? ' is-on' : ''), pick: () => set({ city: c, hidden: {}, sheet: null, loc: 0, cq: '' }), pick2: () => set({ city: c, hidden: {} }) }));
     const cityLabel = S.city || 'Escolher cidade';
     const modeLabel = { presencial: 'Presencial', online: 'Online', qualquer: 'Qualquer formato' }[S.mode];
     const setMode = (m) => () => set({ mode: m, hidden: {}, toast: null });
@@ -89,7 +89,7 @@ class Component extends DCLogic {
         hasRating: !!t.rating, noRating: !t.rating, rating: t.rating || '', n: String(t.n), nrev: t.n + ' avaliações', verified: t.ver,
         hasAvail: t.av !== 'unknown', avail: t.av === 'yes' ? 'Aceita novos alunos' : 'Sem vagas no momento', avYes: t.av === 'yes',
         pend: S.scen === 'pendente' && !S.pedCanceled && t.id === 'rafael',
-        hasWhy2: !t.imp, why2: t.imp ? '' : [S.mode === 'qualquer' ? (t.pres && inCity(t) ? (t.onl ? 'Presencial e online' : 'Presencial') : 'Online') : '', t.av === 'no' ? t.avLong.replace(' (', ' · ').replace(')', '') : ''].filter(Boolean).join(' · '), whyCls: t.av === 'yes' && !t.imp ? 'is-ok' : '', hasPrice: !!off, offName: off ? off[0] : '', price: off ? off[1] : '', unit: off ? off[2] : '', reason,
+        hasWhy2: !t.imp, why2: t.imp ? [t.city, t.pres && t.city ? (t.onl ? 'Presencial e online' : 'Presencial') : (t.onl ? 'Online' : '')].filter(Boolean).join(' · ') : [S.mode === 'qualquer' ? (t.pres && inCity(t) ? (t.onl ? 'Presencial e online' : 'Presencial') : 'Online') : '', t.av === 'no' ? t.avLong.replace(' (', ' · ').replace(')', '') : ''].filter(Boolean).join(' · '), whyCls: t.av === 'yes' && !t.imp ? 'is-ok' : '', hasPrice: !!off, offName: off ? off[0] : '', price: off ? off[1] : '', unit: off ? off[2] : '', reason,
         hid: !!S.hidden[t.id], vis: !S.hidden[t.id],
         favCls: 'tc__fav' + (on ? ' is-on' : ''), favOn: on ? 'true' : 'false', favLabel: (on ? 'Remover ' : 'Salvar ') + t.name + (on ? ' dos salvos' : ''),
         fav: (e) => { const nv = !S.favs[t.id]; set(Object.assign({ favs: Object.assign({}, S.favs, { [t.id]: nv }) }, toastAt(e, nv ? ((document.documentElement.classList.contains('demo') ? visitor : !(window.CONTA && window.CONTA.session())) ? t.name + ' salvo neste aparelho. Entre para guardar na sua conta.' : t.name + ' salvo em Salvos.') : t.name + ' removido dos salvos.', { k: 'fav', id: t.id, v: !nv }))); },
@@ -241,34 +241,40 @@ class Component extends DCLogic {
     const sxRect = (el) => { try { if (!el || !el.getBoundingClientRect) return null; const r = el.getBoundingClientRect(); if (!r.width) return null; const sy = window.scrollY || window.pageYOffset || 0; const dw = document.documentElement.clientWidth || 1440; const w = Math.min(Math.max(Math.round(r.width), 560), dw - 32); const x = Math.max(16, Math.min(Math.round(r.left), dw - w - 16)); return { sxY: Math.round(r.bottom + sy + 8), sxX: x, sxW: w }; } catch (_) { return null; } };
     const sxHdr = () => { try { return document.getElementById('vf-hsx'); } catch (_) { return null; } };
     const sxAnchor = (e) => { let el = e && (e.currentTarget || e.target); try { el = el && el.closest ? (el.closest('[data-sx]') || el) : el; } catch (_) {} return sxRect(el) || sxRect(sxHdr()) || {}; };
-    const openSx = (e) => set(Object.assign({ sx: 'on', sheet: null, toast: null }, sxAnchor(e)));
+    const sxFoco = () => { try { const i = document.getElementById('sx-min'); if (i && i.offsetParent && document.activeElement !== i) i.focus(); } catch (_) {} };
+    const openSx = (e) => { set(Object.assign({ sx: 'on', sheet: null, toast: null }, sxAnchor(e))); sxFoco(); setTimeout(sxFoco, 60); setTimeout(sxFoco, 250); };
     const sxClose = () => set({ sx: null });
     const sxQ = (q) => () => set({ sx: 'on', sxq: q, sxIa: false, sxTab: 'Treinadores' });
     const sxDo = (f) => (e) => { set({ sx: null }); f(e); };
     const sxScroll = () => { try { if (pageScroll()) { const el = document.getElementById((window.innerWidth || 1440) < 600 ? 'treinadores-app' : 'treinadores'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } } catch (_) {} };
     const sq = S.sxq || '', sql = sq.toLowerCase();
     const sxWords = sql.split(' ').filter((w) => w).length;
-    const sxIsIa = !!S.sxIa && sxWords > 2;
+    const sxIsIa = !PRODH && !!S.sxIa && sxWords > 2;
     const sxIsTam = sql.indexOf('tamarana') >= 0;
     const sxIsCross = sql.indexOf('cross') >= 0 && !sxIsTam;
     const sxReal = (window.REAL && sq && !sxIsIa) ? window.REAL.search(sq) : null;
-    const sxSt = !S.sx ? '' : (sxIsIa ? 'ia' : (!sq ? 'empty' : ((sxReal ? sxReal.length : sxIsCross) ? 'typing' : 'none')));
-    const sxTrD = [['Rafael Lima', 'bdc7ef1c8dbf05558c3bf8d575fc3a04', 'Treinador de ', 'Fit e Musculação', true, 'RL'], ['Diego Moraes', '348bafe032c42fc5274e3de9d8004df2', 'Treinador de ', 'Fit e Lutas', true, 'DM'], ['Gabriel Santos', '4534df06b7d037ae994cb151849342b0', 'Treinador de ', 'Fit e LPO', true, 'GS'], ['Carolina Albuquerque Montenegro', '', 'Treinadora de ', 'Fit e Funcional', false, 'CM']].map(([n, img, pre, post, ver, ini]) => ({ name: n, hasImg: !!img, noImg: !img, img: img ? B(img) : '', ini: ini, pre: pre, mk: 'Cross', tag: 'CrossFit', post: post, verified: ver, city: 'Londrina, PR', go: window.NAV.coachId(n) ? sxDo(() => window.NAV.go('perfil', { id: window.NAV.coachId(n) }, this)) : sxDo(goto('Perfil de ' + n, 'o perfil de ' + n)) }));
+    const sxFold = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const sxCnt = (window.REAL && window.REAL.sportCounts && window.REAL.sportCounts()) || {};
+    // modalidades que combinam com o que foi digitado, com a contagem real de treinadores
+    const sxSpR = !sq ? [] : SP.filter(([id, label]) => sxFold(sq).split(' ').filter(Boolean).every((w) => sxFold(label).indexOf(w) >= 0)).slice(0, 6).map(([id, label, ic]) => { const f = sxFold(label), w = sxFold(sq).split(' ').filter(Boolean)[0] || '', at = f.indexOf(w), n = sxCnt[id] || 0; return { icon: ic, pre: at < 0 ? label : label.slice(0, at), mk: at < 0 ? '' : label.slice(at, at + w.length), post: at < 0 ? '' : label.slice(at + w.length), sub: n ? n + (n === 1 ? ' treinador' : ' treinadores') : 'Ver treinadores', go: sxDo(goSport(id)), id: id, label: label }; });
+    const sxSp = PRODH ? sxSpR : (sxIsCross ? [{ icon: (chips.filter((c) => c.label === 'CrossFit')[0] || chips[0]).icon, pre: '', mk: 'Cross', post: 'Fit', sub: '8 treinadores presenciais em Londrina · 3 online', go: sxDo(() => window.NAV.go('esporte', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }, this)) }] : []);
+    const sxSt = !S.sx ? '' : (sxIsIa ? 'ia' : (!sq ? 'empty' : (((sxReal ? sxReal.length : sxIsCross) || (PRODH && sxSp.length)) ? 'typing' : 'none')));
+    const sxTrD = [['Rafael Lima', 'bdc7ef1c8dbf05558c3bf8d575fc3a04', 'Treinador de ', 'Fit e Musculação', true, 'RL'], ['Diego Moraes', '348bafe032c42fc5274e3de9d8004df2', 'Treinador de ', 'Fit e Lutas', true, 'DM'], ['Gabriel Santos', '4534df06b7d037ae994cb151849342b0', 'Treinador de ', 'Fit e LPO', true, 'GS'], ['Carolina Albuquerque Montenegro', '', 'Treinadora de ', 'Fit e Funcional', false, 'CM']].map(([n, img, pre, post, ver, ini]) => ({ name: n, hasImg: !!img, noImg: !img, img: img ? B(img) : '', ini: ini, pre: pre, mk: 'Cross', tag: 'CrossFit', hasTag: true, hasCity: true, noCity: false, post: post, verified: ver, city: 'Londrina, PR', go: window.NAV.coachId(n) ? sxDo(() => window.NAV.go('perfil', { id: window.NAV.coachId(n) }, this)) : sxDo(goto('Perfil de ' + n, 'o perfil de ' + n)) }));
     const sxCut = (txt) => { const f = (x) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); const w = f(sq).split(' ').filter(Boolean)[0] || ''; const at = w ? f(txt).indexOf(w) : -1; return at < 0 ? [txt, '', ''] : [txt.slice(0, at), txt.slice(at, at + w.length), txt.slice(at + w.length)]; };
-    const sxTr = sxReal ? sxReal.map((t) => { const c = sxCut(t.spec || 'Treinador'); return { name: t.name, hasImg: !!t.photo, noImg: !t.photo, img: t.photo, ini: t.ini, pre: c[0], mk: c[1], post: c[2], tag: t.city || 'Online', verified: false, city: t.city, go: sxDo(() => window.NAV.go('perfil', { id: t.id }, this)) }; }) : sxTrD;
+    const sxTr = sxReal ? sxReal.map((t) => { const c = sxCut(t.spec || 'Treinador'); return { name: t.name, hasImg: !!t.photo, noImg: !t.photo, img: t.photo, ini: t.ini, pre: c[0], mk: c[1], post: c[2], tag: t.city ? '' : (t.onl ? 'Online' : ''), hasTag: !t.city && !!t.onl, hasCity: !!t.city, noCity: !t.city, verified: false, city: t.city, go: sxDo(() => window.NAV.go('perfil', { id: t.id }, this)) }; }) : sxTrD;
     const sxPr = ((sxReal && !sxIsCross) || !document.documentElement.classList.contains('demo') ? [] : plist4.slice(0, 3)).map((p) => { const cf = p.title.indexOf('Cross') === 0; return { cover: p.cover, pre: cf ? '' : p.title, mk: cf ? 'Cross' : '', post: cf ? p.title.slice(5) : '', sub: p.coach + (cf ? '' : ' · CrossFit') + ' · ' + p.weeks, price: p.price, go: sxDo(p.open) }; });
     const sxCf = chips.filter((c) => c.label === 'CrossFit')[0] || chips[0];
     const sxRecL = [];
     if (S.sxR1) sxRecL.push({ t: 'CrossFit', s: ' · Londrina · presencial', go: sxQ('crossfit'), rm: () => set({ sxR1: false }) });
     if (S.sxR2) sxRecL.push({ t: 'Musculação', s: ' · online', go: sxDo(() => window.NAV.go('esporte', { mod: 'Musculação', fmt: 'Online' }, this)), rm: () => set({ sxR2: false }) });
     const sxHot = [['Personal trainer Londrina', null], ['CrossFit para iniciantes', 'crossfit iniciante'], ['Pilates', null], ['Corrida 5 km', null], ['Musculação online', null]].map(([label, q]) => ({ label: label, go: q ? sxQ(q) : sxDo(() => window.NAV.go('esporte', ({ 'Personal trainer Londrina': { mod: 'Musculação', city: 'Londrina, PR', fmt: 'Presencial' }, 'Pilates': { mod: 'Pilates' }, 'Corrida 5 km': { mod: 'Corrida' }, 'Musculação online': { mod: 'Musculação', fmt: 'Online' } })[label] || {}, this)) }));
-    const sxTabs = ['Treinadores', 'Programas', 'Esportes'].map((l) => ({ label: l, cls: 'sx-tab' + (S.sxTab === l ? ' is-on' : ''), on: String(S.sxTab === l), pick: () => set({ sxTab: l }) }));
-    const sxCountT = S.sxTab === 'Programas' ? '3 programas de CrossFit para “' + sq + '”' : (S.sxTab === 'Esportes' ? '1 modalidade para “' + sq + '”' : (sxReal ? (() => { const n = window.REAL.total(sq); return n + (n === 1 ? ' treinador' : ' treinadores') + ' para “' + sq + '”'; })() : '11 treinadores e 3 programas para “' + sq + '” em Londrina'));
+    const sxTabs = (PRODH ? ['Treinadores', 'Esportes'] : ['Treinadores', 'Programas', 'Esportes']).map((l) => ({ label: l, cls: 'sx-tab' + (S.sxTab === l ? ' is-on' : ''), on: String(S.sxTab === l), pick: () => set({ sxTab: l }) }));
+    const sxCountT = S.sxTab === 'Programas' ? '3 programas de CrossFit para “' + sq + '”' : (S.sxTab === 'Esportes' ? (PRODH ? sxSp.length + (sxSp.length === 1 ? ' modalidade' : ' modalidades') : '1 modalidade') + ' para “' + sq + '”' : (sxReal ? (() => { const n = window.REAL.total(sq); return n + (n === 1 ? ' treinador' : ' treinadores') + ' para “' + sq + '”'; })() : '11 treinadores e 3 programas para “' + sq + '” em Londrina'));
     const sxScens = [['Busca: antes de digitar', '', false], ['Busca: digitando “cross”', 'cross', false], ['Busca: IA', 'quero perder peso treinando de manhã perto de casa', true], ['Busca: sem resultado', 'crossfit tamarana', false]].map(([label, q, ia]) => { const on = !!S.sx && S.sxq === q && !!S.sxIa === ia; return { label: label, cls: 'chip' + (on ? ' is-on' : ''), on: String(on), pick: () => set(Object.assign({ sx: 'on', sxq: q, sxIa: ia, sheet: null, toast: null, sxTab: 'Treinadores' }, sxRect(sxHdr()) || {})) }; });
     const SXR = {
       sxOpen: !!S.sx, sxExp: String(!!S.sx), sxPos: 'top: ' + S.sxY + 'px; left: ' + S.sxX + 'px; width: ' + S.sxW + 'px',
       openSx, sxClose, sxScens, sxTabs, sxTabT: S.sxTab === 'Treinadores', sxTabP: S.sxTab === 'Programas', sxTabE: S.sxTab === 'Esportes',
-      sxEmpty: sxSt === 'empty', sxTyping: sxSt === 'typing', sxCrossRows: document.documentElement.classList.contains('demo') && (!sxReal || sxIsCross), sxIaS: sxSt === 'ia', sxNone: sxSt === 'none',
+      sxEmpty: sxSt === 'empty', sxTyping: sxSt === 'typing', sxCrossRows: document.documentElement.classList.contains('demo') && (!sxReal || sxIsCross), sxSp, sxHasSp: sxSp.length > 0, sxNoSp: sxSp.length === 0, sxHasTr: sxTr.length > 0, sxPh: PRODH ? 'Pesquisar treinador, esporte ou cidade' : 'Pesquisar treinadores, programas, esportes', sxNoneReal: PRODH, sxNoneDemo: !PRODH, sxNoneS: PRODH ? 'Confira a grafia ou procure pelo esporte ou pela cidade.' : 'Escolha o próximo passo. A busca continua salva.', sxIaS: sxSt === 'ia', sxNone: sxSt === 'none',
       sxQText: sq || 'Pesquisar treinadores, programas, esportes', sxq: sq, sxType: (e) => set({ sx: 'on', sxq: (e.target && e.target.value) || '', sxIa: false, sxTab: 'Treinadores', sheet: null }), sxInCls: 'sx-in' + (sq ? '' : ' is-ph'), sxHasQ: !!sq,
       sxClear: () => set({ sxq: '', sxIa: false, sx: S.sx ? 'on' : null }),
       sxIaOn: String(!!S.sxIa), sxIaCls: 'sx-ia' + (S.sxIa ? ' is-on' : ''), sxIaQc: 'qchip sx-iaq' + (S.sxIa ? ' is-on' : ''),
@@ -278,9 +284,9 @@ class Component extends DCLogic {
       sxHotTitle: PRODH ? 'Sugestões para explorar' : 'Em alta em Londrina', sxHotNote: PRODH ? 'Sugestões fixas para começar. Nada aqui é patrocinado.' : 'Buscas mais feitas na cidade nos últimos 7 dias, somadas sem identificar ninguém. Nada aqui é patrocinado.', sxRecClear: () => set({ sxR1: false, sxR2: false }), sxHot,
       sxMods: chips.slice(0, 6).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })),
       sxModIcon: sxCf.icon, sxModGo: sxDo(() => window.NAV.go('esporte', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }, this)),
-      sxTr, sxPr, sxPr1: sxPr.slice(0, 1), sxCount: sxCountT, sxAllLabel: S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver todos os resultados',
-      sxMcta: S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver 11 treinadores e 3 programas',
-      sxAll: () => { set({ sx: null }); window.NAV.go('esporte', { mod: 'CrossFit' }, this); },
+      sxTr, sxPr, sxPr1: sxPr.slice(0, 1), sxCount: sxCountT, sxAllLabel: PRODH ? (sxSp[0] ? 'Ver treinadores de ' + sxSp[0].label : 'Ver todos os treinadores') : (S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver todos os resultados'),
+      sxMcta: PRODH ? (sxSp[0] ? 'Ver treinadores de ' + sxSp[0].label : 'Ver todos os treinadores') : (S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver 11 treinadores e 3 programas'),
+      sxAll: () => { set({ sx: null, sxq: '' }); if (PRODH && sxSp[0]) return goSport(sxSp[0].id)(); window.NAV.go('esporte', PRODH ? {} : { mod: 'CrossFit' }, this); },
       sxIaChips: sxIsCross || sql.indexOf('crossfit') >= 0 ? ['CrossFit', 'Londrina, PR', 'Presencial'] : ['Funcional', 'Londrina, PR', 'Presencial', 'Manhã', 'Iniciante'],
       sxIaNote: sql.indexOf('peso') >= 0 ? '“Perder peso” não vira filtro: nenhum treinador promete resultado.' : 'Tamarana não tem CrossFit presencial; a cidade vizinha entrou como sugestão.',
       sxIaApply: () => { set({ sx: null, sxIa: false }); window.NAV.go('esporte', { mod: sql.indexOf('peso') >= 0 ? 'Funcional' : 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }, this); },
@@ -314,7 +320,7 @@ class Component extends DCLogic {
       modeP: setMode('presencial'), modeO: setMode('online'), modeQ: setMode('qualquer'),
       doSearch: (e) => { if (e && e.preventDefault) e.preventDefault(); try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} if (!S.city && S.mode === 'presencial') { return set({ sheet: 'city', sd: null, y: yOf(e), loc: 0 }); } window.NAV.go('esporte', {}, this); },
       useLoc: (e) => set({ sheet: 'city', sd: null, y: yOf(e), loc: 1, toast: null }),
-      chips, allSports, editSports, goals, cities,
+      chips, allSports, editSports, goals, cities, cq: S.cq || '', setCq: (e) => set({ cq: (e && e.target && e.target.value) || '' }), noCityQ: !!String(S.cq || '').trim() && !cities.length,
       // topo
       showLink, twoLinks, linkTabs, lk, linkTitle: twoLinks ? 'Seus acompanhamentos' : 'Seu acompanhamento',
       pedPhoto: myReq ? avatar(myReq.trainerName) : B('272071ea45b1ee18'), contNote: PRODH ? 'Sua última escolha, guardada só neste aparelho.' : 'Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou.',
@@ -357,7 +363,7 @@ class Component extends DCLogic {
       shSvc: sh === 'svc', sv: svT ? Object.assign({}, svT) : { coach: '', first: '', kind: '', title: '', price: '', unit: '', rate: '' },
       svGo: window.NAV.svc(svT) ? () => window.NAV.go(window.NAV.svc(svT).page, window.NAV.svc(svT), this) : goto('Perfil de ' + (svT ? svT.coach : ''), 'o perfil de ' + (svT ? svT.coach : '') + ', com este serviço já escolhido'),
       seeAllSvc: goto('Serviços', 'a lista de serviços em ' + (S.city || 'todas as cidades') + ''), seeGuides: info('Guias', ['Lista de guias editoriais ainda não publicada.']),
-      goProgramsSec: goSec('programas'), openPlans: info('Planos para treinadores', ['Essencial: grátis, até 3 alunos ativos, perfil, treinos e mensagens.', 'Pro: R$ 99/mês ou R$ 990/ano, até 50 alunos e 6.000 créditos de IA por mês. Teste de 7 dias só se você ativar.', 'Comissão de 5% só nas vendas pela 99Coach. O Pro não compra posição nem selo na busca.']),
+      goProgramsSec: goSec('programas'), openPlans: info('Planos para treinadores', ['Essencial: grátis, até 3 alunos ativos, perfil, treinos e mensagens.', 'Pro: R$ 99/mês ou R$ 990/ano, até 50 alunos. Teste de 7 dias só se você ativar.', 'Comissão de 5% só nas vendas pela 99Coach. O Pro não compra posição nem selo na busca.']),
       modeLow: modeLabel.toLowerCase(), cityShortTitle: (S.city || 'sua cidade').replace(', PR', '')
     };
   }
