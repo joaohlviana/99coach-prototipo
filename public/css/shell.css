@@ -523,3 +523,12 @@ html body #app .vfe-pickcity:hover{border-style:solid;color:var(--fg)}
 /* ação irreversível no painel da equipe */
 html body #app .btn--danger{background:transparent;border:1px solid #B42318;color:#B42318}
 html body #app .btn--danger:hover{background:#B42318;color:#fff}
+
+/* Cabeçalho do perfil: a caixa da busca atual fica igual à da página inicial (ícone, texto centrado, seta) */
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs){display:flex;align-items:center;gap:12px;height:52px;min-height:52px;padding:0 18px 0 6px;border:1px solid var(--line-2);border-radius:var(--r-pill);background:#fff;box-shadow:none;cursor:pointer;text-align:left;font:inherit}
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs){position:relative;padding-left:58px}
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs)::before{content:"";position:absolute;left:5px;top:50%;width:40px;height:40px;margin-top:-20px;border-radius:50%;background:var(--brand)}
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs)>.i-search{position:absolute;left:16px;top:50%;margin-top:-9px;color:#fff;z-index:1}
+html body #app .hdr__search.vf-hsearch>.vf-hs{flex:1;min-width:0;font-size:15px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1}
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs)>.i-arrow-r{flex:none;color:var(--text-2)}
+html body #app .hdr__search.vf-hsearch:has(>.vf-hs):hover{border-color:var(--line)}
