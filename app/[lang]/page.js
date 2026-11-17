@@ -10,7 +10,7 @@ export async function generateStaticParams() { return [{ lang: 'en' }, { lang: '
 export async function generateMetadata({ params }) {
   const { lang: l } = await params; if (!ok(l)) return { title: 'Not found', robots: { index: false } };
   const x = tr(l);
-  return { title: { absolute: x.homeTitle + ' | 99coach' }, description: x.homeDesc, alternates: { canonical: '/' + l, languages: idiomas('/') }, openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: x.homeTitle, description: x.homeDesc, url: '/' + l } };
+  return { title: { absolute: x.homeTitle + ' | 99coach' }, description: x.homeDesc, alternates: { canonical: '/' + l, languages: idiomas('/') }, openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: x.homeTitle, description: x.homeDesc, url: '/' + l, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default async function Home({ params }) {

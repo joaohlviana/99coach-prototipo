@@ -15,7 +15,7 @@ export function metadadosIdioma(l, esporteSlug, ondeSlug, pagina = 1) {
   const titulo = (d.online ? x.onlineOf(serv) : (d.cid ? x.inCity(serv, curta(d.cid.label)) : serv)) + (pagina > 1 ? x.page(pagina) : '');
   const descricao = d.online ? x.whoOnline(nome) : x.sportDesc(serv, d.itens.length, d.cid ? d.cid.label : '');
   return { title: titulo, description: descricao, alternates: { canonical: '/' + l + d.caminho, languages: idiomas(d.caminho) },
-    openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: titulo, description: descricao, url: '/' + l + d.caminho } };
+    openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: titulo, description: descricao, url: '/' + l + d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina = 1 }) {
