@@ -277,7 +277,7 @@ class Component extends DCLogic {
     const sxRecL = [];
     if (S.sxR1) sxRecL.push({ t: 'CrossFit', s: ' · Londrina · presencial', go: sxQ('crossfit'), rm: () => set({ sxR1: false }) });
     if (S.sxR2) sxRecL.push({ t: 'Musculação', s: ' · online', go: sxDo(() => window.NAV.go('esporte', { mod: 'Musculação', fmt: 'Online' }, this)), rm: () => set({ sxR2: false }) });
-    const sxHot = [['Personal trainer Londrina', null], ['CrossFit para iniciantes', 'crossfit iniciante'], ['Pilates', null], ['Corrida 5 km', null], ['Musculação online', null]].map(([label, q]) => ({ label: label, go: q ? sxQ(q) : sxDo(() => window.NAV.go('esporte', ({ 'Personal trainer Londrina': { mod: 'Musculação', city: 'Londrina, PR', fmt: 'Presencial' }, 'Pilates': { mod: 'Pilates' }, 'Corrida 5 km': { mod: 'Corrida' }, 'Musculação online': { mod: 'Musculação', fmt: 'Online' } })[label] || {}, this)) }));
+    const sxHot = [['Personal trainer Londrina', null], ['CrossFit para iniciantes', 'crossfit iniciante'], ['Pilates', null], ['Corrida 5 km', null], ['Musculação online', null]].map(([label, q]) => ({ label: label, ic: 'ic ic--xs i-trend', go: q ? sxQ(q) : sxDo(() => window.NAV.go('esporte', ({ 'Personal trainer Londrina': { mod: 'Musculação', city: 'Londrina, PR', fmt: 'Presencial' }, 'Pilates': { mod: 'Pilates' }, 'Corrida 5 km': { mod: 'Corrida' }, 'Musculação online': { mod: 'Musculação', fmt: 'Online' } })[label] || {}, this)) }));
     const sxTabs = (PRODH ? ['Treinadores', 'Esportes'] : ['Treinadores', 'Programas', 'Esportes']).map((l) => ({ label: l, cls: 'sx-tab' + (S.sxTab === l ? ' is-on' : ''), on: String(S.sxTab === l), pick: () => set({ sxTab: l }) }));
     const sxCountT = S.sxTab === 'Programas' ? '3 programas de CrossFit para “' + sq + '”' : (S.sxTab === 'Esportes' ? (PRODH ? sxSp.length + (sxSp.length === 1 ? ' modalidade' : ' modalidades') : '1 modalidade') + ' para “' + sq + '”' : (sxReal ? (() => { const n = window.REAL.total(sq); return n + (n === 1 ? ' treinador' : ' treinadores') + ' para “' + sq + '”'; })() : '11 treinadores e 3 programas para “' + sq + '” em Londrina'));
     const sxScens = [['Busca: antes de digitar', '', false], ['Busca: digitando “cross”', 'cross', false], ['Busca: IA', 'quero perder peso treinando de manhã perto de casa', true], ['Busca: sem resultado', 'crossfit tamarana', false]].map(([label, q, ia]) => { const on = !!S.sx && S.sxq === q && !!S.sxIa === ia; return { label: label, cls: 'chip' + (on ? ' is-on' : ''), on: String(on), pick: () => set(Object.assign({ sx: 'on', sxq: q, sxIa: ia, sheet: null, toast: null, sxTab: 'Treinadores' }, sxRect(sxHdr()) || {})) }; });
@@ -292,7 +292,18 @@ class Component extends DCLogic {
       sxHasRec: !PRODH && sxRecL.length > 0, sxRec: sxRecL,
       // produto: sem contagem de buscas, não chamamos de 'em alta' nem inventamos buscas recentes
       sxHotTitle: PRODH ? 'Sugestões para explorar' : 'Em alta em Londrina', sxHotNote: PRODH ? 'Sugestões fixas para começar. Nada aqui é patrocinado.' : 'Buscas mais feitas na cidade nos últimos 7 dias, somadas sem identificar ninguém. Nada aqui é patrocinado.', sxRecClear: () => set({ sxR1: false, sxR2: false }), sxHot,
-      sxMods: chips.slice(0, 6).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })),
+      // sugestões diferentes por aba: Treinadores = por cidade e formato; Esportes = todas as modalidades com treinadores
+      ...(PRODH ? (S.sxTab === 'Esportes' ? {
+        sxHasHot: false, sxHot: [], sxHasHot2: false, sxHot2: [], sxHasMods: true, sxModsTitle: 'Modalidades com treinadores',
+        sxMods: chips.slice(0, 18).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })),
+        sxHotNote: 'Só aparecem modalidades com treinadores publicados.'
+      } : {
+        sxHasHot: true, sxHotTitle: 'Treinadores por cidade',
+        sxHot: TOPC.slice(0, 8).map(([c, k]) => ({ label: c.split(',')[0], ic: 'ic ic--xs i-pin', go: sxDo(() => { location.href = '/cidade/' + k; }) })),
+        sxHasHot2: true, sxHot2Title: 'Como você quer treinar',
+        sxHot2: [{ label: 'Perto de mim', ic: 'ic ic--xs i-pin', go: sxDo((e) => set({ sheet: 'city', sd: null, y: yOf(e), loc: 1, toast: null })) }, { label: 'Treinadores online', ic: 'ic ic--xs i-monitor', go: sxDo(() => window.NAV.go('esporte', { mod: window.NAV.modOf(S.sport), city: '', fmt: 'Online' }, this)) }, { label: 'Ver todos os treinadores', ic: 'ic ic--xs i-search', go: sxDo(() => window.NAV.go('esporte', { mod: window.NAV.modOf(S.sport) }, this)) }],
+        sxHasMods: false, sxMods: [], sxModsTitle: '', sxHotNote: 'Sugestões fixas para começar. Nada aqui é patrocinado.'
+      }) : { sxHasHot: true, sxHasHot2: false, sxHot2: [], sxHasMods: true, sxModsTitle: 'Modalidades', sxMods: chips.slice(0, 6).map((c) => ({ label: c.label, icon: c.icon, pick: sxDo(c.pick) })) }),
       sxModIcon: sxCf.icon, sxModGo: sxDo(() => window.NAV.go('esporte', { mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial' }, this)),
       sxTr, sxPr, sxPr1: sxPr.slice(0, 1), sxCount: sxCountT, sxAllLabel: PRODH ? (sxSp[0] ? 'Ver treinadores de ' + sxSp[0].label : 'Ver todos os treinadores') : (S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver todos os resultados'),
       sxMcta: PRODH ? (sxSp[0] ? 'Ver treinadores de ' + sxSp[0].label : 'Ver todos os treinadores') : (S.sxTab === 'Programas' ? 'Ver os 3 programas' : 'Ver 11 treinadores e 3 programas'),

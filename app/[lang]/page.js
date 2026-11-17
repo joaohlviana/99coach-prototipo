@@ -4,7 +4,7 @@ import ShellIdioma from '../../components/ShellIdioma.js';
 import { esportes, cidadesDo, todos, curta, esporte, treinador, publicadoAgora } from '../../lib/catalogo.js';
 import { ok, t as tr, esporteNome, idiomas } from '../../lib/i18n.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 export async function generateStaticParams() { return [{ lang: 'en' }, { lang: 'es' }]; }
 export async function generateMetadata({ params }) {

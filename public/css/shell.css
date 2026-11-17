@@ -516,3 +516,10 @@ html body #app .is-load .vfm-row{background:var(--paper-2)}
   html body #app .v4-qf--seg .seg__it{height:24px;padding:0 12px;font-size:13px}
   html body #app .v4-q .qbar__btn{flex:none;margin-left:6px;height:56px;padding:0 22px}
 }
+/* lista sem cidade: aviso discreto junto da contagem, em vez da faixa amarela */
+html body #app .vfe-pickcity{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px dashed var(--line);border-radius:var(--r-pill);background:transparent;font:inherit;font-size:13px;color:var(--text-2);cursor:pointer;white-space:nowrap}
+html body #app .vfe-pickcity u{color:var(--fg);text-underline-offset:3px}
+html body #app .vfe-pickcity:hover{border-style:solid;color:var(--fg)}
+/* ação irreversível no painel da equipe */
+html body #app .btn--danger{background:transparent;border:1px solid #B42318;color:#B42318}
+html body #app .btn--danger:hover{background:#B42318;color:#fff}

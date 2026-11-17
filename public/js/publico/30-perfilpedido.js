@@ -10,6 +10,8 @@ REG.screen({
     var LS = function (k, v) { try { if (v === undefined) return window.localStorage.getItem(k); window.localStorage.setItem(k, v); } catch (_) { return null; } };
     var mine = (function () { try { return JSON.parse(LS('c99.retiradas') || '{}'); } catch (_) { return {}; } })();
     var prev = mine[slug] || null;
+    // veio do botão "Remover este perfil": a opção de retirar já vem marcada
+    if (ui.kind == null) { var pre = LS('c99.pedidoTipo'); if (pre) { try { window.localStorage.removeItem('c99.pedidoTipo'); } catch (_) {} setTimeout(function () { ctx.setUi({ kind: pre }); }, 0); } }
     var ERR = { relato_curto: 'Conte o que precisa ser feito em pelo menos 10 caracteres.', email_invalido: 'Esse e-mail não parece válido. Ele é opcional.', perfil_inexistente: 'Este perfil não está mais publicado.',
       limite_de_pedidos: 'Este perfil já tem muitos pedidos abertos. Tente de novo mais tarde.', prova_curta: 'Explique em pelo menos 10 caracteres como podemos confirmar que o perfil é seu.',
       conta_ja_tem_perfil: 'Sua conta já tem um perfil de treinador. Para unir os dois, fale com a equipe pela Ajuda.', idade_nao_confirmada: 'Confirme que você tem 18 anos ou mais.', 'conta bloqueada': 'Esta conta está bloqueada.' };
@@ -26,7 +28,8 @@ REG.screen({
         var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
         if (!r.ok || !d || !d.protocol) return ctx.setUi({ busy: false, err: why(r) });
         mine[slug] = { protocol: d.protocol, key: k, kind: d.kind, at: new Date().toISOString() }; LS('c99.retiradas', JSON.stringify(mine));
-        ctx.setUi({ busy: false, sent: d.protocol, status: d.status });
+        ctx.setUi({ busy: false, sent: d.protocol, status: d.status, paused: !!d.paused });
+        if (d.paused && window.REAL && window.REAL.hide) window.REAL.hide(slug);
       });
     };
     var check = function () {
@@ -52,10 +55,10 @@ REG.screen({
     var ST = { recebido: 'Recebido', em_analise: 'Em análise', precisa_complemento: 'Precisa de complemento', concluido: 'Concluído', recusado: 'Recusado', nao_encontrado: 'Não encontrado' };
     return {
       name: name, first: first, hasT: !!t, noT: !t,
-      kinds: [['corrigir', 'Corrigir dados', 'Algo está errado: nome, cidade, modalidade, contato.'], ['retirar', 'Retirar o perfil', 'Tirar o perfil do 99coach.']].map(function (k) { var on = (ui.kind || 'corrigir') === k[0]; return { label: k[1], sub: k[2], on: String(on), cls: 'onb-choice' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ kind: k[0], err: '' }); } }; }),
+      kinds: [['corrigir', 'Corrigir dados', 'Algo está errado: nome, cidade, modalidade, contato.'], ['retirar', 'Remover o perfil', 'Sai do site na hora e fica guardado até a equipe revisar.']].map(function (k) { var on = (ui.kind || 'corrigir') === k[0]; return { label: k[1], sub: k[2], on: String(on), cls: 'onb-choice' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ kind: k[0], err: '' }); } }; }),
       reason: ui.reason || '', setReason: function (e) { ctx.setUi({ reason: U.val(e), err: '' }); }, contact: ui.contact || '', setContact: function (e) { ctx.setUi({ contact: U.val(e), err: '' }); },
       send: send, sendLabel: ui.busy ? 'Enviando…' : 'Enviar pedido', err: ui.err || '', hasErr: !!ui.err,
-      sent: !!ui.sent, protocol: ui.sent || (prev && prev.protocol) || '', hasPrev: !!prev && !ui.sent,
+      paused: !!ui.paused, notPaused: !ui.paused, sent: !!ui.sent, protocol: ui.sent || (prev && prev.protocol) || '', hasPrev: !!prev && !ui.sent,
       statusTxt: ui.checking ? 'Consultando…' : (ui.statusErr ? 'Não foi possível consultar agora.' : (ST[ui.status] || ui.status || '')), statusNote: ui.statusNote || '', check: check,
       logged: logged, anon: !logged, login: function () { try { window.localStorage.setItem('c99.depoisEntrar', '#publico-perfilpedido-' + slug); } catch (_) {} GO('@onboarding', { flow: 'entrar' }); },
       proof: ui.proof || '', setProof: function (e) { ctx.setUi({ proof: U.val(e), cerr: '' }); },

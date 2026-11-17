@@ -80,14 +80,18 @@
         }),
         rem: q.rem.map(function (r) {
           var id = r.request_id;
-          return { title: KIND[r.kind] + ' · ' + (r.trainer_name || r.trainer_slug), meta: 'Protocolo ' + r.protocol + ' · ' + (ST[r.status] || r.status) + ' · ' + when(r.created_at) + (r.contact_email ? ' · resposta para ' + r.contact_email : ' · sem e-mail para resposta'),
+          return { title: KIND[r.kind] + ' · ' + (r.trainer_name || r.trainer_slug) + (r.trainer_status === 'pausado' ? ' · fora do site (pausado)' : ''), meta: 'Protocolo ' + r.protocol + ' · ' + (ST[r.status] || r.status) + ' · ' + when(r.created_at) + (r.contact_email ? ' · resposta para ' + r.contact_email : ' · sem e-mail para resposta'),
             reason: r.reason, open: function () { window.open('/treinador/' + encodeURIComponent(r.trainer_slug), '_blank', 'noopener'); }, idN: 'n-' + id, note: (ui.notes || {})[id] || '', setNote: setNote(id),
             analyze: function () { act('admin_decide_removal', { p_request: id, p_status: 'em_analise', p_idem: idem('rm:' + id + ':analise') }, 'Marcado em análise'); },
             more: function () { act('admin_decide_removal', { p_request: id, p_status: 'precisa_complemento', p_note: note(id), p_idem: idem('rm:' + id + ':compl:' + note(id).length) }, 'Complemento pedido'); },
             retire: function () { ctx.ask({ title: 'Retirar o perfil de ' + (r.trainer_name || r.trainer_slug) + '?', lines: ['O perfil sai da busca e do endereço público. A retirada fica registrada e vale mesmo depois de restaurar uma cópia do banco.'], ok: 'Retirar perfil', onOk: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'perfil_retirado', p_note: note(id), p_idem: idem('rm:' + id + ':retirar') }, 'Perfil retirado'); } }); },
             fixed: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'dados_corrigidos', p_note: note(id), p_idem: idem('rm:' + id + ':corrigido') }, 'Pedido concluído'); },
             refuse: function () { act('admin_decide_removal', { p_request: id, p_status: 'recusado', p_note: note(id), p_idem: idem('rm:' + id + ':recusar') }, 'Pedido recusado'); },
-            isRetire: r.kind === 'retirar', isFix: r.kind !== 'retirar' };
+            // perfil pausado pelo pedido (saiu do site na hora): a equipe recoloca no site ou exclui de vez
+            restore: function () { ctx.ask({ title: 'Recolocar o perfil de ' + (r.trainer_name || r.trainer_slug) + ' no site?', lines: ['O perfil volta à busca e ao endereço público. O pedido é encerrado com a sua explicação.'], ok: 'Recolocar no site', onOk: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'perfil_restaurado', p_note: note(id) || 'Perfil recolocado no site pela equipe.', p_idem: idem('rm:' + id + ':recolocar') }, 'Perfil de volta no site'); } }); },
+            purge: function () { ctx.ask({ title: 'Excluir de vez o perfil de ' + (r.trainer_name || r.trainer_slug) + '?', lines: ['O perfil e tudo que depende dele são apagados do banco. Não dá para desfazer.', 'O pedido fica guardado no histórico, sem o perfil.'], ok: 'Excluir de vez', onOk: function () { act('admin_decide_removal', { p_request: id, p_status: 'concluido', p_effect: 'perfil_excluido', p_note: note(id) || 'Perfil excluído de vez pela equipe.', p_idem: idem('rm:' + id + ':excluir') }, 'Perfil excluído'); } }); },
+            paused: r.trainer_status === 'pausado', notPaused: r.trainer_status !== 'pausado',
+            isRetire: r.kind === 'retirar' && r.trainer_status !== 'pausado', isFix: r.kind !== 'retirar' };
         }),
         claims: q.claim.map(function (r) {
           var id = r.request_id;

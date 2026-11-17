@@ -59,5 +59,14 @@ await press(/^Aprovar$/); await press(/^Aprovar$/, '.mod-sheet button'); await p
 console.log('  reivindicação aprovada:', srv.decClaim && srv.decClaim.p_decision === 'aprovado');
 await press(/Conferido no conselho/); await p.waitForTimeout(800); t = await txt();
 console.log('  CREF conferido:', srv.decCref && srv.decCref.p_decision === 'conferido', '| filas vazias:', /Nenhum pedido esperando decisão/.test(t));
+// 4. perfil pausado por pedido de remoção: recolocar no site ou excluir de vez (sem "Retirar" nem "Recusar")
+const pausado = (id) => ({ request_id: id, protocol: 'RT-' + id, trainer_slug: 'caio-x', trainer_name: 'Caio X', kind: 'retirar', reason: 'Quero que saia do site.', contact_email: null, status: 'recebido', created_at: '2026-11-17T10:00:00Z', trainer_status: 'pausado' });
+srv.rem = [pausado('P1')]; srv.decRem = null; await press(/^Atualizar filas$|^Atualizar$/); t = await open(); await press(/^Filas de pedidos$/); t = await txt();
+console.log('4 pausado aparece com as duas saídas:', /fora do site \(pausado\)/.test(t), /Recolocar no site/.test(t), /Excluir de vez/.test(t), '| sem retirar nem recusar:', await p.evaluate(() => { const sec = document.getElementById('ad-rem').closest('section'); return ![...sec.querySelectorAll('button')].filter((b) => b.offsetParent).some((b) => /^(Retirar perfil|Recusar)$/.test(b.innerText.trim())); }));
+await press(/^Recolocar no site$/); await press(/^Recolocar no site$/, '.mod-sheet button'); await p.waitForTimeout(800);
+console.log('  recolocado:', !!srv.decRem && srv.decRem.p_effect === 'perfil_restaurado' && srv.decRem.p_status === 'concluido');
+srv.rem = [pausado('P2')]; srv.decRem = null; t = await open(); await press(/^Filas de pedidos$/);
+await press(/^Excluir de vez$/); await press(/^Excluir de vez$/, '.mod-sheet button'); await p.waitForTimeout(800);
+console.log('  excluído de vez:', !!srv.decRem && srv.decRem.p_effect === 'perfil_excluido');
 console.log('errs', JSON.stringify(errs));
 await b.close();

@@ -5,7 +5,7 @@ import Shell, { Cartao, Paginacao } from '../../../components/Shell.js';
 import { idiomas } from '../../../lib/i18n.js';
 import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo, cidadesProximas } from '../../../lib/catalogo.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 export async function generateStaticParams() { return []; }
 const POR_PAGINA = 36;

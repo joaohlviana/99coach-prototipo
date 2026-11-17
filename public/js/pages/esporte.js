@@ -357,7 +357,6 @@ class Component extends DCLogic {
       let badge = '', bcls = 'tc__badge tag tag--white', dot = false;
       if (isBack) { badge = 'Você abriu este perfil'; bcls = 'tc__badge tag tag--dark'; }
       else if (t.avail === 'nao') badge = 'Sem vagas no momento · informado em ' + t.ad;
-      else if (t.imported) { badge = 'Perfil não reivindicado'; bcls = 'tc__badge tag tag--white tc__badge--imp'; }
       const m2 = [];
       
       if (t.imported) m2.push('Não confirmado pelo profissional');

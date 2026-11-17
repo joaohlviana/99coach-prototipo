@@ -2,7 +2,7 @@
 import Shell from '../../components/Shell.js';
 import { cidades, nomeUF, plural } from '../../lib/catalogo.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const metadata = {
   title: 'Personal trainer e aulas por cidade',
   description: 'Todas as cidades com personal trainer e professores de esporte que atendem presencialmente, organizadas por estado.',

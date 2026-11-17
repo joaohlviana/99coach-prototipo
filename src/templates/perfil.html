@@ -139,7 +139,6 @@
           <sc-if value="{{A.hasSecondary}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--outline btn--block v4-wrapbtn" onClick="{{A.go2}}">{{A.label2}}</button></sc-if>
           <sc-if value="{{showMsg}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--block" onClick="{{openMsg}}"><i class="ic ic--sm i-message" aria-hidden="true"></i>Enviar mensagem</button></sc-if>
           <sc-if value="{{A.hasFine}}" hint-placeholder-val="{{ true }}"><p class="vfp-fine"><i class="ic ic--sm i-info" aria-hidden="true"></i><span>{{A.fine}}</span></p></sc-if>
-          <p class="vfp-ext"><sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openExt}}">Instagram abre fora da 99Coach ↗</button></sc-if><sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><button type="button" class="v4-reset vfp-u" onClick="{{openClaim}}">É meu perfil</button></sc-if></p>
         </div>
         </sc-if>
       </aside>
@@ -245,7 +244,8 @@
             <sc-if value="{{canMsg}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Mensagens pela 99Coach</b><span>Para tirar dúvidas. Mensagem não é contratação.</span></div><button type="button" class="btn btn--outline btn--sm" onClick="{{openMsg}}">Enviar</button></div></sc-if>
             <sc-if value="{{noMsg}}" hint-placeholder-val="{{ false }}"><div class="vfp-crow"><div><b>Sem mensagens pela 99Coach</b><span>Perfis importados não recebem mensagens nem contratações.</span></div></div></sc-if>
             <sc-if value="{{t.hasExt}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Instagram {{t.ext}}</b><span>Abre fora da 99Coach</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openExt}}"><i class="ic ic--xs i-instagram" aria-hidden="true"></i>Abrir</button></div></sc-if>
-            <sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>É o seu perfil?</b><span>Reivindique ou recupere o acesso</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openClaim}}">É meu perfil</button></div></sc-if>
+            <sc-if value="{{claimable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>É o seu perfil?</b><span>Reivindique e acesse seu perfil</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openClaim}}">É meu perfil</button></div></sc-if>
+            <sc-if value="{{removable}}" hint-placeholder-val="{{ true }}"><div class="vfp-crow"><div><b>Remover este perfil</b><span>Sai do site na hora e fica guardado até a equipe revisar</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openRemove}}">Remover</button></div></sc-if>
             <div class="vfp-crow"><div><b>Compartilhar perfil</b><span>Copie o link para mandar a alguém</span></div><button type="button" class="btn btn--ghost btn--sm" onClick="{{openShare}}"><i class="ic ic--xs i-share" aria-hidden="true"></i>Copiar</button></div>
           </div>
         </div>

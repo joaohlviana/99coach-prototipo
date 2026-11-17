@@ -5,7 +5,7 @@ import { dados } from '../../../cidade/[cidade]/page.js';
 import { curta, SITE, resumo, cidadesProximas } from '../../../../lib/catalogo.js';
 import { ok, t as tr, esporteNome, idiomas } from '../../../../lib/i18n.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 export async function generateStaticParams() { return []; }
 const POR_PAGINA = 36;

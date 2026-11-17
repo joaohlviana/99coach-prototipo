@@ -1,6 +1,6 @@
 import PaginaEsporte, { dados, metadados } from '../../../components/PaginaEsporte.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 import { esportes } from '../../../lib/catalogo.js';
 // as páginas de esporte saem prontas no build; as demais são montadas no primeiro acesso e ficam guardadas por um dia

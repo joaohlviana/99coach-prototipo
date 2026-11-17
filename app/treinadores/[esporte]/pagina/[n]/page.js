@@ -1,6 +1,6 @@
 import PaginaEsporte, { dados, metadados } from '../../../../../components/PaginaEsporte.js';
 // páginas seguintes da lista do esporte (a primeira fica no endereço base)
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 export async function generateStaticParams() { return []; }
 const num = (n) => { const v = parseInt(n, 10); return String(v) === String(n) && v >= 2 ? v : -1; };

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Shell, { Cartao } from '../../../components/Shell.js';
 import { ehUF, nomeDoUF, noUF, listaUF, cidadesDoUF, esportesNoUF, estadosDo, plural, SITE, resumo } from '../../../lib/catalogo.js';
 
-export const revalidate = 86400;
+export const revalidate = 3600;
 export const dynamicParams = true;
 export async function generateStaticParams() { return []; }
 const POR_PAGINA = 36;

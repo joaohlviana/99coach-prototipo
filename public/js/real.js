@@ -25,11 +25,23 @@
     if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '' };
     return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '' };
   }
+  // perfis tirados do ar depois do último build (pedido de remoção ou decisão da equipe) somem na hora
+  var HID = {}, lastRows = null;
   function setItems(rows) {
+    lastRows = rows;
     items = []; byId = {}; cache = {};
-    (rows || []).forEach(function (r) { var t = norm(r); if (!t.id || byId[t.id]) return; t.sports = ui(t.raw); byId[t.id] = t; items.push(t); if (t.photo) (window.__IMG = window.__IMG || {})[t.photo] = t.photo; });
+    (rows || []).forEach(function (r) { var t = norm(r); if (!t.id || byId[t.id] || HID[t.id]) return; t.sports = ui(t.raw); byId[t.id] = t; items.push(t); if (t.photo) (window.__IMG = window.__IMG || {})[t.photo] = t.photo; });
   }
   setItems(window.__REAL || []);
+  setTimeout(function () {
+    if (!window.CONTA || !window.CONTA.rpc) return;
+    window.CONTA.rpc('hidden_trainer_slugs', {}).then(function (r) {
+      var L = r && r.ok && Array.isArray(r.data) ? r.data : [];
+      if (!L.length) return;
+      L.forEach(function (x) { var k = typeof x === 'string' ? x : (x && x.hidden_trainer_slugs); if (k) HID[k] = 1; });
+      setItems(lastRows); rerender();
+    }, function () {});
+  }, 0);
 
   var REAL = {
     count: function () { return items.length; },
@@ -131,6 +143,8 @@
     }
   };
   window.REAL = REAL;
+  // pedido de remoção feito nesta aba: o perfil some daqui na hora
+  REAL.hide = function (id) { HID[id] = 1; setItems(lastRows); rerender(); };
 
   // perfil publicado no cadastro deste aparelho, no formato da vitrine da Home (abre o perfil 'thiago' do cadastro)
   function myTrainer() {
