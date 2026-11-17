@@ -500,3 +500,19 @@ html body #app .is-load .vfm-row{background:var(--paper-2)}
 @media (prefers-reduced-motion:reduce){html body #app .is-load :is(.vf-tc,.vfm-row){animation:none}}
 /* topo do celular: a imagem já vem recortada no atleta */
 @media (max-width:599px){html body #app .vfm-hero2__media img{object-position:50% 20%}}
+
+/* Busca do topo (computador): rótulos numa linha só, todos na mesma altura, divisórias entre os campos */
+@media (min-width:1024px){
+  html body #app .v4-q{align-items:center;gap:0;padding:8px;min-height:76px;max-width:min(1040px,100%)}
+  html body #app .v4-q .qbar__go{flex:none;margin-right:6px}
+  html body #app .v4-qf{position:relative;justify-content:center;gap:6px;min-height:60px;padding:8px 18px;border-radius:var(--r-pill)}
+  html body #app .v4-qf>.label{white-space:nowrap;line-height:1;margin:0}
+  html body #app .v4-qf .v4-fv{line-height:1.2;height:28px;overflow:visible}
+  html body #app .v4-qf:not(.v4-qf--seg){flex:1 1 auto;min-width:170px}
+  html body #app .v4-qf+.v4-qf::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:1px;background:var(--line-2)}
+  html body #app .v4-qf:hover::before,html body #app .v4-qf:hover+.v4-qf::before{opacity:0}
+  html body #app .v4-qf--seg{flex:none;padding:8px 14px 8px 18px}
+  html body #app .v4-qf--seg .seg{padding:2px;height:28px;margin-left:-2px;width:max-content}
+  html body #app .v4-qf--seg .seg__it{height:24px;padding:0 12px;font-size:13px}
+  html body #app .v4-q .qbar__btn{flex:none;margin-left:6px;height:56px;padding:0 22px}
+}
