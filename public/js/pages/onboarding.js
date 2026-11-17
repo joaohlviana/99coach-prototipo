@@ -195,7 +195,7 @@ class Component extends DCLogic {
       programas: st.programs.length ? [st.programs.length + (st.programs.length === 1 ? ' programa' : ' programas'), 'ok'] : ['Opcional', 'opt'],
       disponibilidade: st.avail ? ['Feito', 'ok'] : ['Opcional', 'todo'],
       credenciais: st.crefDoc ? ['Em conferência', 'wait'] : (st.cref ? ['CREF informado', 'ok'] : ['Opcional', 'opt']),
-      instagram: st.igStep === 'ok' ? ['Confirmado', 'ok'] : (st.igStep === 'review' ? ['Em revisão', 'wait'] : (st.igStep ? ['Em andamento', 'wait'] : ['Opcional', 'opt'])),
+      instagram: !document.documentElement.classList.contains('demo') && !st.scn ? ['Em breve', 'opt'] : st.igStep === 'ok' ? ['Confirmado', 'ok'] : (st.igStep === 'review' ? ['Em revisão', 'wait'] : (st.igStep ? ['Em andamento', 'wait'] : ['Opcional', 'opt'])),
       recebimentos: st.payout === 'ok' ? ['Vendas habilitadas', 'ok'] : (st.payout === 'wait' ? ['Em verificação', 'wait'] : ['Para vender', 'todo']),
       plano: st.pro === 'active' ? ['Teste do Pro ativo', 'ok'] : ['Essencial · grátis', 'opt']
     };
@@ -310,6 +310,8 @@ class Component extends DCLogic {
     };
 
     const g = {
+      // conta real: não há verificação de Instagram no servidor; nada de código preenchido nem selo simulado
+      real: !document.documentElement.classList.contains('demo') && !st.scn, demo: document.documentElement.classList.contains('demo') || !!st.scn,
       s: { intro: !st.igStep, instr: st.igStep === 'instr', wait: st.igStep === 'wait', code: st.igStep === 'code', ok: st.igStep === 'ok', review: st.igStep === 'review' },
       handle: st.ig, fromTxt: String(st.ig || '').trim() ? 'de ' + String(st.ig).trim() : 'do seu perfil', setHandle: (ev) => set({ ig: val(ev) }),
       copyMsg: () => set({ igStep: 'instr', toast: 'Mensagem copiada. (Demonstração: a área de transferência pode estar bloqueada.)' }),
@@ -774,12 +776,13 @@ class Component extends DCLogic {
       isTrainer: !studentRole,
       purposes: PURP.map(([kk, t, s2, locked]) => ({ title: t, sub: s2, locked: locked, free: !locked, on: String(!!st.purposes[kk]), swCls: 'switch onb-switch' + (st.purposes[kk] ? ' is-on' : ''), toggle: () => set({ purposes: Object.assign({}, st.purposes, { [kk]: !st.purposes[kk] }) }) })),
       save: () => toast('Preferências de privacidade salvas às ' + now() + '.'),
-      exportStart: () => set({ exportStep: 'confirm', pvCode: '' }), exportCancel: () => set({ exportStep: '' }), exportConfirm: st.exportStep === 'confirm',
+      // conta real: exportar e excluir acontecem em “Meus dados e segurança”, com os dados reais da conta (nada de código ou protocolo simulado)
+      exportStart: () => (!document.documentElement.classList.contains('demo') && !st.scn && window.GO) ? window.GO('@publico', { s: 'meusdados' }) : set({ exportStep: 'confirm', pvCode: '' }), exportCancel: () => set({ exportStep: '' }), exportConfirm: st.exportStep === 'confirm',
       code: st.pvCode, setCode: (ev) => set({ pvCode: val(ev).replace(/\D/g, '').slice(0, 6) }),
       exportSend: () => { if ((st.pvCode || '').length !== 6) return toast('Digite os 6 números do código.'); set({ exportStep: '', reqExport: true, toast: 'Pedido de exportação recebido · protocolo #P-44.' }); },
       fixSub: studentRole ? 'Nome, e-mail e dados do seu perfil de aluno' : 'Leva ao seu cadastro de treinador', fix: studentRole ? () => toast('Fora desta versão: a edição do perfil do aluno abre aqui.') : go('cad'),
       unpublish: () => (window.CONTA && window.CONTA.session() && st.published && !st.scn) ? window.CONTA.unpublish().then((r) => set(r.ok ? { published: false, toast: 'Perfil retirado da busca. Sua conta, seus alunos e seus recebimentos continuam.' } : { toast: 'Não foi possível retirar agora: ' + (r.msg || r.status) })) : toast(st.published ? 'Demonstração: o perfil sairia da busca. Sua conta, seus alunos e seus recebimentos continuam.' : 'Seu perfil ainda não está publicado.'),
-      delStart: () => set({ delOpen: true, delOk: false }), delOpen: !!st.delOpen, effects: EFFECTS, delOkOn: String(!!st.delOk), delOkCls: 'check' + (st.delOk ? ' is-on' : ''), delToggle: () => set({ delOk: !st.delOk }),
+      delStart: () => (!document.documentElement.classList.contains('demo') && !st.scn && window.GO) ? window.GO('@publico', { s: 'meusdados' }) : set({ delOpen: true, delOk: false }), delOpen: !!st.delOpen, effects: EFFECTS, delOkOn: String(!!st.delOk), delOkCls: 'check' + (st.delOk ? ' is-on' : ''), delToggle: () => set({ delOk: !st.delOk }),
       delCancel: () => set({ delOpen: false }), delSend: () => { if (!st.delOk) return toast('Marque a confirmação para pedir a exclusão.'); set({ delOpen: false, reqDelete: true, toast: 'Pedido de exclusão recebido · protocolo #E-12. Efetiva em 7 dias.' }); },
       hasReqs: !!(st.reqExport || st.reqDelete),
       reqs: [].concat(st.reqExport ? [{ title: 'Exportação de dados', sub: 'Pedido em 26/10 · protocolo #P-44 · pode levar até 48 h', st: 'Em preparo', cls: 'badge badge--warn', canCancel: false }] : [])

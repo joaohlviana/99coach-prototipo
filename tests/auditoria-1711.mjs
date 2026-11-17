@@ -44,6 +44,14 @@ await clickTxt(a.p, /Nova rotina/); await a.p.waitForTimeout(1500);
 const hash = await a.p.evaluate(() => location.hash);
 console.log('F15 nova rotina abre o editor sem erro:', a.errs.length === before, /editor/.test(hash), a.errs.slice(before).join(' | '));
 
+// F15 (caminho 2): rotina incompleta criada antes da correção (sem histórico) recebe exercício pela tela do exercício
+await a.p.evaluate(() => { DB.rotinas.push({ id: 'ru7csj', name: 'Rotina QA', folder: '', student: '', status: 'rascunho', version: 1, savedAt: '17/11 15:00', lastSection: 's1', sessions: [{ id: 's1', name: 'Sessão A', items: [] }] }); if (DB.t3_versoes) delete DB.t3_versoes.ru7csj; });
+await a.p.evaluate(() => NAV.go('treinador', { s: 'exercicio', id: 'afundo', rotina: 'ru7csj', sessao: 's1' }, null)); await a.p.waitForTimeout(1200);
+const b2 = a.errs.length;
+await clickTxt(a.p, /^Adicionar à Sessão A$/); await a.p.waitForTimeout(1500);
+t = await txt(a.p);
+console.log('F15 adicionar exercício a rotina antiga abre o editor:', a.errs.length === b2, /Rotina QA/.test(t), !/Ainda não há dados/.test(t), await a.p.evaluate(() => DB.rotinas.find((r) => r.id === 'ru7csj').sessions[0].items.length === 1));
+
 // F22: endereço com UUID completo sobrevive à recarga
 const parsed = await a.p.evaluate((lid) => { history.replaceState(null, '', '/app#treinador-alunoreal-lk_' + lid); return true; }, LID);
 await a.p.reload({ waitUntil: 'load' }); await a.p.waitForTimeout(2500);

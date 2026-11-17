@@ -262,7 +262,7 @@
         var t = r.ok && r.data && r.data[0];
         if (!t) return { ok: false, needPublish: true, msg: 'Crie e publique seu perfil de treinador antes de convidar alunos.' };
         // regra do servidor: só perfil publicado convida (o aluno abre o convite e vê quem é você)
-        if (t.status !== 'publicado') return { ok: false, needPublish: true, msg: 'Para convidar, publique seu perfil primeiro: o aluno abre o convite e vê o seu perfil. Publique em Perfil e volte aqui.' };
+        if (t.status && t.status !== 'publicado') return { ok: false, needPublish: true, msg: 'Para convidar, publique seu perfil primeiro: o aluno abre o convite e vê o seu perfil. Publique em Perfil e volte aqui.' };
         return db('POST', 'invites', { code: code, trainer_id: t.id, kind: 'individual', recipient_name: o.name || null, recipient_email: o.email || null, service: o.service || null, message: o.message || null }, 'return=representation').then(function (x) { x.code = code; x.expiresAt = x.ok && x.data && x.data[0] ? x.data[0].expires_at : null; return x; });
       });
     },

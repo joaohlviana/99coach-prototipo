@@ -415,6 +415,10 @@
         <!-- Instagram (ACC08 · fluxo completo) -->
         <sc-if value="{{sx.is.instagram}}" hint-placeholder-val="{{ false }}">
           <section class="card onb-sec" aria-label="Instagram">
+            <sc-if value="{{g.real}}" hint-placeholder-val="{{ false }}">
+              <div class="alert alert--info"><i class="ic ic--sm i-info" aria-hidden="true"></i><div><b>Confirmação pelo Instagram ainda não está disponível</b>Por enquanto nenhum perfil recebe selo de Instagram confirmado. Se o seu perfil foi importado de dados públicos, use “É meu perfil” na página dele: o pedido tem protocolo e uma pessoa da equipe confere.</div></div>
+            </sc-if>
+            <sc-if value="{{g.demo}}" hint-placeholder-val="{{ true }}">
             <sc-if value="{{g.s.intro}}" hint-placeholder-val="{{ true }}">
               <div class="field"><label class="field__label" for="ci-h">Seu perfil no Instagram</label><div class="input"><i class="ic ic--sm i-instagram" aria-hidden="true"></i><input id="ci-h" type="text" value="{{g.handle}}" onInput="{{g.setHandle}}"></div></div>
               <ol class="onb-steps"><li><span class="onb-steps__n">1</span><div><b>Copie a mensagem</b><span class="v4-sub">Ela tem um código de referência.</span></div></li><li><span class="onb-steps__n">2</span><div><b>Envie {{g.fromTxt}} para @99coach.oficial</b><span class="v4-sub">Conta oficial da 99Coach para receber a prova.</span></div></li><li><span class="onb-steps__n">3</span><div><b>Volte e cole o código que respondermos</b><span class="v4-sub">Não pedimos sua senha nem o código de login do Instagram.</span></div></li></ol>
@@ -440,6 +444,7 @@
             </sc-if>
             <sc-if value="{{g.s.review}}" hint-placeholder-val="{{ false }}">
               <div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Enviado para revisão · protocolo #C-301</b>Uma pessoa da equipe confere e avisa por e-mail. Seu cadastro continua.</div></div>
+            </sc-if>
             </sc-if>
           </section>
         </sc-if>
