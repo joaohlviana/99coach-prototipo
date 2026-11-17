@@ -19,9 +19,9 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
     if (/^rpc\//.test(path) && rq.postData()) { const kk = JSON.parse(rq.postData()).p_idem; if (kk != null && (String(kk).length < 8 || String(kk).length > 200)) return route.fulfill({ status: 400, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'content-type': 'application/json' }, body: JSON.stringify({ message: 'chave de idempotência inválida' }) }); }
   if (path === 'links') return j(200, srv.links);
   if (path === 'sessions') return j(200, srv.sessions.filter((x) => !/link_id=eq\./.test(u.search) || u.search.includes(x.link_id)));
-  if (path === 'rpc/submit_session') { srv.logs = body.p_logs; srv.sessions.push({ id: 'S' + srv.sessions.length, link_id: body.p_link, session_key: body.p_key, started_at: '2026-11-12T10:00:00Z', submitted_at: '2026-11-12T10:40:00Z', set_logs: body.p_logs.map((x) => ({ item: x.item, set_no: x.set, reps: x.reps, load_kg: x.loadKg, exercise_id: x.exerciseId, exercise_name: x.name })), session_comments: [] }); return j(200, { receipt: 'ok' }); }
+  if (path === 'rpc/submit_session') { srv.logs = body.p_logs; srv.sessions.push({ id: 'S' + srv.sessions.length, link_id: body.p_link, session_key: body.p_key, started_at: new Date(Date.now() - 7200000).toISOString(), submitted_at: new Date(Date.now() - 4800000).toISOString(), set_logs: body.p_logs.map((x) => ({ item: x.item, set_no: x.set, reps: x.reps, load_kg: x.loadKg, exercise_id: x.exerciseId, exercise_name: x.name })), session_comments: [] }); return j(200, { receipt: 'ok' }); }
   if (path === 'rpc/correct_session_sets') { srv.fix = body; const x = srv.sessions.find((q) => q.id === body.p_session); body.p_sets.forEach((c) => { const l = x.set_logs.find((g) => g.item === c.item && g.set_no === c.set); if (l) { l.reps = c.reps; l.load_kg = c.loadKg; } }); return j(200, { changed: body.p_sets.length }); }
-  if (path === 'rpc/student_session_feedback') { srv.fb = body; srv.sessions.find((x) => x.id === body.p_session).session_comments.push({ id: 'C1', side: 'aluno', body: 'Esforço ' + body.p_effort + '/10 · ' + body.p_body, created_at: '2026-11-12T10:45:00Z' }); return j(200, { comment: 'C1' }); }
+  if (path === 'rpc/student_session_feedback') { srv.fb = body; srv.sessions.find((x) => x.id === body.p_session).session_comments.push({ id: 'C1', side: 'aluno', body: 'Esforço ' + body.p_effort + '/10 · ' + body.p_body, created_at: new Date(Date.now() - 4500000).toISOString() }); return j(200, { comment: 'C1' }); }
   if (path === 'appointments') return j(200, srv.appts.filter((a) => a.status === 'marcado'));
   if (path === 'rpc/cancel_appointment') { srv.appts.forEach((a) => { if (a.id === body.p_id) a.status = 'cancelado'; }); srv.canceled.push(body.p_id); return j(200, { status: 'cancelado' }); }
   if (path === 'profiles') return j(200, [{ id: 'al', roles: ['aluno'] }]);
@@ -63,7 +63,7 @@ console.log('  correção gravada:', !!srv.fix && srv.fix.p_sets[0].reps === 6 &
 srv.sessions.forEach((x) => { x.submitted_at = new Date(Date.now() - 50 * 3600000).toISOString(); });
 t = await aluno('hoje'); t = await aluno('treinos'); await press(/^Ver registro$/); t = await txt();
 console.log('  fora do prazo não oferece corrigir:', !/Corrigir registro/.test(t));
-srv.sessions.forEach((x) => { x.submitted_at = '2026-11-12T10:40:00Z'; });
+srv.sessions.forEach((x) => { x.submitted_at = new Date(Date.now() - 4800000).toISOString(); });
 // 4. versão nova durante uma sessão em andamento
 await aluno('hoje'); await press(/^Começar treino$/); await (await p.$('#app [role=checkbox]')).click(); await p.waitForTimeout(300); await press(/^Pausar e sair$/);
 srv.links = [lk('L1', 'Marina Duarte', 2)]; await p.evaluate(() => window.__refreshLinks()); await p.waitForTimeout(700);
