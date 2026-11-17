@@ -17,7 +17,7 @@ await p.goto('http://localhost:5173/?demo=0#onboarding', { waitUntil: 'load' });
 const press = async (t) => { for (const h of await p.$$('#app button')) if ((await h.textContent()).trim() === t) { await h.click(); return true; } return false; };
 await press('Continuar com Google'); await p.waitForTimeout(300);
 console.log('0 sem aceitar termos fica na página:', /localhost/.test(p.url()));
-await p.click('#app .onb-checkrow').catch(() => {});
+await p.click('#app .onb-checkbox').catch(() => {});
 console.log('1 sem botão do Apple (desligado no Supabase):', !/Continuar com Apple/.test(await p.evaluate(() => document.body.innerText)));
 await press('Continuar com Google'); await p.waitForTimeout(900);
 console.log('2 foi ao servidor:', p.url().slice(0, 150));

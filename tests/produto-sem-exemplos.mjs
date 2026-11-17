@@ -36,7 +36,7 @@ const btn = async (re) => { for (const h of await p.$$('#app button')) { const t
 console.log('campo senha', !!(await p.$('#onb-senha')));
 // senha curta
 await fill('Marina Duarte', 'marina@teste.com', '123');
-await (await p.$('#app .onb-checkrow')).click();
+await (await p.$('#app .onb-checkbox')).click();
 await (await btn(/^Criar conta$/)).click();
 await p.waitForTimeout(300);
 console.log('senha curta ->', await st());
