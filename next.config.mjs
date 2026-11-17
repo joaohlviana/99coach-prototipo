@@ -15,10 +15,8 @@ const config = {
       r('/ajuda', '/app#publico-ajuda'), r('/contato', '/app#publico-ajuda'), r('/termos', '/app#publico-ajuda-termos'),
       r('/privacidade', '/app#publico-ajuda-privacidade'), r('/cookies', '/app#publico-ajuda-privacidade'), r('/pagamentos-e-reembolsos', '/app#publico-ajuda-pagamentos'),
       r('/remocao', '/app#publico-ajuda'), r('/reivindicar/:slug', '/treinador/:slug'),
-      r('/esportes', '/#esportes'), r('/esporte/:slug', '/treinadores/:slug'), r('/busca', '/buscar'),
-      r('/c/:codigo', '/app#publico-convite-:codigo'),
-      // programas do site anterior: ainda não há página de programa aqui; levam à modalidade do programa
-      r('/programa/lpo-booster', '/treinadores/lpo'), r('/programa/:slug', '/treinadores/crossfit')
+      r('/esportes', '/#esportes'), { source: '/esporte/:slug', destination: '/treinadores/:slug', statusCode: 301 }, { source: '/busca', destination: '/buscar', statusCode: 301 },
+      r('/c/:codigo', '/app#publico-convite-:codigo')
     ];
   },
   async headers() {
