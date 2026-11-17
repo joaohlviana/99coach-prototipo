@@ -10,7 +10,10 @@ REG.screen({
       C.db('GET', 'trainers?select=id,status&user_id=eq.' + encodeURIComponent(uid || '')).then(function (r) {
         var t = r.ok && r.data && r.data[0];
         if (!t) return ctx.setUi({ list: null, noTrainer: r.ok });
-        C.db('GET', 'programs?select=id,slug,title,weeks,workouts,access_months,price_cents,status,description,content&trainer_id=eq.' + t.id + '&order=title.asc').then(function (p) { ctx.setUi({ tid: t.id, tPub: t.status === 'publicado', list: p.ok ? (p.data || []) : null }); });
+        C.db('GET', 'programs?select=id,slug,title,weeks,workouts,access_months,price_cents,status,description,program_contents(content)&trainer_id=eq.' + t.id + '&order=title.asc').then(function (p) {
+          // o conteúdo vendido fica em tabela própria, que só o dono lê (o comprador recebe pela função my_programs)
+          var L = p.ok ? (p.data || []).map(function (x) { var pc = Array.isArray(x.program_contents) ? x.program_contents[0] : x.program_contents; return Object.assign({}, x, { content: (pc && pc.content) || '' }); }) : null;
+          ctx.setUi({ tid: t.id, tPub: t.status === 'publicado', list: L }); });
       });
     };
     if (C && C.session() && !ui.asked) load();
@@ -24,9 +27,16 @@ REG.screen({
       if (!w || !k || !m) return ctx.setUi({ ferr: 'Informe semanas, treinos e meses de acesso (números maiores que zero).' });
       if (c < 100) return ctx.setUi({ ferr: 'Informe o preço em reais (mínimo R$ 1,00).' });
       if (ui.saving) return; ctx.setUi({ saving: true, ferr: '' });
-      var body = { title: title, weeks: w, workouts: k, access_months: m, price_cents: c, description: String(f.desc || '').trim().slice(0, 600) || null, content: String(f.content || '').trim().slice(0, 20000) || null };
-      var req = ui.editId ? C.db('PATCH', 'programs?id=eq.' + ui.editId, body)
-        : C.db('POST', 'programs', Object.assign({ trainer_id: ui.tid, slug: slug(title) + '-' + Math.random().toString(36).slice(2, 7), status: 'rascunho' }, body));
+      var body = { title: title, weeks: w, workouts: k, access_months: m, price_cents: c, description: String(f.desc || '').trim().slice(0, 600) || null };
+      var content = String(f.content || '').trim().slice(0, 20000) || null;
+      var req = (ui.editId ? C.db('PATCH', 'programs?id=eq.' + ui.editId, body, 'return=representation')
+        : C.db('POST', 'programs', Object.assign({ trainer_id: ui.tid, slug: slug(title) + '-' + Math.random().toString(36).slice(2, 7), status: 'rascunho' }, body), 'return=representation'))
+        .then(function (r) {
+          var row = r.ok && Array.isArray(r.data) ? r.data[0] : null;
+          if (!row) return r.ok ? { ok: false } : r;
+          // o conteúdo só conta como salvo com o recibo do servidor
+          return C.db('POST', 'program_contents?on_conflict=program_id', { program_id: row.id, content: content, updated_at: new Date().toISOString() }, 'resolution=merge-duplicates').then(function (c) { return c.ok ? r : c; });
+        });
       req.then(function (r) {
         if (!r.ok) return ctx.setUi({ saving: false, ferr: 'Não foi possível salvar agora' + (r.offline ? ': sem conexão.' : '. Tente de novo.') });
         ctx.setUi({ saving: false, open: false, editId: '', f: {} }); ctx.toast(ui.editId ? 'Programa atualizado.' : 'Programa criado como rascunho.'); load();

@@ -2,7 +2,7 @@
 const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
 const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
 const now = Date.now(), iso = (min) => new Date(now - min * 60000).toISOString();
-const srv = { progs: [], calls: [],
+const srv = { progs: [], pc: {}, contentLeak: false, calls: [],
   msgs: [1, 2, 3, 4, 5].map((i) => ({ id: 'old' + i, side: 'aluno', body: 'Mensagem antiga ' + i, client_id: 'c-antiga-' + i, created_at: iso(600 + i), read_at: iso(500), edited_at: null, retracted_at: null }))
     .concat([{ id: 'm1', side: 'treinador', body: 'Treino de perna amanha', client_id: 'c-nova-0001', created_at: iso(2), read_at: null, edited_at: null, retracted_at: null }]) };
 const lk = { id: 'L1', status: 'ativo', origin: 'convite', prep: 'assigned', answers: {}, created_at: '2026-11-01T12:00:00Z', student_id: 'a1', trainers: { slug: 'm', name: 'Marina Duarte', user_id: 'tr' },
@@ -15,12 +15,15 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', async (route) => {
   const j = (d, s) => route.fulfill({ status: s || 200, headers: cors, body: JSON.stringify(d) });
   const path = u.pathname.replace('/rest/v1/', ''), body = (() => { try { return rq.postData() ? JSON.parse(rq.postData()) : {}; } catch (_) { return {}; } })(), q = decodeURIComponent(u.search);
   if (path === 'programs') {
-    if (rq.method() === 'POST') { srv.progs.push(Object.assign({ id: 'P' + srv.progs.length }, body)); return j([]); }
+    // como o banco: o conteúdo vendido não é coluna de programs (fica em program_contents, só o dono lê)
+    if ((rq.method() === 'POST' || rq.method() === 'PATCH') && 'content' in body) srv.contentLeak = true;
+    if (rq.method() === 'POST') { const row = Object.assign({ id: 'P' + srv.progs.length }, body); srv.progs.push(row); return j([row]); }
     const id = (q.match(/id=eq\.([^&]+)/) || [])[1];
-    if (rq.method() === 'PATCH') { Object.assign(srv.progs.find((x) => x.id === id), body); return j([]); }
+    if (rq.method() === 'PATCH') { const row = srv.progs.find((x) => x.id === id); Object.assign(row, body); return j([row]); }
     if (rq.method() === 'DELETE') { srv.progs = srv.progs.filter((x) => x.id !== id); return j([]); }
-    return j(srv.progs);
+    return j(srv.progs.map((x) => Object.assign({}, x, { program_contents: srv.pc[x.id] ? { content: srv.pc[x.id] } : null })));
   }
+  if (path === 'program_contents' && rq.method() === 'POST') { srv.pc[body.program_id] = body.content; return j([]); }
   if (/\/storage\/v1\/object\/chat-anexos\//.test(u.pathname)) { srv.calls.push('upload:' + rq.method() + ':' + (rq.headers()['content-type'] || '')); return j({ Key: 'ok' }); }
   if (path === 'rpc/send_message') { const m = { id: 'm9', side: 'treinador', body: body.p_body, client_id: body.p_client_id, created_at: iso(0), read_at: null, edited_at: null, retracted_at: null }; srv.msgs.push(m); return j({ outcome: 'entregue', id: 'm9', at: m.created_at }); }
   if (path === 'rpc/attach_to_message') { const m = srv.msgs.find((x) => x.id === body.p_message); m.attachment_path = body.p_path; m.attachment_name = body.p_name; m.attachment_type = body.p_type; srv.calls.push('attach:' + /^L1\//.test(body.p_path)); return j({ id: m.id }); }
@@ -50,9 +53,11 @@ console.log('1 programas vazio e honesto:', /Nenhum programa ainda/.test(t), /Pr
 await press(/Novo programa/); await press(/^Salvar$/);
 console.log('  valida antes de gravar:', /Dê um nome ao programa/.test(await T()), srv.progs.length === 0);
 await p.fill('#pg-t', 'Força em 8 semanas'); await p.fill('#pg-w', '8'); await p.fill('#pg-k', '24'); await p.fill('#pg-m', '6'); await p.fill('#pg-p', '197,00');
+await p.fill('#pg-c', 'Semana 1: agachamento 3x8');
 await press(/^Salvar$/); await p.waitForTimeout(600); t = await T();
 console.log('  criado como rascunho:', srv.progs.length === 1 && srv.progs[0].status === 'rascunho' && srv.progs[0].price_cents === 19700 && srv.progs[0].trainer_id === 'T1' && /^forca-em-8-semanas-/.test(srv.progs[0].slug), /Força em 8 semanas Rascunho/i.test(t), /8 semanas · 24 treinos · acesso por 6 meses · R\$ 197,00/.test(t));
 await press(/^Publicar$/); await press(/^Publicar$/, '.mod-sheet button'); await p.waitForTimeout(600);
+console.log('  conteúdo pago fora da tabela pública, salvo na tabela do dono:', !srv.contentLeak, srv.pc.P0 === 'Semana 1: agachamento 3x8');
 console.log('  publicado:', srv.progs[0].status === 'publicado', /Publicado/i.test(await T()));
 await press(/^Retirar$/); await p.waitForTimeout(600);
 console.log('  retirado:', srv.progs[0].status === 'retirado', /Retirado/i.test(await T()));
