@@ -30,6 +30,6 @@ console.log('  marcar modalidade funciona:', await p.evaluate(() => [...document
 let t = '';
 for (let i = 0; i < 10; i++) { await press(/^Próxima/); t += ' ' + await T(); }
 console.log('2 sem dados de exemplo nas seções:', !/thiago/i.test(t), !/Thiago Pereira/.test(t), !/Ana Carvalho/.test(t), !/créditos de IA/.test(t));
-console.log('  Instagram sem perfil preenchido:', /Envie do seu perfil para @99coach\.oficial/.test(t));
+console.log('  Instagram sem fluxo simulado na conta real:', /Confirmação pelo Instagram ainda não está disponível/.test(t) && !/Envie do seu perfil para @99coach/.test(t));
 console.log('errs', errs);
 await b.close();

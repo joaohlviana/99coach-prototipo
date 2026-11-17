@@ -39,7 +39,7 @@ let t = await txt();
 console.log('1 insights do servidor:', srv.calls.includes('trainer_metrics'), '| sem números de exemplo:', !/412/.test(t));
 console.log('  sem base honesto:', /Pedidos respondidos no prazo Sem base/i.test(t), /pelo menos 5 casos/.test(t));
 console.log('  tempo de resposta:', /1,5 h/.test(t), /9 em cada 10 respondidos em até 8,3 h/.test(t), /1 pedido sem resposta/.test(t));
-console.log('  vagas:', /3 de 3 vagas em uso/.test(t), /Vagas esgotadas/.test(t), '| sem fonte listado:', /Visitas ao perfil/.test(t) && /modo de teste/.test(t));
+console.log('  vagas:', /3 de 3 vagas em uso/.test(t), /Vagas esgotadas/.test(t), '| sem fonte listado:', /Visitas ao perfil/.test(t) && /ainda sem vendas pagas/.test(t));
 await p.evaluate(() => NAV.go('treinador', { s: 'credenciais' }, null)); await p.waitForTimeout(1200);
 t = await txt();
 console.log('2 credenciais reais:', /CREF 012345-G\/PR/.test(t), /Informado por você/i.test(t), '| sem exemplos:', !/CrossFit Level 1/.test(t));
