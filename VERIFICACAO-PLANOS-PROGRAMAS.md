@@ -44,9 +44,10 @@ Para conferir, foi feita uma consulta ao banco com o papel de visitante anônimo
 
 **Causa.** A regra de acesso "programas publicados" libera todas as colunas da tabela `programs` para qualquer pessoa, inclusive `content`, que é o material vendido. O site só pede título e preço, mas a API aceita pedir `content`.
 
-**Correção proposta** (é uma mudança no banco, então precisa da sua autorização):
-1. Mover o conteúdo para uma tabela própria, que só o dono lê.
-2. O comprador continua recebendo o conteúdo pela função `my_programs`, que já confere o pagamento e a validade.
+**Corrigido em 17/11, com sua autorização:**
+1. O conteúdo foi para a tabela `program_contents`, que só o dono lê.
+2. O comprador recebe o conteúdo pela função `my_programs`, que confere o pagamento e a validade.
+3. O visitante sem conta agora recebe "permissão negada".
 
 Isso atende o critério P20 ("conteúdo privado sem direito: o servidor nega a leitura").
 
@@ -78,7 +79,7 @@ Isso atende o critério P20 ("conteúdo privado sem direito: o servidor nega a l
 | P16 Versão comprada preservada | Não atende | Editar o texto muda o conteúdo de quem já comprou |
 | P17 / P18 Acesso gratuito e duas origens | Não atende | Não há concessão gratuita |
 | P19 Progresso do aluno | Não atende | O aluno só lê o texto |
-| P20 Conteúdo privado | **Falha** | Veja a seção 2.1 |
+| P20 Conteúdo privado | Atende (corrigido) | Veja a seção 2.1 |
 | O11 Preço público e SEO | Parcial | Não há página pública de programa (o sitemap de programas está vazio) |
 
 ---
@@ -134,3 +135,60 @@ Nenhuma tela prevista ficou faltando, exceto FC07 ("Minhas contratações e deta
 5. **Para vender de verdade:**
    - cada treinador precisa ativar o recebimento no Stripe;
    - fazer uma compra em ambiente de teste do começo ao fim: compra, acesso, reembolso e recebimentos.
+
+---
+
+## 5. Os dois canvas do DS: "Versões finais" e o canvas original
+
+Foram lidas todas as pranchas de programas, ofertas, compra, entrega e financeiro:
+- **"Versões finais":** Hubs-4 (H07 Programa).
+- **Canvas original:** Hub-H07, Hub-H09, TRE-1 a TRE-7, FC-1 a FC-3, FT-1 a FT-3, PR-1 a PR-5, ALU-1 a ALU-3, PUB-1 a PUB-4, "Famílias" e "Decisões".
+
+### 5.1 O que o DS já desenha certo
+
+- **Concessão gratuita e duas origens de acesso (TRE24):** "Revogado · Acesso por compra continua"; "Acesso gratuito não gera pedido pago".
+- **Compra (FC01 a FC05):**
+  - "Retorno visual não confirma pagamento";
+  - "Pode fechar; pedido guardado";
+  - "Consultar de novo, nunca pagar de novo";
+  - a caixa de aceite já marcada aparece na lista "Não fazer".
+- **Cancelamento e reembolso:**
+  - FC07 tem reembolso parcial;
+  - FC08 diz "Cancelar e reembolsar são ações diferentes".
+- **Presente (FC10):** quem paga não vê os dados de quem recebe.
+- **Prévia do aluno (ALU07):** "Prévia do treinador é rotulada e nunca atualiza progresso". A tela de demonstração do app não segue isso (seção 3, desvio 1).
+- **Publicação (TRE23):**
+  - publicar a versão e habilitar a venda são passos separados;
+  - "Resultado desconhecido · Consultar de novo";
+  - participantes da versão anterior escolhem se migram.
+- **Assinatura Pro (FT11):** R$ 99/mês ou R$ 990/ano, sem caixa pré-marcada, e os alunos mantêm o que compraram.
+- **Financeiro:**
+  - FT10 tem saldo negativo com origem;
+  - FT12 tem relatório parcial com "taxas do provedor pendentes".
+
+### 5.2 Divergências entre o DS e o pacote (a corrigir no DS e depois no app)
+
+| # | Divergência | Onde aparece | Ajuste |
+|---|---|---|---|
+| 1 | A comissão de 5% vira "taxa" e não há linha da tarifa do processador. O líquido ignora a tarifa, e há "Taxa (estimada) R$ 29,70" sobre R$ 297, que é 10% | FT02, FT03, FT04, H09, PR15 | Duas linhas: "Comissão 99Coach 5%" e "Tarifa do processador" (conhecida ou pendente) |
+| 2 | Acesso de 6 meses | Versão final do H07 ("R$ 140 · acesso 6 meses"); PUB06 e ALU06 ("09/10 → 09/04") | 12 meses a partir da liberação |
+| 3 | A criação começa por "nome e duração" | H07, TRE21, TRE22 | Título e objetivo |
+| 4 | A prontidão bloqueia por vídeo num programa "só sessões" | Versão final do H07; variante do TRE23 | Bloquear só no formato curso; em programa de sessões, o vídeo é recomendação |
+| 5 | Famílias trocadas nos protótipos | PR12 cobra uma consultoria no fluxo do Pro; PR13 chama de "acompanhamento" a compra de um programa | Alinhar o título e o fluxo de cada família |
+| 6 | O limite Essencial 3 / Pro 50 não aparece em tela | TRE29 e "Decisões" | Contador de "alunos ativos em acompanhamento", estado de última vaga e efeito do downgrade do Pro |
+| 7 | Pré-venda desenhada como estado | FC06, PUB06 | O pacote não permite pré-venda: remover |
+| 8 | No reembolso, "Acesso · encerra ao aprovar" vale para tudo | FC09 | Calcular por origem: outra origem mantém o acesso |
+| 9 | Navegação | Versão final do H07 usa "Mais" no lugar de "Conta"; grupo fixo "Negócio" no desktop | Hoje, Alunos, Conteúdo, Mensagens e Conta; destinos comerciais contextuais |
+| 10 | A compra de programa sugere relação com o treinador | ALU06 "Falar com treinador"; PUB15 "Abra pelo seu acompanhamento"; seção "Oferta" dentro do editor (TRE22) | Para quem só comprou programa: suporte e "Meus programas"; oferta fora do editor |
+
+### 5.3 O que o pacote exige e nenhuma prancha desenha
+
+- **Editor do programa:** seções Conteúdo, Apresentação, Acesso e Revisão.
+- **Edição concorrente:** comparação de versões do programa (existe só para rotinas).
+- **Troca de conta no mesmo navegador** com rascunho privado de programa (P03).
+- **Retomar a edição em outro aparelho** (P02, lado do treinador).
+- **Referências de outros autores:** exercício pendente ou licença de outro autor vencida (P08, P09).
+- **Datas do acesso:** "acesso de X a Y a partir da liberação" (C10).
+- **Cotação vencida em compra única,** com aceite da diferença.
+- **Canal nativo** com compra de conteúdo de terceiros desabilitada (R05).
+- **Concessão gratuita:** falta o estado "concedido, aplicando acesso".
