@@ -39,7 +39,7 @@
         var p = isProg && P ? P.prog(v.ref) : null;
         var unavailable = !!(t && t.status === 'retirado');
         var name = isProg ? (p ? p.name : 'Programa') : (unavailable ? 'Perfil indisponível' : (t ? t.name : 'Treinador'));
-        var pr = isProg ? { pre: '', price: p ? U.money(p.price) : '', unit: '· pagamento único' } : priceOf(t && t.from);
+        var pr = isProg ? { pre: '', price: p ? (p.price ? U.money(p.price) : 'Sem preço definido') : '', unit: '· pagamento único' } : priceOf(t && t.from);
         var a = P && t ? P.av(t) : { photo: '', hasPhoto: false, noPhoto: true, ini: U.ini(name) };
         return {
           name: name, kindLabel: isProg ? 'Programa · ' + (P && p ? P.tr(p.author).name : '') : (unavailable ? (t.note || 'Retirado') : 'Treinador · ' + (t ? t.spec : '')),

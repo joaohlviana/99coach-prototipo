@@ -271,6 +271,7 @@
       <!-- ALU07 · Aula ou conteúdo do programa -->
       <sc-if value="{{is.conteudo}}" hint-placeholder-val="{{ false }}">
         <div class="pghead"><div class="pghead__txt"><span class="eyebrow eyebrow--plain">{{v.eyebrow}}</span><h1 class="pghead__title">{{v.title}}</h1><p class="pghead__sub">{{v.kind}} · progresso {{v.version}}</p></div></div>
+        <sc-if value="{{v.isPrev}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-eye" aria-hidden="true"></i><div><b>Prévia do aluno</b>{{v.prevTxt}}</div></div></sc-if>
         <sc-if value="{{v.al.has}}" hint-placeholder-val="{{ false }}"><div class="{{v.al.cls}}" role="{{v.al.role}}"><i class="{{v.al.ic}}" aria-hidden="true"></i><div class="a1-alert__t"><b>{{v.al.t}}</b><span>{{v.al.x}}</span><sc-if value="{{v.al.hasB}}" hint-placeholder-val="{{ false }}"><div class="a1-alert__b"><button type="button" class="btn btn--outline btn--sm" onClick="{{v.al.f}}">{{v.al.b}}</button><sc-if value="{{v.al.hasB2}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.al.f2}}">{{v.al.b2}}</button></sc-if></div></sc-if></div></div></sc-if>
         <div class="mod-grid2">
           <div class="mod-col">
@@ -282,7 +283,7 @@
               <section class="a1-card" aria-label="Sessão guiada"><b>Sessão guiada</b>
                 <ol class="a1-exlist"><sc-for list="{{v.drills}}" as="d" hint-placeholder-count="2"><li class="a1-ex"><div class="a1-ex__t"><b>{{d.name}}</b><span>{{d.presc}} · {{d.cues}}</span></div></li></sc-for></ol>
                 <p class="mod-small mod-muted"><i class="ic ic--xs i-info" aria-hidden="true"></i> Esta aula não registra um treino realizado. Treinos do seu acompanhamento ficam em Treinos.</p>
-                <div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goSessao}}">Ver treino do acompanhamento</button></div>
+                <sc-if value="{{v.hasAcomp}}" hint-placeholder-val="{{ false }}"><div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.goSessao}}">Ver treino do acompanhamento</button></div></sc-if>
               </section>
             </sc-if>
             <sc-if value="{{v.hasText}}" hint-placeholder-val="{{ true }}">
@@ -719,7 +720,7 @@
             </sc-if>
           </div>
         </sc-if>
-        <p class="mod-small mod-muted">Compras e recibos ficam em Minhas contratações. Dúvidas sobre acesso: <button type="button" class="a1-link" onClick="{{v.goHelp}}">fale com seu treinador</button>.</p>
+        <p class="mod-small mod-muted">Compras e recibos ficam em Minhas contratações. Dúvidas sobre acesso a um programa comprado: <button type="button" class="a1-link" onClick="{{v.goHelp}}">peça ajuda à 99Coach</button>. Comprar um programa não abre conversa com o treinador; isso só existe no acompanhamento.</p>
       </sc-if>
 
       <!-- ALU02 · Detalhe da sessão prescrita -->

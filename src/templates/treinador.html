@@ -2061,12 +2061,18 @@
             <div class="t4-split">
               <section class="card onb-sec" aria-label="Oferta">
                 <h2 class="onb-h2">Oferta</h2>
+                <div class="field"><span class="field__label" id="t4-ofam">O que você vai oferecer?</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-ofam"><sc-for list="{{v.fams}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.famHelp}}</span>
+                  <sc-if value="{{v.hasFamErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.famErr}}</span></sc-if></div>
+                <sc-if value="{{v.noVaga}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-users" aria-hidden="true"></i><div><b>Sem vaga · venda pausada</b>Você tem 3 de 3 alunos ativos em acompanhamento (Essencial). A venda volta quando uma vaga liberar ou com o Pro (até 50). Compradores de programa não contam nesse limite.</div></div></sc-if>
                 <div class="field"><label class="field__label" for="t4-on">Nome</label><div class="input"><input id="t4-on" type="text" value="{{v.f.name}}" onInput="{{v.setName}}"></div><sc-if value="{{v.hasNameErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.nameErr}}</span></sc-if></div>
-                <div class="field"><span class="field__label" id="t4-oc">Ciclo</span><div class="seg t4-seg" role="radiogroup" aria-labelledby="t4-oc"><sc-for list="{{v.cycles}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.cycleHelp}}</span></div>
+                <sc-if value="{{v.showCycles}}" hint-placeholder-val="{{ false }}"><div class="field"><span class="field__label" id="t4-oc">Ciclo</span><div class="seg t4-seg" role="radiogroup" aria-labelledby="t4-oc"><sc-for list="{{v.cycles}}" as="o" hint-placeholder-count="3"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.cycleHelp}}</span></div></sc-if>
                 <div class="field"><label class="field__label" for="t4-op">Preço</label><div class="{{v.priceCls}}"><span class="t4-pre">R$</span><input id="t4-op" type="text" inputmode="decimal" value="{{v.f.price}}" onInput="{{v.setPrice}}"></div><span class="field__help">{{v.priceLabel}} · Demonstração: nada é cobrado.</span><sc-if value="{{v.hasPriceErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.priceErr}}</span></sc-if></div>
                 <div class="field"><span class="field__label" id="t4-of">Formato</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-of"><sc-for list="{{v.fmts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
                 <div class="field"><span class="field__label" id="t4-oa">Forma de aceite</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-oa"><sc-for list="{{v.accepts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.acceptHelp}}</span></div>
-                <div class="field"><label class="field__label" for="t4-oi">Inclui</label><div class="input input--area"><textarea id="t4-oi" rows="3" onInput="{{v.setIncl}}">{{v.f.incl}}</textarea></div>
+                <div class="field"><span class="field__label" id="t4-ob">Benefícios que você entrega</span><p class="field__help">Nada vem marcado: marque só o que você realmente oferece.</p>
+                  <div class="mod-list" role="group" aria-labelledby="t4-ob"><sc-for list="{{v.benefs}}" as="b" hint-placeholder-count="3"><button type="button" class="v4-reset t4-checkrow" role="checkbox" aria-checked="{{b.on}}" onClick="{{b.toggle}}"><span class="{{b.cls}}"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span>{{b.label}}</span></button></sc-for></div></div>
+                <div class="kv t4-kv" aria-label="Prazos e cobrança"><sc-for list="{{v.terms}}" as="t" hint-placeholder-count="3"><div class="kv__r"><span>{{t.k}}</span><b>{{t.v}}</b></div></sc-for></div>
+                <div class="field"><label class="field__label" for="t4-oi">Detalhes do que está incluído</label><div class="input input--area"><textarea id="t4-oi" rows="3" onInput="{{v.setIncl}}">{{v.f.incl}}</textarea></div>
                   <sc-if value="{{v.inclChanged}}" hint-placeholder-val="{{ false }}"><button type="button" class="v4-reset t4-checkrow" role="checkbox" aria-checked="{{v.inclOn}}" onClick="{{v.toggleIncl}}"><span class="{{v.inclCls}}"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span>Confirmar o que está incluído</span></button></sc-if>
                   <sc-if value="{{v.hasInclErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.inclErr}}</span></sc-if></div>
                 <div class="setrow"><div class="setrow__t"><b>Mostrar no perfil</b><p class="mod-small mod-muted">Divulgar não liga a venda.</p></div><button type="button" class="{{v.showCls}}" role="switch" aria-checked="{{v.showOn}}" aria-label="Mostrar no perfil" onClick="{{v.toggleShow}}"></button></div>
@@ -2222,16 +2228,17 @@
         <sc-if value="{{v.creating}}" hint-placeholder-val="{{ false }}">
           <section class="card onb-sec t4-new" aria-label="Novo programa">
             <div class="mod-between"><h2 class="onb-h2">Novo programa</h2><button type="button" class="btn btn--ghost btn--sm" onClick="{{v.closeNew}}">Cancelar</button></div>
-            <p class="mod-small mod-muted">Comece pelo nome e pela duração; o resto você preenche por seções, no seu ritmo. Criar não habilita venda.</p>
-            <div class="field"><label class="field__label" for="t4-nname">Nome do programa</label><div class="{{v.nInCls}}"><input id="t4-nname" type="text" value="{{v.nName}}" onInput="{{v.setNName}}" placeholder="Ex.: Corrida 10k"></div>
+            <p class="mod-small mod-muted">Comece pelo título e pelo objetivo; o resto você preenche por seções, no seu ritmo. Criar não habilita venda.</p>
+            <div class="field"><label class="field__label" for="t4-nname">Título do programa</label><div class="{{v.nInCls}}"><input id="t4-nname" type="text" value="{{v.nName}}" onInput="{{v.setNName}}" placeholder="Ex.: Corrida 10k"></div>
               <sc-if value="{{v.hasNErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.nErr}}</span></sc-if></div>
-            <div class="field"><span class="field__label" id="t4-nw">Duração</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-nw"><sc-for list="{{v.nWeeks}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+            <div class="field"><label class="field__label" for="t4-ngoal">Objetivo</label><div class="input"><input id="t4-ngoal" type="text" value="{{v.nGoal}}" onInput="{{v.setNGoal}}" placeholder="Ex.: correr 10 km sem parar em 8 semanas"></div>
+              <sc-if value="{{v.hasGErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.gErr}}</span></sc-if></div>
             <div class="onb-actions onb-actions--row"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.create}}">Criar rascunho</button></div>
           </section>
         </sc-if>
 
         <sc-if value="{{v.isEmpty}}" hint-placeholder-val="{{ false }}"><sc-if value="{{v.notCreating}}" hint-placeholder-val="{{ true }}">
-          <div class="emp t4-emp"><span class="emp__ic"><i class="ic i-book" aria-hidden="true"></i></span><b>Venda um programa pronto</b><p class="mod-small mod-muted">Comece pelo nome e pela duração; o resto você preenche por seções, no seu ritmo.</p><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openNew}}">Criar programa</button></div>
+          <div class="emp t4-emp"><span class="emp__ic"><i class="ic i-book" aria-hidden="true"></i></span><b>Venda um programa pronto</b><p class="mod-small mod-muted">Comece pelo título e pelo objetivo; o resto você preenche por seções, no seu ritmo.</p><button type="button" class="btn btn--primary btn--lg" onClick="{{v.openNew}}">Criar programa</button></div>
         </sc-if></sc-if>
 
         <sc-if value="{{v.hasList}}" hint-placeholder-val="{{ true }}">
@@ -2320,12 +2327,12 @@
 
           <div class="mod-col">
             <sc-if value="{{v.isBas}}" hint-placeholder-val="{{ false }}">
-              <section class="card onb-sec" aria-label="Básico">
-                <h2 class="onb-h2">Básico</h2>
-                <div class="field"><label class="field__label" for="t4-pn">Nome</label><div class="{{v.nameCls}}"><input id="t4-pn" type="text" value="{{v.f.name}}" onInput="{{v.setName}}"></div><sc-if value="{{v.hasNameErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.nameErr}}</span></sc-if></div>
+              <section class="card onb-sec" aria-label="Apresentação">
+                <h2 class="onb-h2">Apresentação</h2>
+                <div class="field"><label class="field__label" for="t4-pn">Título</label><div class="{{v.nameCls}}"><input id="t4-pn" type="text" value="{{v.f.name}}" onInput="{{v.setName}}"></div><sc-if value="{{v.hasNameErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.nameErr}}</span></sc-if></div>
                 <div class="field"><label class="field__label" for="t4-pd">Descrição</label><div class="input input--area"><textarea id="t4-pd" rows="3" onInput="{{v.setDesc}}">{{v.f.desc}}</textarea></div></div>
                 <div class="field"><span class="field__label" id="t4-pf">Formato</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-pf"><sc-for list="{{v.fmts}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><span class="field__help">{{v.fmtHelp}}</span></div>
-                <div class="field"><span class="field__label" id="t4-pw">Semanas</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-pw"><sc-for list="{{v.weeks}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+                <div class="field"><span class="field__label" id="t4-pw">Duração do conteúdo (semanas)</span><div class="onb-chips" role="radiogroup" aria-labelledby="t4-pw"><sc-for list="{{v.weeks}}" as="o" hint-placeholder-count="4"><button type="button" class="{{o.cls}}" role="radio" aria-checked="{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
                 <div class="field"><label class="field__label" for="t4-pa">Público</label><div class="input"><input id="t4-pa" type="text" value="{{v.f.aud}}" onInput="{{v.setAud}}" placeholder="Para quem é o programa"></div></div>
                 <div class="field"><label class="field__label" for="t4-pp">Pré-requisito</label><div class="input"><input id="t4-pp" type="text" value="{{v.f.pre}}" onInput="{{v.setPre}}" placeholder="Opcional"></div></div>
               </section>
@@ -2363,9 +2370,10 @@
             </sc-if>
 
             <sc-if value="{{v.isOff}}" hint-placeholder-val="{{ false }}">
-              <section class="card onb-sec" aria-label="Oferta">
-                <h2 class="onb-h2">Oferta</h2>
-                <p class="mod-small mod-muted">Criar e publicar o programa não habilita venda. Preço e venda ficam em Ofertas.</p>
+              <section class="card onb-sec" aria-label="Acesso">
+                <h2 class="onb-h2">Acesso</h2>
+                <p class="mod-small">{{v.accessTxt}}</p>
+                <p class="mod-small mod-muted">Publicar o programa não habilita venda e não atribui treino a ninguém. Preço e venda ficam em Ofertas; acesso gratuito é concedido em Participantes.</p>
                 <sc-if value="{{v.hasOffer}}" hint-placeholder-val="{{ true }}"><div class="lrow"><span class="lrow__ic"><i class="ic ic--xs i-tag" aria-hidden="true"></i></span><span class="lrow__t"><b>{{v.offName}}</b><span>{{v.offTxt}}</span></span></div><div><button type="button" class="btn btn--outline" onClick="{{v.goOffer}}">Configurar oferta</button></div></sc-if>
                 <sc-if value="{{v.noOffer}}" hint-placeholder-val="{{ false }}"><p class="t4-nores mod-small">Sem oferta ligada. O programa pode ser publicado e concedido sem venda.</p><div><button type="button" class="btn btn--outline" onClick="{{v.goOffer}}">Criar oferta</button></div></sc-if>
               </section>

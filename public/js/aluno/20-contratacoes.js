@@ -103,7 +103,7 @@
     page: 'aluno', key: 'fc06', id: 'FC06', title: 'Acesso', nav: 'contratacoes', back: 'history', form: true,
     testIds: ['ct1', 'ctprep'],
     normal: 'Pagamento confirmado',
-    scens: [['pendente', 'Pago, acesso pendente'], ['outra', 'Outra conta'], ['prevenda', 'Pré-venda'], ['divergente', 'Destinatário divergente'],
+    scens: [['pendente', 'Pago, acesso pendente'], ['outra', 'Outra conta'], ['prevenda', 'Liberação atrasada'], ['divergente', 'Destinatário divergente'],
       ['convite', 'Convite expirado'], ['retirado', 'Conteúdo retirado ou acesso suspenso']],
     vals: function (ctx) {
       var scn = ctx.scn, id = ctx.id;
@@ -119,7 +119,7 @@
       steps.push({ t: 'Pagamento', s: free ? 'sem cobrança · acesso gratuito' : 'confirmado · ' + (x.paidAt || c.since), cls: 'onb-check__i', chk: 'check is-on', b: free ? 'Não se aplica' : 'Confirmado' });
       if (isAcomp || (o && o.accept === 'aceite do treinador')) steps.push({ t: 'Vínculo com ' + A2.first(c.with), s: access === 'aguardando aceite' ? 'o treinador foi avisado' : 'confirmado', cls: 'onb-check__i' + (access === 'aguardando aceite' ? ' is-wait' : ''), chk: access === 'aguardando aceite' ? 'check' : 'check is-on', b: access === 'aguardando aceite' ? 'Aguardando aceite' : 'Confirmado' });
       var prepWait = access === 'preparando' || scn === 'prevenda';
-      steps.push({ t: 'Acesso', s: scn === 'prevenda' ? 'libera em 02/11/2026' : (prepWait ? 'em andamento · costuma levar minutos' : (access === 'convite' ? 'quem recebe precisa aceitar o convite' : 'disponível na sua conta')), cls: 'onb-check__i' + (prepWait || access === 'convite' ? ' is-wait' : ''), chk: prepWait || access === 'convite' ? 'check' : 'check is-on', b: prepWait ? 'Em preparação' : (access === 'convite' ? 'Convite enviado' : 'Disponível') });
+      steps.push({ t: 'Acesso', s: scn === 'prevenda' ? 'atrasada · estamos liberando; os 12 meses só contam a partir da liberação' : (prepWait ? 'em andamento · costuma levar minutos' : (access === 'convite' ? 'quem recebe precisa aceitar o convite' : 'disponível na sua conta')), cls: 'onb-check__i' + (prepWait || access === 'convite' ? ' is-wait' : ''), chk: prepWait || access === 'convite' ? 'check' : 'check is-on', b: prepWait ? 'Em preparação' : (access === 'convite' ? 'Convite enviado' : 'Disponível') });
       steps.push({ t: 'E-mail com o acesso', s: 'para ana@email.com', cls: 'onb-check__i' + (prepWait ? ' is-wait' : ''), chk: prepWait ? 'check' : 'check is-on', b: prepWait ? 'Envio pendente' : 'Enviado' });
       var title = free ? 'Seu acesso está liberado' : (prepWait ? 'Seu acesso está sendo preparado' : (access === 'aguardando aceite' ? 'Aguardando o aceite de ' + A2.first(c.with) : 'Seu pagamento está confirmado'));
       var primary;
@@ -135,7 +135,7 @@
       else primary = { label: c.kind === 'programa' ? 'Abrir meu programa' : 'Ver agenda com ' + A2.first(c.with), fn: function () { GO('ALU06'); } };
       var alert = null;
       if (scn === 'outra') alert = { cls: 'alert alert--warn', ic: 'ic ic--sm i-user', b: 'Você entrou com outra conta', t: 'O acesso foi para ana@email.com e você está em ana.souza@trabalho.com. Entre com o destinatário certo para abrir.', btn: 'Continuar', fn: function () { GO('ACC02'); } };
-      else if (scn === 'prevenda') alert = { cls: 'alert alert--info', ic: 'ic ic--sm i-calendar', b: 'Pré-venda', t: 'O conteúdo libera em 02/11/2026. Avisamos por e-mail e aqui; seu pagamento já está confirmado.', btn: 'Consultar de novo', fn: function () { ctx.toast('Liberação mantida para 02/11/2026.'); } };
+      else if (scn === 'prevenda') alert = { cls: 'alert alert--warn', ic: 'ic ic--sm i-clock', b: 'Liberação atrasada', t: 'Seu pagamento está confirmado e o acesso ainda está sendo liberado. Não pague de novo: os 12 meses de acesso só começam a contar quando a liberação terminar.', btn: 'Consultar de novo', fn: function () { ctx.toast('Consultado às ' + U.now() + '. Liberação em andamento; nada foi cobrado de novo.'); } };
       else if (scn === 'divergente') alert = { cls: 'alert alert--warn', ic: 'ic ic--sm i-alert', b: 'Destinatário divergente', t: 'O pedido saiu para marina@email.com, mas a conta que pagou é a sua. Revise quem recebe antes de liberar.', btn: 'Revisar', fn: function () { GO('FC10', { offer: x.offer || 'o2' }); } };
       else if (scn === 'convite') alert = { cls: 'alert alert--warn', ic: 'ic ic--sm i-clock', b: 'Convite expirado', t: 'O link de acesso expirou sem uso. Reenviamos um novo link; o pagamento continua valendo.', btn: 'Corrigir', fn: function () { ctx.toast('Novo convite enviado. Referência ' + ref + '.'); } };
       else if (scn === 'retirado') alert = { cls: 'alert alert--risk', ic: 'ic ic--sm i-lock', b: 'Conteúdo retirado ou acesso suspenso', t: 'Este conteúdo saiu do ar. O suporte recebe o pedido ' + ref + ' e trata reembolso ou troca, sem pedir nova compra.', btn: 'Saiba por quê', fn: function () { ctx.ask({ title: 'Por que o acesso foi suspenso', text: 'O treinador retirou o conteúdo ou ele está em revisão. Seu pedido ' + ref + ' fica guardado; o suporte responde com as opções.', ok: 'Falar com suporte', onOk: function () { ctx.toast('Caso aberto com o pedido ' + ref + '.'); } }); } };
@@ -246,8 +246,10 @@
       var rf = A2.refundOf(c.id);
       if (!rf && (scn === 'protocolo' || scn === 'negado' || scn === 'desconhecido')) rf = { id: 'R-118', ct: c.id, value: elig, reason: 'Não consegui seguir por lesão.', at: '26/10 09:12', status: scn === 'negado' ? 'negado' : 'em análise', demo: true };
       var tracking = !!rf;
-      var others = DB.contratacoes.filter(function (k) { return k.id !== c.id && !/reembols|cancelada/.test(k.status); }).map(function (k) { return k.what; });
-      var effect = rec ? 'Se aprovado, este acompanhamento encerra e a renovação é cancelada.' : 'Se aprovado, o acesso a ' + c.what + ' encerra.';
+      var others = DB.contratacoes.filter(function (k) { return k.id !== c.id && k.what !== c.what && !/reembols|cancelada/.test(k.status); }).map(function (k) { return k.what; });
+      // efeito calculado por origem: reembolso encerra só o acesso desta compra; outra origem do mesmo conteúdo (cortesia, outra compra) continua
+      var sameOther = DB.contratacoes.filter(function (k) { return k.id !== c.id && k.what === c.what && !/reembols|cancelada|encerr/.test(k.status); })[0];
+      var effect = rec ? 'Se aprovado, este acompanhamento encerra e a renovação é cancelada.' : (sameOther ? 'Se aprovado, o acesso por esta compra encerra, mas você continua com ' + c.what + ' pela outra origem (' + sameOther.status + ').' : 'Se aprovado, o acesso a ' + c.what + ' que veio desta compra encerra.');
       var keep = others.length ? 'Continuam valendo: ' + others.join(', ') + '.' : '';
       var REASONS = ['Não consegui seguir por lesão.', 'Não era o que eu esperava.', 'Cobrança que não reconheço.', 'Outro motivo.'];
       var reason = ui.reason || '';

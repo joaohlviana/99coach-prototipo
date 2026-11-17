@@ -4,7 +4,7 @@ REG.screen({
   back: function (ctx) { return ctx.id ? 'FT03' : 'H09'; },
   testIds: ['v4801', 'v4807', 'v4808', 'v4811'],
   normal: 'Vendas do mês',
-  scens: [['estimada', 'Taxa estimada'], ['reembolso', 'Reembolso'], ['vazio', 'Sem vendas'], ['filtro', 'Nenhum resultado de filtro'], ['parcialreemb', 'Venda reembolsada parcialmente'], ['parcial', 'Consulta parcial']],
+  scens: [['estimada', 'Tarifa pendente'], ['reembolso', 'Reembolso'], ['vazio', 'Sem vendas'], ['filtro', 'Nenhum resultado de filtro'], ['parcialreemb', 'Venda reembolsada parcialmente'], ['parcial', 'Consulta parcial']],
   vals: function (ctx) {
     var T6 = window.T6, scn = ctx.scn, ui = ctx.ui;
     var id = ctx.id || ({ estimada: 'v4811', reembolso: 'v4808', parcialreemb: 'v4801' })[scn] || '';
@@ -14,17 +14,17 @@ REG.screen({
       var st = T6.stOf(s), est = s.est && scn !== 'reembolso';
       var money = [['Bruto', T6.brl(s.gross)]];
       if (s.discount) money.push(['Desconto · cupom ' + s.coupon, T6.brl(-s.discount)]);
-      money.push(['Taxa 99Coach (5%) · R1', T6.brl(-s.plat)]);
-      money.push([T6.feeLabel(s) + (est ? ' · estimada' : ''), T6.brl(-s.proc), est ? 't6-est' : '']);
-      money.push([est ? 'Líquido estimado' : 'Líquido', T6.brl(s.net), 't6-strong']);
+      money.push(['Comissão 99Coach (5%) · R1', T6.brl(-s.plat)]);
+      money.push([est ? 'Tarifa do processador' : T6.feeLabel(s), est ? 'pendente · o processador ainda não informou' : T6.brl(-s.proc), est ? 't6-est' : '']);
+      money.push(['Líquido', est ? 'aguardando a tarifa' : T6.brl(s.net), 't6-strong']);
       if (s.refund) {
         money.push(['Reembolso ' + (s.refund.kind === 'parcial' ? 'parcial' : 'total') + ' · ' + s.refund.date, T6.brl(-s.refund.amount), 't6-neg']);
-        money.push(['Taxa 99Coach devolvida', T6.sbrl(T6.r2(s.refund.amount * 0.05))]);
+        money.push(['Comissão 99Coach devolvida', T6.sbrl(T6.r2(s.refund.amount * 0.05))]);
         money.push(['Líquido depois do reembolso', T6.brl(T6.r2(s.net - T6.refundDebit(s))), 't6-strong']);
       }
       var c = s.dispute ? DB.find('t6_casos', s.dispute) : (s.refund ? DB.find('t6_casos', s.refund.caseId) : null);
       var A = {
-        estimada: ['info', 'Taxa estimada', 'O rótulo “estimada” fica até a conciliação do provedor (hoje conciliado até 24/10). O valor final pode mudar alguns centavos.', 'Consultar de novo'],
+        estimada: ['info', 'Tarifa do processador pendente', 'O processador ainda não informou a tarifa desta venda (conciliado até 24/10). Não mostramos um valor estimado: o líquido aparece quando a tarifa chegar. A comissão 99Coach (5%) já está certa.', 'Consultar de novo'],
         reembolso: ['info', 'Reembolso', 'A linha negativa fica vinculada a este pedido no extrato. O provedor não devolve a taxa dele.', ''],
         parcialreemb: ['info', 'Venda reembolsada parcialmente', 'Parte do valor voltou ao aluno; o restante continua na venda. O efeito aparece no extrato com a mesma referência.', 'Consultar de novo']
       };
@@ -42,7 +42,7 @@ REG.screen({
           hist: T6.hist(s), hasStudent: !!s.student, hasCase: !!c, caseLabel: c ? (c.kind === 'disputa' ? 'Tratar disputa ' + c.id : 'Ver reembolso ' + c.id) : '',
           isRestricted: s.status === 'a receber' || s.status === 'retido', canRefund: canRefund,
           hasAlert: !!a, aCls: a ? 'alert alert--' + a[0] + ' t6-alert' : '', aT: a ? a[1] : '', aS: a ? a[2] : '', aHasBtn: !!(a && a[3]), aBtn: a ? a[3] : '',
-          aGo: function () { ctx.toast('Consultamos às ' + U.now() + ': ' + (scn === 'estimada' ? 'a taxa segue estimada até a conciliação.' : 'nada mudou nesta venda.')); },
+          aGo: function () { ctx.toast('Consultamos às ' + U.now() + ': ' + (scn === 'estimada' ? 'a tarifa do processador continua pendente.' : 'nada mudou nesta venda.')); },
           goMov: function () { GO('FT04', { sale: s.id }); }, goCase: function () { if (c) GO('FT10', { id: c.id }); }, goStudent: function () { GO('TRE03', { id: s.student }); },
           goWhy: function () { GO('FT05', { id: s.id }); },
           refund: function () {
@@ -50,7 +50,7 @@ REG.screen({
             ctx.ask({
               title: 'Reembolsar ' + T6.brl(amount) + '?', danger: true, ok: 'Reembolsar ' + T6.brl(amount),
               text: 'O valor volta para ' + who + ' pelo mesmo meio de pagamento (' + s.method + ').',
-              lines: ['Sai ' + bucket + ': ' + T6.brl(-(amount - f)) + '.', 'A taxa 99Coach (' + T6.brl(f) + ') volta para você; a do processador (' + T6.brl(s.proc) + ') não volta.', 'Se o saldo ficar negativo, ele é recuperado das próximas vendas.', 'Não dá para desfazer.'],
+              lines: ['Sai ' + bucket + ': ' + T6.brl(-(amount - f)) + '.', 'A comissão 99Coach (' + T6.brl(f) + ') volta para você; a do processador (' + T6.brl(s.proc) + ') não volta.', 'Se o saldo ficar negativo, ele é recuperado das próximas vendas.', 'Não dá para desfazer.'],
               onOk: function () {
                 var cid = 'R-' + (1 + DB.t6_casos.reduce(function (m, k) { var n = Number(String(k.id).split('-')[1]) || 0; return k.kind === 'reembolso' && n > m ? n : m; }, 0));
                 s.refund = { amount: amount, date: '26/10', time: U.now(), kind: 'total', reason: 'reembolso feito por você', caseId: cid };
@@ -73,7 +73,7 @@ REG.screen({
     var size = 5, pages = Math.max(1, Math.ceil(list.length / size)), pg = Math.min(ui.pg || 0, pages - 1);
     var rows = list.slice(pg * size, pg * size + size).map(function (x) {
       var st = T6.stOf(x);
-      return { order: x.order, product: T6.prod(x), buyer: T6.buyer(x), date: x.date, gross: T6.brl(x.base), fee: T6.brl(-(x.plat + x.proc)) + (x.est ? ' est.' : ''), net: T6.brl(x.net), st: st.label, stCls: st.cls, partial: !!(x.refund && x.refund.kind === 'parcial'), go: function () { GO('FT03', { id: x.id }); } };
+      return { order: x.order, product: T6.prod(x), buyer: T6.buyer(x), date: x.date, gross: T6.brl(x.base), fee: T6.brl(-(x.plat + x.proc)) + (x.est ? ' + tarifa pendente' : ''), net: x.est ? 'aguardando tarifa' : T6.brl(x.net), st: st.label, stCls: st.cls, partial: !!(x.refund && x.refund.kind === 'parcial'), go: function () { GO('FT03', { id: x.id }); } };
     });
     var kinds = [['todas', 'Todas'], ['acompanhamento', 'Acompanhamento'], ['programa', 'Programas'], ['sessao', 'Sessões']].map(function (k) {
       return { label: k[1], cls: 'chip' + (kind === k[0] ? ' is-on' : ''), on: String(kind === k[0]), pick: function () { ctx.setUi({ k: k[0], pg: 0 }); } };

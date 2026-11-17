@@ -43,7 +43,7 @@
     recipient: function () { var r = DB.a2_checkout.recipient; return r && r.email ? r : null; },
     // descrições da oferta para o resumo
     fmt: function (o) {
-      if (o.kind === 'programa') { var p = DB.find('programas', o.program); return 'Programa em vídeo · ' + (p ? p.weeks + ' semanas, ' + p.sessions + ' sessões' : 'online'); }
+      if (o.kind === 'programa') { var p = DB.find('programas', o.program), fm = (DB.t4_progmeta && DB.t4_progmeta[o.program] || {}).format; var nome = fm === 'curso' ? 'Curso em vídeo' : (fm === 'misto' ? 'Programa com aulas e sessões' : 'Programa de sessões'); return nome + ' · ' + (p && p.weeks ? p.weeks + ' semanas, ' + p.sessions + ' sessões' : 'online') + ' · acompanhamento individual não incluído'; }
       if (o.kind === 'recorrente') return 'Acompanhamento ' + o.fmt + ' · plano mensal';
       if (o.kind === 'pacote') return 'Aulas ' + o.fmt + 's · 8 aulas em Londrina';
       return 'Sessão ' + o.fmt + ' · 1 encontro em Londrina';

@@ -1,8 +1,10 @@
 /* T4 · Programas: hub (H07/TRE21), editor (TRE22), publicação (TRE23) e participantes (TRE24) */
 (function () {
   var T4 = window.T4;
-  var SECS = [['basico', 'Básico'], ['conteudo', 'Conteúdo'], ['direitos', 'Direitos'], ['oferta', 'Oferta']];
-  var SECNAME = { basico: 'o básico', conteudo: 'o conteúdo', direitos: 'os direitos de uso', oferta: 'a oferta' };
+  // seções do editor (pacote de planos e programas): Conteúdo · Apresentação · Acesso · Revisão. Materiais e direito de uso
+  // ficam dentro de Conteúdo; preço e venda ficam em Ofertas (fora do editor); Revisão abre a prontidão/publicação (TRE23)
+  var SECS = [['conteudo', 'Conteúdo'], ['basico', 'Apresentação'], ['oferta', 'Acesso'], ['revisao', 'Revisão']];
+  var SECNAME = { basico: 'a apresentação', conteudo: 'o conteúdo', direitos: 'os materiais', oferta: 'o acesso', revisao: 'a revisão' };
 
   /* ---------------- H07 · hub de programas (atende também TRE21) ---------------- */
   REG.screen({
@@ -47,7 +49,7 @@
         var next = bl[0];
         var lastMod = mods.find(function (x) { return x.id === m.lastItem; });
         d = {
-          has: true, name: p.name + ' · ' + p.weeks + ' semanas', head: head, st: T4.status(p.status).label, stCls: T4.status(p.status).cls,
+          has: true, name: p.name + (p.weeks ? ' · ' + p.weeks + ' semanas' : ' · duração a definir'), head: head, st: T4.status(p.status).label, stCls: T4.status(p.status).cls,
           tabs: T4.opts([['editar', 'Editar'], ['revisar', 'Revisar'], ['resultados', 'Resultados']], tab, function (k) { ctx.setUi({ tab: k, sel: p.id }); }, 'seg__it'),
           isEdit: tab === 'editar', isRev: tab === 'revisar', isRes: tab === 'resultados',
           hasPend: !!next, noPend: !next,
@@ -65,7 +67,7 @@
           resume: 'Última edição: ' + (SECS.find(function (s) { return s[0] === m.lastSec; }) || SECS[0])[1] + (lastMod ? ' · ' + lastMod.title : '') + ' · salvo ' + m.savedAt,
           cont: function () { GO('TRE22', { id: p.id, sec: m.lastSec, item: m.lastItem }); },
           partTxt: partialFail && p.id === 'p3' ? 'não carregou · consulte de novo' : (p.participants + ' · na v' + (live || p.version)),
-          priceTxt: off ? U.money(off.price) + ' · ' + off.unit : U.money(p.price) + ' · sem oferta configurada',
+          priceTxt: off && off.price != null ? U.money(off.price) + ' · ' + off.unit : 'Sem preço definido · sem oferta configurada',
           saleTxt: off && off.sale ? 'ligada' : 'não habilitada',
           goPart: function () { GO('TRE24', { id: p.id }); },
           goOffer: function () { if (off) GO('TRE29', { id: off.id }); else GO('TRE29', { prog: p.id }); },
@@ -98,19 +100,20 @@
       if (scn === 'consulta') al.push(ui.cons ? T4.alert('ok', 'Tudo carregado', 'Consultado às ' + U.now() + '.')
         : T4.alert('warn', 'Consulta parcial', 'Os participantes de Mobilidade 15 minutos não carregaram. Programas e pendências estão atualizados (26/10 08:00).', 'Consultar de novo', function () { ctx.setUi({ cons: true }); }));
 
-      // novo programa: só nome e duração; o resto por seções
+      // novo programa: só título e objetivo; duração, formato e o resto por seções
       var nName = ui.nName != null ? ui.nName : '';
-      var nWeeks = ui.nWeeks || '6';
+      var nGoal = ui.nGoal != null ? ui.nGoal : '';
       var creating = !!ui.creating;
       var create = function () {
         var nm = String(nName || '').trim();
-        if (nm.length < 3) { ctx.setUi({ nErr: 'Dê um nome com pelo menos 3 letras.' }); return; }
+        if (nm.length < 3) { ctx.setUi({ nErr: 'Dê um título com pelo menos 3 letras.' }); return; }
+        if (String(nGoal || '').trim().length < 5) { ctx.setUi({ gErr: 'Escreva o objetivo em uma frase (por exemplo: correr 10 km sem parar).' }); return; }
         var id = DB.uid('p');
-        DB.programas.push({ id: id, name: nm, weeks: Number(nWeeks), sessions: 0, status: 'rascunho', version: 1, price: 0, participants: 0, rating: '', updated: U.todayShort, sections: ['Semana 1'], pending: [] });
-        DB.t4_progmeta[id] = { format: 'sessoes', desc: '', audience: '', prereq: '', publishedAt: '', savedAt: T4.stamp(), draft: 1, lastSec: 'basico', lastItem: '' };
+        DB.programas.push({ id: id, name: nm, goal: String(nGoal).trim(), weeks: 0, sessions: 0, status: 'rascunho', version: 1, price: null, participants: 0, rating: '', updated: U.todayShort, sections: ['Semana 1'], pending: [] });
+        DB.t4_progmeta[id] = { format: 'sessoes', desc: String(nGoal).trim(), audience: '', prereq: '', publishedAt: '', savedAt: T4.stamp(), draft: 1, lastSec: 'conteudo', lastItem: '' };
         DB.t4_estrutura.push({ id: DB.uid('m'), program: id, title: 'Semana 1', items: [] });
         T4.sync(id);
-        GO('TRE22', { id: id, sec: 'basico' });
+        GO('TRE22', { id: id, sec: 'conteudo' });
       };
 
       return {
@@ -123,7 +126,7 @@
         openNew: function () { ctx.setUi({ creating: true, nErr: '' }); },
         closeNew: function () { ctx.setUi({ creating: false, nErr: '' }); },
         nName: nName, setNName: function (e) { ctx.setUi({ nName: U.val(e), nErr: '' }); },
-        nWeeks: T4.opts([['4', '4 semanas'], ['6', '6 semanas'], ['8', '8 semanas'], ['12', '12 semanas']], nWeeks, function (k) { ctx.setUi({ nWeeks: k }); }),
+        nGoal: nGoal, setNGoal: function (e) { ctx.setUi({ nGoal: U.val(e), gErr: '' }); }, gErr: ui.gErr || '', hasGErr: !!ui.gErr,
         nErr: ui.nErr || '', hasNErr: !!ui.nErr, nInCls: 'input' + (ui.nErr ? ' is-err' : ''),
         create: create
       };
@@ -230,9 +233,9 @@
       var off = T4.offerOf(p.id);
       var rd = T4.readiness(p.id), bl = rd.filter(function (c) { return c.req && !c.ok; });
       var secs = SECS.map(function (s) {
-        var n = bl.filter(function (c) { return c.sec === s[0]; }).length;
-        var on = sec === s[0];
-        return { label: s[1], on: String(on), cls: 'v4-reset t4-secnav__it' + (on ? ' is-on' : ''), hasN: n > 0, n: String(n), go: function () { ctx.setUi({ sec: s[0] }); } };
+        var n = s[0] === 'revisao' ? bl.length : bl.filter(function (c) { return c.sec === s[0] || (s[0] === 'conteudo' && c.sec === 'direitos'); }).length;
+        var on = sec === s[0] || (s[0] === 'conteudo' && sec === 'direitos');
+        return { label: s[1], on: String(on), cls: 'v4-reset t4-secnav__it' + (on ? ' is-on' : ''), hasN: n > 0, n: String(n), go: function () { if (s[0] === 'revisao') return GO('TRE23', { id: p.id }); ctx.setUi({ sec: s[0] }); } };
       });
 
       var al = [];
@@ -258,7 +261,8 @@
         review: function () { GO('TRE23', { id: p.id }); },
         assist: function () { GO('IA01', { from: 'TRE22', id: p.id }); },
         secs: secs,
-        isBas: sec === 'basico', isCon: sec === 'conteudo', isDir: sec === 'direitos', isOff: sec === 'oferta',
+        isBas: sec === 'basico', isCon: sec === 'conteudo' || sec === 'direitos', isDir: sec === 'conteudo' || sec === 'direitos', isOff: sec === 'oferta',
+        accessTxt: 'Quem compra tem acesso por 12 meses a partir da liberação do acesso (não da data do pagamento). A duração do conteúdo (' + (p.weeks ? U.plural(p.weeks, 'semana', 'semanas') : 'a definir') + ') e a cobrança são informações separadas.',
         // básico
         f: f,
         setName: function (e) { ctx.setUi({ name: U.val(e), nameErr: '' }); },
@@ -308,13 +312,14 @@
       var already = scn === 'publicado' || known;
       var canPub = !bl.length && !unknown && !changed && !already;
       var first = !live;
-      var apply = ui.apply || 'todos';
+      // padrão: quem já comprou fica na versão comprada; migrar é escolha explícita do treinador
+      var apply = ui.apply || 'novos';
 
       var publish = function () {
         if (unknown) { ctx.toast('Consulte o resultado antes de publicar de novo.'); return; }
         if (changed) { ctx.toast('A versão mudou depois da revisão. Revise antes de publicar.'); return; }
         if (bl.length) { ctx.toast('Resolva ' + U.plural(bl.length, 'pendência obrigatória', 'pendências obrigatórias') + ' antes de publicar.'); return; }
-        var lines = [first ? 'Primeira versão: ninguém afetado.' : (apply === 'todos' ? p.participants + ' participantes passam para a v' + nextV + '.' : p.participants + ' participantes continuam na v' + live + '; a v' + nextV + ' vale para quem entrar.'),
+        var lines = [first ? 'Primeira versão: ninguém afetado.' : (apply === 'todos' ? p.participants + ' participantes recebem um aviso e podem passar para a v' + nextV + ' (cada um escolhe; quem não escolher fica na v' + live + ').' : p.participants + ' participantes continuam na v' + live + '; a v' + nextV + ' vale para quem entrar.'),
           'Publicar não atribui treino a ninguém.', off && off.sale ? 'A venda continua ligada (' + off.name + ' · ' + U.money(off.price) + ').' : 'A venda continua desligada até você habilitar.'];
         ctx.ask({ title: 'Publicar v' + nextV + ' de ' + p.name + '?', lines: lines, ok: 'Publicar versão',
           onOk: function () {
@@ -352,8 +357,8 @@
         publish: publish, pubLabel: 'Publicar v' + nextV,
         first: first, notFirst: !first,
         impact: first ? 'Primeira versão: ninguém afetado.' : p.participants + ' participantes estão na v' + live + '.',
-        applyOpts: T4.opts([['todos', 'Atualizar quem já participa'], ['novos', 'Só para quem entrar']], apply, function (k) { ctx.setUi({ apply: k }); }),
-        applyHelp: apply === 'todos' ? 'Quem já participa vê a v' + nextV + ' e mantém o progresso das sessões que não mudaram.' : 'Quem já participa continua na v' + live + '; a v' + nextV + ' vale para novos participantes.',
+        applyOpts: T4.opts([['novos', 'Só para quem entrar (padrão)'], ['todos', 'Oferecer a nova versão a quem já participa']], apply, function (k) { ctx.setUi({ apply: k }); }),
+        applyHelp: apply === 'todos' ? 'Quem já participa recebe o convite para migrar para a v' + nextV + ', vê o que mudou antes de aceitar e mantém o progresso das sessões que não mudaram. Quem não aceitar continua na v' + live + '.' : 'Quem já participa continua na v' + live + '; a v' + nextV + ' vale para novos participantes.',
         saleTxt: off ? (off.sale ? 'Venda ligada · ' + off.name + ' · ' + U.money(off.price) + ' · ' + off.unit : 'Venda ainda não habilitada · oferta salva') : 'Venda ainda não habilitada · sem oferta',
         saleLabel: off && off.sale ? 'Ver oferta' : 'Habilitar venda',
         goSale: function () { GO('TRE29', off ? { id: off.id } : { prog: p.id }); },

@@ -23,14 +23,14 @@
       var q = A2.quote(o.id), rec = q.recurring;
       var off = !o.sale || scn === 'expirada' || scn === 'expalt';
       var unknown = scn === 'dispdesc';
-      var prazo = scn === 'semprazo' ? 'Prazo combinado com o treinador' : (o.kind === 'programa' ? '12 meses' : rec ? 'enquanto a assinatura estiver ativa' : o.kind === 'pacote' ? 'Prazo combinado com o treinador' : 'data combinada com Rafael');
+      var prazo = scn === 'semprazo' ? 'Prazo combinado com o treinador' : (o.kind === 'programa' ? '12 meses a partir da liberação do acesso' : rec ? 'enquanto a assinatura estiver ativa' : o.kind === 'pacote' ? 'Prazo combinado com o treinador' : 'data combinada com Rafael');
       var kv = [
         { k: 'Vendedor', v: 'Rafael Lima · ' + DB.trainer.cref },
         { k: 'Formato', v: A2.fmt(o) },
         { k: 'Para', v: forTxt() },
         { k: 'Cobrança', v: rec ? 'mensal, renova até você cancelar' : 'única' },
         { k: o.kind === 'programa' ? 'Acesso' : 'Prazo', v: prazo },
-        { k: 'Início', v: o.accept === 'aceite do treinador' ? 'depois do aceite de Rafael' : 'logo após o pagamento' }
+        { k: 'Início', v: o.kind === 'programa' ? 'quando o acesso é liberado, depois da confirmação do pagamento (os 12 meses contam a partir daí)' : (o.accept === 'aceite do treinador' ? 'depois do aceite de Rafael' : 'depois da confirmação do pagamento') }
       ];
       var alert = null;
       if (!o.sale && !scn) alert = { cls: 'alert alert--warn', b: 'Oferta fora de venda', t: 'Rafael pausou a venda de ' + o.name + '. Nada é cobrado; veja as ofertas atuais.', btn: 'Voltar ao perfil', fn: function () { GO('PUB04'); } };
@@ -163,7 +163,7 @@
         noPix: !pixOk, noPixTxt: rec ? 'Pix não aparece: cobranças mensais usam só cartão neste canal.' : 'Pix indisponível agora.',
         okOn: String(!!ui.ok), okCls: 'check' + (ui.ok ? ' is-on' : ''), policyTxt: 'Li a política de cancelamento v2 de Rafael Lima.',
         toggleOk: function () { ctx.setUi({ ok: !ui.ok, err: '' }); },
-        readPolicy: function () { ctx.ask({ title: 'Política de cancelamento v2', lines: ['Você cancela a renovação quando quiser; o acesso segue até o fim do período pago.', 'Reembolso é um pedido separado, analisado pela política do treinador.', 'Valores em reais (BRL).'], ok: 'Fechar', cancel: false }); },
+        readPolicy: function () { ctx.ask({ title: 'Política de cancelamento v2', lines: rec ? ['Você cancela a renovação quando quiser; o acesso segue até o fim do período pago.', 'Reembolso é um pedido separado, analisado pela política do treinador.', 'Valores em reais (BRL).'] : ['Compra única: não há renovação nem cobrança futura.', 'Você pode pedir o dinheiro de volta em até 7 dias depois da compra; depois disso, o pedido é analisado pela política do treinador.', 'Valores em reais (BRL).'], ok: 'Fechar', cancel: false }); },
         err: ui.err || '', hasErr: !!ui.err,
         canPay: !noTotal, payLabel: 'Continuar no provedor',
         pay: function () {
@@ -205,12 +205,13 @@
         hasAlert: !!alert, alert: alert || { cls: '', b: '', t: '', btn: '', fn: function () {}, btn2: '', fn2: function () {} }, alertHasBtn2: !!(alert && alert.btn2),
         isCard: method === 'card', isPix: method === 'pix',
         payTxt: 'Pagar ' + A2.brl(q.today),
-        pay: function () { finish('pago'); },
+        // o retorno do provedor não confirma pagamento: o pedido fica "confirmando" até o aviso do provedor (FC05)
+        pay: function () { finish('aguardando'); },
         decline: function () { ctx.setUi({ res: 'recusado' }); },
         unknown: function () { finish('desconhecido'); },
         pixCode: '00020126.99COACH.DEMO.PEDIDO' + no + '.NAO-PAGAVEL',
         copyPix: function () { ctx.toast('Código Pix fictício copiado. Ele não paga nada.'); },
-        pixPaid: function () { finish('pago'); },
+        pixPaid: function () { finish('aguardando'); },
         pixWait: function () { finish('aguardando'); },
         cancel: function () { ctx.toast('Pagamento cancelado no provedor. Nada foi cobrado.'); GO('FC03', { offer: o.id }); },
         seeProgress: function () { var last = DB.a2_pedidos.slice(-1)[0]; GO('FC05', last ? { order: last.id } : { offer: o.id }); },
@@ -255,6 +256,11 @@
         tl.push({ t: 'Pedido criado', s: ord.at, dot: 'tl__dot is-ink', ic: 'ic ic--xs i-check' });
         tl.push({ t: st === 'aguardando' ? 'Confirmando pagamento' : 'Consultando o provedor', s: 'sem nova cobrança', dot: 'tl__dot is-brand', ic: 'ic ic--xs i-refresh' });
         tl.push({ t: 'Acesso', s: 'depois da confirmação', dot: 'tl__dot', ic: 'ic ic--xs i-clock' });
+      }
+      // demonstração do aviso autoritativo do provedor: chega alguns instantes depois do retorno e só então o pedido vira pago
+      if (!preview && !scn && ord.status === 'aguardando' && !ord.autoAt) {
+        ord.autoAt = 1;
+        setTimeout(function () { if (ord.status === 'aguardando') { A2.fulfil(ord); if (window.STORE) window.STORE.saveDb(); ctx.toast('Confirmação do provedor recebida: pedido #' + ord.id + ' pago.'); ctx.setUi({ tick: Date.now() }); } }, 2500);
       }
       var consult = function () {
         if (!preview && !scn && (ord.status === 'aguardando' || ord.status === 'desconhecido')) { A2.fulfil(ord); ctx.toast('Pagamento confirmado no pedido #' + ord.id + '.'); return; }

@@ -88,7 +88,7 @@ REG.screen({
       al: al, cur: cur, showCur: !fail,
       progs: progs, showProgs: !empty && !fail, isEmpty: empty,
       hasExt: !!ext, ext: ext || { name: '', author: '', status: '', cls: '', txt: '', btn: '', go: A1.noop },
-      goExplore: function () { GO('PUB15'); }, goHelp: function () { GO('ALU11'); }
+      goExplore: function () { GO('PUB15'); }, goHelp: function () { GO('@publico', { s: 'ajuda' }); }
     };
   }
 });

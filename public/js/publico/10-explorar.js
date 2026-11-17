@@ -38,7 +38,7 @@ REG.screen({
     });
     var progs = DB.p1_programas.map(function (p) {
       var t = P.tr(p.author), h = heartOf('programa', p.id);
-      return { name: p.name, meta: t.name + ' · ' + p.weeks + ' semanas · ' + p.sessions + ' sessões', price: U.money(p.price) + ' · pagamento único', note: 'Acompanhamento individual não incluído',
+      return { name: p.name, meta: t.name + ' · ' + p.weeks + ' semanas · ' + p.sessions + ' sessões', price: (p.price ? U.money(p.price) : 'Sem preço definido') + ' · pagamento único', note: 'Acompanhamento individual não incluído',
         open: function () { ctx.go('PUB06', { id: p.id }); }, heartCls: h.cls, heartLabel: h.label + ': ' + p.name, heartPressed: h.pressed, toggle: h.toggle };
     });
     var other = ['Corrida', 'Yoga e Pilates', 'Funcional', 'Lutas', 'Online'].map(function (s) {

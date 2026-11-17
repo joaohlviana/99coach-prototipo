@@ -23,7 +23,7 @@ REG.screen({
     T6.sales().forEach(function (s) {
       if (seg !== 'todos' && s.kind !== seg) return;
       var st = T6.stOf(s);
-      rows.push({ id: s.id, k: T6.key(s.date, s.time), date: s.date, origin: T6.buyer(s).split(' ')[0] + ' · ' + T6.prod(s), gross: T6.brl(s.base), fees: T6.brl(-(s.plat + s.proc)) + (s.est ? ' est.' : ''), net: T6.brl(s.net), st: st.label, stCls: st.cls });
+      rows.push({ id: s.id, k: T6.key(s.date, s.time), date: s.date, origin: T6.buyer(s).split(' ')[0] + ' · ' + T6.prod(s), gross: T6.brl(s.base), fees: T6.brl(-(s.plat + s.proc)) + (s.est ? ' + tarifa pendente' : ''), net: s.est ? 'aguardando tarifa' : T6.brl(s.net), st: st.label, stCls: st.cls });
       if (s.refund) rows.push({ id: s.id, k: T6.key(s.refund.date, s.refund.time), date: s.refund.date, origin: 'Reembolso · ' + T6.buyer(s).split(' ')[0], gross: T6.brl(-s.refund.amount), fees: T6.sbrl(T6.r2(s.refund.amount * 0.05)), net: T6.brl(-T6.refundDebit(s)), st: 'ajuste', stCls: 'badge badge--risk' });
     });
     rows.sort(function (a, b2) { return b2.k - a.k; });
@@ -38,18 +38,19 @@ REG.screen({
     });
     var pend = T6.pend().map(function (p) { return { t: p.t, s: p.s, go: function () { GO(p.to, p.p); } }; });
     var envios = DB.t6_envios.slice(-3).reverse().map(function (e) {
-      var M = { pago: ['pago pelo provedor', 'badge badge--ok'], pausado: ['pausado', 'badge badge--warn'], agendado: ['previsto ' + e.forecast, 'badge badge--info'], falhou: ['falhou', 'badge badge--risk'] };
+      var M = { pago: ['enviado ao banco · confirmado pelo processador', 'badge badge--ok'], pausado: ['pausado', 'badge badge--warn'], agendado: ['previsto ' + e.forecast, 'badge badge--info'], falhou: ['falhou', 'badge badge--risk'] };
       var m = M[e.status] || [e.status, 'badge'];
       return { t: e.id + ' · ' + T6.brl(T6.envioAmount(e)), s: e.date + ' · ' + e.dest, st: m[0], stCls: m[1], go: function () { GO('FT08', { id: e.id }); } };
     });
     var summ = T6.kv([
       ['Bruto (' + U.plural(S.n, 'venda', 'vendas') + ')', T6.brl(S.base)],
-      ['Taxas' + (S.est ? ' · parte estimada' : ''), T6.brl(-S.fees)],
-      ['Reembolsos (taxa 99Coach devolvida)', T6.brl(-(S.refunds - S.platBack))],
+      ['Comissão 99Coach (5%)', T6.brl(-S.plat)],
+      ['Tarifa do processador' + (S.est ? ' · parte pendente' : ''), T6.brl(-S.proc) + (S.est ? ' + pendente' : '')],
+      ['Reembolsos (comissão 99Coach devolvida)', T6.brl(-(S.refunds - S.platBack))],
       ['Líquido do período', T6.brl(S.net), 't6-strong'],
       ['Retido', noBal ? '—' : T6.brl(b.ret)],
       ['Disponível (liberado)', noBal || noLib ? '— · aguardando' : T6.brl(b.lib)],
-      ['Taxa 99Coach', '5% · R1'],
+      ['Comissão 99Coach', '5% · R1 (a tarifa do processador é cobrada à parte)'],
       ['Mínimo para repasse', 'R$ 50 · R2']
     ]);
     var usdUnavail = scn === 'umamoeda';

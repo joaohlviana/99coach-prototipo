@@ -15,11 +15,11 @@
     var L = [
       q('99Coach · Relatório de recebimentos de Rafael Lima (demonstração, dados fictícios)'),
       'Período;' + q(P.range.replace(/(\d\d\/\d\d)/g, '$1/2026')), 'Fuso;' + q('Brasília (UTC−3)'), 'Moeda;BRL', 'Corte;' + q(X.cut), 'Cobertura;' + q('conciliado até ' + X.reconciledUntil + '; taxas posteriores estimadas'),
-      '', 'Data;Hora;Tipo;Descrição;Referência;Valor (BRL);Valor que muda de etapa (BRL);Taxa estimada'
+      '', 'Data;Hora;Tipo;Descrição;Referência;Valor (BRL);Valor que muda de etapa (BRL);Tarifa pendente'
     ];
     B.rows.forEach(function (e) { L.push([e.date + '/2026', e.time, q(KIND[e.kind] || e.kind), q(e.label), q(e.ref), n(e.amount), n(e.moved || 0), e.est ? 'sim' : 'não'].join(';')); });
     L.push('', 'Saldo inicial;' + n(B.openT), 'Movimentos no período;' + n(B.mov), 'Saldo final até o corte;' + n(B.closeT),
-      'Bruto (antes das taxas);' + n(S.base), 'Taxas;' + n(-S.fees), 'Reembolsos (com taxa 99Coach devolvida);' + n(-(S.refunds - S.platBack)), 'Líquido (depois das taxas e reembolsos);' + n(S.net),
+      'Bruto (antes das taxas);' + n(S.base), 'Comissão 99Coach (5%);' + n(-S.plat), 'Tarifa do processador' + (S.est ? ' (parte pendente)' : '') + ';' + n(-S.proc), 'Reembolsos (com comissão 99Coach devolvida);' + n(-(S.refunds - S.platBack)), 'Líquido (depois das taxas e reembolsos);' + n(S.net),
       'Realizado (enviado ao banco pelo provedor);' + n(sent), 'Linhas de movimento;' + B.rows.length);
     return { text: '﻿' + L.join('\r\n'), rows: B.rows.length, name: '99coach-recebimentos-' + (per === 'out' ? 'outubro-2026' : '20-a-26-out-2026') + '.csv', sent: sent };
   }
@@ -71,7 +71,7 @@
       var sv = saleF ? T6.sale(saleF) : null;
       var A = {
         fecha: ['ok', 'check', 'Fecha', 'Saldo inicial + movimentos = saldo final até o corte de ' + X.cut + '.', '', null],
-        pendente: ['warn', 'clock', 'Pendente de conciliação', 'Taxas marcadas como estimadas ainda não foram conciliadas pelo provedor (conciliado até ' + X.reconciledUntil + '). O saldo final é provisório.', 'Consultar de novo', function () { ctx.toast('Consultamos às ' + U.now() + ': conciliação segue até ' + X.reconciledUntil + '.'); }],
+        pendente: ['warn', 'clock', 'Pendente de conciliação', 'Tarifas do processador marcadas como pendentes ainda não foram informadas pelo processador (conciliado até ' + X.reconciledUntil + '). O saldo final é provisório.', 'Consultar de novo', function () { ctx.toast('Consultamos às ' + U.now() + ': conciliação segue até ' + X.reconciledUntil + '.'); }],
         semmov: ['info', 'info', 'Período sem movimento', 'Nenhum movimento em USD em outubro. Saldos iguais: inicial US$ 0,00 e final US$ 0,00. Moedas não são somadas.', '', null],
         reversao: ['info', 'swap', 'Reversão parcial', 'O repasse P-72 foi revertido em R$ 76,00 em 23/10 pelo reembolso parcial R-08 (pedido #4801). A linha fica vinculada ao pedido.', 'Consultar de novo', function () { ctx.toast('Consultamos às ' + U.now() + ': reversão parcial confirmada.'); }],
         fonte: ['risk', 'alert', 'Fonte indisponível', 'Não conseguimos ler o extrato do provedor agora. Não mostramos saldo nem afirmamos que o período fecha.', 'Tentar de novo', function () { ctx.scenario(''); ctx.toast('Extrato carregado às ' + U.now() + '.'); }]
@@ -133,7 +133,7 @@
       if (st === 'falha' || st === 'expirado') a = A[st];
       return {
         pers: pers, tz: 'Brasília (UTC−3)', cur: 'BRL', range: P.range,
-        cover: parcial ? 'até 24/10 (parcial)' : 'conciliado até ' + X.reconciledUntil + '; 25 e 26/10 com taxa estimada', fresh: 'corte ' + X.cut,
+        cover: parcial ? 'até 24/10 (parcial)' : 'conciliado até ' + X.reconciledUntil + '; 25 e 26/10 com tarifa do processador pendente', fresh: 'corte ' + X.cut,
         lines: String(B.rows.length),
         totals: T6.kv([['Saldo inicial', T6.brl(B.openT)], ['Movimentos no período', T6.sbrl(B.mov)], ['Saldo final até o corte', T6.brl(B.closeT), 't6-strong'], ['Bruto', T6.brl(S.base)], ['Taxas', T6.brl(-S.fees)], ['Reembolsos', T6.brl(-(S.refunds - S.platBack))], ['Líquido', T6.brl(S.net), 't6-strong'], ['Realizado (enviado ao banco)', T6.brl(sent)]]),
         hasAlert: !!a, aCls: a ? 'alert alert--' + a[0] + ' t6-alert' : '', aT: a ? a[1] : '', aS: a ? a[2] : '', aBtn: a ? a[3] : '', aGo: a ? a[4] : function () {},

@@ -377,7 +377,7 @@
 
         <sc-if value="{{v.adq}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div><b>Você já tem este programa</b>Acesso até 02/10/2027. O botão abre o programa na sua área.</div></div></sc-if>
         <sc-if value="{{v.ret}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Programa retirado</b>{{v.retText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.explorar}}">Ver outros programas</button></div></sc-if>
-        <sc-if value="{{v.pre}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="p1-grow"><b>Pré-venda</b>{{v.preText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.saibaPorque}}">Saiba por quê</button></div></sc-if>
+        <sc-if value="{{v.pre}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info" role="status"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div class="p1-grow"><b>Ainda não à venda</b>{{v.preText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.saibaPorque}}">Saiba por quê</button></div></sc-if>
         <sc-if value="{{v.alt}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="status"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p1-grow"><b>Oferta alterada</b>{{v.altText}}</div><button type="button" class="btn btn--outline btn--sm" onClick="{{v.revisar}}">Revisar</button></div></sc-if>
 
         <div class="mod-grid2">

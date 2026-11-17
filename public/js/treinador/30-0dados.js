@@ -61,7 +61,7 @@
     processando: { label: 'processando', cls: 'badge badge--info' },
     'falta video': { label: 'falta vídeo', cls: 'badge badge--warn' }
   };
-  var FORMATS = { sessoes: 'Só sessões', misto: 'Aulas e sessões' };
+  var FORMATS = { sessoes: 'Só sessões', misto: 'Aulas e sessões', curso: 'Curso em vídeo' };
 
   var T4 = {
     FORMATS: FORMATS,
@@ -94,8 +94,12 @@
         { key: 'midia', label: proc.length ? (proc[0].name + ' processando') : 'Mídias processadas', ok: !proc.length, req: true, why: 'Aguarde o processamento; a aula fica como rascunho.', sec: 'direitos', item: proc.length ? proc[0].id : '' },
         { key: 'capa', label: cover ? 'Capa enviada' : 'Capa', ok: !!cover, req: false, why: 'Opcional: sem capa, a vitrine usa a cor do perfil.', sec: 'direitos' }
       ];
-      if (m.format === 'misto') list.push({ key: 'video', label: 'Videoaulas com legenda', ok: aulas.every(function (a) { return a.state === 'pronta'; }), req: true, why: 'Aulas em vídeo precisam estar processadas e com legenda.', sec: 'conteudo' });
-      else list.push({ key: 'video', label: 'Videoaula', ok: true, req: false, na: true, why: 'Não exigida neste formato.', sec: 'conteudo' });
+      // formato decide o que é obrigatório: curso e "aulas e sessões" prometem videoaulas (precisam existir e estar prontas);
+      // "só sessões" não exige vídeo nenhum (vídeo de técnica vira recomendação, nunca bloqueio)
+      var semAula = aulas.filter(function (a) { return a.state !== 'pronta'; });
+      if (m.format === 'curso' || m.format === 'misto') list.push({ key: 'video', label: !aulas.length ? 'Nenhuma videoaula ainda' : (semAula.length ? semAula[0].name + ' sem vídeo pronto' : 'Videoaulas com legenda'), ok: aulas.length > 0 && !semAula.length, req: true,
+        why: !aulas.length ? 'O formato “' + FORMATS[m.format] + '” promete aulas em vídeo: inclua pelo menos uma ou mude o formato para “Só sessões”.' : 'Aulas em vídeo precisam estar processadas e com legenda.', sec: 'conteudo', item: semAula.length ? semAula[0].id : '' });
+      else list.push({ key: 'video', label: 'Videoaula', ok: true, req: false, na: true, why: 'Não exigida neste formato. Vídeo de técnica nos exercícios é recomendado, não obrigatório.', sec: 'conteudo' });
       // nSess usado no texto de sessões quando há seções vazias
       list.nSess = nSess;
       return list;

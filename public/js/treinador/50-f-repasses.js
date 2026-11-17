@@ -4,7 +4,7 @@
     'concluída': ['na conta conectada', 'badge badge--ok'], 'enviado ao provedor': ['enviado ao provedor', 'badge badge--info'], falhou: ['falhou', 'badge badge--risk'],
     revertida: ['revertido', 'badge badge--risk'], 'parcialmente revertida': ['parcial · revertido em parte', 'badge badge--warn']
   };
-  var EST = { pago: ['pago pelo provedor', 'badge badge--ok'], pausado: ['pausado', 'badge badge--warn'], agendado: ['previsto', 'badge badge--info'], falhou: ['falhou', 'badge badge--risk'] };
+  var EST = { pago: ['enviado ao banco · confirmado pelo processador', 'badge badge--ok'], pausado: ['pausado', 'badge badge--warn'], agendado: ['previsto', 'badge badge--info'], falhou: ['falhou', 'badge badge--risk'] };
   function parseAmt(t) { var n = Number(String(t || '').replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.')); return isNaN(n) ? 0 : n; }
   function fmtIn(n) { return n.toFixed(2).replace('.', ','); }
   function newManual(amount) {

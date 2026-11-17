@@ -1,0 +1,44 @@
+// Telas de programas, ofertas, compra e financeiro (modo demonstração) seguem o pacote de planos e programas:
+// criar com título e objetivo; seções Conteúdo/Apresentação/Acesso/Revisão; versão comprada fixa por padrão; prontidão por formato;
+// prévia sem efeitos; oferta com família, benefícios desmarcados, centavos e 5%; acesso de 12 meses a partir da liberação;
+// sem pré-venda; retorno do provedor não confirma pagamento; comissão e tarifa do processador separadas.
+const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
+const b = await chromium.launch();
+const p = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
+const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
+await p.goto('http://localhost:5173/app#demo', { waitUntil: 'load' }); await p.waitForTimeout(2500);
+const T = () => p.evaluate(() => document.getElementById('app').innerText.replace(/\s+/g, ' '));
+const go = async (id, params) => { await p.evaluate(([i, q]) => GO(i, q || {}), [id, params]); await p.waitForTimeout(1200); return T(); };
+const click = async (re) => { const ok = await p.evaluate((s) => { const r = new RegExp(s); const el = [...document.querySelectorAll('#app button, #app a')].find((x) => r.test(x.textContent.trim()) && x.offsetParent); if (el) el.click(); return !!el; }, re.source); await p.waitForTimeout(700); return ok; };
+
+let t = await go('H07'); await click(/Novo programa/); t = await T();
+console.log('1 criar com título e objetivo:', /Comece pelo título e pelo objetivo/.test(t), !/nome e pela duração/.test(t));
+t = await go('TRE22', { id: 'p1' });
+console.log('2 seções do editor:', /Conteúdo/.test(t) && /Apresentação/.test(t) && /Acesso/.test(t) && /Revisão/.test(t), !/\bBásico\b/.test(t));
+await click(/^Acesso/); t = await T();
+console.log('  acesso de 12 meses a partir da liberação, sem preço no editor:', /12 meses a partir da liberação/.test(t));
+t = await go('TRE23', { id: 'p1' });
+console.log('3 versão comprada fica fixa por padrão:', await p.evaluate(() => { const on = [...document.querySelectorAll('#app [aria-checked="true"], #app [aria-pressed="true"]')].map((x) => x.textContent.trim()); return on.some((x) => /Só para quem entrar/.test(x)); }));
+const rd = await p.evaluate(() => { const m = DB.t4_progmeta.p2; const old = m.format; m.format = 'curso'; const a = T4.readiness('p2').find((c) => c.key === 'video'); DB.t4_estrutura.filter((x) => x.program === 'p2').forEach((x) => x.items.forEach((i) => { if (i.kind === 'aula') i.state = 'processando'; })); const b2 = T4.readiness('p2').find((c) => c.key === 'video'); m.format = 'sessoes'; const c2 = T4.readiness('p2').find((c) => c.key === 'video'); m.format = old; return [a.req, b2.ok, c2.req]; });
+console.log('4 prontidão por formato: curso exige aula pronta, sessões não exige vídeo:', rd[0] === true && rd[1] === false && rd[2] === false);
+await p.evaluate(() => { DB.a1_progresso.ct2.done = DB.a1_progresso.ct2.done.slice(0, 2); });
+const before = await p.evaluate(() => JSON.stringify([DB.a1_progresso.ct2.done, (DB.participantes || []).map((x) => x.progress)]));
+t = await go('ALU07', { id: 'p1', preview: '1' });
+const temPrevia = /Prévia do aluno/.test(t);
+await click(/^Concluir/);
+const after = await p.evaluate(() => JSON.stringify([DB.a1_progresso.ct2.done, (DB.participantes || []).map((x) => x.progress)]));
+console.log('5 prévia sem efeitos:', temPrevia, before === after);
+t = await go('TRE29', { id: 'o4' });
+console.log('6 oferta: família, benefícios desmarcados, prazos separados, 5%:', /O que você vai oferecer/i.test(t), await p.evaluate(() => [...document.querySelectorAll('#app .t4-checkrow[aria-checked="true"]')].length === 0), /12 meses a partir da liberação/.test(t), /Versão vendida/.test(t));
+const tpl = await p.evaluate(() => fetch('/shell/area-treinador.js?x=' + Date.now()).then((r) => r.text()).catch(() => ''));
+console.log('  sem 10%/12% na cotação:', !/10% · a partir de 26\/10: 12%/.test(tpl));
+t = await go('PUB06', { id: 'p1' });
+console.log('7 acesso a partir da liberação, sem pré-venda:', /12 meses a partir da liberação/.test(t), !/após a compra/.test(t));
+t = await go('FC01', { offer: 'o4' });
+console.log('8 resumo da compra: formato real e acesso a partir da liberação:', /Programa de sessões/.test(t), /a partir da liberação/.test(t), !/Programa em vídeo/.test(t));
+t = await go('FT03', { id: 'v4811' });
+console.log('9 tarifa pendente separada da comissão:', /Comissão 99Coach/.test(t), /pendente/.test(t), /aguardando a tarifa/.test(t), !/estimad/i.test(t));
+t = await go('H09');
+console.log('  recebimentos sem "taxas" misturadas:', /Comissão 99Coach \(5%\)/.test(t), /Tarifa do processador/.test(t));
+console.log('10 sem erros:', errs.length === 0, errs.join(' | '));
+await b.close();

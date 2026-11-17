@@ -10,8 +10,10 @@
   var FEE = { Pix: 0.0099, 'Cartão': 0.0399 };
   function sale(o) {
     o.discount = o.discount || 0; o.coupon = o.coupon || ''; o.qty = o.qty || 1; o.student = o.student || '';
-    o.base = r2(o.gross - o.discount); o.plat = r2(o.base * 0.05); o.proc = r2(o.base * FEE[o.method]);
-    o.net = r2(o.base - o.plat - o.proc); o.cur = 'BRL'; o.est = !!o.est;
+    o.base = r2(o.gross - o.discount); o.plat = r2(o.base * 0.05); o.est = !!o.est;
+    // tarifa do processador ainda não informada: fica pendente (não é estimada nem vira zero no texto); o líquido aguarda a tarifa
+    o.proc = o.est ? 0 : r2(o.base * FEE[o.method]); o.procPending = o.est;
+    o.net = r2(o.base - o.plat - o.proc); o.cur = 'BRL';
     o.releaseAt = o.releaseAt || ''; o.forecast = o.forecast || ''; o.payout = o.payout || ''; o.transfer = o.transfer || '';
     o.dispute = o.dispute || ''; o.refund = o.refund || null; o.card = o.card || '';
     return o;
@@ -114,8 +116,9 @@
       var nm = T6.prod(s) + ' · ' + T6.buyer(s);
       add(s.id + '-venda', s.date, s.time, 'venda', 'Venda · ' + nm, s.order, s.id, s.gross, { rec: s.gross }, { note: 'Pago por ' + T6.methodTxt(s) });
       if (s.discount) add(s.id + '-desc', s.date, s.time, 'ajuste', 'Desconto · cupom ' + s.coupon, s.order, s.id, -s.discount, { rec: -s.discount }, { note: 'Cupom aplicado na compra' });
-      add(s.id + '-plat', s.date, s.time, 'taxa', 'Taxa 99Coach (5%)', s.order, s.id, -s.plat, { rec: -s.plat }, { note: 'Regra R1' });
-      add(s.id + '-proc', s.date, s.time, 'taxa', T6.feeLabel(s) + (s.est ? ' · estimada' : ''), s.order, s.id, -s.proc, { rec: -s.proc }, { est: s.est, note: s.est ? 'Estimada até a conciliação do provedor' : 'Valor informado pelo provedor' });
+      add(s.id + '-plat', s.date, s.time, 'taxa', 'Comissão 99Coach (5%)', s.order, s.id, -s.plat, { rec: -s.plat }, { note: 'Regra R1 · só a comissão; a tarifa do processador é outra linha' });
+      if (s.procPending) add(s.id + '-proc', s.date, s.time, 'taxa', 'Tarifa do processador · pendente', s.order, s.id, 0, {}, { est: true, note: 'Ainda não informada pelo processador. O valor entra aqui quando for conhecido; até lá o líquido desta venda aguarda a tarifa.' });
+      else add(s.id + '-proc', s.date, s.time, 'taxa', T6.feeLabel(s), s.order, s.id, -s.proc, { rec: -s.proc }, { note: 'Valor informado pelo processador' });
       if (s.releaseAt) add(s.id + '-lib', s.releaseAt, '06:00', 'liberacao', 'Liberação · ' + s.order, s.order, s.id, 0, { rec: -s.net, lib: s.net }, { moved: s.net, note: s.why });
       if (s.dispute) {
         var c = DB.find('t6_casos', s.dispute);
@@ -128,7 +131,7 @@
         var b = s.releaseAt ? 'lib' : 'rec', f = r2(s.refund.amount * 0.05), m1 = {}, m2 = {};
         m1[b] = -s.refund.amount; m2[b] = f;
         add(s.id + '-reemb', s.refund.date, s.refund.time, 'reembolso', 'Reembolso ' + (s.refund.kind === 'parcial' ? 'parcial ' : '') + 'ao aluno · ' + s.refund.caseId, s.order, s.id, -s.refund.amount, m1, { note: s.refund.reason });
-        add(s.id + '-dev', s.refund.date, s.refund.time, 'taxa', 'Taxa 99Coach devolvida (5%)', s.order, s.id, f, m2, { note: 'A 99Coach devolve a taxa dela no reembolso' });
+        add(s.id + '-dev', s.refund.date, s.refund.time, 'taxa', 'Comissão 99Coach devolvida (5%)', s.order, s.id, f, m2, { note: 'A 99Coach devolve a taxa dela no reembolso' });
         if (!s.releaseAt && s.refund.kind === 'total') {
           var resid = r2(s.net - (s.refund.amount - f));
           if (resid) add(s.id + '-enc', s.refund.date, s.refund.time, 'liberacao', 'Encerramento ' + s.order + ' · taxa do processador não devolvida', s.order, s.id, 0, { rec: -resid, lib: resid }, { moved: resid, note: 'O provedor não devolve a taxa dele; ela sai do liberado' });

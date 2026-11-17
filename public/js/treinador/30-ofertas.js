@@ -13,6 +13,13 @@
     k2: { cycles: 'cobrança única', created: '01/09', last: '29/09', oneUse: true }
   });
   var CYCLES = [['mensal', 'Mensal'], ['sessao', 'Por sessão'], ['unico', 'Cobrança única']];
+  // três famílias que o aluno contrata (a assinatura Pro do treinador é outra coisa, em Minha assinatura):
+  // acompanhamento (mensal, ocupa vaga de aluno ativo), sessões/pacote (por sessão ou pacote) e programa (compra única, acesso de 12 meses)
+  var FAMS = [['acompanhamento', 'Acompanhamento'], ['sessoes', 'Sessões ou pacote'], ['programa', 'Programa']];
+  var famOf = function (o) { return !o ? '' : (o.kind === 'programa' ? 'programa' : (o.kind === 'recorrente' ? 'acompanhamento' : 'sessoes')); };
+  // benefícios: nenhum vem marcado; o treinador marca só o que realmente entrega
+  var BENEF = [['app', 'Treino no app'], ['checkin', 'Check-in semanal'], ['whatsapp', 'Conversa por WhatsApp'], ['chamada', 'Chamada de vídeo'], ['nutricao', 'Orientação nutricional (com nutricionista)'], ['ilimitado', 'Mensagens sem limite']];
+  var cents = function (s) { var n = parseFloat(String(s == null ? '' : s).replace(/\./g, '').replace(',', '.')); return isNaN(n) ? null : Math.round(n * 100); };
   var cycleOf = function (o) { return o.kind === 'recorrente' ? 'mensal' : (o.kind === 'avulsa' ? 'sessao' : 'unico'); };
   var unitOf = function (cy, o) { return cy === 'mensal' ? 'mês' : (cy === 'sessao' ? 'sessão' : (o && (o.unit === 'acesso' || o.unit === 'pacote') ? o.unit : 'pacote')); };
   var kindOf = function (cy, o) { return o && o.kind === 'programa' ? 'programa' : (cy === 'mensal' ? 'recorrente' : (cy === 'sessao' ? 'avulsa' : 'pacote')); };
@@ -30,14 +37,19 @@
       var prog = ctx.p.prog ? T4.prog(ctx.p.prog) : null;
       var isNew = ui.sel === 'novo' || (!ui.sel && !!prog && !T4.offerOf(prog.id));
       var o = isNew ? null : (DB.find('ofertas', ui.sel || ctx.id) || (prog && T4.offerOf(prog.id)) || DB.find('ofertas', 'o1'));
-      var meta = o ? ofm(o.id) : { incl: '', shown: false, savedAt: '' };
-      var base = o ? { name: o.name, price: String(o.price).replace('.', ','), cycle: cycleOf(o), fmt: o.fmt, accept: o.accept, incl: meta.incl, shown: meta.shown }
-        : { name: prog ? prog.name : '', price: prog ? String(prog.price) : '', cycle: 'unico', fmt: 'online', accept: 'direta', incl: prog ? 'Acesso ao programa ' + prog.name + ' por 12 meses' : '', shown: false };
-      if (scn === 'falha' && !ui.fixed && ui.price == null) base.price = '0';
+      var meta = o ? ofm(o.id) : { incl: '', shown: false, savedAt: '', benef: [] };
+      var base = o ? { name: o.name, price: o.price != null ? (o.price).toFixed(2).replace('.', ',') : '', cycle: cycleOf(o), fam: famOf(o), fmt: o.fmt, accept: o.accept, incl: meta.incl, shown: meta.shown, benef: (meta.benef || []).slice() }
+        : { name: prog ? prog.name : '', price: prog && prog.price ? String(prog.price).replace('.', ',') : '', cycle: 'unico', fam: prog ? 'programa' : '', fmt: 'online', accept: 'direta', incl: prog ? 'Acesso ao programa ' + prog.name + ' por 12 meses a partir da liberação' : '', shown: false, benef: [] };
+      if (scn === 'falha' && !ui.fixed && ui.price == null) base.price = '';
       if (scn === 'salvo' && ui.shown == null) base.shown = false;
       var f = {};
       Object.keys(base).forEach(function (k) { f[k] = ui[k] != null ? ui[k] : base[k]; });
-      var price = num(f.price);
+      // família decide o ciclo: acompanhamento é mensal; programa é compra única; sessões são por sessão ou pacote
+      if (f.fam === 'acompanhamento') f.cycle = 'mensal';
+      if (f.fam === 'programa') f.cycle = 'unico';
+      if (f.fam === 'sessoes' && f.cycle === 'mensal') f.cycle = 'sessao';
+      // preço guardado em centavos; vazio continua vazio (nunca vira zero)
+      var priceC = cents(f.price), price = priceC == null ? 0 : priceC / 100;
       var unit = unitOf(f.cycle, o);
       var inclChanged = isNew || f.incl !== meta.incl;
       var inclOk = !inclChanged || !!ui.inclOk;
@@ -49,23 +61,24 @@
         var cy = f.cycle;
         if (isNew) {
           var id = DB.uid('o');
-          var no = { id: id, name: String(f.name).trim(), kind: prog ? 'programa' : kindOf(cy, null), price: price, unit: prog ? 'acesso' : unitOf(cy, null), fmt: f.fmt, sale: false, accept: f.accept, active: 0, version: 1 };
+          var no = { id: id, name: String(f.name).trim(), kind: (prog || f.fam === 'programa') ? 'programa' : kindOf(cy, null), price: price, priceCents: priceC, currency: 'BRL', unit: (prog || f.fam === 'programa') ? 'acesso' : unitOf(cy, null), fmt: f.fmt, sale: false, accept: f.accept, active: 0, version: 1 };
           if (prog) no.program = prog.id;
           DB.ofertas.push(no);
-          DB.t4_ofmeta[id] = { incl: f.incl, shown: !!f.shown, savedAt: T4.stamp() };
+          DB.t4_ofmeta[id] = { incl: f.incl, shown: !!f.shown, savedAt: T4.stamp(), benef: (f.benef || []).slice() };
           ctx.setUi({ sel: id, name: null, price: null, cycle: null, fmt: null, accept: null, incl: null, shown: null, inclOk: false, priceErr: '', fixed: true });
           ctx.toast('Oferta criada · v1 · ' + T4.stamp() + '. Venda desligada: salvar não publica nem cobra.');
           return;
         }
-        o.name = String(f.name).trim(); o.price = price; o.unit = unit; o.kind = kindOf(cy, o); o.fmt = f.fmt; o.accept = f.accept; o.version += 1;
-        meta.incl = f.incl; meta.shown = !!f.shown; meta.savedAt = T4.stamp();
+        o.name = String(f.name).trim(); o.price = price; o.priceCents = priceC; o.currency = 'BRL'; o.unit = unit; o.kind = f.fam === 'programa' ? 'programa' : kindOf(cy, o); o.fmt = f.fmt; o.accept = f.accept; o.version += 1;
+        meta.incl = f.incl; meta.shown = !!f.shown; meta.savedAt = T4.stamp(); meta.benef = (f.benef || []).slice();
         ctx.setUi({ name: null, price: null, cycle: null, fmt: null, accept: null, incl: null, shown: null, inclOk: false, priceErr: '', fixed: true });
         ctx.toast('Oferta salva · v' + o.version + ' · ' + meta.savedAt + '. Salvar não publica nem cobra.');
       };
       var save = function () {
         if (policyDown) { ctx.toast('A política de cancelamento não carregou. Tente de novo antes de salvar.'); return; }
+        if (!f.fam) { ctx.setUi({ famErr: 'Escolha o que você vai oferecer: acompanhamento, sessões ou programa.' }); return; }
         if (String(f.name || '').trim().length < 3) { ctx.setUi({ nameErr: 'Dê um nome com pelo menos 3 letras.' }); return; }
-        if (!(price > 0)) { ctx.setUi({ priceErr: 'O preço precisa ser maior que zero. Seus campos continuam preenchidos.' }); return; }
+        if (priceC == null || priceC < 100) { ctx.setUi({ priceErr: 'Informe o preço em reais (mínimo R$ 1,00). Seus campos continuam preenchidos.' }); return; }
         if (!inclOk) { ctx.setUi({ inclErr: 'Confirme o que está incluído antes de salvar.' }); return; }
         if (o && price !== o.price && o.active > 0) {
           ctx.ask({ title: 'Preço mudou para quem já contratou', ok: 'Salvar v' + (o.version + 1),
@@ -97,14 +110,14 @@
         : T4.alert('warn', 'Preço mudou', 'Propostas antigas mantêm o valor.', 'Consultar de novo', function () { ctx.setUi({ cons: true }); }));
       if (scn === 'capacidade') al.push(ui.cons ? T4.alert('ok', 'Capacidade liberada', 'Consultado às ' + U.now() + ': recebimentos verificados. Você já pode ligar a venda.')
         : T4.alert('warn', 'Capacidade de venda pendente', 'A verificação da conta de recebimentos está em análise. Salvar funciona; ligar a venda, ainda não.', 'Consultar de novo', function () { ctx.setUi({ cons: true }); }));
-      if (scn === 'cotacao') al.push(T4.alert('warn', 'Cotação alterada', 'A taxa da plataforma mudou em 26/10 (fonte: tabela de taxas 99Coach). Revise quanto você recebe antes de salvar.', 'Revisar', explain('Quanto você recebe', ['Preço: ' + U.money(price) + ' / ' + unit + '.', 'Taxa até 25/10: 10% · a partir de 26/10: 12% (tabela de taxas 99Coach, 26/10).', 'Você recebe ' + U.money(Math.round(price * 0.88)) + ' por ' + unit + ' em novas contratações.', 'Contratos ativos mantêm a taxa da contratação.'])));
+      if (scn === 'cotacao') al.push(T4.alert('warn', 'Cotação alterada', 'A tarifa do processador para Pix mudou em 26/10 (fonte: processador de pagamento). A comissão 99Coach continua 5%. Revise quanto você recebe antes de salvar.', 'Revisar', explain('Quanto você recebe', ['Preço: ' + U.money(price) + ' / ' + unit + '.', 'Comissão 99Coach: 5% (' + U.money(Math.round(price * 5) / 100) + '), igual em toda venda.', 'Tarifa do processador de pagamento: muda conforme o meio (Pix, cartão) e só é conhecida depois do pagamento; ela é cobrada pelo processador, separada da comissão.', 'Você recebe ' + U.money(Math.round(price * 95) / 100) + ' menos a tarifa do processador.', 'Contratos ativos mantêm as condições da contratação.'])));
       if (scn === 'politica') al.push(ui.cons ? T4.alert('ok', 'Política carregada', 'Cancelamento: até 7 dias após a contratação, com devolução integral (política 99Coach v4, 01/10).')
         : T4.alert('risk', 'Política indisponível', 'Não carregamos a política de cancelamento. Salvar fica bloqueado até carregar; seus campos continuam aqui.', 'Tentar de novo', function () { ctx.setUi({ cons: true }); }));
       if (scn === 'falha' && !ui.fixed) al.push(T4.alert('risk', 'Falha ao salvar', 'O preço precisa ser maior que zero. Seus campos continuam preenchidos.', 'Corrigir', function () { ctx.setUi({ price: '200', priceErr: '' }); }));
 
       var list = DB.ofertas.map(function (x) {
         var on = !isNew && o && x.id === o.id;
-        return { name: x.name, sub: U.money(x.price) + ' / ' + x.unit + ' · ' + x.fmt + ' · v' + x.version, sale: x.sale ? 'venda ligada' : 'venda desligada', saleCls: 'badge ' + (x.sale ? 'badge--ok' : 'badge--plain'),
+        return { name: x.name, sub: (x.price != null ? U.money(x.price) + ' / ' + x.unit : 'Sem preço definido') + ' · ' + x.fmt + ' · v' + x.version, sale: x.sale ? 'venda ligada' : 'venda desligada', saleCls: 'badge ' + (x.sale ? 'badge--ok' : 'badge--plain'),
           cls: 'lrow t4-prow' + (on ? ' is-on' : ''), cur: String(!!on), pick: function () { ctx.setUi({ sel: x.id, name: null, price: null, cycle: null, fmt: null, accept: null, incl: null, shown: null, inclOk: false, priceErr: '', nameErr: '', inclErr: '' }); } };
       });
       var linked = o && o.program ? T4.prog(o.program) : prog;
@@ -113,7 +126,20 @@
         isNew: isNew, title: isNew ? 'Nova oferta' : o.name,
         state: isNew ? 'Rascunho · ainda não salvo' : ('Salvo v' + o.version + ' · ' + (meta.shown ? 'divulgado' : 'não divulgado') + ' · venda ' + (o.sale ? 'ligada' : 'desligada')),
         newOffer: function () { ctx.setUi({ sel: 'novo', name: null, price: null, cycle: null, fmt: null, accept: null, incl: null, shown: null, inclOk: false, priceErr: '', nameErr: '', inclErr: '' }); },
-        f: f, priceLabel: U.money(price) + ' / ' + unit,
+        f: f, priceLabel: priceC == null ? 'Sem preço definido' : U.money(price) + ' / ' + unit,
+        fams: T4.opts(FAMS, f.fam, function (k) { ctx.setUi({ fam: k, famErr: '' }); }), famErr: ui.famErr || '', hasFamErr: !!ui.famErr,
+        famHelp: f.fam === 'acompanhamento' ? 'Acompanhamento mensal: renova até o aluno cancelar e ocupa uma vaga de aluno ativo.' : (f.fam === 'programa' ? 'Programa: compra única, acesso por 12 meses a partir da liberação. Não cria acompanhamento nem conversa com você.' : (f.fam === 'sessoes' ? 'Sessões avulsas ou pacote: cada sessão é agendada e registrada.' : 'Escolha uma opção. A assinatura Pro do seu plano fica em Minha assinatura, não aqui.')),
+        isProgFam: f.fam === 'programa', isAcompFam: f.fam === 'acompanhamento', showCycles: f.fam === 'sessoes',
+        benefs: BENEF.map(function (b) { var on = (f.benef || []).indexOf(b[0]) >= 0; return { label: b[1], on: String(on), cls: 'check' + (on ? ' is-on' : ''), toggle: function () { var arr = (f.benef || []).slice(); var i = arr.indexOf(b[0]); if (i >= 0) arr.splice(i, 1); else arr.push(b[0]); ctx.setUi({ benef: arr, inclOk: false }); } }; }),
+        // prazos separados: duração do conteúdo, acesso, período do serviço e cobrança
+        terms: (function () {
+          var lp = (o && o.program ? T4.prog(o.program) : prog) || null;
+          if (f.fam === 'programa') return [['Duração do conteúdo', lp && lp.weeks ? U.plural(lp.weeks, 'semana', 'semanas') : 'a definir no programa'], ['Acesso', '12 meses a partir da liberação do acesso'], ['Cobrança', 'única · sem renovação'], ['Versão vendida', lp ? 'v' + T4.liveV(lp) + ' (fica fixa para quem comprar)' : 'a versão publicada no momento da compra'], ['Acompanhamento', 'não incluído']];
+          if (f.fam === 'acompanhamento') return [['Período do serviço', 'mensal, renova até o aluno cancelar'], ['Cobrança', 'mensal, a cada período'], ['Vagas', '2 de 3 alunos ativos em acompanhamento (Essencial)']];
+          if (f.fam === 'sessoes') return [['Período do serviço', f.cycle === 'sessao' ? 'uma sessão por contratação' : 'pacote com validade combinada'], ['Cobrança', f.cycle === 'sessao' ? 'por sessão' : 'única pelo pacote']];
+          return [];
+        })().map(function (x) { return { k: x[0], v: x[1] }; }),
+        noVaga: scn === 'capacidade' && f.fam === 'acompanhamento' && !ui.cons,
         setName: function (e) { ctx.setUi({ name: U.val(e), nameErr: '' }); },
         setPrice: function (e) { ctx.setUi({ price: U.val(e), priceErr: '' }); },
         setIncl: function (e) { ctx.setUi({ incl: U.val(e), inclOk: false }); },

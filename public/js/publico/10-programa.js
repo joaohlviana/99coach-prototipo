@@ -3,14 +3,14 @@ REG.screen({
   page: 'publico', key: 'programa', id: 'PUB06', title: 'Programa', nav: 'programas', back: 'H01', wide: true,
   testIds: ['p1', 'p3'],
   normal: 'À venda',
-  scens: [['adquirido', 'Já adquirido'], ['retirado', 'Programa retirado'], ['prevenda', 'Pré-venda'], ['previa', 'Prévia indisponível'], ['alterada', 'Oferta alterada']],
+  scens: [['adquirido', 'Já adquirido'], ['retirado', 'Programa retirado'], ['prevenda', 'Ainda não à venda'], ['previa', 'Prévia indisponível'], ['alterada', 'Oferta alterada']],
   vals: function (ctx) {
     var P = window.P1, ui = ctx.ui, scn = ctx.scn, p = P.prog(ctx.id || 'p1'), t = P.tr(p.author), a = P.av(t);
     var adq = scn === 'adquirido', ret = scn === 'retirado', pre = scn === 'prevenda', prevFail = scn === 'previa', alt = scn === 'alterada' && !ui.reviewed;
     var opened = 0;
     var modules = p.modules.map(function (m, i) {
       var open = m[2] || adq; if (open) opened++;
-      return { title: m[0], n: U.plural(m[1], 'sessão', 'sessões'), open: open, locked: !open, lock: 'liberado após a compra' };
+      return { title: m[0], n: U.plural(m[1], 'sessão', 'sessões'), open: open, locked: !open, lock: 'liberado com o acesso' };
     });
     var saved = P.isSaved('programa', p.id), h = P.heart(saved);
     var revisar = function () {
@@ -20,23 +20,23 @@ REG.screen({
     var previewOn = !!ui.preview && !prevFail;
     return {
       name: p.name, meta: t.name + ' · ' + p.weeks + ' semanas · ' + p.level.toLowerCase() + ' · versão ' + p.version, updated: 'Versão ' + p.version + ' publicada em ' + p.updated,
-      adq: adq, ret: ret, pre: pre, prevFail: prevFail, alt: alt, buyable: !adq && !ret, notAdq: !adq,
-      badge: adq ? 'Já adquirido' : (ret ? 'Retirado do catálogo' : (pre ? 'Pré-venda' : 'À venda')),
+      adq: adq, ret: ret, pre: pre, prevFail: prevFail, alt: alt, buyable: !adq && !ret && !pre, notAdq: !adq,
+      badge: adq ? 'Já adquirido' : (ret ? 'Retirado do catálogo' : (pre ? 'Ainda não à venda' : 'À venda')),
       badgeCls: 'badge ' + (adq ? 'badge--ok' : (ret ? 'badge--warn' : (pre ? 'badge--info' : 'badge--plain'))),
       audience: p.audience, prereq: p.prereq, equip: p.equip, level: p.level,
       modules: modules, contentSub: U.plural(p.sessions, 'sessão', 'sessões') + ' em ' + p.modules.length + ' módulos · ' + (adq ? 'tudo liberado para você' : opened + ' de ' + p.modules.length + ' módulos com amostra aberta'),
       previewTitle: p.preview.title, previewItems: p.preview.items.map(function (x) { return { k: x[0], v: x[1] }; }), previewSrc: p.preview.src,
       previewOn: previewOn, previewOff: !previewOn && !prevFail, togglePreview: function () { ctx.setUi({ preview: !ui.preview }); },
       previewBtn: previewOn ? 'Fechar prévia' : 'Ver prévia', retryPreview: function () { ctx.scenario(''); ctx.toast('Prévia carregada'); },
-      price: U.money(p.price), priceUnit: 'pagamento único',
+      price: p.price ? U.money(p.price) : 'Sem preço definido', priceUnit: p.price ? 'pagamento único' : '',
       rows: [
         { k: 'Duração do programa', v: p.weeks + ' semanas · ' + p.sessions + ' sessões' },
-        { k: 'Seu acesso', v: adq ? 'até 02/10/2027 (comprado em 02/10)' : '12 meses após a compra' },
+        { k: 'Seu acesso', v: adq ? 'de 02/10/2026 a 02/10/2027 (12 meses a partir da liberação)' : '12 meses a partir da liberação do acesso' },
         { k: 'Recorrência', v: 'Não renova · sem assinatura' },
         { k: 'Acompanhamento individual', v: 'Não incluído' }
       ],
       altText: 'O preço mudou de ' + U.money(p.price - 10) + ' para ' + U.money(p.price) + ' em 25/10. Revise antes de comprar; nada foi cobrado.',
-      preText: 'Liberação em 16/11/2026, regra aprovada pela 99Coach. Se não for liberado até lá, o valor volta integralmente.',
+      preText: 'Sem pré-venda: o programa só é vendido quando está publicado e pronto. Salve para ver quando abrir; nada é cobrado antes.',
       retText: 'Saiu do catálogo em 20/10. Quem comprou mantém o acesso conforme a licença; não é possível comprar agora.',
       ctaLabel: alt ? 'Revisar novo preço' : 'Revisar compra',
       revisar: revisar, continuar: function () { ctx.go('ALU06'); },

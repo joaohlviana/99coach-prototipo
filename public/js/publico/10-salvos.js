@@ -40,7 +40,7 @@ REG.screen({
       return {
         name: name, isT: isT, isP: !isT, gone: gone, ok: !gone,
         sub: gone ? t.note : (isT ? t.spec + ' · ' + t.area + ', ' + t.city.split(',')[0] : 'Programa · ' + P.tr(p.author).name + ' · ' + p.weeks + ' semanas'),
-        price: gone ? '' : (isT ? (t.from === 'preço sob consulta' ? t.from : 'a partir de ' + t.from) : U.money(p.price) + ' · pagamento único'),
+        price: gone ? '' : (isT ? (t.from === 'preço sob consulta' ? t.from : 'a partir de ' + t.from) : (p.price ? U.money(p.price) : 'Sem preço definido') + ' · pagamento único'),
         hasPrice: !gone, hasRating: isT && !gone && !!t.avg, rating: isT ? t.avg : '', at: 'Salvo em ' + s.at,
         photo: a.photo, hasPhoto: a.hasPhoto, noPhoto: isT && !a.hasPhoto, ini: a.ini,
         busy: !!busy, busyText: busy, idle: !busy,

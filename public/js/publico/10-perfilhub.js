@@ -17,7 +17,7 @@ REG.screen({
       { key: 'avaliacao', title: 'Avaliação física', price: 'Sob consulta', meta: 'Valor combinado antes de marcar' }
     ].map(function (o) { return Object.assign(o, { go: function () { ctx.go('@servico', { offer: o.key }); } }); });
     var progs = DB.p1_programas.filter(function (p) { return !ausencia || p.id !== 'p3'; }).map(function (p) {
-      return { name: p.name, price: U.money(p.price) + ' · ' + p.weeks + ' semanas', meta: 'Acesso por 12 meses · acompanhamento individual não incluído', go: function () { ctx.go('PUB06', { id: p.id }); } };
+      return { name: p.name, price: (p.price ? U.money(p.price) : 'Sem preço definido') + ' · ' + p.weeks + ' semanas', meta: 'Acesso por 12 meses · acompanhamento individual não incluído', go: function () { ctx.go('PUB06', { id: p.id }); } };
     });
     var rev = DB.p1_avaliacoes.filter(function (r) { return r.trainer === 'rafael' && r.status === 'publicada'; })[0];
     var saved = P.isSaved('treinador', 'rafael'), h = P.heart(saved);

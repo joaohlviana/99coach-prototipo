@@ -6,8 +6,13 @@ REG.screen({
   scens: [['carregando', 'Carregando mídia'], ['video', 'Vídeo não carregou'], ['concluida', 'Concluída'], ['retirada', 'Aula retirada'], ['conflito', 'Retomada em conflito']],
   vals: function (ctx) {
     var A1 = window.A1, scn = ctx.scn, ui = ctx.ui;
-    var ctid = A1.PROG[ctx.id] ? ctx.id : 'ct2';
-    var P = A1.PROG[ctid], pr = DB.a1_progresso[ctid], fl = A1.flat(P);
+    // prévia do treinador (aberta pelo editor TRE22 com o id do programa): mostra a versão em edição e não grava nada
+    var isPrev = ctx.p.preview === '1';
+    var byProg = isPrev ? Object.keys(A1.PROG).filter(function (k) { return A1.PROG[k].program === ctx.id; })[0] : '';
+    var ctid = A1.PROG[ctx.id] ? ctx.id : (byProg || 'ct2');
+    var P = A1.PROG[ctid], fl = A1.flat(P);
+    // na prévia o progresso é uma cópia só desta tela: concluir não mexe em compra, matrícula, progresso nem participantes
+    var pr = isPrev ? (ui.pv || { done: [], last: fl[0].it.id, version: P.version }) : DB.a1_progresso[ctid];
     var isDone = function (id) { return pr.done.indexOf(id) >= 0; };
     var nextOpen = function (from) { for (var i = from; i < fl.length; i++) if (fl[i].ok && !isDone(fl[i].it.id)) return i; return -1; };
     var idxOf = function (id) { for (var i = 0; i < fl.length; i++) if (fl[i].it.id === id) return i; return 0; };
@@ -20,6 +25,7 @@ REG.screen({
     var nextI = -1; for (var b = ci + 1; b < fl.length; b++) if (fl[b].ok) { nextI = b; break; }
     var lockedNext = ci + 1 < fl.length && !fl[ci + 1].ok ? fl[ci + 1] : null;
     var syncPart = function () {
+      if (isPrev) { ctx.setUi({ pv: pr }); return; }
       var pct = Math.floor(pr.done.length / fl.length * 100);
       (DB.participantes || []).forEach(function (pp) { if (P.program && pp.program === P.program && pp.student === 'ana') pp.progress = pct + '%'; });
       pr.at = '26/10 ' + U.now(); pr.device = 'este aparelho';
@@ -30,7 +36,7 @@ REG.screen({
       var n = nextOpen(ci + 1); if (n < 0) n = nextOpen(0);
       pr.last = n >= 0 ? fl[n].it.id : it.id; syncPart();
       ctx.setUi({ cur: n >= 0 ? fl[n].it.id : it.id });
-      ctx.toast(n >= 0 ? 'Aula concluída. Próxima: ' + fl[n].it.t + '.' : 'Aula concluída. Você viu todas as aulas liberadas.');
+      ctx.toast(isPrev ? 'Prévia: a conclusão aparece só aqui e não é gravada.' : (n >= 0 ? 'Aula concluída. Próxima: ' + fl[n].it.t + '.' : 'Aula concluída. Você viu todas as aulas liberadas.'));
     };
     var undo = function () {
       pr.done = pr.done.filter(function (x) { return x !== it.id; });
@@ -71,7 +77,10 @@ REG.screen({
       hasLocked: nextI < 0 && !!lockedNext, lockedTxt: lockedNext ? 'Próxima aula libera em ' + lockedNext.mod.rel + '.' : '',
       tree: tree, treeOpen: !!ui.tree, treeCls: 'a1-tree' + (ui.tree ? ' is-open' : ''), treeExp: String(!!ui.tree), toggleTree: function () { ctx.setUi({ tree: !ui.tree }); },
       treeLbl: (ui.tree ? 'Ocultar estrutura' : 'Ver estrutura') + ' (' + fl.length + ' aulas)', drip: P.drip,
-      goSessao: function () { GO('ALU02', { id: 't1' }); }, goBack: function () { GO('ALU06'); }
+      // a compra de um programa não cria acompanhamento: o atalho para o treino do acompanhamento só aparece para quem tem vínculo com o autor
+      hasAcomp: !isPrev && P.author === 'Rafael Lima',
+      isPrev: isPrev, prevTxt: 'Você está vendo a versão em edição como o aluno verá. Nada é gravado: sem compra, matrícula, progresso ou aviso a participantes.',
+      goSessao: function () { GO('ALU02', { id: 't1' }); }, goBack: function () { if (isPrev) return GO('TRE22', { id: ctx.id }); GO('ALU06'); }
     };
   }
 });
