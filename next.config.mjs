@@ -33,8 +33,10 @@ const config = {
     ];
     return [
       { source: '/(.*)', headers: seguranca },
-      { source: '/shell/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' }] },
+      // o pacote do app e os estilos levam a versão no endereço (?v=...): podem ficar um ano no navegador
+      { source: '/shell/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
       // imagens e fontes têm nome fixo pelo conteúdo: podem ficar um ano no navegador; estilos e catálogo, uma hora com revalidação em segundo plano
+      { source: '/next-loader.js', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
       { source: '/img/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
       { source: '/fonts/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
       { source: '/css/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=3600, stale-while-revalidate=86400' }] },

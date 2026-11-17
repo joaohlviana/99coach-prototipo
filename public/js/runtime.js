@@ -267,6 +267,13 @@
     return [name, params];
   }
   var navSeq = 0;
+  function needCss(l) {
+    if (!l || l.__ok) return null;
+    var has = !!l.getAttribute('href');
+    if (has && (l.sheet || !l.getAttribute('data-href'))) { l.__ok = true; return null; }
+    if (!l.__p) l.__p = new Promise(function (ok) { var done = function () { l.__ok = true; ok(); }; l.addEventListener('load', done); l.addEventListener('error', done); setTimeout(done, 5000); if (!has) l.href = l.getAttribute('data-href'); });
+    return l.__p;
+  }
   function mount(name, props, state, key) {
     var my = ++navSeq;
     if (window.__needArea && !window.__areaReady(name)) {
@@ -275,6 +282,9 @@
       return window.__needArea(name).then(function () { html.classList.remove('area-loading'); if (my === navSeq) mount(name, props, state, key); }, function () { html.classList.remove('area-loading'); if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); });
     }
     var P = PAGES[name];
+    // a folha de estilo da tela é baixada quando a tela abre; a tela só entra depois que ela chegou
+    var wcss = needCss(P.css);
+    if (wcss) return wcss.then(function () { if (my === navSeq) mount(name, props, state, key); });
     for (var k in PAGES) PAGES[k].css.media = k === name ? 'all' : 'not all';
     var c = new P.Comp(props);
     if (state) c.state = state;

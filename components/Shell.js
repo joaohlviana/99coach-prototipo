@@ -1,6 +1,8 @@
 // Moldura comum: o servidor entrega o conteúdo pronto dentro de #app e o app interativo assume em seguida.
 // `route` diz ao app qual tela abrir (a mesma que o servidor acabou de montar).
 
+import pacote from '../public/shell/version.json';
+
 export function Topo() {
   return (
     <header className="ssr-top">
@@ -60,7 +62,10 @@ export default function Shell({ route, children, soServidor }) {
       {soServidor ? null : <>
         <div id="app" lang="pt-BR" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: '' }} />
         <script dangerouslySetInnerHTML={{ __html: boot }} />
-        <script src="/next-loader.js" defer />
+        {/* o app começa a baixar junto com a página: telas e código em paralelo */}
+        <link rel="preload" href={'/shell/templates.html?v=' + pacote.v} as="fetch" crossOrigin="anonymous" />
+        <link rel="preload" href={'/shell/app.js?v=' + pacote.v} as="script" />
+        <script src={'/next-loader.js?v=' + pacote.v} defer />
       </>}
     </>
   );
@@ -102,3 +107,4 @@ export function Paginacao({ base, pagina, paginas, total, ini, n }) {
     </nav>
   );
 }
+

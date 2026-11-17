@@ -17,13 +17,17 @@
     var id = a.getAttribute('href').slice(1), el = id ? document.getElementById(id) : null;
     e.preventDefault(); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  fetch('/shell/templates.html').then(function (r) { if (!r.ok) throw new Error('telas'); return r.text(); }).then(function (html) {
+  var V = window.__V ? '?v=' + window.__V : '';
+  fetch('/shell/templates.html' + V).then(function (r) { if (!r.ok) throw new Error('telas'); return r.text(); }).then(function (html) {
     var box = document.createElement('div'); box.innerHTML = html;
     var bar = box.querySelector('#shell-bar'), app = document.getElementById('app');
     if (bar && bar.firstElementChild) app.parentNode.insertBefore(bar.firstElementChild, app);
     while (box.firstChild) document.body.appendChild(box.firstChild);
     return demo ? add('/js/ds-data.js') : null;
-  }).then(function () { return add('/shell/app.js'); }).then(function () {
+  }).then(function () { return add('/shell/app.js' + V); }).then(function () {
     document.documentElement.classList.add('app-on');
+    // no primeiro toque ou rolagem, as folhas das outras telas públicas começam a baixar: a troca de tela fica imediata
+    var fired = false, warm = function () { if (fired) return; fired = true; ['home', 'esporte', 'perfil', 'onboarding', 'publico', 'servico'].forEach(function (n) { var l = document.getElementById('css-' + n); if (l && !l.getAttribute('href') && l.getAttribute('data-href')) l.href = l.getAttribute('data-href'); }); };
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (ev) { window.addEventListener(ev, warm, { once: true, passive: true, capture: true }); });
   }).catch(function () { document.documentElement.classList.add('app-off'); });
 })();
