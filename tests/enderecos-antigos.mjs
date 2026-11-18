@@ -20,7 +20,7 @@ a = await ir('/treinadores/musculacao?uf=pr'); console.log('  filtro de estado a
 for (const [n, min] of [['sitemap-trainers.xml', 100], ['sitemap-sports.xml', 10], ['sitemap-filters.xml', 50], ['sitemap-static.xml', 2], ['sitemap-programs.xml', 0], ['sitemap-states.xml', 50], ['sitemap-en.xml', 100], ['sitemap-es.xml', 100]]) {
   const r = await fetch(B + '/' + n), t = await r.text(), k = (t.match(/<loc>/g) || []).length;
   const locs = [...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  console.log('5 ' + n + ':', r.status === 200 && /xml/.test(r.headers.get('content-type') || '') && /<urlset/.test(t) && k >= min, '| só endereços novos:', locs.every((u) => /^https:\/\/[^/]+(\/$|\/(en\/|es\/)?(treinadores|treinador|cidade|cidades|esportes|estado|buscar|en|es)(\/|$))|^https:\/\/[^/]+$/.test(u)), '(' + k + ')');
+  console.log('5 ' + n + ':', r.status === 200 && /xml/.test(r.headers.get('content-type') || '') && /<urlset/.test(t) && k >= min, '| só endereços novos:', locs.every((u) => /^https:\/\/[^/]+(\/$|\/(en\/|es\/)?(treinadores|treinador|cidade|cidades|esportes|estado|buscar|ajuda|sou-treinador|en|es)(\/|$))|^https:\/\/[^/]+$/.test(u)), '(' + k + ')');
 }
 const rb = await (await fetch(B + '/robots.txt')).text();
 console.log('6 robots não esconde os estilos do Google:', /shell\/css/.test(rb) || !/Disallow: \/shell/.test(rb) || /Disallow: \/$/m.test(rb));

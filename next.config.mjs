@@ -9,11 +9,13 @@ const config = {
     const r = (source, destination) => ({ source, destination, permanent: false });
     return [
       r('/entrar', '/app#onboarding-entrar'), r('/recuperar', '/app#onboarding-entrar'),
-      r('/sou-treinador', '/app#onboarding-treinador'), r('/cadastro/treinador', '/app#onboarding-treinador'), r('/cadastro/treinador/previa', '/app#onboarding-treinador'),
+      r('/cadastro/treinador', '/app#onboarding-treinador'), r('/cadastro/treinador/previa', '/app#onboarding-treinador'),
       r('/painel', '/app'), r('/painel/:resto*', '/app'), r('/dashboard', '/app'), r('/conta', '/app'), r('/conta/:resto*', '/app'),
       r('/mensagens', '/app'), r('/agenda', '/app'), r('/indicadores', '/app'), r('/vinculos', '/app'),
-      r('/ajuda', '/app#publico-ajuda'), r('/contato', '/app#publico-ajuda'), r('/termos', '/app#publico-ajuda-termos'),
-      r('/privacidade', '/app#publico-ajuda-privacidade'), r('/cookies', '/app#publico-ajuda-privacidade'), r('/pagamentos-e-reembolsos', '/app#publico-ajuda-pagamentos'),
+      // páginas públicas da ajuda são do servidor (indexáveis); o formulário de suporte continua no app
+      { source: '/termos', destination: '/ajuda/termos', statusCode: 301 }, { source: '/privacidade', destination: '/ajuda/privacidade', statusCode: 301 },
+      { source: '/cookies', destination: '/ajuda/cookies', statusCode: 301 }, { source: '/pagamentos-e-reembolsos', destination: '/ajuda/pagamentos', statusCode: 301 },
+      r('/contato', '/app#publico-ajuda'),
       r('/remocao', '/app#publico-ajuda'), r('/reivindicar/:slug', '/treinador/:slug'),
       { source: '/esporte/:slug', destination: '/treinadores/:slug', statusCode: 301 }, { source: '/busca', destination: '/buscar', statusCode: 301 },
       r('/c/:codigo', '/app#publico-convite-:codigo')

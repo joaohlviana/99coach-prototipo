@@ -11,7 +11,7 @@ export function Topo() {
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>
-        <a href="/app#onboarding-treinador">Sou treinador</a>
+        <a href="/sou-treinador">Sou treinador</a>
       </nav>
       <a className="ssr-btn" href="/app#onboarding-entrar">Entrar</a>
     </header>
@@ -26,9 +26,9 @@ export function Rodape() {
           <p>Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p>
           <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href="/en" hrefLang="en" lang="en">English</a><a href="/es" hrefLang="es" lang="es">Español</a></p></div>
         <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a></div>
-        <div><b>Para treinadores</b><a href="/app#onboarding-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
+        <div><b>Para treinadores</b><a href="/sou-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
         <div><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/treinadores/corrida">Corrida</a></div>
-        <div><b>Ajuda</b><a href="/app#publico-ajuda">Central de ajuda</a><a href="/app#publico-ajuda-termos">Termos</a><a href="/app#publico-ajuda-privacidade">Privacidade</a></div>
+        <div><b>Ajuda</b><a href="/ajuda">Central de ajuda</a><a href="/ajuda/termos">Termos</a><a href="/ajuda/privacidade">Privacidade</a></div>
       </div>
       <div className="ssr-foot__word" aria-hidden="true">99Coach · mais que treino</div>
       <span className="ssr-foot__m">© 2026 99coach</span>
