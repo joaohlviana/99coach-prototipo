@@ -15,6 +15,8 @@ const decode = (s: string) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').r
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ ok: false, motivo: "metodo" }, 405);
+  // diagnóstico sem conta: só diz se a chave do YouTube está configurada (nunca o valor)
+  if (new URL(req.url).searchParams.get("estado") === "1") return json({ ok: true, configured: !!Deno.env.get("YOUTUBE_API_KEY") });
   const auth = req.headers.get("Authorization") ?? "";
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
   const { data: u } = await sb.auth.getUser();

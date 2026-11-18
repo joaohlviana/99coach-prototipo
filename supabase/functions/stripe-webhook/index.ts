@@ -1,5 +1,5 @@
 // Recebe os avisos do Stripe (endpoint de Connect) e traduz para os eventos que o banco entende.
-// Autenticidade: se houver STRIPE_WEBHOOK_SECRET, a assinatura é conferida. Em todos os casos o aviso é buscado de novo
+// Autenticidade: se houver STRIPE_WEBHOOK_SECRET (um ou mais segredos separados por vírgula), a assinatura é conferida. Em todos os casos o aviso é buscado de novo
 // direto no Stripe pelo id, com a nossa chave, e é essa cópia que vale: um aviso forjado não existe no Stripe.
 // Aviso de ambiente diferente do da chave (teste x real) é ignorado.
 // Avisos de assinatura Pro (customer.subscription.*) chegam pelo endereço de avisos da plataforma e só mandam reler a assinatura no Stripe.
@@ -32,7 +32,10 @@ Deno.serve(async (req: Request) => {
   const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET") ?? "", key = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
   if (!key) return json({ ok: false, motivo: "pagamentos_nao_configurados" }, 503);
   const raw = await req.text();
-  const signed = !secret || (await valid(raw, req.headers.get("stripe-signature") ?? "", secret));
+  // há dois endereços de aviso (plataforma e contas conectadas), cada um com seu segredo: aceita a lista separada por vírgula
+  const secrets = secret.split(",").map((x) => x.trim()).filter(Boolean), sigHeader = req.headers.get("stripe-signature") ?? "";
+  let signed = !secrets.length;
+  for (const sct of secrets) if (!signed && (await valid(raw, sigHeader, sct))) signed = true;
   let got: any; try { got = JSON.parse(raw); } catch (_) { return json({ ok: false, motivo: "corpo_invalido" }, 400); }
   if (!/^evt_[A-Za-z0-9_]+$/.test(String(got?.id ?? "")) || (got.account && !/^acct_[A-Za-z0-9]+$/.test(String(got.account)))) return json({ ok: false, motivo: "aviso_invalido" }, 400);
   // Sem assinatura válida só passa o aviso de assinatura Pro, que chega por outro endereço de avisos (o da plataforma):

@@ -113,7 +113,7 @@ As funções do Supabase leem estes segredos. Coloque-os em Supabase, Edge Funct
 | Segredo | Para quê |
 |---|---|
 | `STRIPE_SECRET_KEY` | cobrança (use a chave de **teste** até a homologação) |
-| `STRIPE_WEBHOOK_SECRET` | validar os avisos do Stripe na função `stripe-webhook` |
+| `STRIPE_WEBHOOK_SECRET` | validar os avisos do Stripe na função `stripe-webhook`. São **dois** endereços de aviso (contas conectadas e assinatura Pro), cada um com seu `whsec_`: guarde os dois juntos, separados por vírgula |
 | `RESEND_API_KEY` e `AVISOS_FROM` | envio de e-mails da função `enviar-avisos` |
 | `SITE_URL` | `https://www.99coach.com.br` |
 | `ANTHROPIC_API_KEY` | só quando as funções de IA forem ligadas; hoje ficam desligadas no site |
@@ -121,7 +121,9 @@ As funções do Supabase leem estes segredos. Coloque-os em Supabase, Edge Funct
 
 Depois, um agente faz um pagamento de teste com cartão de teste do Stripe (`4242 4242 4242 4242`) e confere a assinatura, o recebimento e o aviso.
 
-**Acompanhamento mensal (assinatura no cartão do aluno), desde 17/11.**
+**Para o dono configurar tudo de uma vez:** use `PROMPT-CHATGPT-CONFIGURACAO.md` (passo a passo para um agente com navegador).
+
+**Acompanhamento mensal (assinatura no cartão do aluno), desde 17/11.** Os três avisos novos já foram ligados no endereço de contas conectadas em 18/11.
 - No endereço de avisos de **Connect** do Stripe que aponta para `stripe-webhook`, os avisos a seguir precisam estar marcados:
   - `invoice.paid`
   - `customer.subscription.updated`
