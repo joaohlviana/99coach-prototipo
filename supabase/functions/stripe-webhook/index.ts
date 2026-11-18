@@ -62,6 +62,44 @@ Deno.serve(async (req: Request) => {
     return session === undefined || guardada === session;
   };
 
+  // cobrança de uma fatura (versões novas da API trazem em invoice.payments; antigas em invoice.payment_intent)
+  const invoicePI = async (inv: unknown): Promise<string | null> => {
+    if (typeof inv !== "string") return null;
+    const i = await stripeGet(key, `/v1/invoices/${inv}`, account);
+    if (i?.payment_intent) return typeof i.payment_intent === "string" ? i.payment_intent : i.payment_intent.id;
+    const ps = await stripeGet(key, `/v1/invoice_payments?invoice=${inv}`, account);
+    const p0 = ps?.data?.find((x: any) => x?.payment?.type === "payment_intent" && x.status === "paid") ?? ps?.data?.[0];
+    const pid = p0?.payment?.payment_intent;
+    return pid ? (typeof pid === "string" ? pid : pid.id) : null;
+  };
+  const piPayload = async (piId: string) => {
+    const pi = await stripeGet(key, `/v1/payment_intents/${piId}?expand[]=latest_charge.balance_transaction`, account);
+    if (!pi) return null;
+    const ch = pi.latest_charge ?? {}, bt = typeof ch.balance_transaction === "object" ? ch.balance_transaction : null;
+    const fee = bt ? (bt.fee_details ?? []).filter((f: any) => f.type !== "application_fee").reduce((n: number, f: any) => n + f.amount, 0) : null;
+    return { amountCents: pi.amount_received, currency: pi.currency, applicationFeeCents: pi.application_fee_amount ?? 0, providerFeeCents: fee, method: ch.payment_method_details?.type ?? null,
+      paymentIntent: pi.id, charge: ch.id ?? null, availableOn: bt ? new Date(bt.available_on * 1000).toISOString() : null, balanceTxn: bt?.id ?? null };
+  };
+
+  // renovação mensal paga (não a primeira fatura, que entra pelo checkout): vira um pedido novo do mesmo acompanhamento
+  // a assinatura da fatura: em versões novas da API fica em parent.subscription_details.subscription
+  const subOf = (x: any) => { const r = x?.subscription ?? x?.parent?.subscription_details?.subscription; return typeof r === "string" ? r : r?.id ?? null; };
+  if (ev.type === "invoice.paid" && account && subOf(o) && o.billing_reason === "subscription_cycle") {
+    const subId = subOf(o);
+    const { data: intent } = await db.rpc("srv_renewal_intent", { p_sub: subId, p_invoice: o.id, p_account: account });
+    if (!intent) return json({ ok: true, ignorado: "assinatura_de_outro_sistema" });
+    const piId = await invoicePI(o.id);
+    const pl = piId ? await piPayload(piId) : null;
+    if (!pl) return json({ ok: false, motivo: "cobranca_indisponivel" }, 500);
+    return ingest("payment.succeeded", { intent, ...pl });
+  }
+  // situação da assinatura do acompanhamento (renovação cancelada, encerrada, inadimplente)
+  if (account && /^customer\.subscription\.(updated|deleted)$/.test(ev.type)) {
+    const end = o.current_period_end ?? o.items?.data?.[0]?.current_period_end ?? null;
+    const { data: st, error } = await db.rpc("srv_set_coaching_subscription", { p_sub: o.id, p_account: account, p_status: o.status, p_period_end: end ? new Date(end * 1000).toISOString() : null, p_cancel: !!o.cancel_at_period_end });
+    return error ? json({ ok: false, motivo: "banco_recusou" }, 500) : json({ ok: true, assinatura: st });
+  }
+
   if (ev.type === "account.updated") {
     const { error } = await db.rpc("srv_set_payment_account", { p_trainer: null, p_account: o.id, p_charges: !!o.charges_enabled, p_payouts: !!o.payouts_enabled,
       p_submitted: !!o.details_submitted, p_fees_payer: o.controller?.fees?.payer ?? null, p_capabilities: o.capabilities ?? {} });
@@ -73,8 +111,17 @@ Deno.serve(async (req: Request) => {
     if (!intent) return json({ ok: true, ignorado: "sem_intencao" });
     if (!(await confere(intent, o.id))) return semSessao ? json({ ok: false, motivo: "sessao_nao_registrada" }, 500) : json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     if (o.payment_status !== "paid") return ingest("payment.processing", { intent, method: (o.payment_method_types ?? []).includes("boleto") ? "boleto" : "card", paymentIntent: o.payment_intent });
+    // acompanhamento mensal: a cobrança está na primeira fatura da assinatura; a assinatura fica ligada ao pedido
+    let piId = o.payment_intent;
+    if (o.mode === "subscription" && o.subscription) {
+      const sub = await stripeGet(key, `/v1/subscriptions/${o.subscription}`, account);
+      const end = sub?.current_period_end ?? sub?.items?.data?.[0]?.current_period_end ?? null;
+      await db.rpc("srv_link_subscription", { p_intent: intent, p_sub: o.subscription, p_status: sub?.status ?? "active", p_period_end: end ? new Date(end * 1000).toISOString() : null, p_cancel: !!sub?.cancel_at_period_end });
+      piId = await invoicePI(o.invoice);
+      if (!piId) return json({ ok: false, motivo: "fatura_sem_cobranca" }, 500);
+    }
     // valores vêm do próprio Stripe (cobrança e lançamento de saldo), não do que o navegador mandou
-    const pi = await stripeGet(key, `/v1/payment_intents/${o.payment_intent}?expand[]=latest_charge.balance_transaction`, account);
+    const pi = await stripeGet(key, `/v1/payment_intents/${piId}?expand[]=latest_charge.balance_transaction`, account);
     if (!pi) return json({ ok: false, motivo: "cobranca_indisponivel" }, 500);
     const ch = pi.latest_charge ?? {}, bt = typeof ch.balance_transaction === "object" ? ch.balance_transaction : null;
     const fee = bt ? (bt.fee_details ?? []).filter((f: any) => f.type !== "application_fee").reduce((n: number, f: any) => n + f.amount, 0) : null;
@@ -105,8 +152,11 @@ Deno.serve(async (req: Request) => {
 
   if (ev.type === "charge.refunded") {
     // a mesma conta do Stripe atende outro site: só entram reembolsos de cobranças criadas por este app
-    if (!o.metadata?.intent) return json({ ok: true, ignorado: "cobranca_de_outro_sistema" });
-    if (!(await confere(o.metadata.intent))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
+    if (!o.metadata?.intent) {
+      // cobranças de assinatura (acompanhamento mensal) não levam a intenção: valem se a cobrança já está num pedido desta conta
+      const { data: ord } = await db.from("orders").select("id").eq("charge_id", o.id).eq("seller_account", account ?? "").maybeSingle();
+      if (!ord) return json({ ok: true, ignorado: "cobranca_de_outro_sistema" });
+    } else if (!(await confere(o.metadata.intent))) return json({ ok: true, ignorado: "nao_confere_com_o_pedido" });
     const before = ev.data?.previous_attributes?.amount_refunded ?? 0;
     return ingest("refund.succeeded", { charge: o.id, amountCents: (o.amount_refunded ?? 0) - before });
   }

@@ -22,12 +22,11 @@ Elas rodam junto com a bateria completa (`npm test`).
 
 | Situação | Achados |
 |---|---|
-| Corrigido | F01, F02, F04, F05, F06, F07, F08, F09, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25, F26, F27, F28 |
-| Corrigido em parte (o resto depende de autorização do dono) | F03 |
+| Corrigido | F01, F02, F03, F04, F05, F06, F07, F08, F09, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, F25, F26, F27, F28 |
 | Depende só do dono (painel do Supabase ou do Google) | F10 |
 
-- **26 de 28 achados corrigidos.** Nenhum deles depende mais de mudança no código.
-- **Os dois restantes (F03 e F10) têm o passo a passo** em `PENDENCIAS.md`, nas seções 2.1 e 2.2.
+- **27 de 28 achados corrigidos.** Nenhum deles depende mais de mudança no código.
+- **O restante (F10) depende só do dono**; o passo a passo está em `PENDENCIAS.md` 2.2.
 
 ---
 
@@ -39,7 +38,7 @@ Elas rodam junto com a bateria completa (`npm test`).
 |---|---|---|---|
 | **F01** | O cadastro aberto pela tela de login vinha com nome e e-mail de exemplo (Marina Costa) | Todos os caminhos de cadastro começam com os campos vazios. Os exemplos existem só no modo demonstração | Teste automático e reteste da própria auditoria |
 | **F02** | Os textos "Termos" e "Privacidade" no aceite não abriam os documentos | Viraram links de verdade (`/termos` e `/privacidade`), abertos em nova aba e separados da caixa de aceite. Vale para cadastro de aluno e de treinador | Teste automático e reteste da auditoria |
-| **F03** | O formulário de suporte mostrava "Demonstração: não use dados reais" | No site real, a tela de suporte agora orienta a falar com a equipe pelo Instagram @99coach.oficial; o formulário de demonstração não aparece mais ali. **Falta:** o chamado com protocolo precisa de uma tabela nova no banco, e a criação dela foi recusada. O código pronto está em `PENDENCIAS.md` 2.1 | Teste automático |
+| **F03** | O formulário de suporte mostrava "Demonstração: não use dados reais" | No site real, a tela de suporte agora orienta a falar com a equipe pelo Instagram @99coach.oficial; o formulário de demonstração não aparece mais ali. **Concluído em 18/11:** o formulário grava o chamado de verdade e dá um protocolo para acompanhar; a equipe responde pela fila "Suporte" do painel; o Instagram ficou como alternativa | Teste automático |
 | **F14** | Seis páginas responderam com erro 500 de vez em quando | **Causa encontrada:** uma consulta ao banco feita sem cache transformava páginas estáticas em páginas montadas a cada visita, e algumas falhavam. Agora a consulta tem cache de 5 minutos. Depois da correção, o registro de erros do servidor ficou zerado | Registro de erros da Vercel e as seis páginas abertas de novo |
 | **F15** | "Nova rotina" dava erro e não abria o editor. Adicionar um exercício a uma rotina incompleta também falhava | **Causa:** fora da demonstração, o histórico de versões das rotinas não era preparado. Agora ele sempre existe, e as rotinas que ficaram incompletas pelo erro antigo também abrem | Teste automático com os dois caminhos: nova rotina e exercício adicionado a rotina antiga |
 | **F18** | A tela de segurança do cadastro mostrava 2 etapas ativas e aparelhos inventados (iPhone em São Paulo, Android em Curitiba) | Na conta real, essa parte não mostra mais nada inventado. Ela leva a "Meus dados e segurança", que traz a verificação em 2 etapas e os aparelhos reais da conta | Teste automático |
@@ -130,3 +129,25 @@ Estes itens não são defeitos encontrados; são áreas sem teste real até agor
 - Safari, Firefox, celular de verdade, leitor de tela e teste de carga.
 
 Os dados de teste criados pela auditoria (perfil "João Viana — Teste QA" e um programa em rascunho) continuam no banco. Para apagá-los, siga `PENDENCIAS.md` 2.10, com a confirmação do dono.
+
+---
+
+## 6. Depois da auditoria: planos, programas, mensalidade e suporte (17 e 18/11)
+
+- **Conteúdo pago:** antes, um visitante sem conta conseguia ler o material vendido. Agora só o dono e quem comprou leem.
+- **Programas, conta real:**
+  - rascunho com título e objetivo;
+  - conteúdo em sessões, com vídeo;
+  - versões publicadas que não mudam, e quem comprou fica com a sua;
+  - prévia do aluno;
+  - publicar e vender separados;
+  - acesso de cortesia;
+  - aviso quando outra aba gravou antes.
+- **Acompanhamento mensal:**
+  - a vaga é conferida antes de cobrar;
+  - a cobrança se renova sozinha no cartão;
+  - o aluno desliga ou religa a renovação na tela "Hoje".
+- **Telas de demonstração e canvas do DS:** alinhados ao pacote de planos e programas.
+- **Suporte:** chamado com protocolo de verdade e fila no painel (F03).
+
+O detalhamento está em `VERIFICACAO-PLANOS-PROGRAMAS.md`, na seção 6.

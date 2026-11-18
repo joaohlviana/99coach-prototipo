@@ -69,105 +69,18 @@ Cada teste imprime linhas com `true` ou `false`. Compare a bateria nova com a an
 
 Legenda: **[DONO]** só o dono consegue (painel, conta, decisão); **[AGENTE]** um agente com o repositório consegue; **[AUTORIZAÇÃO]** precisa do "sim" do dono antes.
 
-### 2.1 Suporte com protocolo de verdade **[AUTORIZAÇÃO] + [AGENTE]**
+### 2.1 Suporte com protocolo de verdade **[FEITO em 18/11]**
 
-**Situação:** o formulário "Falar com o suporte" (Central de ajuda) só gravava no navegador; nada chegava à equipe. Hoje, fora da demonstração, a tela orienta a falar pelo Instagram **@99coach.oficial**. A criação da tabela de chamados foi recusada na sessão, então nada foi aplicado.
-
-**Passos, depois do "sim" do dono:**
-
-1. Aplicar a migração abaixo no Supabase (projeto `rycaxboqkkiopjdecgld`).
-2. Em `public/js/publico/20-ajuda.js`, trocar o `send` local (que grava em `DB.p2_casos`) por uma chamada a `C.rpc('submit_support_case', { p_subject, p_email, p_body, p_key })`.
-   - Use como modelo `public/js/publico/30-perfilpedido.js`: chave aleatória de 48 caracteres hexadecimais, a mesma chave enquanto a pessoa repete o mesmo envio, e o protocolo guardado em `localStorage`.
-   - A tela de acompanhamento ("track") deve usar `support_case_status(p_protocol, p_key)`.
-3. Em `src/templates/publico.html`, bloco "contato": trocar `v.demoSupport` e `v.realSupport` para que o formulário apareça também fora da demonstração e o bloco do Instagram vire alternativa.
-   - Remover o aviso "Demonstração: não use dados reais" no site real.
-4. Em `public/js/publico/40-admin.js` e no template do admin, criar a fila "Suporte" com `admin_support_queue()` e as ações `admin_answer_support(p_case, 'em_andamento' | 'respondido' | 'encerrado', p_reply)`.
-   - Siga o padrão das filas existentes: explicação obrigatória e confirmação.
-5. Opcional: avisar a equipe por e-mail. A função `enviar-avisos` já lê a tabela `outbox`, e a migração grava `support.requested`.
-6. Criar `tests/suporte.mjs` no estilo de `tests/remover-perfil.mjs`, simulando o banco. Testar: envio válido, texto curto barrado, e-mail inválido, protocolo exibido e consulta do protocolo. Incluir em `tests/run.sh`.
-
-```sql
--- Fale com o suporte: o chamado é gravado de verdade, com protocolo para acompanhar sem conta.
-create table if not exists public.support_cases (
-  id uuid primary key default gen_random_uuid(),
-  protocol text not null unique default ('S-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))),
-  key_hash text not null unique,
-  subject text not null check (char_length(subject) between 2 and 80),
-  contact_email text not null check (contact_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
-  body text not null check (char_length(body) between 10 and 4000),
-  status text not null default 'recebido' check (status in ('recebido', 'em_andamento', 'respondido', 'encerrado')),
-  reply text check (char_length(reply) <= 4000),
-  user_id uuid,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  decided_by uuid
-);
-alter table public.support_cases enable row level security;  -- sem políticas: acesso só pelas funções abaixo
-
-create or replace function public.submit_support_case(p_subject text, p_email text, p_body text, p_key text)
- returns jsonb language plpgsql security definer set search_path to ''
-as $$
-declare r public.support_cases%rowtype; h text;
-begin
-  if p_key is null or p_key !~ '^[A-Za-z0-9_-]{20,80}$' then raise exception 'codigo_invalido' using errcode = '22023'; end if;
-  h := public._removal_hash(p_key);
-  select * into r from public.support_cases where key_hash = h;
-  if found then return jsonb_build_object('protocol', r.protocol, 'status', r.status, 'repeated', true); end if;
-  if coalesce(char_length(trim(p_subject)), 0) < 2 then raise exception 'assunto_obrigatorio' using errcode = '22023'; end if;
-  if trim(coalesce(p_email, '')) !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'email_invalido' using errcode = '22023'; end if;
-  if coalesce(char_length(trim(p_body)), 0) < 10 then raise exception 'relato_curto' using errcode = '22023'; end if;
-  if (select count(*) from public.support_cases where contact_email = lower(trim(p_email)) and status in ('recebido', 'em_andamento')) >= 5 then
-    raise exception 'limite_de_pedidos' using errcode = '54000';
-  end if;
-  insert into public.support_cases (key_hash, subject, contact_email, body, user_id)
-  values (h, left(trim(p_subject), 80), lower(trim(p_email)), left(trim(p_body), 4000), (select auth.uid())) returning * into r;
-  perform public._outbox('support.requested', r.id::text, jsonb_build_object('subject', r.subject), r.id::text);
-  return jsonb_build_object('protocol', r.protocol, 'status', r.status, 'repeated', false);
-end $$;
-
-create or replace function public.support_case_status(p_protocol text, p_key text)
- returns jsonb language plpgsql stable security definer set search_path to ''
-as $$
-declare r public.support_cases%rowtype;
-begin
-  select * into r from public.support_cases where protocol = upper(trim(p_protocol)) and key_hash = public._removal_hash(coalesce(p_key, ''));
-  if not found then return jsonb_build_object('status', 'nao_encontrado'); end if;
-  return jsonb_build_object('protocol', r.protocol, 'subject', r.subject, 'status', r.status, 'reply', r.reply, 'created_at', r.created_at, 'updated_at', r.updated_at);
-end $$;
-
-create or replace function public.admin_support_queue()
- returns table(case_id uuid, protocol text, subject text, contact_email text, body text, status text, created_at timestamptz)
- language plpgsql stable security definer set search_path to ''
-as $$
-begin
-  if not public.is_admin(true) then raise exception 'exige papel admin com verificação em duas etapas (aal2)' using errcode = '42501'; end if;
-  return query select c.id, c.protocol, c.subject, c.contact_email, c.body, c.status, c.created_at
-    from public.support_cases c where c.status in ('recebido', 'em_andamento') order by c.created_at, c.id;
-end $$;
-
-create or replace function public.admin_answer_support(p_case uuid, p_status text, p_reply text)
- returns jsonb language plpgsql security definer set search_path to ''
-as $$
-begin
-  if not public.is_admin(true) then raise exception 'exige papel admin com verificação em duas etapas (aal2)' using errcode = '42501'; end if;
-  if p_status not in ('em_andamento', 'respondido', 'encerrado') then raise exception 'estado_invalido' using errcode = '22023'; end if;
-  if p_status = 'respondido' and coalesce(trim(p_reply), '') = '' then raise exception 'resposta_obrigatoria' using errcode = '22023'; end if;
-  update public.support_cases set status = p_status, reply = coalesce(nullif(trim(p_reply), ''), reply), decided_by = (select auth.uid()), updated_at = now() where id = p_case;
-  if not found then raise exception 'chamado_inexistente' using errcode = 'P0002'; end if;
-  return jsonb_build_object('case', p_case, 'status', p_status);
-end $$;
-
-revoke all on function public.submit_support_case(text, text, text, text) from public;
-revoke all on function public.support_case_status(text, text) from public;
-revoke all on function public.admin_support_queue() from public, anon;
-revoke all on function public.admin_answer_support(uuid, text, text) from public, anon;
-grant execute on function public.submit_support_case(text, text, text, text) to anon, authenticated;
-grant execute on function public.support_case_status(text, text) to anon, authenticated;
-grant execute on function public.admin_support_queue() to authenticated;
-grant execute on function public.admin_answer_support(uuid, text, text) to authenticated;
-```
-
-**Pronto quando:** um chamado enviado pelo site aparece na fila "Suporte" do painel de administração; respondido lá, a consulta pelo protocolo mostra a resposta; e a bateria completa passa.
+- A migração `suporte_com_protocolo` foi aplicada, com aprovação do dono. Ela cria:
+  - a tabela `support_cases`;
+  - as funções `submit_support_case`, `support_case_status`, `admin_support_queue` e `admin_answer_support`.
+- **"Falar com o suporte" no site real** grava o chamado e mostra o protocolo (`S-XXXXXXXX`).
+  - A consulta funciona no aparelho em que a pessoa enviou, com a chave guardada lá.
+  - A resposta da equipe aparece na consulta.
+  - O Instagram ficou como alternativa.
+- **Painel de administração:** "Filas de pedidos" tem a fila "Suporte", com os botões em andamento, responder (texto obrigatório), encerrar e "Responder por e-mail".
+- **Teste:** `tests/suporte.mjs`.
+- **O que falta [AGENTE]:** mandar a resposta por e-mail sozinho. Hoje a equipe usa o botão "Responder por e-mail". A migração já grava `support.requested` na `outbox`, que a função `enviar-avisos` pode usar.
 
 ### 2.2 Login com Google mostra "rycaxboqkkiopjdecgld.supabase.co" **[DONO]**
 
@@ -207,6 +120,19 @@ As funções do Supabase leem estes segredos. Coloque-os em Supabase, Edge Funct
 | `YOUTUBE_API_KEY` | sugestões automáticas de vídeo nos exercícios (função `videos-exercicio`). Chave da YouTube Data API v3 criada no Google Cloud Console, restrita a essa API. Sem ela, o app mostra o botão “Buscar no YouTube” e o treinador cola o link |
 
 Depois, um agente faz um pagamento de teste com cartão de teste do Stripe (`4242 4242 4242 4242`) e confere a assinatura, o recebimento e o aviso.
+
+**Acompanhamento mensal (assinatura no cartão do aluno), desde 17/11.**
+- No endereço de avisos de **Connect** do Stripe que aponta para `stripe-webhook`, os avisos a seguir precisam estar marcados:
+  - `invoice.paid`
+  - `customer.subscription.updated`
+  - `customer.subscription.deleted`
+  - além dos que já estavam: `checkout.session.*`, `charge.refunded`, `account.updated` e repasses.
+- **Teste de ponta a ponta, em ambiente de teste:**
+  1. O aluno paga um plano com unidade "mês".
+  2. Confira que aparece "Renovação mensal" na tela Hoje do aluno.
+  3. Desligue e religue a renovação.
+  4. Avance o relógio de teste do Stripe (test clock) um mês.
+  5. Confira que a renovação gerou um pedido "· renovação" no extrato do treinador.
 
 ### 2.5 Webhooks antigos do Stripe falhando **[DONO]**
 
@@ -305,7 +231,7 @@ Falta:
 
 ### 2.14 Limpeza do repositório **[AGENTE]**
 
-- A pasta `undefined/` na raiz (capturas de tela soltas, não versionadas) pode ser apagada depois de conferir que não é usada.
+- A pasta `undefined/` (capturas soltas, sem uso) foi apagada em 18/11.
 - A pasta `out/` tem capturas versionadas antigas; avaliar se ainda servem.
 - `README.md`: atualizar com os comandos da seção 1.3 e um resumo da estrutura.
 
@@ -323,7 +249,12 @@ Falta:
 - **Remover perfil:** perfil importado e sem dono sai do ar na hora; o painel tem "Recolocar no site" e "Excluir de vez".
 - **Auditoria de 17/11:**
   - F01, F02, F04 a F09 e F11 a F23 corrigidos.
-  - F03 depende da 2.1 e F10 depende da 2.2.
+  - F03 resolvido com o suporte de verdade (2.1); F10 depende da 2.2.
   - F17: a regra de recebimentos é cobrança real pelo Stripe; o formulário de CPF e Pix ficou só na demonstração.
   - F19: o convite exige o perfil publicado. A tela agora avisa antes de tentar.
+- **Planos e programas (17/11):** tudo da `VERIFICACAO-PLANOS-PROGRAMAS.md` foi corrigido (veja a seção 6 de lá):
+  - conteúdo pago fechado;
+  - programa com rascunho, sessões, versões imutáveis, prévia, publicar separado de vender e cortesia;
+  - vaga conferida antes de cobrar;
+  - acompanhamento mensal com renovação automática no cartão, que o aluno pode desligar e religar.
 - **`llms.txt`:** com links, como pede a auditoria de navegação por agentes.

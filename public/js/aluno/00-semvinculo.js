@@ -36,7 +36,7 @@ REG.screen({
         var m = Object.assign({}, ui.actAsked || {}); m[r.id] = 1; ctx.setUi({ actAsked: m });
         C.activateRequest(r.id).then(function (x) { var o = x.ok ? ((x.data || {}).outcome || '') : 'falhou'; window.__actOut = window.__actOut || {}; window.__actOut[r.id] = o; ctx.setUi({ act: Object.assign({}, window.__actOut) }); if (o === 'vinculo_ativo' && window.__refreshLinks) window.__refreshLinks(); });
       });
-      var PAYWHY = { pagamentos_nao_configurados: 'O pagamento pelo app ainda não está ligado. Combine com o treinador pela conversa depois do início.', chave_de_outro_ambiente: 'O pagamento pelo app ainda não está ligado.', stripe_recusou_cobranca: 'O Stripe não abriu o pagamento agora. Nada foi cobrado; tente de novo.', tente_de_novo: 'Não deu para consultar o pagamento agora. Nada foi cobrado; tente de novo em instantes.', pagina_vencida: 'A página de pagamento venceu. Toque em pagar de novo em alguns instantes para abrir uma nova.', cobranca_fechada: 'Esta cobrança já foi encerrada. Atualize a tela.', vendedor_sem_recebimento: 'O treinador ainda não ativou o recebimento pelo app.', aguardando_confirmacao: 'Seu pagamento foi emitido e está aguardando confirmação do banco.', pagamento_em_confirmacao: 'Seu pagamento está sendo confirmado. Volte em instantes.', email_nao_confirmado: 'Confirme seu e-mail antes de pagar.', offline: 'Sem conexão: nada foi cobrado.', conta_bloqueada: 'Sua conta está bloqueada para compras.' };
+      var PAYWHY = { pagamentos_nao_configurados: 'O pagamento pelo app ainda não está ligado. Combine com o treinador pela conversa depois do início.', chave_de_outro_ambiente: 'O pagamento pelo app ainda não está ligado.', stripe_recusou_cobranca: 'O Stripe não abriu o pagamento agora. Nada foi cobrado; tente de novo.', tente_de_novo: 'Não deu para consultar o pagamento agora. Nada foi cobrado; tente de novo em instantes.', pagina_vencida: 'A página de pagamento venceu. Toque em pagar de novo em alguns instantes para abrir uma nova.', cobranca_fechada: 'Esta cobrança já foi encerrada. Atualize a tela.', vendedor_sem_recebimento: 'O treinador ainda não ativou o recebimento pelo app.', aguardando_confirmacao: 'Seu pagamento foi emitido e está aguardando confirmação do banco.', pagamento_em_confirmacao: 'Seu pagamento está sendo confirmado. Volte em instantes.', email_nao_confirmado: 'Confirme seu e-mail antes de pagar.', offline: 'Sem conexão: nada foi cobrado.', conta_bloqueada: 'Sua conta está bloqueada para compras.', sem_vaga: 'O treinador está sem vaga livre agora. Nada foi cobrado: avise pela conversa ou tente mais tarde.' };
       var ACT = { pagamento_necessario: 'Aceito · falta o pagamento para começar', capacidade_esgotada: 'Aceito · o treinador está sem vagas agora', falhou: 'Aceito · não deu para iniciar agora, tente de novo em instantes', vinculo_ativo: 'Aceito · acompanhamento iniciado' };
       var retryAct = function (id) { return function () { var m = Object.assign({}, ui.actAsked || {}); delete m[id]; if (window.__actOut) delete window.__actOut[id]; ctx.setUi({ actAsked: m, act: Object.assign({}, window.__actOut || {}) }); }; };
       var reqItems = reqs.map(function (r) { return { canRetry: r.status === 'aceito' && (act[r.id] === 'falhou' || act[r.id] === 'capacidade_esgotada'), retry: retryAct(r.id), canPay: r.status === 'aceito' && act[r.id] === 'pagamento_necessario', payLabel: ui.payBusy === r.id ? 'Abrindo pagamento…' : 'Pagar e começar',
@@ -322,6 +322,26 @@ REG.screen({
         });
       })(),
       hasPays: !!(ui.pays && ui.pays.length),
+      // acompanhamento mensal: renovação automática no cartão; o aluno desliga ou religa (o acesso vale até o fim do mês pago)
+      subs: (function () {
+        var C3 = window.CONTA;
+        if (C3.user() && ui.subs === undefined && !ui.subsAsked) { ctx.setUi({ subsAsked: true }); C3.db('POST', 'rpc/my_coaching_subscriptions', {}).then(function (r) { ctx.setUi({ subs: r.ok && Array.isArray(r.data) ? r.data : null }); }); }
+        var dt = function (x) { return x ? new Date(x).toLocaleDateString('pt-BR') : ''; }, money3 = function (c) { return 'R$ ' + (c / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); };
+        return (ui.subs || []).filter(function (x) { return x.status !== 'encerrada'; }).map(function (x) {
+          var off = !!x.cancelAtEnd, busy = ui.subBusy === x.id, pend = x.status === 'pendente';
+          var go = function (cancelar) { ctx.setUi({ subBusy: x.id });
+            C3.fn('pagamentos', { acao: 'renovacao', assinatura: x.id, cancelar: cancelar }).then(function (r) { var d = (r.ok && r.data) || {};
+              ctx.setUi({ subBusy: '', subsAsked: false, subs: undefined });
+              ctx.toast(d.ok ? (d.cancelada ? 'Renovação desligada. O acompanhamento segue até ' + (dt(d.ate) || 'o fim do mês pago') + '; nada mais será cobrado.' : 'Renovação religada. A próxima cobrança será em ' + (dt(d.ate) || 'o fim do mês pago') + '.')
+                : ({ assinatura_encerrada: 'Este acompanhamento já foi encerrado.', stripe_recusou: 'O Stripe não aceitou a mudança agora. Nada foi alterado.' }[d.motivo] || (r.offline ? 'Sem conexão: nada foi alterado.' : 'Não foi possível mudar agora. Nada foi alterado.'))); }); };
+          return { t: (x.description || 'Acompanhamento mensal') + ' · ' + money3(x.amountCents) + '/mês',
+            x: pend ? 'Pagamento do mês pendente: o cartão foi recusado. Atualize o cartão no e-mail do Stripe para não perder o acompanhamento.' : (off ? 'Renovação desligada · acompanhamento até ' + dt(x.periodEnd) : 'Renova automaticamente · próxima cobrança em ' + dt(x.periodEnd)),
+            label: busy ? 'Aguarde…' : (off ? 'Religar renovação' : 'Desligar renovação'), off: off, busy: busy,
+            act: function () { if (busy) return; if (off) return go(false);
+              ctx.ask({ title: 'Desligar a renovação?', lines: ['Nada mais será cobrado depois deste mês.', 'O acompanhamento continua até ' + (dt(x.periodEnd) || 'o fim do mês pago') + ' e então se encerra.', 'Você pode religar antes dessa data.'], ok: 'Desligar renovação', danger: true, onOk: function () { go(true); } }); } };
+        });
+      })(),
+      hasSubs: !!(ui.subs || []).filter(function (x) { return x.status !== 'encerrada'; }).length,
       msgT: note ? 'Recado de ' + tf : 'Nenhuma mensagem nova', msgX: note ? String(note.body).slice(0, 80) : 'Fale com ' + tf + ' pela conversa.',
       title: t[0], text: t[1], showMain: !showEvo && !showMsg, showEvo: showEvo, showMsg: showMsg, chat: showMsg && window.CHAT ? window.CHAT(ctx, link.id, 'aluno', tf) : {},
       isPrep: state === 'prep', isWait: state === 'wait', isReady: state === 'ready', isExec: state === 'exec',

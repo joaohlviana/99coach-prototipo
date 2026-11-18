@@ -489,6 +489,11 @@
           <sc-if value="{{v.hasQErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.qErr}}</div></div></sc-if>
           <sc-if value="{{v.hasDErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div>{{v.dErr}}</div></div></sc-if>
           <sc-if value="{{v.emptyAll}}" hint-placeholder-val="{{ false }}"><p class="mod-small">Nenhum pedido esperando decisão.</p></sc-if>
+          <section class="card onb-sec" aria-labelledby="ad-sup"><h2 class="onb-h2" id="ad-sup">Suporte ({{v.nSup}})</h2>
+            <p class="mod-small mod-muted">Abrir um caso não é resolvê-lo. A resposta escrita aqui aparece na consulta do protocolo; mande também por e-mail.</p>
+            <ol class="onb-secs"><sc-for list="{{v.sups}}" as="r" hint-placeholder-count="1"><li><div class="card onb-sec"><b>{{r.title}}</b><p class="mod-small mod-muted">{{r.meta}}</p><p>{{r.body}}</p>
+              <div class="field"><label class="field__label" for="{{r.idN}}">Resposta para a pessoa (obrigatória para responder)</label><div class="input"><textarea id="{{r.idN}}" rows="3" maxlength="4000" onInput="{{r.setNote}}">{{r.note}}</textarea></div></div>
+              <div class="onb-actions onb-actions--row" style="flex-wrap: wrap"><button type="button" class="btn btn--ghost btn--sm" onClick="{{r.working}}">Em andamento</button><a class="btn btn--ghost btn--sm" href="{{r.mail}}">Responder por e-mail</a><button type="button" class="btn btn--primary btn--sm" onClick="{{r.answer}}">Responder</button><button type="button" class="btn btn--outline btn--sm" onClick="{{r.close}}">Encerrar</button></div></div></li></sc-for></ol></section>
           <section class="card onb-sec" aria-labelledby="ad-rep"><h2 class="onb-h2" id="ad-rep">Denúncias de conversa ({{v.nRep}})</h2>
             <p class="mod-small mod-muted">Recebida não é resolvida. Quem denunciou não é avisado de quem decidiu; o denunciado não vê quem denunciou.</p>
             <ol class="onb-secs"><sc-for list="{{v.reps}}" as="r" hint-placeholder-count="1"><li><div class="card onb-sec"><b>{{r.title}}</b><p class="mod-small mod-muted">{{r.meta}}</p><p>{{r.note}}</p><sc-if value="{{r.hasMsg}}" hint-placeholder-val="{{ false }}"><p class="mod-small">{{r.msg}}</p></sc-if>
@@ -779,26 +784,16 @@
           <!-- contato: abre caso com protocolo -->
           <sc-if value="{{v.isContact}}" hint-placeholder-val="{{ false }}">
             <div><button type="button" class="btn btn--ghost btn--sm p2-backlink" onClick="{{v.toIndex}}"><i class="ic ic--sm i-chev-l" aria-hidden="true"></i>Ajuda</button></div>
-            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Falar com o suporte</h1><sc-if value="{{v.demoSupport}}" hint-placeholder-val="{{ false }}"><p class="pghead__sub">Abrir um caso não significa que ele já foi resolvido. Você recebe um protocolo para acompanhar.</p></sc-if><sc-if value="{{v.realSupport}}" hint-placeholder-val="{{ true }}"><p class="pghead__sub">Por enquanto o atendimento é feito pelo Instagram oficial da 99Coach.</p></sc-if></div></div>
-            <sc-if value="{{v.realSupport}}" hint-placeholder-val="{{ true }}"><div class="mod-grid2">
-              <section class="card onb-sec" aria-label="Como falar com a equipe"><h2 class="onb-h2">Mande uma mensagem direta</h2>
-                <p class="p2-p">Escreva para <b>@99coach.oficial</b> no Instagram contando o que aconteceu e, se for o caso, o endereço da página. Respondemos por lá.</p>
-                <p class="p2-p">Nunca envie senha, código de verificação nem dados de cartão.</p>
-                <div class="onb-actions"><a class="btn btn--primary btn--lg" href="https://www.instagram.com/99coach.oficial/" target="_blank" rel="noopener">Abrir @99coach.oficial<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></a></div>
-              </section>
-              <aside class="mod-col" aria-label="Outros caminhos">
-                <section class="card onb-sec"><h2 class="onb-h2">Corrigir ou remover um perfil</h2><p class="p2-p">Use o botão na página do próprio perfil: o pedido gera um protocolo e não precisa de conta.</p></section>
-                <section class="card onb-sec"><h2 class="onb-h2">Pagamentos</h2><p class="p2-p">Cobrança, cancelamento e reembolso seguem a mesma regra da oferta.</p><button type="button" class="btn btn--outline" onClick="{{v.openPay}}">Ler Pagamentos e reembolsos</button></section>
-              </aside>
-            </div></sc-if>
-            <sc-if value="{{v.demoSupport}}" hint-placeholder-val="{{ false }}">
+            <div class="pghead"><div class="pghead__txt"><h1 class="pghead__title">Falar com o suporte</h1><p class="pghead__sub">Abrir um caso não significa que ele já foi resolvido. Você recebe um protocolo para acompanhar.</p></div></div>
+            
             <div class="mod-grid2">
               <section class="card onb-sec" aria-label="Sua solicitação">
                 <sc-if value="{{v.notSending}}" hint-placeholder-val="{{ true }}">
                   <div class="field"><span class="field__label" id="p2-aj-assunto">Assunto</span><div class="p2-chips" role="group" aria-labelledby="p2-aj-assunto"><sc-for list="{{v.subjects}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div><sc-if value="{{v.hasErrSubject}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errSubject}}</span></sc-if></div>
                   <div class="field"><label class="field__label" for="p2-aj-email">Seu e-mail para resposta</label><div class="{{v.emailCls}}"><input id="p2-aj-email" type="email" autocomplete="email" placeholder="nome@email.com" value="{{v.email}}" onInput="{{v.setEmail}}"></div><sc-if value="{{v.hasErrEmail}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errEmail}}</span></sc-if></div>
-                  <div class="field"><label class="field__label" for="p2-aj-texto">O que aconteceu?</label><div class="{{v.textCls}}"><textarea id="p2-aj-texto" rows="4" onInput="{{v.setText}}">{{v.text}}</textarea></div><span class="field__help">Não envie senha nem número de cartão. Demonstração: não use dados reais.</span><sc-if value="{{v.hasErrText}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errText}}</span></sc-if></div>
-                  <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">Enviar solicitação</button></div>
+                  <div class="field"><label class="field__label" for="p2-aj-texto">O que aconteceu?</label><div class="{{v.textCls}}"><textarea id="p2-aj-texto" rows="4" onInput="{{v.setText}}">{{v.text}}</textarea></div><span class="field__help">Não envie senha, código de verificação nem número de cartão.<sc-if value="{{v.demoSupport}}" hint-placeholder-val="{{ false }}"> Demonstração: não use dados reais.</sc-if></span><sc-if value="{{v.hasErrText}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.errText}}</span></sc-if></div>
+                  <sc-if value="{{v.hasSendErr}}" hint-placeholder-val="{{ false }}"><div class="alert alert--risk" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div class="p2-alert__b"><b>Não enviou</b><span>{{v.sendErr}}</span></div></div></sc-if>
+                  <div class="onb-actions"><button type="button" class="btn btn--primary btn--lg" onClick="{{v.send}}">{{v.sendLabel}}</button></div>
                 </sc-if>
                 <sc-if value="{{v.sending}}" hint-placeholder-val="{{ false }}">
                   <div class="p2-sending" role="status" aria-live="polite"><span class="p2-spin" aria-hidden="true"></span><div><b>Enviando sua solicitação…</b><span>Não feche esta página. Se a conexão cair, consultamos antes de reenviar.</span></div></div>
@@ -808,9 +803,10 @@
               </section>
               <aside class="mod-col" aria-label="Antes de enviar">
                 <section class="card onb-sec"><h2 class="onb-h2">Antes de enviar</h2><p class="p2-p">Cobrança, cancelamento e reembolso seguem a mesma regra da oferta.</p><button type="button" class="btn btn--outline" onClick="{{v.openPay}}">Ler Pagamentos e reembolsos</button></section>
+                <section class="card onb-sec"><h2 class="onb-h2">Corrigir ou remover um perfil</h2><p class="p2-p">Use o botão na página do próprio perfil: o pedido gera um protocolo e não precisa de conta.</p></section>
+                <sc-if value="{{v.realSupport}}" hint-placeholder-val="{{ true }}"><section class="card onb-sec"><h2 class="onb-h2">Também pelo Instagram</h2><p class="p2-p">Se preferir, escreva para <b>@99coach.oficial</b>.</p><a class="btn btn--outline" href="https://www.instagram.com/99coach.oficial/" target="_blank" rel="noopener">Abrir @99coach.oficial</a></section></sc-if>
               </aside>
             </div>
-            </sc-if>
           </sc-if>
 
           <!-- acompanhamento do caso -->
@@ -821,17 +817,19 @@
               <div class="mod-col">
                 <sc-if value="{{v.hasCase}}" hint-placeholder-val="{{ true }}">
                   <section class="card onb-sec" aria-label="Solicitação {{v.cs.id}}">
-                    <sc-if value="{{v.justSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="p2-alert__b"><b>Solicitação recebida</b><span>Guarde o protocolo {{v.cs.id}}. Enviamos uma cópia para {{v.cs.email}}.</span></div></div></sc-if>
+                    <sc-if value="{{v.justSent}}" hint-placeholder-val="{{ false }}"><div class="alert alert--ok" role="status"><i class="ic ic--sm i-check" aria-hidden="true"></i><div class="p2-alert__b"><b>Solicitação recebida</b><span>{{v.sentNote}}</span></div></div></sc-if>
                     <div class="kv"><div class="kv__r"><span>Protocolo</span><b class="p2-mono">{{v.cs.id}}</b></div><div class="kv__r"><span>Assunto</span><b>{{v.cs.subject}}</b></div><div class="kv__r"><span>Aberto em</span><b>{{v.cs.at}}</b></div><div class="kv__r"><span>Situação</span><b><span class="badge badge--info">{{v.cs.status}}</span></b></div></div>
+                    <sc-if value="{{v.hasReply}}" hint-placeholder-val="{{ false }}"><div class="p2-reply"><span class="label">Resposta da equipe</span><p class="p2-p">{{v.reply}}</p></div></sc-if>
                     <ol class="p2-steps" aria-label="Etapas"><sc-for list="{{v.steps}}" as="s" hint-placeholder-count="3"><li class="{{s.cls}}"><span class="p2-step__n" aria-hidden="true">{{s.n}}</span><span>{{s.label}}</span></li></sc-for></ol>
                     <p class="p2-note">Abrir um caso não significa que ele já foi resolvido. A resposta chega no e-mail informado; o que for analisado no atendimento não fica público.</p>
                   </section>
                 </sc-if>
+                <sc-if value="{{v.loadingCase}}" hint-placeholder-val="{{ false }}"><div class="card onb-sec" role="status">Consultando sua solicitação…</div></sc-if>
                 <sc-if value="{{v.noCase}}" hint-placeholder-val="{{ false }}"><div class="emp"><span class="emp__ic"><i class="ic ic--sm i-file" aria-hidden="true"></i></span><b>Nenhuma solicitação aberta</b><span class="p2-emp__t">Consulte pelo protocolo ou fale com o suporte.</span></div></sc-if>
               </div>
               <aside class="mod-col">
                 <section class="card onb-sec" aria-label="Consultar protocolo"><h2 class="onb-h2">Consultar outro protocolo</h2>
-                  <div class="field"><label class="field__label" for="p2-aj-prot">Protocolo</label><div class="input"><input id="p2-aj-prot" type="text" placeholder="99C-0000-0000" autocomplete="off" value="{{v.lookQ}}" onInput="{{v.setLook}}"></div><sc-if value="{{v.hasLookErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.lookErr}}</span></sc-if></div>
+                  <div class="field"><label class="field__label" for="p2-aj-prot">Protocolo</label><div class="input"><input id="p2-aj-prot" type="text" placeholder="{{v.lookPh}}" autocomplete="off" value="{{v.lookQ}}" onInput="{{v.setLook}}"></div><sc-if value="{{v.hasLookErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">{{v.lookErr}}</span></sc-if></div>
                   <button type="button" class="btn btn--outline" onClick="{{v.look}}">Consultar</button>
                 </section>
               </aside>

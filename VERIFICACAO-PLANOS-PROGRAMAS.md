@@ -192,3 +192,55 @@ Foram lidas todas as pranchas de programas, ofertas, compra, entrega e financeir
 - **Cotação vencida em compra única,** com aceite da diferença.
 - **Canal nativo** com compra de conteúdo de terceiros desabilitada (R05).
 - **Concessão gratuita:** falta o estado "concedido, aplicando acesso".
+
+---
+
+## 6. Correções feitas em 17/11 ("corrija tudo")
+
+Depois desta verificação, tudo o que estava nas seções 2, 3 e 5 foi corrigido. Situação atual:
+
+### 6.1 Conta real (banco e servidor)
+
+| Critério | Antes | Agora |
+|---|---|---|
+| P20 Conteúdo privado | Aberto para visitantes | Fechado: só o dono lê; o comprador recebe pela função `my_programs` |
+| P01 Criar só com título e objetivo | Exigia semanas, treinos e preço | Rascunho com título e objetivo; o resto é preenchido depois |
+| P05 Duas edições ao mesmo tempo | Sobrescrevia | Cada gravação confere a revisão; se outra aba gravou antes, a tela avisa e não perde nada |
+| P06 / P07 / P11 Estrutura e prontidão | Texto único | Conteúdo em sessões com exercícios, séries, repetições, descanso e vídeo; formato "sessões" ou "curso"; publicar só com tudo pronto |
+| P13 Prévia do aluno | Não existia | Prévia da versão em edição, sem gravar progresso |
+| P14 Publicar e vender separados | Publicar já vendia | Publicar cria uma versão; a venda é ligada à parte, com preço; o perfil só mostra programa à venda |
+| P16 Versão comprada preservada | Editar mudava o que o aluno via | Cada versão publicada fica gravada e não pode ser alterada; o aluno vê a versão que comprou e é avisado se houver uma mais nova |
+| P17 / P18 Acesso gratuito e duas origens | Não existia | Cortesia por e-mail do aluno; revogar a cortesia não mexe no acesso comprado |
+| O07 / O08 Vaga antes de cobrar | Conferida depois do pagamento | Conferida e reservada por 35 minutos **antes** de abrir o pagamento; sem vaga, o aluno vê "nada foi cobrado" |
+| C18 Renovação mensal | Cobrança única | Acompanhamento mensal vira assinatura no cartão (Stripe), com comissão de 5% em cada mês; o aluno desliga ou religa a renovação na tela "Hoje"; renovação paga gera pedido novo no extrato; assinatura encerrada encerra o vínculo |
+
+Também corrigido: um erro na própria correção de renovação (o banco guardava a unidade como `mes`, e a conferência procurava `mês`). Achado nesta revisão, antes de qualquer cobrança real.
+
+Funções publicadas: `pagamentos` (versão 11) e `stripe-webhook` (versão 11).
+
+### 6.2 Telas de demonstração (DS no app)
+
+Os 10 desvios da seção 3 foram corrigidos e são conferidos pelo teste `tests/telas-programas.mjs`.
+
+### 6.3 Canvas do DS
+
+As pranchas foram ajustadas para as divergências da seção 5.2:
+- **Canvas original:** Hub-H07, Hub-H09, FT-1, FT-2, peças do Financeiro, PR-3, PR-4, TRE-5, TRE-6, TRE-7, Decisões, FC-1, FC-2, FC-3, PUB-2, PUB-4 e ALU-2.
+- **"Versões finais":** Hubs-4.
+
+**Atenção:** alguns números de exemplo nas pranchas foram criados só para ilustrar e não são preços reais:
+- a tarifa do processador de 4%;
+- o adicional e o cupom do PR14.
+
+Troque-os pelos valores verdadeiros quando tiver.
+
+### 6.4 O que continua dependendo de você
+
+- **Ativar o recebimento no Stripe:** cada treinador precisa fazer isso. Hoje as duas contas estão com cobrança desligada.
+- **Testar uma compra de ponta a ponta em ambiente de teste:**
+  - programa: compra, acesso e reembolso;
+  - acompanhamento mensal: pagar, desligar a renovação e religar.
+- **No Stripe, ligar estes avisos no endereço de avisos de Connect:**
+  - `invoice.paid`;
+  - `customer.subscription.updated`;
+  - `customer.subscription.deleted`.

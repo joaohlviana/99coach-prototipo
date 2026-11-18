@@ -1650,6 +1650,7 @@ button.lrow{width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer
 @keyframes p2spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.p2-spin{animation:none}}
 .p2-steps{list-style:none;margin:0;padding:0;display:flex;gap:8px}
+.p2-reply{border-left:3px solid var(--line);padding:8px 12px;margin:8px 0;display:flex;flex-direction:column;gap:4px}
 .p2-step{flex:1;display:flex;align-items:center;gap:8px;padding:10px;border-radius:var(--r-sm);background:var(--paper-2);font-size:13px;font-weight:600;color:var(--text-3);min-width:0}
 .p2-step__n{width:24px;height:24px;border-radius:50%;background:var(--paper);display:inline-flex;align-items:center;justify-content:center;font:700 12px var(--font);flex:none}
 .p2-step.is-done{color:var(--fg)}

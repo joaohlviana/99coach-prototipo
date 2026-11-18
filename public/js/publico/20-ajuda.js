@@ -65,7 +65,11 @@
       var q = g('q', scn === 'semres' ? 'reembolso em dobro' : '');
       var cat = g('cat', 'todas');
       var lang = g('lang', scn === 'traducao' ? 'en' : 'pt');
-      var caseId = g('caseId', '99C-2610-3187');
+      // site real: o chamado vai para o banco (submit_support_case) e o protocolo fica guardado neste aparelho com a chave de consulta
+      var real = !document.documentElement.classList.contains('demo'), C = window.CONTA;
+      var LS = function (k, v) { try { if (v === undefined) return window.localStorage.getItem(k); window.localStorage.setItem(k, v); } catch (_) { return null; } };
+      var mine = {}; try { mine = JSON.parse(LS('c99.suporte') || '{}') || {}; } catch (_) { mine = {}; }
+      var caseId = g('caseId', real ? (Object.keys(mine).sort(function (a, b) { return String(mine[b].at).localeCompare(String(mine[a].at)); })[0] || '') : '99C-2610-3187');
       var draft = { subject: g('subject', scn === 'naoenviou' || scn === 'enviando' || scn === 'desconhecido' ? 'Pagamento' : ''), email: g('email', scn === 'naoenviou' || scn === 'enviando' || scn === 'desconhecido' ? 'visitante@exemplo.com' : ''), text: g('text', scn === 'naoenviou' || scn === 'enviando' || scn === 'desconhecido' ? 'A cobrança de outubro apareceu duas vezes no meu cartão.' : '') };
       var err = g('err', {});
       var sending = scn === 'enviando';
@@ -83,11 +87,37 @@
         if (!P2.email(draft.email)) e.email = 'Informe um e-mail válido para receber a resposta.';
         if (String(draft.text).trim().length < 10) e.text = 'Conte em poucas palavras o que aconteceu (mínimo 10 caracteres).';
         if (Object.keys(e).length) { ctx.setUi({ err: e }); return; }
+        if (real) return sendReal();
         var id = P2.protocol();
         DB.p2_casos.unshift({ id: id, subject: draft.subject, email: draft.email, text: draft.text, at: '26/10 ' + U.now(), status: 'Recebida' });
         if (ctx.scn) ctx.scenario('');
         ctx.setUi({ view: 'track', caseId: id, err: {}, subject: '', email: '', text: '', justSent: true });
       };
+
+      var ERR = { relato_curto: 'Conte em poucas palavras o que aconteceu (mínimo 10 caracteres).', email_invalido: 'Informe um e-mail válido para receber a resposta.', assunto_obrigatorio: 'Escolha o assunto.', limite_de_pedidos: 'Você já tem 5 solicitações abertas com este e-mail. Aguarde a resposta antes de abrir outra.' };
+      var mkKey = function () { var a = new Uint8Array(24); (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(a) : a.forEach(function (_, i) { a[i] = Math.random() * 256; }); return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); };
+      var sendReal = function () {
+        if (ui.busy) return;
+        var sig = draft.subject + '|' + draft.email + '|' + draft.text;
+        // a mesma chave enquanto a pessoa repete o MESMO envio: resposta perdida não abre dois chamados
+        var k = ui.pendKey && ui.pendFor === sig ? ui.pendKey : mkKey();
+        ctx.setUi({ busy: true, sendErr: '', pendKey: k, pendFor: sig });
+        C.rpc('submit_support_case', { p_subject: draft.subject, p_email: String(draft.email).trim(), p_body: String(draft.text).trim(), p_key: k }).then(function (r) {
+          var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
+          if (!r.ok || !d || !d.protocol) { var m = String(r.msg || ''), t = ''; for (var x in ERR) if (m.indexOf(x) >= 0) t = ERR[x];
+            return ctx.setUi({ busy: false, sendErr: t || (r.offline ? 'Sem conexão: sua mensagem foi mantida. Tente de novo.' : 'Não foi possível enviar agora. Sua mensagem foi mantida; tente de novo.') }); }
+          mine[d.protocol] = { key: k, email: String(draft.email).trim(), subject: draft.subject, at: new Date().toISOString() }; LS('c99.suporte', JSON.stringify(mine));
+          ctx.setUi({ busy: false, view: 'track', caseId: d.protocol, rc: { protocol: d.protocol, subject: draft.subject, status: d.status, created_at: mine[d.protocol].at }, rcFor: d.protocol, err: {}, subject: '', email: '', text: '', justSent: true, pendKey: '', pendFor: '' });
+        });
+      };
+      // consulta do chamado real (só com a chave guardada neste aparelho)
+      if (real && view === 'track' && caseId && mine[caseId] && ui.rcFor !== caseId && ui.rcAsk !== caseId) {
+        ctx.setUi({ rcAsk: caseId });
+        C.rpc('support_case_status', { p_protocol: caseId, p_key: mine[caseId].key }).then(function (r) {
+          var d = r.ok && r.data ? (Array.isArray(r.data) ? r.data[0] : r.data) : null;
+          ctx.setUi({ rc: d && d.protocol ? d : null, rcFor: caseId, rcErr: !r.ok });
+        });
+      }
 
       // busca: título, resumo e seções, sem acento
       var nq = U.norm(q);
@@ -122,17 +152,22 @@
       var artLinks = art.links.map(function (l) { return { label: l[0], go: nav(l[1]) }; });
 
       // caso acompanhado
-      var cs = DB.find('p2_casos', caseId);
+      var ST = { recebido: 'Recebida', em_andamento: 'Em análise', respondido: 'Respondida', encerrado: 'Encerrada' };
+      var rc = real && ui.rcFor === caseId ? ui.rc : null;
+      var cs = real ? (rc ? { id: rc.protocol, subject: rc.subject, at: new Date(rc.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }), status: ST[rc.status] || rc.status, email: (mine[caseId] || {}).email || '', reply: rc.reply || '' } : null) : DB.find('p2_casos', caseId);
       var lookQ = g('lookQ', '');
       var lookErr = g('lookErr', '');
       var steps = ['Recebida', 'Em análise', 'Respondida'].map(function (s, i) {
-        var at = cs ? ['Recebida', 'Em análise', 'Respondida'].indexOf(cs.status) : -1;
+        var at = cs ? (cs.status === 'Encerrada' ? 2 : ['Recebida', 'Em análise', 'Respondida'].indexOf(cs.status)) : -1;
         return { label: s, cls: 'p2-step' + (i <= at ? ' is-done' : '') + (i === at ? ' is-cur' : ''), n: String(i + 1) };
       });
 
       return {
         // suporte de verdade, por enquanto, é o Instagram oficial; o formulário com protocolo só existe na demonstração
-        demoSupport: document.documentElement.classList.contains('demo'), realSupport: !document.documentElement.classList.contains('demo'),
+        demoSupport: !real, realSupport: real,
+        sendErr: ui.sendErr || '', hasSendErr: !!ui.sendErr, sendLabel: ui.busy ? 'Enviando…' : 'Enviar solicitação',
+        reply: (cs && cs.reply) || '', hasReply: !!(cs && cs.reply), lookPh: real ? 'S-0000000' : '99C-0000-0000',
+        sentNote: real ? 'Guarde o protocolo ' + ((cs && cs.id) || '') + '. A equipe responde no e-mail ' + ((cs && cs.email) || 'informado') + ', e a situação aparece aqui neste aparelho.' : 'Guarde o protocolo ' + ((cs && cs.id) || '') + '. Enviamos uma cópia para ' + ((cs && cs.email) || '') + '.',
         isIndex: view === 'index', isArt: view === 'art', isContact: view === 'contact', isTrack: view === 'track',
         alerts: alerts, hasAlerts: alerts.length > 0,
         // índice
@@ -157,13 +192,17 @@
         emailCls: 'input' + (err.email ? ' is-err' : ''), textCls: 'input input--area' + (err.text ? ' is-err' : ''),
         sending: sending, notSending: !sending, send: send,
         // acompanhamento
-        hasCase: !!cs && scn !== 'casoindisp', noCase: !cs && scn !== 'casoindisp',
+        hasCase: !!cs && scn !== 'casoindisp', noCase: !cs && scn !== 'casoindisp' && !(real && caseId && mine[caseId] && ui.rcFor !== caseId), loadingCase: real && !!caseId && !!mine[caseId] && ui.rcFor !== caseId,
         cs: cs ? { id: cs.id, subject: cs.subject, at: cs.at, status: cs.status, email: cs.email } : { id: '', subject: '', at: '', status: '', email: '' },
         steps: steps, justSent: !!g('justSent', false),
         openTrack: function () { ctx.setUi({ view: 'track' }); },
         lookQ: lookQ, setLook: function (e) { ctx.setUi({ lookQ: U.val(e), lookErr: '' }); },
         look: function () {
           var id = String(lookQ).trim().toUpperCase();
+          if (real) {
+            if (!mine[id]) { ctx.setUi({ lookErr: 'Este protocolo não foi aberto neste aparelho. Por segurança, a consulta só funciona no aparelho em que você enviou. Se precisar, escreva para @99coach.oficial no Instagram com o protocolo.' }); return; }
+            ctx.setUi({ caseId: id, lookErr: '', justSent: false, rcAsk: '' }); return;
+          }
           var f = DB.find('p2_casos', id);
           if (!f) { ctx.setUi({ lookErr: 'Protocolo não encontrado. Confira o formato 99C-0000-0000 no e-mail que enviamos.' }); return; }
           ctx.setUi({ caseId: id, lookErr: '', justSent: false });

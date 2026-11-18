@@ -5,6 +5,7 @@
 //   estado   -> situação da conta de recebimento do treinador
 //   ativar   -> cria a conta do treinador no Stripe (se não existir) e devolve o link de cadastro do Stripe
 //   checkout -> cria a página de pagamento do pedido aceito (o valor e a comissão vêm do banco, nunca do navegador)
+//   renovacao -> o aluno desliga ou religa a renovação mensal do acompanhamento
 //   reembolsar, garantia -> devolve o pagamento de um pedido (treinador; ou aluno em até 7 dias)
 //   pro_estado, pro_assinar, pro_cancelar, pro_retomar -> assinatura Pro do treinador
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -104,8 +105,25 @@ Deno.serve(async (req: Request) => {
     const acc = await stripe(key, "GET", `/v1/accounts/${c.sellerAccount}`);
     const tipos = methods.length ? methods : ["card"];
     if (acc.ok && caps(acc.data).pix_payments === "active") tipos.push("pix");
+    // acompanhamento mensal: assinatura no Stripe (renova todo mês até o aluno cancelar a renovação). Só cartão.
+    // A página de pagamento vence com a reserva de vaga (30 minutos).
+    const expira = Math.floor(Date.now() / 1000) + 31 * 60;
+    if (c.recurring) {
+      const sr = await stripe(key, "POST", "/v1/checkout/sessions", {
+        mode: "subscription", client_reference_id: c.order, locale: "pt-BR", expires_at: expira,
+        line_items: [{ quantity: 1, price_data: { currency: String(c.currency).toLowerCase(), unit_amount: c.amountCents, recurring: { interval: "month" }, product_data: { name: c.description } } }],
+        payment_method_types: ["card"],
+        subscription_data: { application_fee_percent: Number(c.feeBps) / 100, metadata: { intent, order: c.order } },
+        metadata: { intent, order: c.order },
+        success_url: `${SITE}/app#aluno-hoje`, cancel_url: `${SITE}/app#aluno-hoje`,
+      }, { account: c.sellerAccount, idem: `checkout-sub:${intent}` });
+      if (!sr.ok || !sr.data.url) return json({ ok: false, motivo: "stripe_recusou_cobranca", detalhe: sr.data?.error?.code ?? sr.status });
+      const att2 = await db.rpc("srv_attach_session", { p_intent: intent, p_session: sr.data.id });
+      if (att2.error) return json({ ok: false, motivo: "nao_registrou_cobranca" }, 500);
+      return json({ ok: true, url: sr.data.url, recorrente: true });
+    }
     const s = await stripe(key, "POST", "/v1/checkout/sessions", {
-      mode: "payment", client_reference_id: c.order, locale: "pt-BR",
+      mode: "payment", client_reference_id: c.order, locale: "pt-BR", expires_at: expira,
       line_items: [{ quantity: 1, price_data: { currency: String(c.currency).toLowerCase(), unit_amount: c.amountCents, product_data: { name: c.description } } }],
       payment_method_types: tipos,
       payment_intent_data: { application_fee_amount: c.applicationFeeCents, metadata: { intent, order: c.order } },
@@ -117,6 +135,20 @@ Deno.serve(async (req: Request) => {
     const att = await db.rpc("srv_attach_session", { p_intent: intent, p_session: s.data.id });
     if (att.error) return json({ ok: false, motivo: "nao_registrou_cobranca" }, 500);
     return json({ ok: true, url: s.data.url });
+  }
+  // ---------- Renovação do acompanhamento: o aluno cancela ou religa a renovação (o acesso segue até o fim do período pago) ----------
+  if (acao === "renovacao") {
+    const id = String(body.assinatura ?? "");
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ ok: false, motivo: "assinatura_invalida" }, 400);
+    const { data: x } = await db.rpc("srv_subscription_for", { p_id: id, p_user: user.id });
+    if (!x || !x.sub) return json({ ok: false, motivo: "assinatura_nao_encontrada" }, 404);
+    if (x.status === "encerrada") return json({ ok: false, motivo: "assinatura_encerrada" });
+    const cancelar = body.cancelar !== false;
+    const r = await stripe(key, "POST", `/v1/subscriptions/${x.sub}`, { cancel_at_period_end: cancelar }, { account: x.account });
+    if (!r.ok) return json({ ok: false, motivo: "stripe_recusou" });
+    await db.rpc("srv_set_cancel", { p_id: id, p_cancel: !!r.data.cancel_at_period_end });
+    const end = r.data.current_period_end ?? r.data.items?.data?.[0]?.current_period_end ?? null;
+    return json({ ok: true, cancelada: !!r.data.cancel_at_period_end, ate: end ? new Date(end * 1000).toISOString() : null });
   }
   // ---------- Reembolso ----------
   // reembolsar -> o treinador devolve o pagamento inteiro de um pedido seu
