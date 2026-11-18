@@ -25,7 +25,7 @@ export function Rodape() {
         <div className="ssr-foot__brand"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="110" height="28" />
           <p>Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p>
           <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href="/en" hrefLang="en" lang="en">English</a><a href="/es" hrefLang="es" lang="es">Español</a></p></div>
-        <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a></div>
+        <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a><a href="/worldwide">Worldwide</a></div>
         <div><b>Para treinadores</b><a href="/sou-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
         <div><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/treinadores/corrida">Corrida</a></div>
         <div><b>Ajuda</b><a href="/ajuda">Central de ajuda</a><a href="/ajuda/termos">Termos</a><a href="/ajuda/privacidade">Privacidade</a></div>
@@ -73,7 +73,7 @@ export default function Shell({ route, children, soServidor, espera }) {
 
 // cartão de treinador nas listas do servidor: só o que o catálogo afirma (nome, especialidade, cidade, formato)
 export function Cartao({ t }) {
-  const onde = [t.pres ? 'Presencial em ' + t.city : '', t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
+  const onde = [t.pres ? 'Presencial em ' + t.city : (t.local ? 'Presencial em ' + t.local : ''), t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
   return (
     <li className="ssr-card">
       <a className="ssr-ph" href={'/treinador/' + t.id} tabIndex={-1} aria-hidden="true"><span>{t.ini || t.name.slice(0, 1)}</span>{t.photo ? <img src={t.photo} alt="" width="320" height="320" loading="lazy" decoding="async" /> : null}</a>

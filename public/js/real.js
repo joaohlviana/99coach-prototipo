@@ -22,7 +22,7 @@
   function foto(v) { return !v ? '' : (/^https?:/.test(v) ? v : FOTOS + (v.indexOf('legado/') === 0 ? v : 'legado/' + v)); }
   function norm(r) {
     // linha compacta (amostra / sync) ou item da API
-    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], city: r[6] || '', pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '', own: !!r[9] && r[9] !== 'importado' };
+    if (Array.isArray(r)) return { id: r[0], name: r[1], ini: r[2], photo: foto(r[3]), ext: r[10] || '', spec: r[4] || '', raw: r[5] || [], pais: r[11] || '', city: r[11] ? (r[12] || '') : (r[6] || ''), /* fora do Brasil: "Cidade, País" */ pres: (r[7] || '').indexOf('p') >= 0, onl: (r[7] || '').indexOf('o') >= 0, pub: r[8] || '', own: !!r[9] && r[9] !== 'importado' };
     return { id: r.slug, name: r.name, ini: r.initials || '', photo: (r.imported === false || String(r.photo || '').indexOf(FOTOS) === 0) ? (r.photo || '') : '', spec: r.specialty || '', raw: r.sports || [], city: r.city && r.city.label || '', pres: (r.formats || []).indexOf('presencial') >= 0, onl: (r.formats || []).indexOf('online') >= 0, pub: r.publishedAt || '', own: r.imported === false };
   }
   // perfis tirados do ar depois do último build (pedido de remoção ou decisão da equipe) somem na hora
@@ -77,7 +77,7 @@
       if (!items.length) return null;
       return cache.esp || (cache.esp = items.map(function (t, i) {
         var f = []; if (t.pres && t.city) f.push('Presencial'); if (t.onl) f.push('Online'); /* sem formato informado: não inferimos 'online' */
-        return { id: t.id, name: t.name, ph: t.photo, ini: t.ini, spec: t.spec, mods: t.sports.map(function (s) { return LABEL[s]; }), city: t.city, area: '', fmts: f, langs: ['português'], avail: '', ad: '', imported: true, rating: '', reviews: 0,
+        return { id: t.id, name: t.name, ph: t.photo, ini: t.ini, spec: t.spec, mods: t.sports.map(function (s) { return LABEL[s]; }), city: t.city, area: '', fmts: f, langs: t.pais ? [] : ['português'], pais: t.pais || '', avail: '', ad: '', imported: true, rating: '', reviews: 0,
           pub: t.pub, rank: i + 1, pos: [12 + (i * 37) % 76, 14 + (i * 53) % 70], trust: [['Perfil importado · não confirmado pelo profissional', 'imp']] };
       }));
     },
@@ -109,7 +109,7 @@
       if (plain(q)) { var k = plain(q); L = pool.filter(function (c) { return plain(c).indexOf(k) >= 0; }).slice(0, 12); }
       else if (uf) { L = pool.slice(0, 40); }
       else { L = cache.cit.slice(); if (keep && L.indexOf(keep) < 0) L.push(keep); }
-      return L.map(function (c) { var uf = c.split(', ')[1] || ''; return [c, (UF[uf] || uf) + ' · Brasil']; });
+      return L.map(function (c) { var uf = c.split(', ').slice(-1)[0] || ''; return [c, UF[uf] ? UF[uf] + ' · Brasil' : uf]; });
     },
     // estados com profissional, do que tem mais para o que tem menos
     ufs: function () {

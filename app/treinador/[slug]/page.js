@@ -19,7 +19,7 @@ function textos(t, esp) {
   const serv = servicoDe(principal && principal.slug, principal ? principal.label : (t.spec || ''));
   const nome = nomeLimpo(t.name);
   const curto = nome.split(' ').length > 2 ? nome.split(' ')[0] + ' ' + nome.split(' ').slice(-1)[0] : nome;
-  const onde = t.pres ? ' em ' + cidadeUF(t.city) : (t.onl ? ' online' : ''), ondeC = t.pres ? ' em ' + curta(t.city) : (t.onl ? ' online' : '');
+  const onde = t.pres ? ' em ' + cidadeUF(t.city) : (t.local ? ' em ' + t.local : (t.onl ? ' online' : '')), ondeC = t.pres ? ' em ' + curta(t.city) : (t.local ? ' em ' + curta(t.local) : (t.onl ? ' online' : ''));
   const titulo = caber(`${nome}: ${serv}${onde}`, `${nome}: ${serv}${ondeC}`, `${curto}: ${serv}${onde}`, `${curto}: ${serv}${ondeC}`, `${curto}: ${principal ? principal.label : 'Treinador'}${ondeC}`, `${curto.split(' ')[0]}: ${principal ? principal.label : 'Treinador'}${ondeC}`);
   const outros = esp.slice(1, 4).map((s) => s.label);
   const fmt = t.pres && t.onl ? 'Atende presencialmente e online' : (t.pres ? 'Atendimento presencial' : (t.onl ? 'Atendimento online' : ''));
@@ -51,7 +51,7 @@ export default async function Page({ params }) {
   const pessoa = {
     '@type': 'Person', name: nomeLimpo(t.name), url, description: resumoLd,
     ...(t.spec ? { jobTitle: t.spec } : {}), ...(t.photo ? { image: t.photo } : {}), ...(t.ig ? { sameAs: ['https://www.instagram.com/' + t.ig + '/'] } : {}), ...(esp.length ? { knowsAbout: esp.map((s) => s.label) } : {}),
-    ...(t.pres ? { address: { '@type': 'PostalAddress', addressLocality: curta(t.city), addressRegion: (t.city.split(', ')[1] || ''), addressCountry: 'BR' } } : {})
+    ...(t.pres ? { address: { '@type': 'PostalAddress', addressLocality: curta(t.city), addressRegion: (t.city.split(', ')[1] || ''), addressCountry: 'BR' } } : (t.pais ? { address: { '@type': 'PostalAddress', addressLocality: curta(t.local), addressCountry: t.pais } } : {}))
   };
   const trilha = [{ name: 'Início', item: SITE + '/' }].concat(principal ? [{ name: principal.label, item: SITE + '/treinadores/' + principal.slug }] : [], principal && cid ? [{ name: t.city, item: SITE + '/treinadores/' + principal.slug + '/' + cid }] : [], [{ name: t.name, item: url }]);
   const ld = [
@@ -69,7 +69,7 @@ export default async function Page({ params }) {
         <div>
           <h1>{t.name}</h1>
           {t.spec ? <p>{t.spec}</p> : null}
-          <p>{[t.pres ? 'Atende presencialmente em ' + t.city : '', t.onl ? 'Atende online' : ''].filter(Boolean).join(' · ') || 'Local de atendimento não informado'}</p>
+          <p>{[t.pres ? 'Atende presencialmente em ' + t.city : (t.local ? 'Atende presencialmente em ' + t.local : ''), t.onl ? 'Atende online' : ''].filter(Boolean).join(' · ') || 'Local de atendimento não informado'}</p>
         </div>
       </section>
       {t.teste ? <section className="ssr-aviso" aria-label="Perfil de teste"><p><b>Perfil de teste.</b> Dados inventados para conferir as telas da 99coach. Não é um profissional real e não aparece na busca.</p></section> : null}

@@ -53,9 +53,9 @@ class Component extends DCLogic {
     const PRD = !document.documentElement.classList.contains('demo');
     // cidade escolhida fica guardada (cookie); a primeira leitura desta tela não grava nada
     if (PRD && window.ONDE) { const c0 = S.city || ''; if (this.__c0 === undefined) this.__c0 = c0; else if (this.__c0 !== c0) { this.__c0 = c0; window.ONDE.set(c0); } }
-    const cityTxt = !S.city ? (PRD ? 'Todo o Brasil' : 'sem cidade') : (/^UF:/.test(S.city) ? S.city.slice(3) : S.city);
+    const cityTxt = !S.city ? (PRD ? 'Todo o Brasil' : 'sem cidade') : (S.city === 'MUNDO' ? 'Worldwide' : (/^UF:/.test(S.city) ? S.city.slice(3) : S.city));
     const CIT = (window.REAL && window.REAL.cities(S.city, S.cq)) || [['Londrina, PR', 'Paraná · Brasil'], ['Cambé, PR', 'Paraná · Brasil'], ['Maringá, PR', 'Paraná · Brasil'], ['Tamarana, PR', 'Paraná · Brasil']];
-    const cities = (PRD && !S.cq ? [['', 'Brasil']] : []).concat(CIT).map(([c, n]) => ({ label: c || 'Todo o Brasil', note: n, cls: 'opt' + ((S.city || '') === c ? ' is-on' : ''), pick: () => set({ city: c || null, hidden: {}, sheet: null, loc: 0, cq: '' }), pick2: () => set({ city: c || null, hidden: {} }) }));
+    const cities = (PRD && !S.cq ? [['', 'Brasil'], ['MUNDO', 'Todos os países']] : []).concat(CIT).map(([c, n]) => ({ label: c === 'MUNDO' ? 'Worldwide' : (c || 'Todo o Brasil'), note: n, cls: 'opt' + ((S.city || '') === c ? ' is-on' : ''), pick: () => set({ city: c || null, hidden: {}, sheet: null, loc: 0, cq: '' }), pick2: () => set({ city: c || null, hidden: {} }) }));
     const cityLabel = PRD ? cityTxt : (S.city || 'Escolher cidade');
     const modeLabel = { presencial: 'Presencial', online: 'Online', qualquer: 'Qualquer formato' }[S.mode];
     const setMode = (m) => () => set({ mode: m, hidden: {}, toast: null });
@@ -79,7 +79,8 @@ class Component extends DCLogic {
     // treinadores reais (base importada); os de exemplo ficam só para as situações de demonstração
     const T = (window.REAL && window.REAL.home()) || TD;
     const byId = (id) => T.find((t) => t.id === id) || TD.find((t) => t.id === id);
-    const inCity = (t) => !S.city ? (PRD && !!t.city) : (/^UF:/.test(S.city) ? String(t.city || '').slice(-4) === ', ' + S.city.slice(3) : t.city === S.city);
+    // "Todo o Brasil": só cidades do Brasil ("Cidade, UF"); "Worldwide": qualquer país
+    const inCity = (t) => !S.city ? (PRD && /, [A-Z]{2}$/.test(t.city || '')) : S.city === 'MUNDO' ? !!t.city : (/^UF:/.test(S.city) ? String(t.city || '').slice(-4) === ', ' + S.city.slice(3) : t.city === S.city);
     const sportOk = (t) => t.sports.indexOf(S.sport) >= 0;
     const visitor = ['vinculo', 'dois', 'pendente'].indexOf(S.scen) < 0, logged = !visitor;
     const offerFor = (t, ctx) => (ctx === 'online' ? t.offO : (ctx === 'presencial' ? t.offP : ((t.pres && inCity(t)) ? t.offP : t.offO))) || null;
