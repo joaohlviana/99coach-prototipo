@@ -5,7 +5,8 @@ import { todos, esportes, cidades, slug, plural } from '../../lib/catalogo.js';
 export const dynamic = 'force-dynamic';
 export async function generateMetadata({ searchParams }) {
   const q = String((await searchParams).q || '').trim().slice(0, 80);
-  return { title: q ? `Busca: ${q}` : 'Buscar treinadores', robots: { index: false, follow: true }, alternates: { canonical: '/buscar' } };
+  // página pública: indexável; as variações com ?q= apontam para /buscar como canônica
+  return { title: q ? `Busca: ${q}` : 'Buscar treinadores', alternates: { canonical: '/buscar' } };
 }
 
 export default async function Buscar({ searchParams }) {
