@@ -25,7 +25,7 @@ declare
   v_title text; v_spec text; v_pitch text; v_handle text; v_photo text;
   v_followers int; v_followers_at timestamptz; v_pub timestamptz; v_upd timestamptz;
   v_existe record; v_imp record; v_ini text;
-  n_pub int := 0; n_ret int := 0; n_pulado int := 0; motivos jsonb := '{}'::jsonb; fotos jsonb := '[]'::jsonb;
+  n_pub int := 0; n_ret int := 0; n_pulado int := 0; motivos jsonb := '{}'::jsonb; fotos jsonb := '[]'::jsonb; erros jsonb := '[]'::jsonb;
 begin
   for r in select * from jsonb_array_elements(coalesce(registros, '[]'::jsonb)) loop
     begin
@@ -36,7 +36,8 @@ begin
       v_upd := coalesce((r->>'updatedAt')::timestamptz, now());
 
       if v_slug is null or v_slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$' then
-        n_pulado := n_pulado + 1; motivos := motivos || jsonb_build_object('slug_invalido', coalesce((motivos->>'slug_invalido')::int, 0) + 1); continue;
+        n_pulado := n_pulado + 1; motivos := motivos || jsonb_build_object('slug_invalido', coalesce((motivos->>'slug_invalido')::int, 0) + 1);
+        erros := erros || jsonb_build_array(jsonb_build_object('id', r->>'id', 'erro', 'slug_invalido')); continue;
       end if;
 
       select t.id, t.origin, t.user_id, t.claimed_at into v_existe from public.trainers t where t.id = v_id;
@@ -46,7 +47,8 @@ begin
         n_pulado := n_pulado + 1; motivos := motivos || jsonb_build_object('fora_do_lote', coalesce((motivos->>'fora_do_lote')::int, 0) + 1); continue;
       end if;
       if exists (select 1 from public.trainers t where t.slug = v_slug and t.id <> v_id) then
-        n_pulado := n_pulado + 1; motivos := motivos || jsonb_build_object('slug_em_uso', coalesce((motivos->>'slug_em_uso')::int, 0) + 1); continue;
+        n_pulado := n_pulado + 1; motivos := motivos || jsonb_build_object('slug_em_uso', coalesce((motivos->>'slug_em_uso')::int, 0) + 1);
+        erros := erros || jsonb_build_array(jsonb_build_object('id', r->>'id', 'erro', 'slug_em_uso')); continue;
       end if;
 
       v_visivel := coalesce((r->>'published')::boolean, false)
@@ -146,6 +148,7 @@ begin
       n_pulado := n_pulado + 1;
       motivos := motivos || jsonb_build_object('erro', coalesce((motivos->>'erro')::int, 0) + 1,
                                                'ultimo_erro', left(sqlerrm, 200));
+      erros := erros || jsonb_build_array(jsonb_build_object('id', r->>'id', 'erro', left(sqlerrm, 200)));
     end;
   end loop;
 
@@ -158,7 +161,7 @@ begin
                                 'ultima_chamada', jsonb_build_object('publicados', n_pub, 'retirados', n_ret, 'pulados', n_pulado, 'motivos', motivos, 'em', now()))
    where version = 'legado-sync-v1';
 
-  return jsonb_build_object('publicados', n_pub, 'retirados', n_ret, 'pulados', n_pulado, 'motivos', motivos, 'fotos_pendentes', fotos);
+  return jsonb_build_object('publicados', n_pub, 'retirados', n_ret, 'pulados', n_pulado, 'motivos', motivos, 'erros', erros, 'fotos_pendentes', fotos);
 end $$;
 
 -- foto copiada pela Edge receber-legado
