@@ -1,3 +1,4 @@
+import { languageAlternates } from '../lib/domains.js';
 // Moldura comum: o servidor entrega o conteúdo pronto dentro de #app e o app interativo assume em seguida.
 // `route` diz ao app qual tela abrir (a mesma que o servidor acabou de montar).
 
@@ -18,13 +19,14 @@ export function Topo() {
   );
 }
 
-export function Rodape() {
+export function Rodape({ caminho = "/" }) {
+  const links = languageAlternates(caminho);
   return (
     <footer className="ssr-foot">
       <div className="ssr-foot__grid">
         <div className="ssr-foot__brand"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="110" height="28" />
           <p>Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p>
-          <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href="/en" hrefLang="en" lang="en">English</a><a href="/es" hrefLang="es" lang="es">Español</a></p></div>
+          <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href={links.en} hrefLang="en" lang="en">English</a><a href={links.es} hrefLang="es" lang="es">Español</a></p></div>
         <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a></div>
         <div><b>Para treinadores</b><a href="/app#onboarding-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
         <div><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/treinadores/corrida">Corrida</a></div>
@@ -37,7 +39,7 @@ export function Rodape() {
 }
 
 // soServidor: página que fica só com o HTML do servidor (leve, sem carregar o app); os links levam às páginas interativas
-export default function Shell({ route, children, soServidor, espera }) {
+export default function Shell({ route, children, soServidor, espera, caminho = "/" }) {
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';';
   return (
     <>
@@ -48,10 +50,10 @@ export default function Shell({ route, children, soServidor, espera }) {
       <div id="ssr" className={soServidor ? "ssr ssr--solo" : "ssr"}>
         {/* foto que não carrega some e ficam as iniciais (sem ícone de imagem quebrada) */}
         <script dangerouslySetInnerHTML={{ __html: "document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av,.ssr-perfil'))t.style.visibility='hidden'},true);" }} />
-        <a className="ssr-skip" href="#conteudo-ssr">Pular para o conteúdo</a>
+        <a className="ssr-skip" href={caminho + '#conteudo-ssr'}>Pular para o conteúdo</a>
         <Topo />
         <main id="conteudo-ssr">{children}</main>
-        <Rodape />
+        <Rodape caminho={caminho} />
         {soServidor ? <nav className="ssr-tab" aria-label="Navegação do site">
           <a href="/"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><span>Explorar</span></a>
           <a href="/cidades"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg><span>Cidades</span></a>

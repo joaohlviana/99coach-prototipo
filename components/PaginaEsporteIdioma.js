@@ -1,9 +1,10 @@
+import { INTERNATIONAL_SITE as SITE } from '../lib/domains.js';
 // Página "esporte [na cidade | online]" em inglês ou espanhol. Mesmos dados e regras da versão em português
 // (sem treinador, a página não existe); só a interface muda de idioma.
 import { notFound } from 'next/navigation';
 import ShellIdioma, { CartaoIdioma, PaginacaoIdioma } from './ShellIdioma.js';
 import { dados } from './PaginaEsporte.js';
-import { lista, cidadesDo, esportes, curta, SITE, nomeDoUF, cidadesDoUF } from '../lib/catalogo.js';
+import { lista, cidadesDo, esportes, curta, nomeDoUF, cidadesDoUF } from '../lib/catalogo.js';
 import { t as tr, esporteNome, servico, idiomas, ok } from '../lib/i18n.js';
 
 const POR_PAGINA = 36;
@@ -35,7 +36,7 @@ export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina =
   const pre = '/' + l + '/treinadores/';
   const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: itens.length, itemListElement: naPagina.map((t, i) => ({ '@type': 'ListItem', position: ini + i + 1, url: SITE + '/' + l + '/treinador/' + t.id, name: t.name })) };
   return (
-    <ShellIdioma l={l}>
+    <ShellIdioma l={l} caminho={d.caminho}>
       <nav className="ssr-crumb" aria-label={x.youAreHere}>
         <a href={'/' + l}>{x.home}</a> › {cid || online ? <a href={pre + esp.slug}>{nome}</a> : <span>{nome}</span>}
         {cid ? <> › <span>{cid.label}</span></> : null}{online ? <> › <span>Online</span></> : null}
