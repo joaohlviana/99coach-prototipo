@@ -66,6 +66,7 @@
         <p class="vfm-sub">{{tSub}}</p>
         <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>Escolha uma cidade</b><span>Sem cidade não existe “perto de você”.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
         <sc-if value="{{tEmpty}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-search" aria-hidden="true"></i><b>Ninguém com estes filtros</b><span>{{emptyText}}</span><div class="vfm-row-btns"><sc-for list="{{alts}}" as="a" hint-placeholder-count="2"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{tLoad}}" hint-placeholder-val="{{ false }}"><div class="vfm-list" aria-busy="true" aria-label="Carregando treinadores"><sc-for list="{{skels}}" as="k" hint-placeholder-count="4"><div class="vfm-row vf-sk" aria-hidden="true"><span class="vfm-thumb skel"></span><div class="vfm-row__b" style="flex: 1"><span class="skel vfe-sk" style="width: 60%"></span><span class="skel vfe-sk" style="width: 35%"></span><span class="skel vfe-sk" style="width: 50%"></span></div></div></sc-for></div></sc-if>
         <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">
         <div class="vfm-list vfm-cap4">
           <sc-for list="{{tlist}}" as="t" hint-placeholder-count="4">
@@ -260,6 +261,7 @@
       <div class="card empty" style="align-items: flex-start; text-align: left"><i class="ic  i-search" aria-hidden="true"></i><b>Não encontramos profissionais com estes filtros</b><span>{{emptyText}} Nada muda até você escolher uma alternativa.</span>
         <div class="v4-row" style="gap: 8px; margin-top: 10px"><sc-for list="{{alts}}" as="a" hint-placeholder-count="3"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div>
     </sc-if>
+    <sc-if value="{{tLoad}}" hint-placeholder-val="{{ false }}"><div class="vf-g4" aria-busy="true" aria-label="Carregando treinadores"><sc-for list="{{skels}}" as="k" hint-placeholder-count="4"><div class="vf-tc vf-sk" aria-hidden="true"><div class="vf-tc__m skel"></div><div class="vf-tc__b"><span class="skel vfe-sk" style="width: 60%"></span><span class="skel vfe-sk" style="width: 35%"></span><span class="skel vfe-sk" style="width: 50%"></span></div></div></sc-for></div></sc-if>
     <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">
       <div class="vf-g4">
         <sc-for list="{{tlist}}" as="t" hint-placeholder-count="4">

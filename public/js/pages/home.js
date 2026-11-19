@@ -79,7 +79,7 @@ class Component extends DCLogic {
       { id: 'renata', name: 'Renata Lopes', spec: 'Corrida', city: 'São Paulo, SP', pres: false, onl: true, sports: ['corrida'], photo: B('cdd8dbf615cdeed2e5c5bd489c64e674'), rating: '4,9', n: 44, ver: false, cref: 'CREF informado pela treinadora, ainda não verificado', av: 'yes', avLong: 'Aceita novos alunos (informado em 24/10)', offO: ['Planilha de corrida com ajustes', 'R$ 99', '/ mês'], more: 1 }
     ];
     // treinadores reais (base importada); os de exemplo ficam só para as situações de demonstração
-    const T = (window.REAL && window.REAL.home()) || TD;
+    const T = (window.REAL && window.REAL.home()) || (PRD ? [] : TD);
     const byId = (id) => T.find((t) => t.id === id) || TD.find((t) => t.id === id);
     // "Todo o Brasil": só cidades do Brasil ("Cidade, UF"); "Worldwide": qualquer país
     const inCity = (t) => !S.city ? (PRD && /, [A-Z]{2}$/.test(t.city || '')) : S.city === 'MUNDO' ? !!t.city : (/^UF:/.test(S.city) ? String(t.city || '').slice(-4) === ', ' + S.city.slice(3) : t.city === S.city);
@@ -111,11 +111,15 @@ class Component extends DCLogic {
     if (S.mode === 'presencial') { if (!S.city && !PRD) tNoLoc = true; else main = T.filter((t) => t.pres && inCity(t) && sportOk(t)); }
     else if (S.mode === 'online') main = T.filter((t) => t.onl && sportOk(t));
     else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl));
-    const tEmpty = !tNoLoc && main.length === 0, tHas = main.length > 0;
+    // carregando: esqueletos no lugar dos cartões, até a lista certa chegar (nada de mostrar uns e trocar por outros)
+    const CST = PRD && window.REAL && window.REAL.status ? window.REAL.status() : null;
+    const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && main.length < 4));
+    if (CST && CST.parcial && main.length < 4 && window.REAL.ensure) window.REAL.ensure();
+    const tEmpty = !tNoLoc && !tLoad && main.length === 0, tHas = !tLoad && main.length > 0;
     const tlist = main.slice(0, 4).map((t) => card(t, S.mode));
     const nTot = main.length;
     const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + cityTxt.replace(', PR', '') : 'Treinadores de ' + sportLabel);
-    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : (tHas ? (PRD && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' ? '' : nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ') + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? (S.city && S.city !== 'MUNDO' ? 'presencial em ' + cityTxt + ' e online' : 'presencial e online') : (S.city ? 'presencial' : 'presencial, em todo o Brasil'))) : 'Nenhum perfil com esta combinação.');
+    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : tLoad ? '' : (tHas ? (CST && (CST.base === 'carregando' || CST.parcial) ? '' : nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ') + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? (S.city && S.city !== 'MUNDO' ? 'presencial em ' + cityTxt + ' e online' : 'presencial e online') : (S.city ? 'presencial' : 'presencial, em todo o Brasil'))) : 'Nenhum perfil com esta combinação.');
     const nearCity = S.city === 'Tamarana, PR' ? 'Londrina, PR (cerca de 50 km)' : 'Londrina, PR';
     const alts = [
       { label: 'Ver quem atende online', go: setMode('online') },
@@ -358,7 +362,7 @@ class Component extends DCLogic {
       openEdit: open('edit'), clearSearch: (e) => { if (PRODH) lsSet('c99.tela.busca', null); set(Object.assign({ retCleared: true }, toastAt(e, 'Busca limpa. Seus salvos continuam em Salvos.', { k: 'clear' }))); },
       showRecent: !PRODH && !S.recentCleared, recent, clearRecent: (e) => set(Object.assign({ recentCleared: true }, toastAt(e, 'Vistos recentemente limpos neste aparelho.', { k: 'recent' }))),
       // vitrines
-      tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tlist, alts, emptyText, openOrder: open('order'),
+      tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tLoad, skels: [1, 2, 3, 4], tlist, alts, emptyText, openOrder: open('order'),
       seeAllT: () => window.NAV.go('esporte', {}, this),
       altHas, altNote, altList, altTitle, altSub, altAll, seeAllAlt: () => window.NAV.go('esporte', { fmt: S.mode === 'presencial' ? 'Online' : 'Presencial' }, this),
       pFail, pLoading, pHas, pEmpty, plist, retryP, seeAllP: goto('Programas', 'a lista de programas de ' + sportLabel),

@@ -1571,3 +1571,8 @@ html,body{margin:0;background:#EFEDEA}
 .v4-sheet .field{gap:8px}
 .v4-sheet .btn--lg{height:52px;font-size:15px}
 @media (max-width:599px){.v4-sheet .btn--lg{height:48px}.v4-sheet .input input,.v4-sheet .input textarea{font-size:16px}}
+.vfe-sk{display:block;height:12px;margin-top:8px}
+.vf-sk{pointer-events:none;animation:c99-sk 1.2s ease-in-out infinite}
+@keyframes c99-sk{0%{opacity:.55}50%{opacity:1}100%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.vf-sk{animation:none}}
+.vf-sk .skel{background:var(--concrete-2,#E4E1DC)}

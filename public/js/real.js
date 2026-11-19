@@ -32,7 +32,8 @@
     items = []; byId = {}; cache = {};
     (rows || []).forEach(function (r) { var t = norm(r); if (!t.id || byId[t.id] || HID[t.id]) return; t.sports = ui(t.raw); byId[t.id] = t; items.push(t); if (t.photo) (window.__IMG = window.__IMG || {})[t.photo] = t.photo; });
   }
-  setItems(window.__REAL || []);
+  // a amostra embutida só vale na demonstração; no produto a lista espera o catálogo de verdade (a tela mostra esqueletos)
+  setItems(document.documentElement.classList.contains('demo') ? (window.__REAL || []) : []);
   setTimeout(function () {
     if (!window.CONTA || !window.CONTA.rpc) return;
     window.CONTA.rpc('hidden_trainer_slugs', {}).then(function (r) {
@@ -460,9 +461,13 @@
     fromDb.then(function (ok) { LOADST.live = ok ? 'ok' : 'falha'; return ok ? null : next().then(function () { if (got.length) LOADST.live = 'ok'; }); }).then(function () {
       if (!got.length) { rerender(); return; }
       got.forEach(function (t) { live[t.slug] = t; });
-      var rows = got.concat(items.filter(function (x) { return !live[x.id]; }).map(function (x) { return [x.id, x.name, x.ini, x.photo, x.spec, x.raw, x.city, (x.pres ? 'p' : '') + (x.onl ? 'o' : ''), x.pub, x.imported === false ? 'conta' : 'importado', x.ext || '']; }));
-      setItems(rows); rerender();
+      setItems(comLive(lastRows || [])); rerender();
     }).catch(function () { rerender(); });
+  }
+  // perfil vindo do banco entra no lugar que já tinha no catálogo (a lista não pula); só o que ainda não está no catálogo vai para o começo
+  function comLive(rows) {
+    var visto = {}, out = (rows || []).map(function (r) { var id = Array.isArray(r) ? r[0] : (r && r.slug); if (id && live[id]) { visto[id] = 1; return live[id]; } return r; });
+    return Object.keys(live).filter(function (k) { return !visto[k]; }).map(function (k) { return live[k]; }).concat(out);
   }
   REAL.isLive = function (id) { return !!live[id]; };
   // estado real do carregamento, para a busca separar "vazio" de "falha" (plano: vazio × falha × fim)
@@ -475,7 +480,7 @@
   function fetchBase() {
     if (!window.fetch) { LOADST.base = 'falha'; return; }
     fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (d && d.items && d.items.length) { var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(d.items)); LOADST.base = 'ok'; }
+      if (d && d.items && d.items.length) { setItems(comLive(d.items)); LOADST.base = 'ok'; LOADST.parcial = false; }
       else LOADST.base = 'falha';
       rerender();
     }).catch(function () { LOADST.base = 'falha'; rerender(); });
@@ -495,10 +500,10 @@
     if (LOADST.base !== 'ok') LOADST.base = 'carregando';
     fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (baseAsked && LOADST.base === 'ok') return;
-      if (!d || !Array.isArray(d.items)) { slices[key] = null; if (!sliceRows.length) LOADST.base = 'falha'; rerender(); return; }
+      if (!d || !Array.isArray(d.items)) { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); return; }
       slices[key] = 'ok'; sliceRows = sliceRows.concat(d.items);
-      var lv = Object.keys(live).map(function (k) { return live[k]; }); setItems(lv.concat(sliceRows)); LOADST.base = 'ok'; rerender();
-    }).catch(function () { slices[key] = null; if (!sliceRows.length) LOADST.base = 'falha'; rerender(); });
+      setItems(comLive(sliceRows)); LOADST.base = 'ok'; if (key === 'inicio') LOADST.parcial = true; rerender();
+    }).catch(function () { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); });
   }
   var SLUG = {}; Object.keys(LABEL).forEach(function (k) { SLUG[LABEL[k]] = k; });
   // a vitrine pede a modalidade que está mostrando; sem fatia conhecida, cai no catálogo inteiro
@@ -512,7 +517,8 @@
   if (first === 'esporte' && rp.slug) fetchSlice('/dados/esporte/' + encodeURIComponent(rp.slug), 'e:' + rp.slug);
   else if (first === 'perfil' && rp.id && /^\/treinador\//.test(location.pathname)) fetchSlice('/dados/treinador/' + encodeURIComponent(rp.id), 'p:' + rp.id);
   else if (first === 'publico' && /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.test(location.hash || '')) { var mh = /^#publico-(pedir|perfilpedido)-([a-z0-9-]+)$/.exec(location.hash); fetchSlice('/dados/treinador/' + encodeURIComponent(mh[2]), 'p:' + mh[2]); }
-  else if (first === 'home' && location.pathname === '/') ensureSoon();
+  // página inicial: o começo da lista (por relevância) chega já; o catálogo inteiro vem em seguida, na mesma ordem
+  else if (first === 'home' && location.pathname === '/') { if (!document.documentElement.classList.contains('demo')) fetchSlice('/dados/inicio', 'inicio'); ensureSoon(); }
   else if (PUBLIC[first] || location.pathname === '/' || /^\/(treinadores|treinador|cidade)\//.test(location.pathname)) ensureBase();
 
   // ---------- favoritos ----------
