@@ -25,7 +25,7 @@ const bad = ev.filter((e) => !/^[a-z_]+\.[a-z_]+\.v\d+$/.test(e.event_name) || O
 console.log('3 nomes versionados e sem dado pessoal:', ev.length > 0 && bad.length === 0, ev.map((e) => e.event_name).join(','));
 // 4. treinador retoma o cadastro pelo painel
 await p.goto('http://localhost:5173/', { waitUntil: 'load' }); await p.waitForTimeout(500);
-await p.evaluate(() => { const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'treinador', ''), { name: 'Marina Duarte', city: 'Londrina, PR', dadosSaved: true, step: 'hoje', scn: '' })); GO('@onboarding', { flow: 'treinador' }); });
+await p.evaluate(() => { const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'treinador', ''), { name: 'Marina Duarte', city: 'Londrina, PR', dadosSaved: true, sports: { crossfit: true }, step: 'hoje', scn: '' })); GO('@onboarding', { flow: 'treinador' }); });
 await p.waitForTimeout(1200);
 for (const h of await p.$$('button')) { if (/^Continuar cadastro$/.test((await h.textContent()).trim()) && (await h.isVisible())) { await h.click(); break; } }
 await p.waitForTimeout(600);
