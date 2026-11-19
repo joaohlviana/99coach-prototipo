@@ -1,4 +1,7 @@
 PAGES.onboarding = { Comp: (function () {
+// países com cidades na base (GeoNames, public/data/mundo/<país>.json); o Brasil usa a base de municípios
+const ISO_PAISES = 'AD AE AF AG AI AL AM AO AR AS AT AU AW AX AZ BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BS BT BW BY BZ CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY HK HN HR HT HU ID IE IL IM IN IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ NA NC NE NF NG NI NL NO NP NR NU NZ OM PA PE PF PG PH PK PL PM PN PR PS PT PW PY QA RE RO RS RU RW SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VG VI VN VU WF WS XK YE YT ZA ZM ZW';
+const MUNDO = {};
 class Component extends DCLogic {
   constructor(props) { super(props); const p = props || {}; this.state = (!p.scn && window.STORE && window.STORE.loadOnb(p.flow || 'treinador')) || this.base(p.flow || 'treinador', p.scn || ''); if (!p.scn && !this.state.dadosSaved && !this.state.real && this.state.step !== 'codigo' && window.CONTA) Object.assign(this.state, { name: '', email: '', code: '' }); this.semExemplo(p); }
   // conta real nunca herda os textos de exemplo do protótipo (Instagram, título, nome de recebedor, convidado, horário do rascunho)
@@ -124,8 +127,10 @@ class Component extends DCLogic {
       dadosonl: { step: 'dados', pres: false, onl: true }, dadoshom: { step: 'dados', q: 'Toledo', dd: 'open' }, dadossem: { step: 'dados', q: 'Tamarna', dd: 'open' }, dadosneg: { step: 'dados', loc: 'denied', dd: 'open' }, dadoserr: { step: 'dados', dErr: true },
       contaaluno: { step: 'acct', prepDone: true }, compart: { step: 'cta', cta: 'compartilhamento', prepDone: true }, avisos: { step: 'cta', cta: 'avisos', prepDone: true }
     };
-    // cadastro novo começa como no DS: só CrossFit, presencial e sem cidade
-    if (flow === 'treinador' && (!scn || ['existe', 'expirado'].indexOf(scn) >= 0 || scn.indexOf('dados') === 0)) Object.assign(s, { sports: { crossfit: true }, city: '', onl: false });
+    // cadastro novo: na demonstração começa como no DS (só CrossFit, presencial, sem cidade); no produto ninguém escolhe
+    // pela pessoa: nenhuma modalidade marcada, e o idioma de atendimento começa no idioma do site
+    if (flow === 'treinador' && (!scn || ['existe', 'expirado'].indexOf(scn) >= 0 || scn.indexOf('dados') === 0)) Object.assign(s, { sports: document.documentElement.classList.contains('demo') ? { crossfit: true } : {}, city: '', onl: false });
+    if (!document.documentElement.classList.contains('demo') && (window.__LANG === 'en' || window.__LANG === 'es')) s.langs = { [window.__LANG]: true };
     return Object.assign(s, S[scn] || {});
   }
 
@@ -456,8 +461,8 @@ class Component extends DCLogic {
     const conta = invite ? { eyebrow: 'Convite', title: 'Só falta entrar', sub: 'Use e-mail ou celular. Depois de entrar, o convite é aceito com a decisão que você já tomou.', cta: 'Receber código', askName: false, askTerms: false, hasInvite: true, fine: 'Já tem conta? Entre com ela; o convite continua aqui. Não precisa instalar o app.', hasSwitch: false }
       : st.session ? { eyebrow: 'Entrar', title: 'Sua sessão expirou', sub: 'Por segurança, entre de novo.', cta: 'Entrar e continuar', askName: false, askTerms: false, hasSession: true, fine: 'Você volta para a mesma seção do perfil.', hasSwitch: false }
       : login ? { eyebrow: '', title: 'Entrar', sub: window.CONTA ? '' : 'Use o e-mail ou celular da sua conta. Enviamos um código; senha não é necessária.', cta: window.CONTA ? 'Entrar' : 'Receber código', askName: false, askTerms: false, fine: 'A mesma conta serve para treinar e para atender.', hasSwitch: true, switchQ: 'Ainda não tem conta?', switchLabel: 'Criar conta', switchGo: () => { set(this.base('aluno', '')); top(); } }
-      : st.intent === 'treinador' ? { eyebrow: 'Sou treinador · passo 1 de 3', title: 'Crie sua conta de treinador', sub: 'Grátis e sem cartão. Você completa o perfil depois, no seu ritmo.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Grátis até 3 alunos ativos.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } }
-      : { eyebrow: 'Quero treinar · passo 1 de 2', title: 'Crie sua conta', sub: 'Só o necessário para salvar treinadores, pedir acompanhamento e contratar.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Buscar e ver perfis não pede conta.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } };
+      : st.intent === 'treinador' ? { eyebrow: 'Sou treinador · criar conta', title: 'Crie sua conta de treinador', sub: 'Grátis e sem cartão. Você completa o perfil depois, no seu ritmo.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Grátis até 3 alunos ativos.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } }
+      : { eyebrow: 'Quero treinar · criar conta', title: 'Crie sua conta', sub: 'Só o necessário para salvar treinadores, pedir acompanhamento e contratar.', cta: 'Criar conta', askName: true, askTerms: true, fine: 'Buscar e ver perfis não pede conta.', hasSwitch: true, switchQ: 'Já tem conta?', switchLabel: 'Entrar', switchGo: () => { set(this.base('entrar', '')); top(); } };
     const afterAuth = () => {
       if (invite) return go('confirmando')();
       if (st.session) { set({ step: 'sec', sec: 'apresentacao', session: false, toast: 'Você voltou para o mesmo rascunho, salvo às ' + st.savedAt + '.' }); return top(); }
@@ -472,7 +477,11 @@ class Component extends DCLogic {
     conta.hasEyebrow = !!conta.eyebrow && conta.eyebrow !== conta.title;
     const f = {
       showSocial: !np, hideEmail: np,
-      name: st.name, email: np ? npEmail : st.email, setName: (e) => set({ name: val(e) }), setEmail: (e) => set({ email: val(e), emailExists: false }),
+      name: st.name, email: np ? npEmail : st.email, setName: (e) => set({ name: val(e), nameErr: false }), setEmail: (e) => set({ email: val(e), emailExists: false, emailErr: false }),
+      // Enter em qualquer campo envia; erros de todos os campos aparecem de uma vez, cada um no seu campo
+      key: (e) => { if (e.key === 'Enter') { e.preventDefault(); f.submit(); } },
+      nameErr: !!st.nameErr, nameInv: String(!!st.nameErr), nameCls: 'input' + (st.nameErr ? ' is-err' : ''), emailErr: !!st.emailErr && !st.emailExists, emailInv: String(!!st.emailErr), pwInv: String(!!st.pwErr),
+      pwType: st.pwShow ? 'text' : 'password', pwShown: String(!!st.pwShow), pwToggle: st.pwShow ? 'Ocultar' : 'Mostrar', togglePw: () => set({ pwShow: !st.pwShow }), pwHelpCls: st.pwErr ? 'field__err' : 'field__help',
         askPw: !!window.CONTA && !st.scn, pw: st.pw || '', setPw: (e) => set({ pw: val(e), pwErr: false }), pwCls: 'input' + (st.pwErr ? ' is-err' : ''),
         pwAuto: login && !np ? 'current-password' : 'new-password', pwHelp: login && !np ? '' : 'Pelo menos 8 caracteres.', canForgot: login && !np,
         forgot: () => { const em = (st.email || '').trim(); if (em.indexOf('@') < 1) return toast('Informe o e-mail da conta primeiro.'); window.CONTA.recover(em).then((r) => toast(r.ok ? 'Se houver uma conta com ' + em + ', enviamos um link para criar uma senha nova.' : (r.offline ? 'Sem conexão com o servidor.' : 'Não foi possível enviar: ' + (r.msg || r.status)))); },
@@ -491,13 +500,16 @@ class Component extends DCLogic {
             finishReal('', npEmail, true);
           });
         }
-        if (conta.askTerms && !st.terms) return set({ termsErr: true });
-        if (!(st.email || '').trim()) return toast('Informe um e-mail ou celular.');
-        // conta real: e-mail e senha no servidor da 99Coach (a conta é confirmada na hora)
+        // conta real: confere todos os campos de uma vez e leva o cursor ao primeiro que falta
         if (window.CONTA && !st.scn) {
           const email = (st.email || '').trim(), pw = st.pw || '';
-          if (email.indexOf('@') < 1) return toast('Informe um e-mail válido.');
-          if (pw.length < 8) return set({ pwErr: true, toast: 'A senha precisa ter pelo menos 8 caracteres.' });
+          const er = { nameErr: !login && !!conta.askName && !(st.name || '').trim(), emailErr: !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email), pwErr: pw.length < (login ? 1 : 8), termsErr: !!conta.askTerms && !st.terms };
+          if (er.nameErr || er.emailErr || er.pwErr || er.termsErr) {
+            set(Object.assign(er, { toast: '' }));
+            const alvo = er.nameErr ? 'onb-nome' : er.emailErr ? 'onb-email' : er.pwErr ? 'onb-senha' : '';
+            if (alvo) setTimeout(() => { const el = document.getElementById(alvo); if (el) el.focus(); }, 30);
+            return;
+          }
           const role = login ? '' : (st.intent === 'treinador' || st.flow === 'treinador' ? 'treinador' : 'aluno');
           const done = () => finishReal(role, email, login);
           set({ busy: true, toast: login ? 'Entrando…' : 'Criando sua conta…' });
@@ -531,7 +543,7 @@ class Component extends DCLogic {
     // ---------- código (ACC03) ----------
     const c = {
       value: st.code, set: (e) => set({ code: val(e).replace(/\D/g, '').slice(0, 6), codeErr: false }), expired: st.codeExp, err: st.codeErr,
-      change: go('conta'),
+      change: go('conta'), key: (e) => { if (e.key === 'Enter') { e.preventDefault(); c.verify(); } },
       verify: () => {
         if ((st.code || '').length !== 6) return set({ codeErr: true });
         // conta real: o servidor confere o código e abre a sessão
@@ -568,8 +580,15 @@ class Component extends DCLogic {
     const modCount = modsOn.length === 0 ? 'nenhuma escolhida' : (modsOn.length === 1 ? '1 escolhida' : modsOn.length + ' escolhidas');
     const moreList = MORE.filter((kk) => !st.modQ || nrm(SPORT[kk]).indexOf(nrm(st.modQ)) >= 0);
 
-    // cidades (amostra normalizada; em produção vem da base do IBGE)
-    const CITIES = [['Londrina', 'PR', 'Paraná'], ['Cambé', 'PR', 'Paraná'], ['Ibiporã', 'PR', 'Paraná'], ['Rolândia', 'PR', 'Paraná'], ['Arapongas', 'PR', 'Paraná'], ['Apucarana', 'PR', 'Paraná'], ['Maringá', 'PR', 'Paraná'], ['Curitiba', 'PR', 'Paraná'], ['Toledo', 'PR', 'Paraná'], ['Toledo', 'MG', 'Minas Gerais'], ['Cascavel', 'PR', 'Paraná'], ['Cascavel', 'CE', 'Ceará'], ['São Paulo', 'SP', 'São Paulo'], ['Campinas', 'SP', 'São Paulo'], ['Santos', 'SP', 'São Paulo'], ['Rio de Janeiro', 'RJ', 'Rio de Janeiro'], ['Belo Horizonte', 'MG', 'Minas Gerais'], ['Florianópolis', 'SC', 'Santa Catarina'], ['Porto Alegre', 'RS', 'Rio Grande do Sul'], ['Goiânia', 'GO', 'Goiás'], ['Salvador', 'BA', 'Bahia'], ['Recife', 'PE', 'Pernambuco'], ['Fortaleza', 'CE', 'Ceará'], ['Brasília', 'DF', 'Distrito Federal']];
+    // cidades: no produto, a base oficial de municípios (public/data/municipios.json, 5.571); na demonstração, a amostra do DS
+    const PRD_C = !document.documentElement.classList.contains('demo');
+    const UFN = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
+    if (PRD_C && !Component.__mun && window.GEO && window.GEO.all) {
+      Component.__mun = [];
+      window.GEO.all().then((it) => { Component.__mun = it.map((m) => [m[0], m[1], UFN[m[1]] || m[1]]); this.setState({ munOk: true }); }).catch(() => { Component.__mun = null; });
+    }
+    const AMOSTRA = [['Londrina', 'PR', 'Paraná'], ['Cambé', 'PR', 'Paraná'], ['Ibiporã', 'PR', 'Paraná'], ['Rolândia', 'PR', 'Paraná'], ['Arapongas', 'PR', 'Paraná'], ['Apucarana', 'PR', 'Paraná'], ['Maringá', 'PR', 'Paraná'], ['Curitiba', 'PR', 'Paraná'], ['Toledo', 'PR', 'Paraná'], ['Toledo', 'MG', 'Minas Gerais'], ['Cascavel', 'PR', 'Paraná'], ['Cascavel', 'CE', 'Ceará'], ['São Paulo', 'SP', 'São Paulo'], ['Campinas', 'SP', 'São Paulo'], ['Santos', 'SP', 'São Paulo'], ['Rio de Janeiro', 'RJ', 'Rio de Janeiro'], ['Belo Horizonte', 'MG', 'Minas Gerais'], ['Florianópolis', 'SC', 'Santa Catarina'], ['Porto Alegre', 'RS', 'Rio Grande do Sul'], ['Goiânia', 'GO', 'Goiás'], ['Salvador', 'BA', 'Bahia'], ['Recife', 'PE', 'Pernambuco'], ['Fortaleza', 'CE', 'Ceará'], ['Brasília', 'DF', 'Distrito Federal']];
+    const CITIES = PRD_C && Component.__mun && Component.__mun.length ? Component.__mun : AMOSTRA;
     const NEAR = { 'Londrina|PR': ['Cambé', 'Ibiporã'], 'Maringá|PR': ['Arapongas', 'Apucarana'] };
     const REAL = { 'Londrina|PR': { crossfit: 8, funcional: 5 } };   // contagem só real: sem dado, a linha mostra só o estado
     const cityOf = (n, uf) => CITIES.find((c) => c[0] === n && c[1] === uf);
@@ -584,9 +603,9 @@ class Component extends DCLogic {
     }
     const dd = st.dd ? (qn.length < 2 ? 'empty' : (found.length ? 'typing' : 'none')) : null;
     const top1 = found[0];
-    const nearKeys = dd === 'typing' && top1 ? (NEAR[top1[0] + '|' + top1[1]] || []).filter((n) => !found.some((c) => c[0] === n)) : [];
-    const realLine = (c, short) => { const r = REAL[c[0] + '|' + c[1]]; if (!r) return ''; const kk = modsOn.find((m) => r[m]); return kk ? ' · ' + r[kk] + (short ? ' de ' + SPORT[kk] + ' atendem aqui' : ' treinadores de ' + SPORT[kk] + ' já atendem aqui') : ''; };
-    const choose = (c) => () => { set({ city: c[0] + ', ' + c[1], regions: {}, q: '', dd: null, act: 0, dErr: false, cvLive: c[0] + ', ' + c[1] + ' escolhida' }); };
+    const nearKeys = !PRD_C && dd === 'typing' && top1 ? (NEAR[top1[0] + '|' + top1[1]] || []).filter((n) => !found.some((c) => c[0] === n)) : [];
+    const realLine = (c, short) => { const r = PRD_C ? null : REAL[c[0] + '|' + c[1]]; if (!r) return ''; const kk = modsOn.find((m) => r[m]); return kk ? ' · ' + r[kk] + (short ? ' de ' + SPORT[kk] + ' atendem aqui' : ' treinadores de ' + SPORT[kk] + ' já atendem aqui') : ''; };
+    const choose = (c) => () => { set({ city: c[0] + ', ' + c[1], pais: '', fora: false, regions: {}, q: '', dd: null, act: 0, dErr: false, cvLive: c[0] + ', ' + c[1] + ' escolhida' }); };
     // opções navegáveis por teclado, na ordem da lista
     const opts = dd === 'empty' ? [['cv-o-loc', () => set({ dSheet: 'loc', dd: null })], ['cv-o-last', choose(cityOf('Londrina', 'PR'))]]
       : (dd === 'typing' ? found.map((c, i) => ['cv-o-' + i, choose(c)]).concat(nearKeys.map((n, i) => ['cv-o-n' + i, choose(cityOf(n, top1[1]))])) : []);
@@ -599,7 +618,10 @@ class Component extends DCLogic {
     const nTot = found.length + nearKeys.length;
     // o campo só existe depois do próximo render: tenta algumas vezes
     const focusQ = (n) => setTimeout(() => { const el = document.getElementById('cv-city'); if (el) el.focus(); else if ((n || 0) < 15) focusQ((n || 0) + 1); }, 40);
-    const REGS = [['centro', 'Centro'], ['zonasul', 'Zona Sul'], ['zonanorte', 'Zona Norte'], ['zonaleste', 'Zona Leste'], ['zonaoeste', 'Zona Oeste'], ['gleba', 'Gleba Palhano']];
+    const REGS = st.pais ? [] : [['centro', 'Centro'], ['zonasul', 'Zona Sul'], ['zonanorte', 'Zona Norte'], ['zonaleste', 'Zona Leste'], ['zonaoeste', 'Zona Oeste'], ['gleba', 'Gleba Palhano']].filter((r) => r[0] !== 'gleba' || /^Londrina, PR$/.test(st.city || ''));
+    // países (todos os códigos ISO, menos o Brasil), com o nome no idioma da tela; o perfil guarda o nome em português
+    const paisNome = (cc, l) => { try { return new Intl.DisplayNames([l === 'pt' ? 'pt-BR' : l], { type: 'region' }).of(cc) || cc; } catch (_) { return cc; } };
+    const PAISES = () => { const l = window.__LANG === 'en' || window.__LANG === 'es' ? window.__LANG : 'pt'; return ISO_PAISES.split(' ').map((cc) => [cc, paisNome(cc, l)]).sort((a, b) => a[1].localeCompare(b[1], l)); };
     const regOn = REGS.filter(([kk]) => st.regions[kk]).length;
     const LANGS = [['pt', 'Português'], ['en', 'Inglês'], ['es', 'Espanhol']];
     const langsOn = LANGS.filter(([kk]) => st.langs[kk]).length;
@@ -634,7 +656,18 @@ class Component extends DCLogic {
       presCls: 'cv-reset cv-tog' + (st.pres ? ' is-on' : ''), presOn: String(!!st.pres), togPres: () => { if (st.pres && !st.onl) return toast('Marque Online antes de tirar Presencial: é preciso pelo menos um formato.'); set({ pres: !st.pres, dErr: false }); },
       onlCls: 'cv-reset cv-tog' + (st.onl ? ' is-on' : ''), onlOn: String(!!st.onl), togOnl: () => { if (st.onl && !st.pres) return toast('Marque Presencial antes de tirar Online: é preciso pelo menos um formato.'); set({ onl: !st.onl }); },
       cityReq: cityReqd ? 'obrigatório para presencial' : 'opcional para online',
-      locWhy: st.locWhy || 'Tudo bem: digite a cidade. A localização nunca é obrigatória.', locBusy: st.loc === 'busy', locDenied: st.loc === 'denied', noCity: !hasCity, hasCity, cityLabel: st.city,
+      locWhy: st.locWhy || 'Tudo bem: digite a cidade. A localização nunca é obrigatória.', locBusy: st.loc === 'busy', locDenied: st.loc === 'denied', noCity: !hasCity, noCityBr: !hasCity && !st.fora, hasCity, cityLabel: st.city, hasLast: !PRD_C,
+      // fora do Brasil: país + cidade (vai para o perfil como "Cidade, País")
+      fora: !!st.fora && !hasCity, foraCid: st.foraCid || '', foraErr: !!st.foraErr, foraMsg: !st.foraPais ? 'Escolha o país.' : 'Escolha uma cidade da lista.', foraSemPais: !st.foraPais, foraCarregando: !!st.foraPais && !MUNDO[st.foraPais],
+      setForaCid: (e) => set({ foraCid: val(e), foraErr: false }),
+      // ao escolher o país, baixa as cidades dele (base GeoNames); a cidade é escolhida da lista, não digitada livre
+      setPais: (e) => { const cc = val(e); set({ foraPais: cc, foraCid: '', foraErr: false }); if (cc && !MUNDO[cc]) fetch('/data/mundo/' + cc + '.json').then((r) => r.ok ? r.json() : []).then((it) => { MUNDO[cc] = it.map((x) => [x[0] + (x[1] ? ', ' + x[1] : ''), nrm(x[0] + (x[1] ? ', ' + x[1] : '')), x[0]]); this.setState({ munOk: Date.now() }); }).catch(() => { MUNDO[cc] = []; this.setState({ munOk: Date.now() }); }); },
+      foraOpts: (() => { const L = MUNDO[st.foraPais || ''] || [], q = nrm(st.foraCid || ''); if (q.length < 2) return L.slice(0, 20).map((x) => ({ v: x[0] })); const a = [], b2 = []; for (let i = 0; i < L.length && a.length < 20; i++) { const p = L[i][1].indexOf(q); if (p === 0) a.push(L[i]); else if (p > 0 && b2.length < 20) b2.push(L[i]); } return a.concat(b2).slice(0, 20).map((x) => ({ v: x[0] })); })(),
+      paises: PAISES().map((o) => ({ code: o[0], name: o[1], sel: o[0] === (st.foraPais || '') })),
+      openFora: () => { set({ fora: true, dd: null, q: '', dErr: false }); setTimeout(() => { const el = document.getElementById('cv-pais'); if (el) el.focus(); }, 60); },
+      fecharFora: () => { set({ fora: false, foraErr: false }); focusQ(); },
+      foraKey: (e) => { if (e.key === 'Enter') { e.preventDefault(); d.usarFora(); } },
+      usarFora: () => { const cc = st.foraPais || '', L = MUNDO[cc] || [], q = nrm((st.foraCid || '').trim()); const hit = q ? (L.find((x) => x[1] === q) || L.find((x) => nrm(x[2]) === q)) : null; if (!cc || !hit) return set({ foraErr: true }); set({ city: hit[2] + ', ' + paisNome(cc, 'pt'), pais: cc, fora: false, regions: {}, dErr: false, cvLive: hit[2] + ' escolhida' }); },
       cityCls: 'cv-city' + (dd ? ' is-open' : ''), inCls: 'cv-in' + (dd ? ' is-focus' : '') + (cityErr ? ' is-err' : ''),
       ph: cityReqd ? 'Digite sua cidade' : 'Digite sua cidade (opcional)', q: cq, hasQ: !!cq, ddOpen: String(!!dd), ddOn: !!dd, cityErr: String(cityErr),
       activeId: opts[act] ? opts[act][0] : '',
@@ -652,9 +685,9 @@ class Component extends DCLogic {
       locCls: optCls('cv-o-loc'), locSel: optSel('cv-o-loc'), lastCls: optCls('cv-o-last'), lastSel: optSel('cv-o-last'),
       askLoc: openSh('loc'), pickLast: choose(cityOf('Londrina', 'PR')),
       matches, nearby, hasNear: nearby.length > 0, nearTitle: top1 ? 'Perto de ' + top1[0] : '', homonym, total: nTot === 1 ? '1 cidade' : nTot + ' cidades',
-      removeCity: () => { set({ city: '', regions: {}, cvLive: 'Cidade removida' }); focusQ(); },
-      chipKey: (e) => { if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); set({ city: '', regions: {}, cvLive: 'Cidade removida' }); focusQ(); } },
-      change: () => { set({ city: '', regions: {}, q: '', dd: 'open', act: 0 }); focusQ(); },
+      removeCity: () => { set({ city: '', pais: '', regions: {}, cvLive: 'Cidade removida' }); focusQ(); },
+      chipKey: (e) => { if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); set({ city: '', pais: '', regions: {}, cvLive: 'Cidade removida' }); focusQ(); } },
+      change: () => { set({ city: '', pais: '', regions: {}, q: '', dd: 'open', act: 0 }); focusQ(); },
       showHelp: !cityErr && !dd, cityHelp: !st.pres ? 'Atender online não exige endereço público.' : 'Só a cidade e, se quiser, a região aparecem no perfil.', cityErr2: cityErr,
       live: st.cvLive || (dd === 'typing' ? (nTot === 1 ? '1 cidade' : nTot + ' cidades') : (dd === 'none' ? 'Nenhuma cidade' : '')),
       regions: REGS.map(([kk, l]) => { const isOn = !!st.regions[kk]; return { label: l, on: String(isOn), isOn: isOn, cls: 'chip cv-chip' + (isOn ? ' is-on' : ''), pick: () => set({ regions: Object.assign({}, st.regions, { [kk]: !isOn }) }) }; }),

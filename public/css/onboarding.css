@@ -1361,3 +1361,8 @@ html,body{margin:0;background:#EFEDEA}
   .onb .input input,.onb .input textarea,.onb .cv-in__q{font-size:16px}
   .onb .onb-choices{grid-template-columns:1fr}
 }
+/* cadastro: mostrar/ocultar senha e bloco "atendo fora do Brasil" */
+.onb-ver{flex:none;border:0;background:none;padding:0 4px 0 10px;font:600 13px var(--font);color:var(--text-2,#52525B);cursor:pointer;min-height:44px}
+.onb-ver:hover{color:var(--fg,#121214)}
+.cv-fora{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--line,#E4E1DC);border-radius:16px;background:var(--paper,#F7F6F3)}
+.cv-fora select{width:100%;border:0;outline:0;background:transparent;font:inherit;min-height:42px;color:var(--fg,#121214)}

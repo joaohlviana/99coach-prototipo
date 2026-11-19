@@ -14,7 +14,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', (r) => {
 });
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
 await p.goto('http://localhost:5173/', { waitUntil: 'load' }); await p.waitForTimeout(500);
-await p.evaluate(() => { localStorage.setItem('c99.sessao', JSON.stringify({ access_token: 't', refresh_token: 'r', user: { id: 'tr', email: 'tr@x.com' } })); const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'treinador', ''), { name: 'Marina Duarte', city: 'Londrina, PR', dadosSaved: true, conta: true, step: 'hoje', scn: '' })); });
+await p.evaluate(() => { localStorage.setItem('c99.sessao', JSON.stringify({ access_token: 't', refresh_token: 'r', user: { id: 'tr', email: 'tr@x.com' } })); const C = PAGES.onboarding.Comp; STORE.saveOnb(Object.assign(C.prototype.base.call(C.prototype, 'treinador', ''), { name: 'Marina Duarte', sports: { crossfit: true }, city: 'Londrina, PR', dadosSaved: true, conta: true, step: 'hoje', scn: '' })); });
 await p.reload({ waitUntil: 'load' }); await p.waitForTimeout(1500);
 const T = () => p.evaluate(() => document.getElementById('app').innerText.replace(/\s+/g, ' '));
 const press = async (re) => { await p.evaluate((src) => { const r = new RegExp(src); const x = [...document.querySelectorAll('#app button')].find((y) => y.offsetParent && r.test(y.innerText.trim())); if (x) x.click(); }, re.source); await p.waitForTimeout(800); };

@@ -40,11 +40,12 @@
         <sc-if value="{{conta.hasInvite}}" hint-placeholder-val="{{ false }}"><div class="onb-ctx"><span class="av av--sm onb-av"><sc-if value="{{inv.hasPhoto}}" hint-placeholder-val="{{ true }}"><img src="{{inv.photo}}" alt=""></sc-if><sc-if value="{{inv.noPhoto}}" hint-placeholder-val="{{ false }}">{{inv.ini}}</sc-if></span><span>Convite de <b>{{inv.name}}</b> · {{inv.svc}}</span></div></sc-if>
         <sc-if value="{{conta.hasSession}}" hint-placeholder-val="{{ false }}"><div class="alert alert--info"><i class="ic ic--sm i-clock" aria-hidden="true"></i><div><b>Seu rascunho está salvo</b>Entre para continuar exatamente de onde parou.</div></div></sc-if>
         <div class="onb-form">
-          <sc-if value="{{conta.askName}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-nome">Nome</label><div class="input"><input id="onb-nome" type="text" autocomplete="name" value="{{f.name}}" onInput="{{f.setName}}"></div></div></sc-if>
-          <div class="field"><label class="field__label" for="onb-email">E-mail</label><div class="{{f.emailCls}}"><input id="onb-email" type="email" inputmode="email" autocomplete="username" value="{{f.email}}" onInput="{{f.setEmail}}" aria-describedby="onb-email-msg"></div>
+          <sc-if value="{{conta.askName}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-nome">Nome</label><div class="{{f.nameCls}}"><input id="onb-nome" type="text" autocomplete="name" value="{{f.name}}" onInput="{{f.setName}}" onKeyDown="{{f.key}}" aria-invalid="{{f.nameInv}}" aria-describedby="onb-nome-msg"></div><sc-if value="{{f.nameErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" id="onb-nome-msg" role="alert">Informe seu nome.</span></sc-if></div></sc-if>
+          <div class="field"><label class="field__label" for="onb-email">E-mail</label><div class="{{f.emailCls}}"><input id="onb-email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" spellcheck="false" value="{{f.email}}" onInput="{{f.setEmail}}" onKeyDown="{{f.key}}" aria-invalid="{{f.emailInv}}" aria-describedby="onb-email-msg"></div>
+            <sc-if value="{{f.emailErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" id="onb-email-msg" role="alert">Informe um e-mail válido.</span></sc-if>
             <sc-if value="{{f.emailExists}}" hint-placeholder-val="{{ false }}"><span class="field__err" id="onb-email-msg" role="alert">Este e-mail já tem conta. Entre com ela; nada é duplicado.</span></sc-if>
           </div>
-          <sc-if value="{{f.askPw}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-senha">Senha</label><div class="{{f.pwCls}}"><input id="onb-senha" type="password" autocomplete="{{f.pwAuto}}" value="{{f.pw}}" onInput="{{f.setPw}}" aria-describedby="onb-senha-msg"></div><span class="field__help" id="onb-senha-msg">{{f.pwHelp}}</span><sc-if value="{{f.canForgot}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" style="align-self: flex-start" onClick="{{f.forgot}}">Esqueci a senha</button></sc-if></div></sc-if>
+          <sc-if value="{{f.askPw}}" hint-placeholder-val="{{ true }}"><div class="field"><label class="field__label" for="onb-senha">Senha</label><div class="{{f.pwCls}}"><input id="onb-senha" type="{{f.pwType}}" autocomplete="{{f.pwAuto}}" value="{{f.pw}}" onInput="{{f.setPw}}" onKeyDown="{{f.key}}" aria-invalid="{{f.pwInv}}" aria-describedby="onb-senha-msg"><button type="button" class="onb-ver" aria-pressed="{{f.pwShown}}" onClick="{{f.togglePw}}">{{f.pwToggle}}</button></div><span class="{{f.pwHelpCls}}" id="onb-senha-msg">{{f.pwHelp}}</span><sc-if value="{{f.canForgot}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--ghost btn--sm" style="align-self: flex-start" onClick="{{f.forgot}}">Esqueci a senha</button></sc-if></div></sc-if>
           <sc-if value="{{f.emailExists}}" hint-placeholder-val="{{ false }}"><button type="button" class="btn btn--primary btn--lg btn--block" onClick="{{f.loginExisting}}">Entrar com esta conta</button></sc-if>
           <sc-if value="{{conta.askTerms}}" hint-placeholder-val="{{ true }}"><div class="onb-checkrow onb-checkrow--docs"><button type="button" class="onb-checkbox" role="checkbox" aria-checked="{{f.termsOn}}" aria-labelledby="onb-terms-t" onClick="{{f.toggleTerms}}"><span class="{{f.termsCls}}" aria-hidden="true"><i class="ic ic--xs i-check"></i></span></button><span id="onb-terms-t"><span class="onb-terms-hit" onClick="{{f.toggleTerms}}">Tenho 18 anos ou mais e aceito os </span><a href="/termos" target="_blank" rel="noopener">Termos de uso</a> e a <a href="/privacidade" target="_blank" rel="noopener">Política de privacidade</a>.</span></div>
             <sc-if value="{{f.termsErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">Para criar a conta, confirme que tem 18 anos ou mais e aceite os Termos. A opção não vem marcada.</span></sc-if>
@@ -63,7 +64,7 @@
       <sc-if value="{{is.codigo}}" hint-placeholder-val="{{ false }}">
         <div class="onb-head"><span class="eyebrow">Verificação</span><h1 class="onb-h1">Digite o código</h1><p class="onb-lede">Enviamos um código de 6 dígitos para <b>{{f.email}}</b>. Senha não é necessária.</p></div>
         <sc-if value="{{c.expired}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn" role="alert"><i class="ic ic--sm i-alert" aria-hidden="true"></i><div><b>O código venceu</b>Enviamos um novo agora. O que você preencheu continua salvo.</div></div></sc-if>
-        <div class="field"><label class="field__label" for="onb-code">Código de acesso</label><div class="input onb-codebox"><input id="onb-code" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{c.value}}" onInput="{{c.set}}"></div>
+        <div class="field"><label class="field__label" for="onb-code">Código de acesso</label><div class="input onb-codebox"><input id="onb-code" class="onb-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" value="{{c.value}}" onInput="{{c.set}}" onKeyDown="{{c.key}}"></div>
           <sc-if value="{{c.err}}" hint-placeholder-val="{{ false }}"><span class="field__err" role="alert">O código tem 6 números. Confira o e-mail ou peça outro.</span></sc-if>
         </div>
         <p class="onb-alt"><span class="t3">Reenviar em 0:42</span> · <button type="button" class="onb-link" onClick="{{c.change}}">Trocar e-mail</button></p>
@@ -154,7 +155,7 @@
         <span id="cv-l2" class="field__label">Como você atende<small>uma ou as duas</small></span>
         <div class="cv-fmt">
           <button type="button" class="{{d.presCls}}" aria-pressed="{{d.presOn}}" onClick="{{d.togPres}}"><span class="cv-tog__c"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span class="cv-tog__t"><b>Presencial</b><span>Na sua cidade</span></span></button>
-          <button type="button" class="{{d.onlCls}}" aria-pressed="{{d.onlOn}}" onClick="{{d.togOnl}}"><span class="cv-tog__c"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span class="cv-tog__t"><b>Online</b><span>Treino no app, todo o Brasil</span></span></button>
+          <button type="button" class="{{d.onlCls}}" aria-pressed="{{d.onlOn}}" onClick="{{d.togOnl}}"><span class="cv-tog__c"><i class="ic ic--xs i-check" aria-hidden="true"></i></span><span class="cv-tog__t"><b>Online</b><span>Treino no app, de qualquer lugar</span></span></button>
         </div>
       </div>
 
@@ -162,7 +163,17 @@
       <div class="field" role="group" aria-labelledby="cv-l3">
         <span id="cv-l3" class="field__label">Onde você atende<small>{{d.cityReq}}</small></span>
         <sc-if value="{{d.locDenied}}" hint-placeholder-val="{{ false }}"><div class="alert alert--warn cv-loc" role="status"><i class="ic ic--sm i-pin" aria-hidden="true"></i><div><b>Sem acesso à localização</b>{{d.locWhy}}</div></div></sc-if>
-        <sc-if value="{{d.noCity}}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{d.fora}}" hint-placeholder-val="{{ false }}">
+          <div class="cv-fora">
+            <div class="field"><label class="field__label" for="cv-pais">País</label><div class="input"><select id="cv-pais" autocomplete="country" onChange="{{d.setPais}}"><option value="">Escolha o país</option><sc-for list="{{d.paises}}" as="o" hint-placeholder-count="3"><option value="{{o.code}}" selected="{{o.sel}}">{{o.name}}</option></sc-for></select></div></div>
+            <div class="field"><label class="field__label" for="cv-cid-fora">Cidade</label><div class="input"><input id="cv-cid-fora" type="text" list="cv-fora-lista" autocomplete="off" spellcheck="false" maxlength="80" value="{{d.foraCid}}" onInput="{{d.setForaCid}}" onKeyDown="{{d.foraKey}}" aria-describedby="cv-fora-msg"></div><datalist id="cv-fora-lista"><sc-for list="{{d.foraOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}"></option></sc-for></datalist>
+              <sc-if value="{{d.foraCarregando}}" hint-placeholder-val="{{ false }}"><span class="field__help" role="status">Carregando as cidades…</span></sc-if></div>
+            <sc-if value="{{d.foraErr}}" hint-placeholder-val="{{ false }}"><span class="field__err" id="cv-fora-msg" role="alert">{{d.foraMsg}}</span></sc-if>
+            <div class="cv-chips"><button type="button" class="btn btn--primary btn--sm" onClick="{{d.usarFora}}">Usar esta cidade</button><button type="button" class="btn btn--outline btn--sm" onClick="{{d.fecharFora}}">Atendo no Brasil</button></div>
+            <p class="field__help">Cidades do mundo: base GeoNames.</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{d.noCityBr}}" hint-placeholder-val="{{ true }}">
           <div class="{{d.cityCls}}">
             <div class="cv-city__row">
               <div class="{{d.inCls}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i><input id="cv-city" class="cv-in__q" type="text" role="combobox" autocomplete="off" spellcheck="false" placeholder="{{d.ph}}" aria-autocomplete="list" aria-expanded="{{d.ddOpen}}" aria-controls="cv-list" aria-activedescendant="{{d.activeId}}" aria-invalid="{{d.cityErr}}" aria-describedby="cv-city-msg" aria-labelledby="cv-l3" value="{{d.q}}" onInput="{{d.setQ}}" onKeyDown="{{d.key}}" onFocusIn="{{d.open}}" onClick="{{d.open}}"><sc-if value="{{d.hasQ}}" hint-placeholder-val="{{ false }}"><button type="button" class="cv-x" aria-label="Limpar" onClick="{{d.clearQ}}"><i class="ic ic--sm i-x" aria-hidden="true"></i></button></sc-if></div>
@@ -172,8 +183,9 @@
             <div class="cv-dd" id="cv-list" role="listbox" aria-label="Cidades">
               <sc-if value="{{d.ddEmpty}}" hint-placeholder-val="{{ true }}">
                 <button type="button" id="cv-o-loc" class="{{d.locCls}}" role="option" aria-selected="{{d.locSel}}" onClick="{{d.askLoc}}"><span class="cv-opt__i"><i class="ic ic--sm i-target" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Usar minha localização</b><span>Só para achar a cidade; o endereço não aparece no perfil</span></span></button>
-                <span class="label cv-sec">Usada na sua conta</span>
-                <button type="button" id="cv-o-last" class="{{d.lastCls}}" role="option" aria-selected="{{d.lastSel}}" onClick="{{d.pickLast}}"><span class="cv-opt__i"><i class="ic ic--sm i-clock" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Londrina</b><span>Paraná · informada no cadastro da conta</span></span><span class="cv-uf">PR</span></button>
+                <sc-if value="{{d.hasLast}}" hint-placeholder-val="{{ false }}"><span class="label cv-sec">Usada na sua conta</span>
+                <button type="button" id="cv-o-last" class="{{d.lastCls}}" role="option" aria-selected="{{d.lastSel}}" onClick="{{d.pickLast}}"><span class="cv-opt__i"><i class="ic ic--sm i-clock" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Londrina</b><span>Paraná · informada no cadastro da conta</span></span><span class="cv-uf">PR</span></button></sc-if>
+                <button type="button" class="cv-opt" role="option" aria-selected="false" onClick="{{d.openFora}}"><span class="cv-opt__i"><i class="ic ic--sm i-pin" aria-hidden="true"></i></span><span class="cv-opt__t"><b>Atendo fora do Brasil</b><span>Informe o país e a cidade</span></span></button>
                 <div class="cv-dd__foot"><span>Digite ao menos 2 letras</span></div>
               </sc-if>
               <sc-if value="{{d.ddTyping}}" hint-placeholder-val="{{ false }}">
@@ -187,7 +199,7 @@
                 <div class="cv-dd__foot"><span class="cv-kb">↑ ↓ para escolher · Enter confirma · Esc fecha</span><span>{{d.total}}</span></div>
               </sc-if>
               <sc-if value="{{d.ddNone}}" hint-placeholder-val="{{ false }}">
-                <div class="cv-none"><b>Nenhuma cidade com “{{d.q}}”</b><span>Confira a grafia ou digite sem acento. Se a cidade não aparece mesmo, mande para revisão: o perfil continua salvo.</span><div class="cv-chips"><button type="button" class="btn btn--outline btn--sm" onClick="{{d.clearQ}}">Digitar de novo</button><button type="button" class="btn btn--primary btn--sm" onClick="{{d.openReview}}">Não encontrei minha cidade</button></div></div>
+                <div class="cv-none"><b>Nenhuma cidade com “{{d.q}}”</b><span>Confira a grafia ou digite sem acento. Se a cidade não aparece mesmo, mande para revisão: o perfil continua salvo.</span><div class="cv-chips"><button type="button" class="btn btn--outline btn--sm" onClick="{{d.clearQ}}">Digitar de novo</button><button type="button" class="btn btn--outline btn--sm" onClick="{{d.openFora}}">Atendo fora do Brasil</button><button type="button" class="btn btn--primary btn--sm" onClick="{{d.openReview}}">Não encontrei minha cidade</button></div></div>
               </sc-if>
             </div>
             </sc-if>

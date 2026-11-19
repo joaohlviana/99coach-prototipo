@@ -37,5 +37,5 @@
     for (var i = 0; i < items.length; i++) { if (items[i][0] + ', ' + items[i][1] === city) return Math.round(dist(here[0], here[1], items[i][2], items[i][3])); }
     return null;
   }
-  window.GEO = { kmTo: kmTo, locate: locate, why: function (e) { var m = e && e.message; return m === 'negada' ? 'Você não permitiu a localização. Tudo bem: digite a cidade.' : (m === 'sem_suporte' ? 'Este navegador não informa a localização. Digite a cidade.' : 'Não deu para achar sua localização agora. Digite a cidade.'); } };
+  window.GEO = { kmTo: kmTo, locate: locate, all: load, why: function (e) { var m = e && e.message; return m === 'negada' ? 'Você não permitiu a localização. Tudo bem: digite a cidade.' : (m === 'sem_suporte' ? 'Este navegador não informa a localização. Digite a cidade.' : 'Não deu para achar sua localização agora. Digite a cidade.'); } };
 })();

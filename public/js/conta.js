@@ -196,9 +196,13 @@
         });
       }
       var tr = null;
-      return photoP.then(function () { return city ? db('GET', 'cities?select=id&slug=eq.' + encodeURIComponent(slugify(city))) : Promise.resolve({ ok: true, data: [] }); }).then(function (r) {
+      // cidade: no Brasil, pelo nome e pelo estado (o servidor acha ou cria a partir da base de municípios);
+      // fora do Brasil, o perfil guarda o país (ISO) e "Cidade, País"
+      var uf = (/, ([A-Z]{2})$/.exec(st.city || '') || [])[1] || '', foraBr = /^[A-Z]{2}$/.test(st.pais || '') && st.pais !== 'BR';
+      row.country = foraBr ? st.pais : null; row.locality = foraBr ? String(st.city || '').slice(0, 120) : null;
+      return photoP.then(function () { return city && uf && !foraBr ? CONTA.rpc('ensure_city', { p_name: city, p_uf: uf }) : Promise.resolve({ ok: true, data: null }); }).then(function (r) {
         if (r.offline) return r;
-        row.city_id = r.ok && r.data && r.data[0] ? r.data[0].id : null;
+        row.city_id = r.ok && r.data ? r.data : null;
         return db('GET', 'trainers?select=id,slug&user_id=eq.' + encodeURIComponent(uid));
       }).then(function (r) {
         if (!r.ok) return r;

@@ -27353,7 +27353,7 @@
  },
  "Informe um e-mail válido.": {
   "en": "Enter a valid email.",
-  "es": "Indica un correo válido."
+  "es": "Escribe un correo válido."
  },
  "Criando sua conta…": {
   "en": "Creating your account…",
@@ -37702,5 +37702,81 @@
  " aluno": {
   "en": " client",
   "es": " alumno"
+ },
+ "Informe seu nome.": {
+  "en": "Enter your name.",
+  "es": "Escribe tu nombre."
+ },
+ "Sou treinador · criar conta": {
+  "en": "I'm a coach · create account",
+  "es": "Soy entrenador · crear cuenta"
+ },
+ "Quero treinar · criar conta": {
+  "en": "I want to train · create account",
+  "es": "Quiero entrenar · crear cuenta"
+ },
+ "Treino no app, de qualquer lugar": {
+  "en": "Training in the app, from anywhere",
+  "es": "Entrenamiento en la app, desde cualquier lugar"
+ },
+ "Atendo fora do Brasil": {
+  "en": "I coach outside Brazil",
+  "es": "Atiendo fuera de Brasil"
+ },
+ "Informe o país e a cidade": {
+  "en": "Enter the country and the city",
+  "es": "Indica el país y la ciudad"
+ },
+ "País": {
+  "en": "Country",
+  "es": "País"
+ },
+ "Escolha o país": {
+  "en": "Choose the country",
+  "es": "Elige el país"
+ },
+ "Carregando as cidades…": {
+  "en": "Loading cities…",
+  "es": "Cargando las ciudades…"
+ },
+ "Escolha o país.": {
+  "en": "Choose the country.",
+  "es": "Elige el país."
+ },
+ "Escolha uma cidade da lista.": {
+  "en": "Choose a city from the list.",
+  "es": "Elige una ciudad de la lista."
+ },
+ "Usar esta cidade": {
+  "en": "Use this city",
+  "es": "Usar esta ciudad"
+ },
+ "Atendo no Brasil": {
+  "en": "I coach in Brazil",
+  "es": "Atiendo en Brasil"
+ },
+ "Cidades do mundo: base GeoNames.": {
+  "en": "World cities: GeoNames database.",
+  "es": "Ciudades del mundo: base GeoNames."
+ },
+ " escolhida": {
+  "en": " selected",
+  "es": " elegida"
+ },
+ " escolhidas": {
+  "en": " selected",
+  "es": " elegidas"
+ },
+ "1 escolhida": {
+  "en": "1 selected",
+  "es": "1 elegida"
+ },
+ "nenhuma": {
+  "en": "none",
+  "es": "ninguna"
+ },
+ "Português": {
+  "en": "Portuguese",
+  "es": "Portugués"
  }
 }
