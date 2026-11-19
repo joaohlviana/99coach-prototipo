@@ -16,5 +16,16 @@ r = await ve('/en/coach/' + id);
 console.log('3 perfil em inglês:', r.on, /Overview/.test(r.t), /Offers/.test(r.t), !/Visão geral/.test(r.t));
 r = await ve('/treinadores/musculacao');
 console.log('4 português continua em português:', r.on, r.lang === 'pt-BR', /Todos os esportes/.test(r.t));
+// painel do treinador e área do aluno (modo demonstração) no idioma: menu, botões e saudação traduzidos, sem frase meio a meio
+const c2 = await b.newContext({ viewport: { width: 1280, height: 900 } });
+await c2.addInitScript(() => { window.__LANG = 'en'; });
+const q = await c2.newPage(); q.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
+await q.goto(B + '/app#demo', { waitUntil: 'load' }); await q.waitForTimeout(4000);
+const tela = async (id) => { await q.evaluate((i) => GO(i, {}), id); await q.waitForTimeout(1500); return q.evaluate(() => document.getElementById('app').innerText); };
+let t = await tela('TRE01');
+console.log('5 painel do treinador em inglês:', /Clients/.test(t) && /Schedule/.test(t) && /Routines/.test(t), /GOOD MORNING|Good morning/i.test(t), !/\bAlunos\b/.test(t) && !/Mensagens/.test(t));
+t = await tela('ALU01');
+console.log('6 área do aluno em inglês:', /Workouts/.test(t) && /Progress/.test(t), /Log out/.test(t), !/\bTreinos\b/.test(t));
+console.log('7 mensagem de pessoa não é traduzida:', await q.evaluate(() => window.__tr('Oi Rafael! Posso trocar o treino de quarta? Vou viajar.') === 'Oi Rafael! Posso trocar o treino de quarta? Vou viajar.'));
 console.log('errs', errs);
 await b.close();

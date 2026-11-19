@@ -9972,7 +9972,7 @@
   "es": "Abrir registro"
  },
  "Olá, ": {
-  "en": "Hi, ",
+  "en": "Hello, ",
   "es": "Hola, "
  },
  "Não foi possível atualizar agora. A lista abaixo pode estar desatualizada.": {
@@ -29774,5 +29774,7933 @@
  "Só avalia quem concluiu um período contratado desta oferta.": {
   "en": "Only people who completed a purchased period of this offer can review it.",
   "es": "Solo reseña quien completó un período contratado de esta oferta."
+ },
+ "Bloquear a conversa?": {
+  "en": "Block the conversation?",
+  "es": "¿Bloquear la conversación?"
+ },
+ "Desbloquear a conversa?": {
+  "en": "Unblock the conversation?",
+  "es": "¿Desbloquear la conversación?"
+ },
+ "Bloquear": {
+  "en": "Block",
+  "es": "Bloquear"
+ },
+ "Conversa bloqueada.": {
+  "en": "Conversation blocked.",
+  "es": "Conversación bloqueada."
+ },
+ "Conversa desbloqueada.": {
+  "en": "Conversation unblocked.",
+  "es": "Conversación desbloqueada."
+ },
+ "Spam": {
+  "en": "Spam",
+  "es": "Spam"
+ },
+ "Outro": {
+  "en": "Other",
+  "es": "Otro"
+ },
+ " · protocolo ": {
+  "en": " · ticket number ",
+  "es": " · número de protocolo "
+ },
+ "Retirar mensagem": {
+  "en": "Unsend message",
+  "es": "Retirar mensaje"
+ },
+ "Anexo: ": {
+  "en": "Attachment: ",
+  "es": "Adjunto: "
+ },
+ "Mensagem retirada": {
+  "en": "Message unsent",
+  "es": "Mensaje retirado"
+ },
+ " · editada": {
+  "en": " · edited",
+  "es": " · editado"
+ },
+ "Anexo": {
+  "en": "Attachment",
+  "es": "Adjunto"
+ },
+ "Imagem": {
+  "en": "Image",
+  "es": "Imagen"
+ },
+ "Enviando arquivo…": {
+  "en": "Sending file…",
+  "es": "Enviando archivo…"
+ },
+ "Anexar arquivo": {
+  "en": "Attach file",
+  "es": "Adjuntar archivo"
+ },
+ "mensagem encontrada": {
+  "en": "message found",
+  "es": "mensaje encontrado"
+ },
+ "mensagens encontradas": {
+  "en": "messages found",
+  "es": "mensajes encontrados"
+ },
+ "Recebida": {
+  "en": "Received",
+  "es": "Recibida"
+ },
+ "Encerrada": {
+  "en": "Closed",
+  "es": "Cerrada"
+ },
+ "Protocolo ": {
+  "en": "Ticket number ",
+  "es": "Número de protocolo "
+ },
+ "use strict": {
+  "en": "use strict",
+  "es": "use strict"
+ },
+ "Bearer ": {
+  "en": "Bearer ",
+  "es": "Bearer "
+ },
+ "Content-Type": {
+  "en": "Content-Type",
+  "es": "Content-Type"
+ },
+ "musculacao funcional crossfit pilates yoga corrida lutas natacao ciclismo danca jiu-jitsu calistenia tenis futebol volei basquete escalada beach-tennis lpo": {
+  "en": "musculacao funcional crossfit pilates yoga corrida lutas natacao ciclismo danca jiu-jitsu calistenia tenis futebol volei basquete escalada beach-tennis lpo",
+  "es": "musculacao funcional crossfit pilates yoga corrida lutas natacao ciclismo danca jiu-jitsu calistenia tenis futebol volei basquete escalada beach-tennis lpo"
+ },
+ "Centro": {
+  "en": "Downtown",
+  "es": "Centro"
+ },
+ "Mobilidade": {
+  "en": "Mobility",
+  "es": "Movilidad"
+ },
+ "Beach tennis": {
+  "en": "Beach tennis",
+  "es": "Beach tennis"
+ },
+ "esqueci a senha": {
+  "en": "forgot password",
+  "es": "olvidé la contraseña"
+ },
+ "IntersectionObserver": {
+  "en": "IntersectionObserver",
+  "es": "IntersectionObserver"
+ },
+ "MutationObserver": {
+  "en": "MutationObserver",
+  "es": "MutationObserver"
+ },
+ "Recorrente mensal": {
+  "en": "Monthly recurring",
+  "es": "Recurrente mensual"
+ },
+ "Sob consulta": {
+  "en": "On request",
+  "es": "A consultar"
+ },
+ "Avulso": {
+  "en": "One-time",
+  "es": "Pago único"
+ },
+ "sem vínculo": {
+  "en": "no coaching relationship",
+  "es": "sin vínculo"
+ },
+ "Mostrar quando estou online": {
+  "en": "Show when I'm online",
+  "es": "Mostrar cuando estoy online"
+ },
+ "online agora": {
+  "en": "online now",
+  "es": "online ahora"
+ },
+ "Gravando…": {
+  "en": "Recording…",
+  "es": "Grabando…"
+ },
+ "(deste aparelho)": {
+  "en": "(from this device)",
+  "es": "(de este dispositivo)"
+ },
+ " (deste aparelho)": {
+  "en": " (from this device)",
+  "es": " (de este dispositivo)"
+ },
+ "Segunda": {
+  "en": "Monday",
+  "es": "Lunes"
+ },
+ "Quarta": {
+  "en": "Wednesday",
+  "es": "Miércoles"
+ },
+ "Quinta": {
+  "en": "Thursday",
+  "es": "Jueves"
+ },
+ "Sexta": {
+  "en": "Friday",
+  "es": "Viernes"
+ },
+ "Domingo": {
+  "en": "Sunday",
+  "es": "Domingo"
+ },
+ "America/Sao_Paulo": {
+  "en": "America/Sao_Paulo",
+  "es": "America/Sao_Paulo"
+ },
+ "Nada": {
+  "en": "Nothing",
+  "es": "Nada"
+ },
+ "Semana salva. ": {
+  "en": "Week saved. ",
+  "es": "Semana guardada. "
+ },
+ "Dias removidos. ": {
+  "en": "Days removed. ",
+  "es": "Días eliminados. "
+ },
+ "seu treinador": {
+  "en": "your coach",
+  "es": "tu entrenador"
+ },
+ "Nada marcado": {
+  "en": "Nothing scheduled",
+  "es": "Nada programado"
+ },
+ "Previsto": {
+  "en": "Planned",
+  "es": "Previsto"
+ },
+ "treino previsto": {
+  "en": "planned workout",
+  "es": "entrenamiento previsto"
+ },
+ "treinos previstos": {
+  "en": "planned workouts",
+  "es": "entrenamientos previstos"
+ },
+ " nesta semana ": {
+  "en": " this week ",
+  "es": " esta semana "
+ },
+ " aguardando resposta": {
+  "en": " waiting for a reply",
+  "es": " esperando respuesta"
+ },
+ "Como ": {
+  "en": "As ",
+  "es": "Como "
+ },
+ " · aguardando resposta": {
+  "en": " · waiting for a reply",
+  "es": " · esperando respuesta"
+ },
+ "Envio cancelado · ": {
+  "en": "Sending canceled · ",
+  "es": "Envío cancelado · "
+ },
+ "Aguardando": {
+  "en": "Waiting",
+  "es": "Esperando"
+ },
+ "Cancelado": {
+  "en": "Canceled",
+  "es": "Cancelado"
+ },
+ "Fechar respostas": {
+  "en": "Close responses",
+  "es": "Cerrar respuestas"
+ },
+ "Marcado como revisado.": {
+  "en": "Marked as reviewed.",
+  "es": "Marcado como revisado."
+ },
+ "Envio cancelado. ": {
+  "en": "Sending canceled. ",
+  "es": "Envío cancelado. "
+ },
+ " enviou em ": {
+  "en": " sent on ",
+  "es": " envió el "
+ },
+ "cancelado por ": {
+  "en": "canceled by ",
+  "es": "cancelado por "
+ },
+ " revisou em ": {
+  "en": " reviewed on ",
+  "es": " revisó el "
+ },
+ "Avaliar ": {
+  "en": "Review ",
+  "es": "Reseñar a "
+ },
+ " respondeu: “": {
+  "en": " replied: “",
+  "es": " respondió: “"
+ },
+ "tente de novo": {
+  "en": "try again",
+  "es": "inténtalo de nuevo"
+ },
+ " avaliou em ": {
+  "en": " left a review on ",
+  "es": " dejó su reseña el "
+ },
+ "Resposta publicada.": {
+  "en": "Reply published.",
+  "es": "Respuesta publicada."
+ },
+ "Resposta removida.": {
+  "en": "Reply removed.",
+  "es": "Respuesta eliminada."
+ },
+ "Desligar": {
+  "en": "Turn off",
+  "es": "Desactivar"
+ },
+ "Manter ligada": {
+  "en": "Keep on",
+  "es": "Mantener activada"
+ },
+ "Preparando…": {
+  "en": "Preparing…",
+  "es": "Preparando…"
+ },
+ "Conferindo…": {
+  "en": "Checking…",
+  "es": "Verificando…"
+ },
+ "Desligando…": {
+  "en": "Turning off…",
+  "es": "Desactivando…"
+ },
+ "Confirmar acesso": {
+  "en": "Confirm access",
+  "es": "Confirmar acceso"
+ },
+ "Confirmar e entrar": {
+  "en": "Confirm and log in",
+  "es": "Confirmar y entrar"
+ },
+ " · Brasil": {
+  "en": " · Brazil",
+  "es": " · Brasil"
+ },
+ "Instagram ": {
+  "en": "Instagram ",
+  "es": "Instagram "
+ },
+ "Acompanhamento · ": {
+  "en": "Coaching · ",
+  "es": "Acompañamiento · "
+ },
+ "por convite": {
+  "en": "by invite",
+  "es": "por invitación"
+ },
+ "por pedido": {
+  "en": "by request",
+  "es": "por solicitud"
+ },
+ "Cancelado pela pessoa": {
+  "en": "Canceled by the person",
+  "es": "Cancelado por la persona"
+ },
+ "Recusado": {
+  "en": "Declined",
+  "es": "Rechazado"
+ },
+ "Aceito": {
+  "en": "Accepted",
+  "es": "Aceptado"
+ },
+ "Treinador · ": {
+  "en": "Coach · ",
+  "es": "Entrenador · "
+ },
+ "Descanso: ": {
+  "en": "Rest: ",
+  "es": "Descanso: "
+ },
+ "Escape": {
+  "en": "Escape",
+  "es": "Escape"
+ },
+ " | 99coach": {
+  "en": " | 99coach",
+  "es": " | 99coach"
+ },
+ "Rafael": {
+  "en": "Rafael",
+  "es": "Rafael"
+ },
+ "Ana Carolina Souza": {
+  "en": "Ana Carolina Souza",
+  "es": "Ana Carolina Souza"
+ },
+ "Ana Carolina": {
+  "en": "Ana Carolina",
+  "es": "Ana Carolina"
+ },
+ " · desde ": {
+  "en": " · since ",
+  "es": " · desde "
+ },
+ "na sua conta": {
+  "en": "in your account",
+  "es": "en tu cuenta"
+ },
+ "neste aparelho": {
+  "en": "on this device",
+  "es": "en este dispositivo"
+ },
+ "Qualquer": {
+  "en": "Any",
+  "es": "Cualquiera"
+ },
+ "Londrina, PR": {
+  "en": "Londrina, PR",
+  "es": "Londrina, PR"
+ },
+ "not all": {
+  "en": "not all",
+  "es": "not all"
+ },
+ "(prefers-reduced-motion: reduce)": {
+  "en": "(prefers-reduced-motion: reduce)",
+  "es": "(prefers-reduced-motion: reduce)"
+ },
+ " · online": {
+  "en": " · online",
+  "es": " · online"
+ },
+ "Carolina": {
+  "en": "Carolina",
+  "es": "Carolina"
+ },
+ "Gabriel Santos": {
+  "en": "Gabriel Santos",
+  "es": "Gabriel Santos"
+ },
+ "Treinador · Londrina": {
+  "en": "Coach · Londrina",
+  "es": "Entrenador · Londrina"
+ },
+ "Trabalho": {
+  "en": "Work",
+  "es": "Trabajo"
+ },
+ "Conta e perfil": {
+  "en": "Account and profile",
+  "es": "Cuenta y perfil"
+ },
+ "Aluna · Acompanhamento online": {
+  "en": "Client · Online coaching",
+  "es": "Alumna · Acompañamiento online"
+ },
+ "Meu acompanhamento": {
+  "en": "My coaching",
+  "es": "Mi acompañamiento"
+ },
+ "Lia Moura": {
+  "en": "Lia Moura",
+  "es": "Lia Moura"
+ },
+ "Mesa": {
+  "en": "Desk",
+  "es": "Mesa"
+ },
+ "Casos": {
+  "en": "Cases",
+  "es": "Casos"
+ },
+ "Financeiro": {
+  "en": "Finance",
+  "es": "Finanzas"
+ },
+ "Uso normal": {
+  "en": "Normal use",
+  "es": "Uso normal"
+ },
+ "Atualização": {
+  "en": "Update",
+  "es": "Actualización"
+ },
+ "Escolher outra cidade": {
+  "en": "Choose another city",
+  "es": "Elegir otra ciudad"
+ },
+ "Perfil retirado": {
+  "en": "Profile removed",
+  "es": "Perfil retirado"
+ },
+ "Disponibilidade desconhecida": {
+  "en": "Availability unknown",
+  "es": "Disponibilidad desconocida"
+ },
+ "Ver serviço": {
+  "en": "View service",
+  "es": "Ver servicio"
+ },
+ "Oferta mudou": {
+  "en": "Offer changed",
+  "es": "La oferta cambió"
+ },
+ "Expirada": {
+  "en": "Expired",
+  "es": "Expirada"
+ },
+ "Detalhe público de programa": {
+  "en": "Public program detail",
+  "es": "Detalle público del programa"
+ },
+ "Revisar compra": {
+  "en": "Review purchase",
+  "es": "Revisar compra"
+ },
+ "Continuar busca e editar contexto": {
+  "en": "Continue search and edit context",
+  "es": "Continuar búsqueda y editar contexto"
+ },
+ "Limpo": {
+  "en": "Cleared",
+  "es": "Limpio"
+ },
+ "Expirado": {
+  "en": "Expired",
+  "es": "Expirado"
+ },
+ "Explicação e controle de recomendações": {
+  "en": "Recommendation explanation and controls",
+  "es": "Explicación y control de recomendaciones"
+ },
+ "Ocultado": {
+  "en": "Hidden",
+  "es": "Ocultado"
+ },
+ "Feedback salvando": {
+  "en": "Saving feedback",
+  "es": "Guardando feedback"
+ },
+ "Falha": {
+  "en": "Failed",
+  "es": "Falla"
+ },
+ "Avaliações e ciclo de contribuição": {
+  "en": "Reviews and contribution cycle",
+  "es": "Reseñas y ciclo de contribución"
+ },
+ "Erro": {
+  "en": "Error",
+  "es": "Error"
+ },
+ "Ajuda e páginas informativas": {
+  "en": "Help and info pages",
+  "es": "Ayuda y páginas informativas"
+ },
+ "Corrigir perfil": {
+  "en": "Fix profile",
+  "es": "Corregir perfil"
+ },
+ "Correção ou retirada de perfil público": {
+  "en": "Public profile correction or removal",
+  "es": "Corrección o retirada de perfil público"
+ },
+ "Vazio": {
+  "en": "Empty",
+  "es": "Vacío"
+ },
+ "Itens expirados": {
+  "en": "Expired items",
+  "es": "Elementos expirados"
+ },
+ "Limpeza pendente": {
+  "en": "Cleanup pending",
+  "es": "Limpieza pendiente"
+ },
+ "Mapa desligado": {
+  "en": "Map off",
+  "es": "Mapa desactivado"
+ },
+ "Mapa carregando": {
+  "en": "Map loading",
+  "es": "Cargando mapa"
+ },
+ "Catálogo público de programas": {
+  "en": "Public program catalog",
+  "es": "Catálogo público de programas"
+ },
+ "Digitar cidade": {
+  "en": "Type city",
+  "es": "Escribir ciudad"
+ },
+ "Online não é apresentado como perto.": {
+  "en": "Online isn't shown as nearby.",
+  "es": "Online no se muestra como cerca."
+ },
+ "Enviando": {
+  "en": "Sending",
+  "es": "Enviando"
+ },
+ "Serviço indisponível": {
+  "en": "Service unavailable",
+  "es": "Servicio no disponible"
+ },
+ "Recuperar acesso": {
+  "en": "Recover access",
+  "es": "Recuperar acceso"
+ },
+ "Código errado": {
+  "en": "Wrong code",
+  "es": "Código incorrecto"
+ },
+ "Muitas tentativas": {
+  "en": "Too many attempts",
+  "es": "Demasiados intentos"
+ },
+ "Link expirado": {
+  "en": "Link expired",
+  "es": "Enlace expirado"
+ },
+ "Rascunho salvo": {
+  "en": "Draft saved",
+  "es": "Borrador guardado"
+ },
+ "Editar perfil e áreas atendidas": {
+  "en": "Edit profile and service areas",
+  "es": "Editar perfil y áreas de atención"
+ },
+ "Conflito": {
+  "en": "Conflict",
+  "es": "Conflicto"
+ },
+ "Prévia e publicação do perfil": {
+  "en": "Profile preview and publishing",
+  "es": "Vista previa y publicación del perfil"
+ },
+ "Reivindicar perfil pelo Instagram": {
+  "en": "Claim profile via Instagram",
+  "es": "Reclamar perfil por Instagram"
+ },
+ "Tentativas esgotadas": {
+  "en": "No attempts left",
+  "es": "Intentos agotados"
+ },
+ "Aguardando prova": {
+  "en": "Awaiting proof",
+  "es": "Esperando prueba"
+ },
+ "Verificar titularidade": {
+  "en": "Verify ownership",
+  "es": "Verificar titularidad"
+ },
+ "Conflito de titularidade e revisão": {
+  "en": "Ownership conflict and review",
+  "es": "Conflicto de titularidad y revisión"
+ },
+ "Resolvido": {
+  "en": "Resolved",
+  "es": "Resuelto"
+ },
+ "Conta errada": {
+  "en": "Wrong account",
+  "es": "Cuenta equivocada"
+ },
+ "Prova expirada": {
+  "en": "Proof expired",
+  "es": "Prueba expirada"
+ },
+ "Credenciais profissionais": {
+  "en": "Professional credentials",
+  "es": "Credenciales profesionales"
+ },
+ "Verificado": {
+  "en": "Verified",
+  "es": "Verificado"
+ },
+ "Vencido": {
+  "en": "Expired",
+  "es": "Vencido"
+ },
+ "Vencida": {
+  "en": "Expired",
+  "es": "Vencida"
+ },
+ "Sessão encerrada": {
+  "en": "Session ended",
+  "es": "Sesión cerrada"
+ },
+ "Revogado": {
+  "en": "Revoked",
+  "es": "Revocado"
+ },
+ "Encerrar acompanhamento": {
+  "en": "End coaching",
+  "es": "Terminar acompañamiento"
+ },
+ "Concedido": {
+  "en": "Granted",
+  "es": "Concedido"
+ },
+ "Denunciar, bloquear e acompanhar": {
+  "en": "Report, block, and follow up",
+  "es": "Denunciar, bloquear y dar seguimiento"
+ },
+ "Confirmar bloqueio": {
+  "en": "Confirm block",
+  "es": "Confirmar bloqueo"
+ },
+ "Criar convite individual": {
+  "en": "Create individual invite",
+  "es": "Crear invitación individual"
+ },
+ "Reemitido": {
+  "en": "Reissued",
+  "es": "Reemitido"
+ },
+ "Revogar convite": {
+  "en": "Revoke invite",
+  "es": "Revocar invitación"
+ },
+ "Convite expirado": {
+  "en": "Invite expired",
+  "es": "Invitación expirada"
+ },
+ "Offline": {
+  "en": "Offline",
+  "es": "Offline"
+ },
+ "Aceitar convite": {
+  "en": "Accept invite",
+  "es": "Aceptar invitación"
+ },
+ "Pedir acompanhamento pelo perfil": {
+  "en": "Request coaching from the profile",
+  "es": "Solicitar acompañamiento desde el perfil"
+ },
+ "Caixa de pedidos do treinador": {
+  "en": "Coach's request inbox",
+  "es": "Bandeja de solicitudes del entrenador"
+ },
+ "Parcial": {
+  "en": "Partial",
+  "es": "Parcial"
+ },
+ "Incompleto": {
+  "en": "Incomplete",
+  "es": "Incompleto"
+ },
+ "Respostas alteradas": {
+  "en": "Answers changed",
+  "es": "Respuestas modificadas"
+ },
+ "Pausado": {
+  "en": "Paused",
+  "es": "Pausado"
+ },
+ "Encerrado": {
+  "en": "Ended",
+  "es": "Terminado"
+ },
+ "Revisar resposta": {
+  "en": "Review answer",
+  "es": "Revisar respuesta"
+ },
+ "Biblioteca de formulários": {
+  "en": "Form library",
+  "es": "Biblioteca de formularios"
+ },
+ "Arquivado": {
+  "en": "Archived",
+  "es": "Archivado"
+ },
+ "Duplicado": {
+  "en": "Duplicated",
+  "es": "Duplicado"
+ },
+ "Editor e prévia de formulário": {
+  "en": "Form editor and preview",
+  "es": "Editor y vista previa del formulario"
+ },
+ "Salvo como rascunho": {
+  "en": "Saved as draft",
+  "es": "Guardado como borrador"
+ },
+ "Enviar formulário e analisar respostas": {
+  "en": "Send form and analyze answers",
+  "es": "Enviar formulario y analizar respuestas"
+ },
+ "Pergunta mudou": {
+  "en": "Question changed",
+  "es": "La pregunta cambió"
+ },
+ "Avaliações físicas e evolução": {
+  "en": "Physical assessments and progress",
+  "es": "Evaluaciones físicas y progreso"
+ },
+ "Fotos privadas": {
+  "en": "Private photos",
+  "es": "Fotos privadas"
+ },
+ "Acesso revogado": {
+  "en": "Access revoked",
+  "es": "Acceso revocado"
+ },
+ "Arquivos privados do aluno": {
+  "en": "Client's private files",
+  "es": "Archivos privados del alumno"
+ },
+ "Enviando 64%": {
+  "en": "Sending 64%",
+  "es": "Enviando 64%"
+ },
+ "Arquivo grande demais": {
+  "en": "File too large",
+  "es": "Archivo demasiado grande"
+ },
+ "Processando": {
+  "en": "Processing",
+  "es": "Procesando"
+ },
+ "Vínculo não libera todos os documentos": {
+  "en": "Coaching relationship doesn't unlock all documents",
+  "es": "El vínculo no libera todos los documentos"
+ },
+ "Salva": {
+  "en": "Saved",
+  "es": "Guardada"
+ },
+ "Catálogo e seleção de exercícios": {
+  "en": "Exercise catalog and selection",
+  "es": "Catálogo y selección de ejercicios"
+ },
+ "Favoritos vazios": {
+  "en": "No favorites",
+  "es": "Favoritos vacíos"
+ },
+ "Detalhe do exercício": {
+  "en": "Exercise detail",
+  "es": "Detalle del ejercicio"
+ },
+ "Destino alterado": {
+  "en": "Destination changed",
+  "es": "Destino modificado"
+ },
+ "Favoritar": {
+  "en": "Favorite",
+  "es": "Marcar como favorito"
+ },
+ "Criar exercício próprio": {
+  "en": "Create your own exercise",
+  "es": "Crear ejercicio propio"
+ },
+ "Salvo como privado": {
+  "en": "Saved as private",
+  "es": "Guardado como privado"
+ },
+ "Biblioteca de rotinas e pastas": {
+  "en": "Routine and folder library",
+  "es": "Biblioteca de rutinas y carpetas"
+ },
+ "Copiado": {
+  "en": "Copied",
+  "es": "Copiado"
+ },
+ "Pasta removida": {
+  "en": "Folder removed",
+  "es": "Carpeta eliminada"
+ },
+ "Editor técnico de treino": {
+  "en": "Technical workout editor",
+  "es": "Editor técnico de entrenamiento"
+ },
+ "Unidade incerta": {
+  "en": "Uncertain unit",
+  "es": "Unidad incierta"
+ },
+ "Atribuir ou substituir programação": {
+  "en": "Assign or replace programming",
+  "es": "Asignar o sustituir programación"
+ },
+ "Histórico, diferenças e conflito": {
+  "en": "History, differences, and conflict",
+  "es": "Historial, diferencias y conflicto"
+ },
+ "Restaurado": {
+  "en": "Restored",
+  "es": "Restaurado"
+ },
+ "Conflito atual": {
+  "en": "Current conflict",
+  "es": "Conflicto actual"
+ },
+ "Salvamento falhou": {
+  "en": "Save failed",
+  "es": "Error al guardar"
+ },
+ "Movido": {
+  "en": "Moved",
+  "es": "Movido"
+ },
+ "Disponibilidade para atendimento": {
+  "en": "Availability for sessions",
+  "es": "Disponibilidad para atención"
+ },
+ "Compromissos e reservas": {
+  "en": "Appointments and bookings",
+  "es": "Citas y reservas"
+ },
+ "Upload processando": {
+  "en": "Upload processing",
+  "es": "Procesando carga"
+ },
+ "Erro preservando texto": {
+  "en": "Error, text preserved",
+  "es": "Error conservando el texto"
+ },
+ "Assistência": {
+  "en": "Assistance",
+  "es": "Asistencia"
+ },
+ "Falta item": {
+  "en": "Item missing",
+  "es": "Falta un elemento"
+ },
+ "Publicar não atribui treino": {
+  "en": "Publishing doesn't assign a workout",
+  "es": "Publicar no asigna el entrenamiento"
+ },
+ "Progresso privado": {
+  "en": "Private progress",
+  "es": "Progreso privado"
+ },
+ "Convite gratuito pendente": {
+  "en": "Free invite pending",
+  "es": "Invitación gratuita pendiente"
+ },
+ "Acesso gratuito não gera pedido pago": {
+  "en": "Free access doesn't create a paid order",
+  "es": "El acceso gratuito no genera un pedido de pago"
+ },
+ "Centro de notificações e tarefas": {
+  "en": "Notification and task center",
+  "es": "Centro de notificaciones y tareas"
+ },
+ "Marcar como lida": {
+  "en": "Mark as read",
+  "es": "Marcar como leída"
+ },
+ "Lida e resolvida são estados distintos": {
+  "en": "Read and resolved are different states",
+  "es": "Leída y resuelta son estados distintos"
+ },
+ "Analytics do treinador": {
+  "en": "Coach analytics",
+  "es": "Analytics del entrenador"
+ },
+ "Lendo": {
+  "en": "Reading",
+  "es": "Leyendo"
+ },
+ "Venda desligada": {
+  "en": "Sales off",
+  "es": "Venta desactivada"
+ },
+ "Salvar não publica nem cobra": {
+  "en": "Saving doesn't publish or charge",
+  "es": "Guardar no publica ni cobra"
+ },
+ "Ativo": {
+  "en": "Active",
+  "es": "Activo"
+ },
+ "Pagamento pendente": {
+  "en": "Payment pending",
+  "es": "Pago pendiente"
+ },
+ "Aceite não marca pagamento": {
+  "en": "Accepting doesn't mark payment",
+  "es": "Aceptar no marca el pago"
+ },
+ "Detalhe da sessão prescrita": {
+  "en": "Prescribed session detail",
+  "es": "Detalle de la sesión prescrita"
+ },
+ "Direito pendente": {
+  "en": "Entitlement pending",
+  "es": "Derecho pendiente"
+ },
+ "Executar treino e descansar": {
+  "en": "Do workout and rest",
+  "es": "Hacer el entrenamiento y descansar"
+ },
+ "Disco cheio": {
+  "en": "Disk full",
+  "es": "Disco lleno"
+ },
+ "Sincronizando": {
+  "en": "Syncing",
+  "es": "Sincronizando"
+ },
+ "Registrar série": {
+  "en": "Log set",
+  "es": "Registrar serie"
+ },
+ "Encerrar sessão e dar feedback": {
+  "en": "End session and give feedback",
+  "es": "Terminar sesión y dar feedback"
+ },
+ "Feedback opcional vazio": {
+  "en": "Optional feedback empty",
+  "es": "Feedback opcional vacío"
+ },
+ "Meus programas e retomada": {
+  "en": "My programs and resuming",
+  "es": "Mis programas y reanudación"
+ },
+ "Acesso expirado": {
+  "en": "Access expired",
+  "es": "Acceso expirado"
+ },
+ "Outra origem": {
+  "en": "Another source",
+  "es": "Otro origen"
+ },
+ "Leitura falhou": {
+  "en": "Read failed",
+  "es": "Error de lectura"
+ },
+ "Aula ou conteúdo do programa": {
+  "en": "Program lesson or content",
+  "es": "Clase o contenido del programa"
+ },
+ "Aula retirada": {
+  "en": "Lesson removed",
+  "es": "Clase retirada"
+ },
+ "Relação com o treinador e suporte": {
+  "en": "Coach relationship and support",
+  "es": "Relación con el entrenador y soporte"
+ },
+ "Sem franquia": {
+  "en": "No allowance",
+  "es": "Sin cuota incluida"
+ },
+ "Relação não autorizada": {
+  "en": "Relationship not authorized",
+  "es": "Relación no autorizada"
+ },
+ "Saldo desconhecido": {
+  "en": "Balance unknown",
+  "es": "Saldo desconocido"
+ },
+ "Gerar proposta": {
+  "en": "Generate proposal",
+  "es": "Generar propuesta"
+ },
+ "Importar material autorizado": {
+  "en": "Import authorized material",
+  "es": "Importar material autorizado"
+ },
+ "Gerando": {
+  "en": "Generating",
+  "es": "Generando"
+ },
+ "Desatualizada": {
+  "en": "Outdated",
+  "es": "Desactualizada"
+ },
+ "Recusada": {
+  "en": "Declined",
+  "es": "Rechazada"
+ },
+ "Inválida": {
+  "en": "Invalid",
+  "es": "Inválida"
+ },
+ "Revisar proposta e alterações": {
+  "en": "Review proposal and changes",
+  "es": "Revisar propuesta y cambios"
+ },
+ "Contexto mudou": {
+  "en": "Context changed",
+  "es": "El contexto cambió"
+ },
+ "Pendente de revisão": {
+  "en": "Pending review",
+  "es": "Pendiente de revisión"
+ },
+ "Parcialmente editada": {
+  "en": "Partially edited",
+  "es": "Parcialmente editada"
+ },
+ "Aprovação invalidada": {
+  "en": "Approval invalidated",
+  "es": "Aprobación invalidada"
+ },
+ "Adicionar ao rascunho": {
+  "en": "Add to draft",
+  "es": "Agregar al borrador"
+ },
+ "Importar e revisar material": {
+  "en": "Import and review material",
+  "es": "Importar y revisar material"
+ },
+ "Exercício incerto": {
+  "en": "Uncertain exercise",
+  "es": "Ejercicio incierto"
+ },
+ "Arquivo inválido": {
+  "en": "Invalid file",
+  "es": "Archivo inválido"
+ },
+ "Estimativa indisponível: não iniciar pago": {
+  "en": "Estimate unavailable: don't start paid",
+  "es": "Estimación no disponible: no iniciar de pago"
+ },
+ "Aguardando autorização": {
+  "en": "Awaiting authorization",
+  "es": "Esperando autorización"
+ },
+ "Extração parcial": {
+  "en": "Partial extraction",
+  "es": "Extracción parcial"
+ },
+ "Unidade desconhecida": {
+  "en": "Unknown unit",
+  "es": "Unidad desconocida"
+ },
+ "Exercício ambíguo": {
+  "en": "Ambiguous exercise",
+  "es": "Ejercicio ambiguo"
+ },
+ "Consultar original": {
+  "en": "View original",
+  "es": "Consultar original"
+ },
+ "Insight de acompanhamento ou negócio": {
+  "en": "Coaching or business insight",
+  "es": "Insight de acompañamiento o negocio"
+ },
+ "Ação": {
+  "en": "Action",
+  "es": "Acción"
+ },
+ "Sugestão rejeitada": {
+  "en": "Suggestion rejected",
+  "es": "Sugerencia rechazada"
+ },
+ "Revisar ação proposta": {
+  "en": "Review proposed action",
+  "es": "Revisar acción propuesta"
+ },
+ "Abrir resposta": {
+  "en": "Open answer",
+  "es": "Abrir respuesta"
+ },
+ "Abrir oferta": {
+  "en": "Open offer",
+  "es": "Abrir oferta"
+ },
+ "Ver fontes": {
+  "en": "View sources",
+  "es": "Ver fuentes"
+ },
+ "Uso e limite de IA": {
+  "en": "AI usage and limit",
+  "es": "Uso y límite de IA"
+ },
+ "Limite atingido": {
+  "en": "Limit reached",
+  "es": "Límite alcanzado"
+ },
+ "Reposição": {
+  "en": "Refill",
+  "es": "Reposición"
+ },
+ "Reposição futura": {
+  "en": "Upcoming refill",
+  "es": "Reposición futura"
+ },
+ "Nenhuma ainda": {
+  "en": "None yet",
+  "es": "Ninguna todavía"
+ },
+ "Proposta pendente": {
+  "en": "Proposal pending",
+  "es": "Propuesta pendiente"
+ },
+ "Abrir rascunho": {
+  "en": "Open draft",
+  "es": "Abrir borrador"
+ },
+ "Execução concluída não significa aceita": {
+  "en": "Run completed doesn't mean accepted",
+  "es": "Ejecución concluida no significa aceptada"
+ },
+ "Identificação mínima": {
+  "en": "Minimal identification",
+  "es": "Identificación mínima"
+ },
+ "Confirmação antes de pagar": {
+  "en": "Confirmation before paying",
+  "es": "Confirmación antes de pagar"
+ },
+ "Recorrente": {
+  "en": "Recurring",
+  "es": "Recurrente"
+ },
+ "Checkout do provedor": {
+  "en": "Provider checkout",
+  "es": "Checkout del proveedor"
+ },
+ "Redirecionando": {
+  "en": "Redirecting",
+  "es": "Redirigiendo"
+ },
+ "Banco recusou": {
+  "en": "Bank declined",
+  "es": "El banco rechazó"
+ },
+ "Retorno perdido": {
+  "en": "Return lost",
+  "es": "Retorno perdido"
+ },
+ "Resultado durável da compra": {
+  "en": "Durable purchase result",
+  "es": "Resultado duradero de la compra"
+ },
+ "Confirmando": {
+  "en": "Confirming",
+  "es": "Confirmando"
+ },
+ "Pago": {
+  "en": "Paid",
+  "es": "Pagado"
+ },
+ "Marketplace pago/acesso pendente": {
+  "en": "Marketplace paid/access pending",
+  "es": "Marketplace pagado/acceso pendiente"
+ },
+ "Falha confirmada": {
+  "en": "Failure confirmed",
+  "es": "Falla confirmada"
+ },
+ "Preparação e liberação do acesso": {
+  "en": "Access setup and release",
+  "es": "Preparación y liberación del acceso"
+ },
+ "Pago, acesso pendente": {
+  "en": "Paid, access pending",
+  "es": "Pagado, acceso pendiente"
+ },
+ "Reembolso parcial": {
+  "en": "Partial refund",
+  "es": "Reembolso parcial"
+ },
+ "Gestão da contratação recorrente": {
+  "en": "Recurring purchase management",
+  "es": "Gestión de la contratación recurrente"
+ },
+ "Pagamento atrasado": {
+  "en": "Payment overdue",
+  "es": "Pago atrasado"
+ },
+ "Cancelada": {
+  "en": "Canceled",
+  "es": "Cancelada"
+ },
+ "Alterar plano": {
+  "en": "Change plan",
+  "es": "Cambiar plan"
+ },
+ "Solicitar e acompanhar reembolso": {
+  "en": "Request and track refund",
+  "es": "Solicitar y seguir el reembolso"
+ },
+ "Elegibilidade desconhecida": {
+  "en": "Eligibility unknown",
+  "es": "Elegibilidad desconocida"
+ },
+ "Presente ou compra para outra pessoa": {
+  "en": "Gift or purchase for someone else",
+  "es": "Regalo o compra para otra persona"
+ },
+ "Convite enviado": {
+  "en": "Invite sent",
+  "es": "Invitación enviada"
+ },
+ "Contato incorreto": {
+  "en": "Wrong contact",
+  "es": "Contacto incorrecto"
+ },
+ "Aceite pendente": {
+  "en": "Acceptance pending",
+  "es": "Aceptación pendiente"
+ },
+ "Consultar entrega": {
+  "en": "Check delivery",
+  "es": "Consultar entrega"
+ },
+ "Prazo desconhecido": {
+  "en": "Timeline unknown",
+  "es": "Plazo desconocido"
+ },
+ "Cadastro interrompido": {
+  "en": "Sign-up interrupted",
+  "es": "Registro interrumpido"
+ },
+ "Retorno interrompido": {
+  "en": "Return interrupted",
+  "es": "Retorno interrumpido"
+ },
+ "Moedas": {
+  "en": "Currencies",
+  "es": "Monedas"
+ },
+ "Vendas e detalhe": {
+  "en": "Sales and detail",
+  "es": "Ventas y detalle"
+ },
+ "Venda reembolsada parcialmente": {
+  "en": "Sale partially refunded",
+  "es": "Venta reembolsada parcialmente"
+ },
+ "Extrato de movimentos": {
+  "en": "Transaction statement",
+  "es": "Extracto de movimientos"
+ },
+ "Fecha": {
+  "en": "Closes",
+  "es": "Cierra"
+ },
+ "Repasse manual (se adotado)": {
+  "en": "Manual payout (if adopted)",
+  "es": "Transferencia manual (si se adopta)"
+ },
+ "Valor mudou": {
+  "en": "Amount changed",
+  "es": "El monto cambió"
+ },
+ "Saldo mudou": {
+  "en": "Balance changed",
+  "es": "El saldo cambió"
+ },
+ "Revertido": {
+  "en": "Reversed",
+  "es": "Revertido"
+ },
+ "Status desconhecido": {
+  "en": "Status unknown",
+  "es": "Estado desconocido"
+ },
+ "Capacidade desconhecida": {
+  "en": "Capacity unknown",
+  "es": "Capacidad desconocida"
+ },
+ "Saldo negativo": {
+  "en": "Negative balance",
+  "es": "Saldo negativo"
+ },
+ "Ganhou": {
+  "en": "Won",
+  "es": "Ganó"
+ },
+ "Retirada": {
+  "en": "Removed",
+  "es": "Retirada"
+ },
+ "Contestada": {
+  "en": "Disputed",
+  "es": "Disputada"
+ },
+ "Mantida": {
+  "en": "Upheld",
+  "es": "Mantenida"
+ },
+ "Expira": {
+  "en": "Expires",
+  "es": "Expira"
+ },
+ "Sem foto autorizada": {
+  "en": "No authorized photo",
+  "es": "Sin foto autorizada"
+ },
+ "Google": {
+  "en": "Google",
+  "es": "Google"
+ },
+ "Amostra pequena": {
+  "en": "Small sample",
+  "es": "Muestra pequeña"
+ },
+ "Entregue": {
+  "en": "Delivered",
+  "es": "Entregado"
+ },
+ "Bloqueio": {
+  "en": "Block",
+  "es": "Bloqueo"
+ },
+ "Vigente": {
+  "en": "In effect",
+  "es": "Vigente"
+ },
+ "Comparação": {
+  "en": "Comparison",
+  "es": "Comparación"
+ },
+ "Na fila": {
+  "en": "In queue",
+  "es": "En cola"
+ },
+ "Link expira": {
+  "en": "Link expires",
+  "es": "El enlace expira"
+ },
+ "Gestão e afiliação à organização": {
+  "en": "Organization management and affiliation",
+  "es": "Gestión y afiliación a la organización"
+ },
+ "Claim pendente": {
+  "en": "Claim pending",
+  "es": "Reclamación pendiente"
+ },
+ "Hubs": {
+  "en": "Hubs",
+  "es": "Hubs"
+ },
+ "Descoberta que continua": {
+  "en": "Discovery that continues",
+  "es": "Descubrimiento que continúa"
+ },
+ "Indisponibilidade parcial": {
+  "en": "Partial outage",
+  "es": "Indisponibilidad parcial"
+ },
+ "Uso recorrente": {
+  "en": "Recurring use",
+  "es": "Uso recurrente"
+ },
+ "Perfil que ajuda a decidir": {
+  "en": "A profile that helps you decide",
+  "es": "Perfil que ayuda a decidir"
+ },
+ "Primeiro uso · importado": {
+  "en": "First use · imported",
+  "es": "Primer uso · importado"
+ },
+ "Alunos: carteira de relações": {
+  "en": "Clients: relationship portfolio",
+  "es": "Alumnos: cartera de relaciones"
+ },
+ "Recebimentos com significado": {
+  "en": "Payouts with meaning",
+  "es": "Cobros con significado"
+ },
+ "Comparação incompatível": {
+  "en": "Incompatible comparison",
+  "es": "Comparación incompatible"
+ },
+ "Assistência de IA do treinador": {
+  "en": "Coach AI assistance",
+  "es": "Asistencia de IA del entrenador"
+ },
+ "Primeiro uso · antes de gerar": {
+  "en": "First use · before generating",
+  "es": "Primer uso · antes de generar"
+ },
+ "Aguardando, aceitos, vencidos e revogados": {
+  "en": "Waiting, accepted, expired, and revoked",
+  "es": "Esperando, aceptados, vencidos y revocados"
+ },
+ "Compromissos e disponibilidade": {
+  "en": "Appointments and availability",
+  "es": "Citas y disponibilidad"
+ },
+ "Ofertas e cupons": {
+  "en": "Offers and coupons",
+  "es": "Ofertas y cupones"
+ },
+ "Vendas, saldo e repasses": {
+  "en": "Sales, balance, and payouts",
+  "es": "Ventas, saldo y transferencias"
+ },
+ "Visitas, contatos e vendas": {
+  "en": "Visits, contacts, and sales",
+  "es": "Visitas, contactos y ventas"
+ },
+ "Reivindicar e verificar titularidade": {
+  "en": "Claim and verify ownership",
+  "es": "Reclamar y verificar titularidad"
+ },
+ " · renova ": {
+  "en": " · renews ",
+  "es": " · se renueva "
+ },
+ "Carla Nunes": {
+  "en": "Carla Nunes",
+  "es": "Carla Nunes"
+ },
+ "link copiado 25/10 18:06": {
+  "en": "link copied 25/10 18:06",
+  "es": "enlace copiado 25/10 18:06"
+ },
+ "Felipe Ramos": {
+  "en": "Felipe Ramos",
+  "es": "Felipe Ramos"
+ },
+ "João Pedro Alves": {
+  "en": "João Pedro Alves",
+  "es": "João Pedro Alves"
+ },
+ "link copiado 17/10": {
+  "en": "link copied 17/10",
+  "es": "enlace copiado 17/10"
+ },
+ "Larissa Mendes": {
+  "en": "Larissa Mendes",
+  "es": "Larissa Mendes"
+ },
+ "link copiado 22/10": {
+  "en": "link copied 22/10",
+  "es": "enlace copiado 22/10"
+ },
+ "Rita Campos": {
+  "en": "Rita Campos",
+  "es": "Rita Campos"
+ },
+ "link copiado 12/10": {
+  "en": "link copied 12/10",
+  "es": "enlace copiado 12/10"
+ },
+ "Paula Costa": {
+  "en": "Paula Costa",
+  "es": "Paula Costa"
+ },
+ "Ana Nunes": {
+  "en": "Ana Nunes",
+  "es": "Ana Nunes"
+ },
+ "Thiago Reis": {
+  "en": "Thiago Reis",
+  "es": "Thiago Reis"
+ },
+ "Encerrados": {
+  "en": "Ended",
+  "es": "Terminados"
+ },
+ "Curitiba, PR": {
+  "en": "Curitiba, PR",
+  "es": "Curitiba, PR"
+ },
+ "Convidado": {
+  "en": "Invited",
+  "es": "Invitado"
+ },
+ "Ler relato": {
+  "en": "Read report",
+  "es": "Leer relato"
+ },
+ "Programar": {
+  "en": "Schedule",
+  "es": "Programar"
+ },
+ "Responder pedido": {
+  "en": "Reply to request",
+  "es": "Responder solicitud"
+ },
+ "Retomar acompanhamento": {
+  "en": "Resume coaching",
+  "es": "Retomar acompañamiento"
+ },
+ "Programar semana ": {
+  "en": "Schedule week ",
+  "es": "Programar semana "
+ },
+ "Motivo registrado ": {
+  "en": "Reason recorded ",
+  "es": "Motivo registrado "
+ },
+ "Aguarda ": {
+  "en": "Waiting for ",
+  "es": "Esperando a "
+ },
+ "Convite aceito ": {
+  "en": "Invite accepted ",
+  "es": "Invitación aceptada "
+ },
+ " concluir.": {
+  "en": " to finish.",
+  "es": " para concluir."
+ },
+ " · semana ": {
+  "en": " · week ",
+  "es": " · semana "
+ },
+ " · salva ": {
+  "en": " · saved ",
+  "es": " · guardada "
+ },
+ "depois de ": {
+  "en": "after ",
+  "es": "después de "
+ },
+ "Peso ": {
+  "en": "Weight ",
+  "es": "Peso "
+ },
+ " kg · gordura ": {
+  "en": " kg · body fat ",
+  "es": " kg · grasa "
+ },
+ "% · cintura ": {
+  "en": "% · waist ",
+  "es": "% · cintura "
+ },
+ " · acesso: ": {
+  "en": " · access: ",
+  "es": " · acceso: "
+ },
+ "Check-in respondido": {
+  "en": "Check-in answered",
+  "es": "Check-in respondido"
+ },
+ " · revisada": {
+  "en": " · reviewed",
+  "es": " · revisada"
+ },
+ "Notas": {
+  "en": "Notes",
+  "es": "Notas"
+ },
+ " retomar.": {
+  "en": " to resume.",
+  "es": " para retomar."
+ },
+ "Pausado · ": {
+  "en": "Paused · ",
+  "es": "Pausado · "
+ },
+ "Aguardando aceite": {
+  "en": "Awaiting acceptance",
+  "es": "Esperando aceptación"
+ },
+ "venceu em ": {
+  "en": "expired on ",
+  "es": "venció el "
+ },
+ "link copiado ": {
+  "en": "link copied ",
+  "es": "enlace copiado "
+ },
+ " copiado: 99coach.com.br/c/": {
+  "en": " copied: 99coach.com.br/c/",
+  "es": " copiado: 99coach.com.br/c/"
+ },
+ "Ativos": {
+  "en": "Active",
+  "es": "Activos"
+ },
+ "Pausados": {
+  "en": "Paused",
+  "es": "Pausados"
+ },
+ "Online e presencial": {
+  "en": "Online and in person",
+  "es": "Online y presencial"
+ },
+ "Prioridade": {
+  "en": "Priority",
+  "es": "Prioridad"
+ },
+ " ativos · ": {
+  "en": " active · ",
+  "es": " activos · "
+ },
+ " com os filtros": {
+  "en": " with these filters",
+  "es": " con los filtros"
+ },
+ "Preenchendo": {
+  "en": "Filling out",
+  "es": "Completando"
+ },
+ "Marina Alves": {
+  "en": "Marina Alves",
+  "es": "Marina Alves"
+ },
+ "Convite criado · ": {
+  "en": "Invite created · ",
+  "es": "Invitación creada · "
+ },
+ "um convite": {
+  "en": "an invite",
+  "es": "una invitación"
+ },
+ "Compartilhado (": {
+  "en": "Shared (",
+  "es": "Compartido ("
+ },
+ "link copiado": {
+  "en": "link copied",
+  "es": "enlace copiado"
+ },
+ "WhatsApp aberto": {
+  "en": "WhatsApp opened",
+  "es": "WhatsApp abierto"
+ },
+ "Compartilhado: ": {
+  "en": "Shared: ",
+  "es": "Compartido: "
+ },
+ "Link copiado: 99coach.com.br/c/": {
+  "en": "Link copied: 99coach.com.br/c/",
+  "es": "Enlace copiado: 99coach.com.br/c/"
+ },
+ "Pendentes": {
+  "en": "Pending",
+  "es": "Pendientes"
+ },
+ "Aceitos": {
+  "en": "Accepted",
+  "es": "Aceptados"
+ },
+ "Expirados": {
+  "en": "Expired",
+  "es": "Expirados"
+ },
+ "Revogados": {
+  "en": "Revoked",
+  "es": "Revocados"
+ },
+ " aguardando aceite": {
+  "en": " awaiting acceptance",
+  "es": " esperando aceptación"
+ },
+ "Pediu acompanhamento": {
+  "en": "Requested coaching",
+  "es": "Solicitó acompañamiento"
+ },
+ "recebido em ": {
+  "en": "received on ",
+  "es": "recibido el "
+ },
+ "revise antes de montar o treino": {
+  "en": "review before building the workout",
+  "es": "revisa antes de armar el entrenamiento"
+ },
+ "Revisar respostas": {
+  "en": "Review answers",
+  "es": "Revisar respuestas"
+ },
+ "responda pela conversa": {
+  "en": "reply in the conversation",
+  "es": "responde por la conversación"
+ },
+ "Respondeu \"": {
+  "en": "Answered \"",
+  "es": "Respondió \""
+ },
+ "enviado em ": {
+  "en": "sent on ",
+  "es": "enviado el "
+ },
+ "Convite aguardando aceite": {
+  "en": "Invite awaiting acceptance",
+  "es": "Invitación esperando aceptación"
+ },
+ " · salvo ": {
+  "en": " · saved ",
+  "es": " · guardado "
+ },
+ "ativo desde ": {
+  "en": "active since ",
+  "es": "activo desde "
+ },
+ " · rascunho": {
+  "en": " · draft",
+  "es": " · borrador"
+ },
+ "aluno ativo": {
+  "en": "active client",
+  "es": "alumno activo"
+ },
+ "alunos ativos": {
+  "en": "active clients",
+  "es": "alumnos activos"
+ },
+ "pedido aguardando": {
+  "en": "request waiting",
+  "es": "solicitud en espera"
+ },
+ "pedidos aguardando": {
+  "en": "requests waiting",
+  "es": "solicitudes en espera"
+ },
+ "Check-in enviado ": {
+  "en": "Check-in sent ",
+  "es": "Check-in enviado "
+ },
+ "Pedido recebido ": {
+  "en": "Request received ",
+  "es": "Solicitud recibida "
+ },
+ "Aceitou o convite ": {
+  "en": "Accepted the invite ",
+  "es": "Aceptó la invitación "
+ },
+ "Marcar como resolvida?": {
+  "en": "Mark as resolved?",
+  "es": "¿Marcar como resuelta?"
+ },
+ "Marcar como resolvida": {
+  "en": "Mark as resolved",
+  "es": "Marcar como resuelta"
+ },
+ "Compromisso": {
+  "en": "Appointment",
+  "es": "Cita"
+ },
+ "lrow t1-ag": {
+  "en": "lrow t1-ag",
+  "es": "lrow t1-ag"
+ },
+ "Rotina · salva ": {
+  "en": "Routine · saved ",
+  "es": "Rutina · guardada "
+ },
+ "Programa · editado ": {
+  "en": "Program · edited ",
+  "es": "Programa · editado "
+ },
+ "Nada aqui depende dela: revise, programe e responda normalmente.": {
+  "en": "Nothing here depends on it: review, schedule, and reply as usual.",
+  "es": "Nada aquí depende de ella: revisa, programa y responde con normalidad."
+ },
+ "Bom dia, ": {
+  "en": "Good morning, ",
+  "es": "Buenos días, "
+ },
+ " compromissos na agenda de hoje": {
+  "en": " appointments on today's schedule",
+  "es": " citas en la agenda de hoy"
+ },
+ "aluno precisa": {
+  "en": "client needs",
+  "es": "alumno necesita"
+ },
+ "alunos precisam": {
+  "en": "clients need",
+  "es": "alumnos necesitan"
+ },
+ " compromissos na agenda": {
+  "en": " appointments on the schedule",
+  "es": " citas en la agenda"
+ },
+ "motivo confirmado": {
+  "en": "reason confirmed",
+  "es": "motivo confirmado"
+ },
+ "tudo lido": {
+  "en": "all read",
+  "es": "todo leído"
+ },
+ " · fonte ": {
+  "en": " · source ",
+  "es": " · fuente "
+ },
+ ", atualizado ": {
+  "en": ", updated ",
+  "es": ", actualizado "
+ },
+ "Publique quando estiver pronto": {
+  "en": "Publish when you're ready",
+  "es": "Publica cuando esté listo"
+ },
+ "Aceite falhou": {
+  "en": "Acceptance failed",
+  "es": "La aceptación falló"
+ },
+ "Aguardando a pessoa": {
+  "en": "Waiting for the person",
+  "es": "Esperando a la persona"
+ },
+ "Outro motivo": {
+  "en": "Other reason",
+  "es": "Otro motivo"
+ },
+ "Pedido aceito. ": {
+  "en": "Request accepted. ",
+  "es": "Solicitud aceptada. "
+ },
+ " responder.": {
+  "en": " to reply.",
+  "es": " para responder."
+ },
+ " recusado. ": {
+  "en": " declined. ",
+  "es": " rechazado. "
+ },
+ "Consultando pedidos": {
+  "en": "Checking requests",
+  "es": "Consultando solicitudes"
+ },
+ "Enviada ": {
+  "en": "Sent ",
+  "es": "Enviada "
+ },
+ " · aguarda ": {
+  "en": " · waiting for ",
+  "es": " · esperando a "
+ },
+ "Revisada": {
+  "en": "Reviewed",
+  "es": "Revisada"
+ },
+ "Respondida": {
+  "en": "Answered",
+  "es": "Respondida"
+ },
+ " alterou “": {
+  "en": " changed “",
+  "es": " modificó “"
+ },
+ " mudou “": {
+  "en": " changed “",
+  "es": " cambió “"
+ },
+ "Falta ": {
+  "en": "Missing ",
+  "es": "Falta "
+ },
+ "Fonte: ": {
+  "en": "Source: ",
+  "es": "Fuente: "
+ },
+ "Escolhendo": {
+  "en": "Choosing",
+  "es": "Eligiendo"
+ },
+ "Assinatura ": {
+  "en": "Subscription ",
+  "es": "Suscripción "
+ },
+ "Nada a publicar": {
+  "en": "Nothing to publish",
+  "es": "Nada que publicar"
+ },
+ "Dados": {
+  "en": "Data",
+  "es": "Datos"
+ },
+ "Continua aberta": {
+  "en": "Still open",
+  "es": "Sigue abierta"
+ },
+ "Programa comprado": {
+  "en": "Program purchased",
+  "es": "Programa comprado"
+ },
+ "Acompanhamento retomado": {
+  "en": "Coaching resumed",
+  "es": "Acompañamiento retomado"
+ },
+ "Pausado ": {
+  "en": "Paused ",
+  "es": "Pausado "
+ },
+ "Anamnese ok.": {
+  "en": "Health intake ok.",
+  "es": "Anamnesis ok."
+ },
+ "Check-in semanal v1 · respondido 14/10": {
+  "en": "Weekly check-in v1 · answered 14/10",
+  "es": "Check-in semanal v1 · respondido 14/10"
+ },
+ "mesma unidade": {
+  "en": "same unit",
+  "es": "misma unidad"
+ },
+ "Sono": {
+  "en": "Sleep",
+  "es": "Sueño"
+ },
+ "mesma pergunta": {
+  "en": "same question",
+  "es": "misma pregunta"
+ },
+ "Check-in semanal v2 · respondido 18/10": {
+  "en": "Weekly check-in v2 · answered 18/10",
+  "es": "Check-in semanal v2 · respondido 18/10"
+ },
+ "Exames": {
+  "en": "Medical tests",
+  "es": "Exámenes"
+ },
+ "Laudo_joelho.pdf": {
+  "en": "Laudo_joelho.pdf",
+  "es": "Laudo_joelho.pdf"
+ },
+ "Marcos": {
+  "en": "Marcos",
+  "es": "Marcos"
+ },
+ "Hipertrofia": {
+  "en": "Hypertrophy",
+  "es": "Hipertrofia"
+ },
+ "Volume": {
+  "en": "Volume",
+  "es": "Volumen"
+ },
+ "Outros": {
+  "en": "Other",
+  "es": "Otros"
+ },
+ "Acesso encerrado": {
+  "en": "Access ended",
+  "es": "Acceso finalizado"
+ },
+ "Arquivo restrito": {
+  "en": "Restricted file",
+  "es": "Archivo restringido"
+ },
+ "lrow t2-lr": {
+  "en": "lrow t2-lr",
+  "es": "lrow t2-lr"
+ },
+ "Tamanho": {
+  "en": "Size",
+  "es": "Tamaño"
+ },
+ "acesso encerrado": {
+  "en": "access ended",
+  "es": "acceso finalizado"
+ },
+ "Link": {
+  "en": "Link",
+  "es": "Enlace"
+ },
+ "Acesso encerrado · ": {
+  "en": "Access ended · ",
+  "es": "Acceso finalizado · "
+ },
+ "Acesso atualizado · ": {
+  "en": "Access updated · ",
+  "es": "Acceso actualizado · "
+ },
+ "Exame_sangue_out.pdf": {
+  "en": "Exame_sangue_out.pdf",
+  "es": "Exame_sangue_out.pdf"
+ },
+ "Video_postura.mov": {
+  "en": "Video_postura.mov",
+  "es": "Video_postura.mov"
+ },
+ "Planilha_cargas.xlsx": {
+  "en": "Planilha_cargas.xlsx",
+  "es": "Planilha_cargas.xlsx"
+ },
+ "Processando arquivo": {
+  "en": "Processing file",
+  "es": "Procesando archivo"
+ },
+ "Enviando ": {
+  "en": "Uploading ",
+  "es": "Subiendo "
+ },
+ "um arquivo": {
+  "en": "a file",
+  "es": "un archivo"
+ },
+ " e Rafael · ": {
+  "en": " and Rafael · ",
+  "es": " y Rafael · "
+ },
+ "Outra data": {
+  "en": "Another date",
+  "es": "Otra fecha"
+ },
+ "defina a data": {
+  "en": "set the date",
+  "es": "define la fecha"
+ },
+ "Substitui": {
+  "en": "Replaces",
+  "es": "Reemplaza"
+ },
+ "antes: ": {
+  "en": "before: ",
+  "es": "antes: "
+ },
+ "opt t2-ropt": {
+  "en": "opt t2-ropt",
+  "es": "opt t2-ropt"
+ },
+ "input is-err": {
+  "en": "input is-err",
+  "es": "input is-err"
+ },
+ "Pollock 3 dobras": {
+  "en": "Pollock 3 skinfolds",
+  "es": "Pollock 3 pliegues"
+ },
+ "Pollock 7 dobras": {
+  "en": "Pollock 7 skinfolds",
+  "es": "Pollock 7 pliegues"
+ },
+ "Cintura (cm)": {
+  "en": "Waist (cm)",
+  "es": "Cintura (cm)"
+ },
+ "Peso (kg)": {
+  "en": "Weight (kg)",
+  "es": "Peso (kg)"
+ },
+ "Quadril (cm)": {
+  "en": "Hips (cm)",
+  "es": "Cadera (cm)"
+ },
+ "sem base": {
+  "en": "no baseline",
+  "es": "sin base"
+ },
+ "sem medidas": {
+  "en": "no measurements",
+  "es": "sin medidas"
+ },
+ "Peso": {
+  "en": "Weight",
+  "es": "Peso"
+ },
+ "Cintura": {
+  "en": "Waist",
+  "es": "Cintura"
+ },
+ "Avaliador": {
+  "en": "Assessor",
+  "es": "Evaluador"
+ },
+ " · corrigida ": {
+  "en": " · corrected ",
+  "es": " · corregida "
+ },
+ "Peso entre 30 e 250 kg.": {
+  "en": "Weight between 30 and 250 kg.",
+  "es": "Peso entre 30 y 250 kg."
+ },
+ "Cintura entre 40 e 200 cm.": {
+  "en": "Waist between 40 and 200 cm.",
+  "es": "Cintura entre 40 y 200 cm."
+ },
+ "Quadril entre 50 e 200 cm.": {
+  "en": "Hips between 50 and 200 cm.",
+  "es": "Cadera entre 50 y 200 cm."
+ },
+ " · medidas e fotos privadas": {
+  "en": " · private measurements and photos",
+  "es": " · medidas y fotos privadas"
+ },
+ "Medidas e fotos privadas": {
+  "en": "Private measurements and photos",
+  "es": "Medidas y fotos privadas"
+ },
+ "Mover": {
+  "en": "Move",
+  "es": "Mover"
+ },
+ "Nada a alterar neste escopo": {
+  "en": "Nothing to change in this scope",
+  "es": "Nada que cambiar en este alcance"
+ },
+ "Trocado": {
+  "en": "Swapped",
+  "es": "Cambiado"
+ },
+ "Descanso aplicado": {
+  "en": "Rest applied",
+  "es": "Descanso aplicado"
+ },
+ " · base ": {
+  "en": " · base ",
+  "es": " · base "
+ },
+ "Semana": {
+  "en": "Week",
+  "es": "Semana"
+ },
+ "Semana ": {
+  "en": "Week ",
+  "es": "Semana "
+ },
+ "dia muda": {
+  "en": "day changes",
+  "es": "día cambia"
+ },
+ "dias mudam": {
+  "en": "days change",
+  "es": "días cambian"
+ },
+ "Base: a rotina ": {
+  "en": "Base: routine ",
+  "es": "Base: la rutina "
+ },
+ "Macroplano": {
+  "en": "Macro plan",
+  "es": "Macroplan"
+ },
+ "Fase ": {
+  "en": "Phase ",
+  "es": "Fase "
+ },
+ "x por semana": {
+  "en": "x per week",
+  "es": "x por semana"
+ },
+ "Remover a fase ": {
+  "en": "Remove phase ",
+  "es": "Quitar la fase "
+ },
+ "Remover fase": {
+  "en": "Remove phase",
+  "es": "Quitar fase"
+ },
+ "Fase removida · plano v": {
+  "en": "Phase removed · plan v",
+  "es": "Fase quitada · plan v"
+ },
+ "Fase salva · plano v": {
+  "en": "Phase saved · plan v",
+  "es": "Fase guardada · plan v"
+ },
+ "Gera ": {
+  "en": "Generates ",
+  "es": "Genera "
+ },
+ " a partir de ": {
+  "en": " starting from ",
+  "es": " a partir de "
+ },
+ " semanas a partir de ": {
+  "en": " weeks starting from ",
+  "es": " semanas a partir de "
+ },
+ "Nota manual": {
+  "en": "Manual note",
+  "es": "Nota manual"
+ },
+ "Tornar a nota privada": {
+  "en": "Make the note private",
+  "es": "Hacer privada la nota"
+ },
+ "Texto: “": {
+  "en": "Text: “",
+  "es": "Texto: “"
+ },
+ "Compartilhar nota": {
+  "en": "Share note",
+  "es": "Compartir nota"
+ },
+ "Tornar privada": {
+  "en": "Make private",
+  "es": "Hacer privada"
+ },
+ " · sobre ": {
+  "en": " · about ",
+  "es": " · sobre "
+ },
+ "Rafael Lima · ": {
+  "en": "Rafael Lima · ",
+  "es": "Rafael Lima · "
+ },
+ "Visibilidade pendente": {
+  "en": "Visibility pending",
+  "es": "Visibilidad pendiente"
+ },
+ " · atual": {
+  "en": " · current",
+  "es": " · actual"
+ },
+ "outro aparelho": {
+  "en": "another device",
+  "es": "otro dispositivo"
+ },
+ "Outro aparelho (": {
+  "en": "Another device (",
+  "es": "Otro dispositivo ("
+ },
+ "sem resposta": {
+  "en": "no response",
+  "es": "sin respuesta"
+ },
+ "Lembretes": {
+  "en": "Reminders",
+  "es": "Recordatorios"
+ },
+ " · mesmo envio": {
+  "en": " · same send",
+  "es": " · mismo envío"
+ },
+ "Respostas ocultas": {
+  "en": "Hidden responses",
+  "es": "Respuestas ocultas"
+ },
+ " · prazo ": {
+  "en": " · due ",
+  "es": " · plazo "
+ },
+ " (rascunho)": {
+  "en": " (draft)",
+  "es": " (borrador)"
+ },
+ " foi enviado em ": {
+  "en": " was sent on ",
+  "es": " se envió el "
+ },
+ "aguardando resposta": {
+  "en": "awaiting response",
+  "es": "esperando respuesta"
+ },
+ "Envio confirmado · ": {
+  "en": "Send confirmed · ",
+  "es": "Envío confirmado · "
+ },
+ "resposta para revisar": {
+  "en": "response to review",
+  "es": "respuesta por revisar"
+ },
+ "respostas para revisar": {
+  "en": "responses to review",
+  "es": "respuestas por revisar"
+ },
+ "nada para revisar agora": {
+  "en": "nothing to review right now",
+  "es": "nada por revisar ahora"
+ },
+ " · desc. ": {
+  "en": " · rest ",
+  "es": " · desc. "
+ },
+ "Rascunho inicial": {
+  "en": "Initial draft",
+  "es": "Borrador inicial"
+ },
+ ": removido ": {
+  "en": ": removed ",
+  "es": ": quitado "
+ },
+ "peso do corpo": {
+  "en": "body weight",
+  "es": "peso corporal"
+ },
+ "Perder peso": {
+  "en": "Lose weight",
+  "es": "Bajar de peso"
+ },
+ "Nome completo": {
+  "en": "Full name",
+  "es": "Nombre completo"
+ },
+ "Altura (cm)": {
+  "en": "Height (cm)",
+  "es": "Altura (cm)"
+ },
+ "Nunca treinei": {
+  "en": "I've never trained",
+  "es": "Nunca he entrenado"
+ },
+ "Onde e quando sentiu": {
+  "en": "Where and when you felt it",
+  "es": "Dónde y cuándo lo sentiste"
+ },
+ "Desde quando?": {
+  "en": "Since when?",
+  "es": "¿Desde cuándo?"
+ },
+ "Peso, cintura, quadril e dobras": {
+  "en": "Weight, waist, hips, and skinfolds",
+  "es": "Peso, cintura, cadera y pliegues"
+ },
+ "Texto curto": {
+  "en": "Short text",
+  "es": "Texto corto"
+ },
+ "Texto longo": {
+  "en": "Long text",
+  "es": "Texto largo"
+ },
+ "Escala 0 a 10": {
+  "en": "Scale 0 to 10",
+  "es": "Escala de 0 a 10"
+ },
+ "Geral": {
+  "en": "General",
+  "es": "General"
+ },
+ "kettlebell swing unilateral": {
+  "en": "single-arm kettlebell swing",
+  "es": "kettlebell swing unilateral"
+ },
+ "Consulta feita": {
+  "en": "Lookup done",
+  "es": "Consulta realizada"
+ },
+ "Rotina movida": {
+  "en": "Routine moved",
+  "es": "Rutina movida"
+ },
+ "Pasta criada": {
+  "en": "Folder created",
+  "es": "Carpeta creada"
+ },
+ "rotina vai": {
+  "en": "routine goes",
+  "es": "rutina va"
+ },
+ "usada por ": {
+  "en": "used by ",
+  "es": "usada por "
+ },
+ "rascunho · salvo ": {
+  "en": "draft · saved ",
+  "es": "borrador · guardado "
+ },
+ "rotina encontrada": {
+  "en": "routine found",
+  "es": "rutina encontrada"
+ },
+ "rotinas encontradas": {
+  "en": "routines found",
+  "es": "rutinas encontradas"
+ },
+ "resposta pendente": {
+  "en": "pending response",
+  "es": "respuesta pendiente"
+ },
+ "respostas pendentes": {
+  "en": "pending responses",
+  "es": "respuestas pendientes"
+ },
+ "Editor": {
+  "en": "Editor",
+  "es": "Editor"
+ },
+ "Editando": {
+  "en": "Editing",
+  "es": "Editando"
+ },
+ "Bloco ": {
+  "en": "Block ",
+  "es": "Bloque "
+ },
+ " subiu para o bloco ": {
+  "en": " moved up to block ",
+  "es": " subió al bloque "
+ },
+ " desceu para o bloco ": {
+  "en": " moved down to block ",
+  "es": " bajó al bloque "
+ },
+ "Remover “": {
+  "en": "Remove “",
+  "es": "Quitar “"
+ },
+ " salva em ": {
+  "en": " saved on ",
+  "es": " guardada el "
+ },
+ " continua com ": {
+  "en": " stays with ",
+  "es": " sigue con "
+ },
+ "Rascunho v": {
+  "en": "Draft v",
+  "es": "Borrador v"
+ },
+ " salvo em ": {
+  "en": " saved on ",
+  "es": " guardado el "
+ },
+ "Conflito pendente": {
+  "en": "Pending conflict",
+  "es": "Conflicto pendiente"
+ },
+ "Gravando o rascunho v": {
+  "en": "Saving draft v",
+  "es": "Guardando el borrador v"
+ },
+ "Corrija ": {
+  "en": "Fix ",
+  "es": "Corrige "
+ },
+ " para salvar": {
+  "en": " to save",
+  "es": " para guardar"
+ },
+ "Nada mudou desde a v": {
+  "en": "Nothing changed since v",
+  "es": "Nada cambió desde la v"
+ },
+ "Rotina criada como rascunho": {
+  "en": "Routine created as a draft",
+  "es": "Rutina creada como borrador"
+ },
+ " removido do rascunho": {
+  "en": " removed from the draft",
+  "es": " quitado del borrador"
+ },
+ "mesmo grupo": {
+  "en": "same group",
+  "es": "mismo grupo"
+ },
+ "Core": {
+  "en": "Core",
+  "es": "Core"
+ },
+ "sem carga externa": {
+  "en": "no external load",
+  "es": "sin carga externa"
+ },
+ "Tempo": {
+  "en": "Time",
+  "es": "Tiempo"
+ },
+ "segundos ou minutos": {
+  "en": "seconds or minutes",
+  "es": "segundos o minutos"
+ },
+ "Biblioteca 99Coach": {
+  "en": "99Coach library",
+  "es": "Biblioteca 99Coach"
+ },
+ "YouTube": {
+  "en": "YouTube",
+  "es": "YouTube"
+ },
+ "Favorito": {
+  "en": "Favorite",
+  "es": "Favorito"
+ },
+ "Bola medicinal": {
+  "en": "Medicine ball",
+  "es": "Balón medicinal"
+ },
+ "Barra": {
+  "en": "Barbell",
+  "es": "Barra"
+ },
+ "Pernas": {
+  "en": "Legs",
+  "es": "Piernas"
+ },
+ "Escolha o grupo.": {
+  "en": "Choose the group.",
+  "es": "Elige el grupo."
+ },
+ "Personalizado": {
+  "en": "Custom",
+  "es": "Personalizado"
+ },
+ "Usar o existente": {
+  "en": "Use the existing one",
+  "es": "Usar el existente"
+ },
+ "Rascunho retomado": {
+  "en": "Draft resumed",
+  "es": "Borrador retomado"
+ },
+ "Descartar rascunho": {
+  "en": "Discard draft",
+  "es": "Descartar borrador"
+ },
+ "Halteres": {
+  "en": "Dumbbells",
+  "es": "Mancuernas"
+ },
+ "Kettlebell": {
+  "en": "Kettlebell",
+  "es": "Kettlebell"
+ },
+ "Reps": {
+  "en": "Reps",
+  "es": "Reps"
+ },
+ "Unidade: ": {
+  "en": "Unit: ",
+  "es": "Unidad: "
+ },
+ "lrow t3-exrow": {
+  "en": "lrow t3-exrow",
+  "es": "lrow t3-exrow"
+ },
+ "Remover ": {
+  "en": "Remove ",
+  "es": "Quitar "
+ },
+ "Favoritar ": {
+  "en": "Favorite ",
+  "es": "Marcar como favorito "
+ },
+ "Meus": {
+  "en": "Mine",
+  "es": "Míos"
+ },
+ "Filtros · ": {
+  "en": "Filters · ",
+  "es": "Filtros · "
+ },
+ "Adicionar ": {
+  "en": "Add ",
+  "es": "Agregar "
+ },
+ "card t3-q": {
+  "en": "card t3-q",
+  "es": "card t3-q"
+ },
+ "Pergunta ": {
+  "en": "Question ",
+  "es": "Pregunta "
+ },
+ "campo precisa": {
+  "en": "field needs",
+  "es": "campo necesita"
+ },
+ "campos precisam": {
+  "en": "fields need",
+  "es": "campos necesitan"
+ },
+ "Alterada": {
+  "en": "Changed",
+  "es": "Modificada"
+ },
+ "Regra": {
+  "en": "Rule",
+  "es": "Regla"
+ },
+ "Removida": {
+  "en": "Removed",
+  "es": "Quitada"
+ },
+ " (respostas antigas guardadas)": {
+  "en": " (old responses kept)",
+  "es": " (respuestas anteriores guardadas)"
+ },
+ "Publicar a v": {
+  "en": "Publish v",
+  "es": "Publicar la v"
+ },
+ "Envios futuros usam a v": {
+  "en": "Future sends use v",
+  "es": "Los envíos futuros usan la v"
+ },
+ "Publicar v": {
+  "en": "Publish v",
+  "es": "Publicar v"
+ },
+ "esta pergunta": {
+  "en": "this question",
+  "es": "esta pregunta"
+ },
+ " continua publicada": {
+  "en": " stays published",
+  "es": " sigue publicada"
+ },
+ "Gravando a v": {
+  "en": "Saving v",
+  "es": "Guardando la v"
+ },
+ " como rascunho.": {
+  "en": " as a draft.",
+  "es": " como borrador."
+ },
+ "pergunta precisa": {
+  "en": "question needs",
+  "es": "pregunta necesita"
+ },
+ "perguntas precisam": {
+  "en": "questions need",
+  "es": "preguntas necesitan"
+ },
+ "Rascunho criado": {
+  "en": "Draft created",
+  "es": "Borrador creado"
+ },
+ " · rascunho · v": {
+  "en": " · draft · v",
+  "es": " · borrador · v"
+ },
+ "Envia a v": {
+  "en": "Sends v",
+  "es": "Envía la v"
+ },
+ " publicada.": {
+  "en": " published.",
+  "es": " publicada."
+ },
+ " O rascunho v": {
+  "en": " Draft v",
+  "es": " El borrador v"
+ },
+ "Biblioteca": {
+  "en": "Library",
+  "es": "Biblioteca"
+ },
+ "Arquivar “": {
+  "en": "Archive “",
+  "es": "Archivar “"
+ },
+ " em rascunho": {
+  "en": " in draft",
+  "es": " en borrador"
+ },
+ "Modelos": {
+  "en": "Templates",
+  "es": "Plantillas"
+ },
+ "Publicados": {
+  "en": "Published",
+  "es": "Publicados"
+ },
+ "Arquivados": {
+  "en": "Archived",
+  "es": "Archivados"
+ },
+ "Reativado": {
+  "en": "Reactivated",
+  "es": "Reactivado"
+ },
+ "resposta recebida": {
+  "en": "response received",
+  "es": "respuesta recibida"
+ },
+ "respostas recebidas": {
+  "en": "responses received",
+  "es": "respuestas recibidas"
+ },
+ "Removido": {
+  "en": "Removed",
+  "es": "Quitado"
+ },
+ "Alterado": {
+  "en": "Changed",
+  "es": "Modificado"
+ },
+ "Restaurar a v": {
+  "en": "Restore v",
+  "es": "Restaurar la v"
+ },
+ "Cria a v": {
+  "en": "Creates v",
+  "es": "Crea la v"
+ },
+ " continua com a v": {
+  "en": " stays on v",
+  "es": " sigue con la v"
+ },
+ "Restaurar como v": {
+  "en": "Restore as v",
+  "es": "Restaurar como v"
+ },
+ "Restaurar v": {
+  "en": "Restore v",
+  "es": "Restaurar v"
+ },
+ "Revisar ": {
+  "en": "Review ",
+  "es": "Revisar "
+ },
+ "Oito semanas para aprender os movimentos básicos do CrossFit com escalas para cada nível.": {
+  "en": "Eight weeks to learn the basic CrossFit movements, with scaling for every level.",
+  "es": "Ocho semanas para aprender los movimientos básicos de CrossFit con escalas para cada nivel."
+ },
+ "Iniciantes sem lesão ativa": {
+  "en": "Beginners with no active injury",
+  "es": "Principiantes sin lesión activa"
+ },
+ "Liberação médica para atividade física": {
+  "en": "Medical clearance for physical activity",
+  "es": "Autorización médica para actividad física"
+ },
+ "Arranco e arremesso do zero, com técnica antes de carga.": {
+  "en": "Snatch and clean & jerk from scratch, with technique before load.",
+  "es": "Arranque y envión desde cero, con técnica antes que carga."
+ },
+ "Quem já treina musculação há 6 meses": {
+  "en": "People who have been doing strength training for 6 months",
+  "es": "Quienes ya entrenan musculación desde hace 6 meses"
+ },
+ "Quinze minutos por dia para ombros, quadril e coluna.": {
+  "en": "Fifteen minutes a day for shoulders, hips, and spine.",
+  "es": "Quince minutos al día para hombros, cadera y columna."
+ },
+ "Qualquer nível": {
+  "en": "Any level",
+  "es": "Cualquier nivel"
+ },
+ "Semana 1 · base": {
+  "en": "Week 1 · base",
+  "es": "Semana 1 · base"
+ },
+ "Sessão 1 · agachamento e burpee": {
+  "en": "Session 1 · squat and burpee",
+  "es": "Sesión 1 · sentadilla y burpee"
+ },
+ "treino · 35 min": {
+  "en": "workout · 35 min",
+  "es": "entrenamiento · 35 min"
+ },
+ "Sessão 2 · levantamento terra": {
+  "en": "Session 2 · deadlift",
+  "es": "Sesión 2 · peso muerto"
+ },
+ "treino · 40 min": {
+  "en": "workout · 40 min",
+  "es": "entrenamiento · 40 min"
+ },
+ "Sessão 3 · condicionamento 30 min": {
+  "en": "Session 3 · conditioning 30 min",
+  "es": "Sesión 3 · acondicionamiento 30 min"
+ },
+ "treino · 30 min": {
+  "en": "workout · 30 min",
+  "es": "entrenamiento · 30 min"
+ },
+ "Sessões 4 a 6 · técnica de barra": {
+  "en": "Sessions 4 to 6 · barbell technique",
+  "es": "Sesiones 4 a 6 · técnica de barra"
+ },
+ "Semanas 3 a 8": {
+  "en": "Weeks 3 to 8",
+  "es": "Semanas 3 a 8"
+ },
+ "Sessões 7 a 24": {
+  "en": "Sessions 7 to 24",
+  "es": "Sesiones 7 a 24"
+ },
+ "Semana 1 · arranco": {
+  "en": "Week 1 · snatch",
+  "es": "Semana 1 · arranque"
+ },
+ "Aula · arranco": {
+  "en": "Lesson · snatch",
+  "es": "Clase · arranque"
+ },
+ "Sessão 1 · técnica de arranco": {
+  "en": "Session 1 · snatch technique",
+  "es": "Sesión 1 · técnica de arranque"
+ },
+ "Semana 2 · arremesso": {
+  "en": "Week 2 · clean & jerk",
+  "es": "Semana 2 · envión"
+ },
+ "Aula · arremesso": {
+  "en": "Lesson · clean & jerk",
+  "es": "Clase · envión"
+ },
+ "Sessão 3 · técnica de arremesso": {
+  "en": "Session 3 · clean & jerk technique",
+  "es": "Sesión 3 · técnica de envión"
+ },
+ "Semanas 3 a 6": {
+  "en": "Weeks 3 to 6",
+  "es": "Semanas 3 a 6"
+ },
+ "Ombros": {
+  "en": "Shoulders",
+  "es": "Hombros"
+ },
+ "Vídeo · ombros": {
+  "en": "Video · shoulders",
+  "es": "Video · hombros"
+ },
+ "Sessão · mobilidade de ombro": {
+  "en": "Session · shoulder mobility",
+  "es": "Sesión · movilidad de hombro"
+ },
+ "treino · 15 min": {
+  "en": "workout · 15 min",
+  "es": "entrenamiento · 15 min"
+ },
+ "Quadril": {
+  "en": "Hips",
+  "es": "Cadera"
+ },
+ "Vídeo · quadril (semana 2)": {
+  "en": "Video · hips (week 2)",
+  "es": "Video · cadera (semana 2)"
+ },
+ "Coluna": {
+  "en": "Spine",
+  "es": "Columna"
+ },
+ "Sessão · coluna": {
+  "en": "Session · spine",
+  "es": "Sesión · columna"
+ },
+ "Capa CrossFit do zero.jpg": {
+  "en": "Capa CrossFit do zero.jpg",
+  "es": "Capa CrossFit do zero.jpg"
+ },
+ "foto própria": {
+  "en": "own photo",
+  "es": "foto propia"
+ },
+ "autoria de Rafael Lima": {
+  "en": "authored by Rafael Lima",
+  "es": "autoría de Rafael Lima"
+ },
+ "Capa LPO.jpg": {
+  "en": "Capa LPO.jpg",
+  "es": "Capa LPO.jpg"
+ },
+ "Aula arranco.mp4": {
+  "en": "Aula arranco.mp4",
+  "es": "Aula arranco.mp4"
+ },
+ "gravação própria": {
+  "en": "own recording",
+  "es": "grabación propia"
+ },
+ "Capa Mobilidade.jpg": {
+  "en": "Capa Mobilidade.jpg",
+  "es": "Capa Mobilidade.jpg"
+ },
+ "Vídeo quadril.mp4": {
+  "en": "Vídeo quadril.mp4",
+  "es": "Vídeo quadril.mp4"
+ },
+ "Acompanhamento online + 4 sessões presenciais": {
+  "en": "Online coaching + 4 in-person sessions",
+  "es": "Acompañamiento online + 4 sesiones presenciales"
+ },
+ "Foto do caderno de treino enviada por Ana": {
+  "en": "Photo of the workout notebook sent by Ana",
+  "es": "Foto del cuaderno de entrenamiento enviada por Ana"
+ },
+ "falta video": {
+  "en": "video missing",
+  "es": "falta video"
+ },
+ "falta vídeo": {
+  "en": "video missing",
+  "es": "falta video"
+ },
+ "Nome e descrição": {
+  "en": "Name and description",
+  "es": "Nombre y descripción"
+ },
+ "Falta a descrição do programa.": {
+  "en": "The program description is missing.",
+  "es": "Falta la descripción del programa."
+ },
+ " sem sessões": {
+  "en": " with no sessions",
+  "es": " sin sesiones"
+ },
+ " sessões planejadas · ": {
+  "en": " planned sessions · ",
+  "es": " sesiones planificadas · "
+ },
+ " com conteúdo": {
+  "en": " with content",
+  "es": " con contenido"
+ },
+ "Cada seção precisa de pelo menos uma sessão ou aula.": {
+  "en": "Each section needs at least one session or lesson.",
+  "es": "Cada sección necesita al menos una sesión o clase."
+ },
+ "Público e pré-requisito": {
+  "en": "Audience and prerequisite",
+  "es": "Público y requisito previo"
+ },
+ "Diga para quem é o programa.": {
+  "en": "Say who the program is for.",
+  "es": "Di para quién es el programa."
+ },
+ "Capa sem direito de uso confirmado": {
+  "en": "Cover without confirmed usage rights",
+  "es": "Portada sin derecho de uso confirmado"
+ },
+ " sem direito de uso": {
+  "en": " without usage rights",
+  "es": " sin derecho de uso"
+ },
+ "Direito de uso das mídias confirmado": {
+  "en": "Media usage rights confirmed",
+  "es": "Derecho de uso de los medios confirmado"
+ },
+ "Confirme autoria ou licença antes de publicar.": {
+  "en": "Confirm authorship or license before publishing.",
+  "es": "Confirma la autoría o la licencia antes de publicar."
+ },
+ "Mídias processadas": {
+  "en": "Media processed",
+  "es": "Medios procesados"
+ },
+ "Capa enviada": {
+  "en": "Cover uploaded",
+  "es": "Portada subida"
+ },
+ "Capa": {
+  "en": "Cover",
+  "es": "Portada"
+ },
+ "Opcional: sem capa, a vitrine usa a cor do perfil.": {
+  "en": "Optional: with no cover, the storefront uses the profile color.",
+  "es": "Opcional: sin portada, la vitrina usa el color del perfil."
+ },
+ "só sessões": {
+  "en": "sessions only",
+  "es": "solo sesiones"
+ },
+ "Nenhuma videoaula ainda": {
+  "en": "No video lessons yet",
+  "es": "Ninguna videoclase todavía"
+ },
+ " sem vídeo pronto": {
+  "en": " with no video ready",
+  "es": " sin video listo"
+ },
+ "Videoaulas com legenda": {
+  "en": "Video lessons with captions",
+  "es": "Videoclases con subtítulos"
+ },
+ "Aulas em vídeo precisam estar processadas e com legenda.": {
+  "en": "Video lessons must be processed and captioned.",
+  "es": "Las clases en video deben estar procesadas y con subtítulos."
+ },
+ "Videoaula": {
+  "en": "Video lesson",
+  "es": "Videoclase"
+ },
+ "Não exigida neste formato. Vídeo de técnica nos exercícios é recomendado, não obrigatório.": {
+  "en": "Not required in this format. Technique videos on exercises are recommended, not mandatory.",
+  "es": "No se exige en este formato. El video de técnica en los ejercicios es recomendado, no obligatorio."
+ },
+ "Mensal": {
+  "en": "Monthly",
+  "es": "Mensual"
+ },
+ "Oferta criada · v1 · ": {
+  "en": "Offer created · v1 · ",
+  "es": "Oferta creada · v1 · "
+ },
+ "Oferta salva · v": {
+  "en": "Offer saved · v",
+  "es": "Oferta guardada · v"
+ },
+ " contratos ativos continuam com ": {
+  "en": " active contracts stay with ",
+  "es": " contratos activos siguen con "
+ },
+ "Venda ligada · ": {
+  "en": "Sales on · ",
+  "es": "Venta activada · "
+ },
+ "Venda desligada · ": {
+  "en": "Sales off · ",
+  "es": "Venta desactivada · "
+ },
+ "Habilite recebimentos primeiro.": {
+  "en": "Enable payouts first.",
+  "es": "Habilita los cobros primero."
+ },
+ "Capacidade liberada": {
+  "en": "Capacity freed up",
+  "es": "Capacidad liberada"
+ },
+ "venda ligada": {
+  "en": "sales on",
+  "es": "venta activada"
+ },
+ "venda desligada": {
+  "en": "sales off",
+  "es": "venta desactivada"
+ },
+ "lrow t4-prow": {
+  "en": "lrow t4-prow",
+  "es": "lrow t4-prow"
+ },
+ "Salvo v": {
+  "en": "Saved v",
+  "es": "Guardado v"
+ },
+ " · venda ": {
+  "en": " · sales ",
+  "es": " · venta "
+ },
+ "a definir no programa": {
+  "en": "to be set in the program",
+  "es": "por definir en el programa"
+ },
+ "pacote com validade combinada": {
+  "en": "package with agreed validity",
+  "es": "paquete con vigencia acordada"
+ },
+ "input t4-money": {
+  "en": "input t4-money",
+  "es": "input t4-money"
+ },
+ "aceite do treinador": {
+  "en": "coach's acceptance",
+  "es": "aceptación del entrenador"
+ },
+ "switch onb-switch": {
+  "en": "switch onb-switch",
+  "es": "switch onb-switch"
+ },
+ "Inclui: ": {
+  "en": "Includes: ",
+  "es": "Incluye: "
+ },
+ "sim · v": {
+  "en": "yes · v",
+  "es": "sí · v"
+ },
+ " (fonte 99Coach, 26/10 08:00)": {
+  "en": " (source: 99Coach, 26/10 08:00)",
+  "es": " (fuente 99Coach, 26/10 08:00)"
+ },
+ "Esgotado": {
+  "en": "Used up",
+  "es": "Agotado"
+ },
+ "Validade expirada": {
+  "en": "Expired",
+  "es": "Vigencia vencida"
+ },
+ "em todos os ciclos": {
+  "en": "on all cycles",
+  "es": "en todos los ciclos"
+ },
+ "Desconto entre 1% e 90%.": {
+  "en": "Discount between 1% and 90%.",
+  "es": "Descuento entre 1% y 90%."
+ },
+ "Use o formato dd/mm, ex.: 30/11.": {
+  "en": "Use the format dd/mm, e.g. 30/11.",
+  "es": "Usa el formato dd/mm, ej.: 30/11."
+ },
+ "Cupom ": {
+  "en": "Coupon ",
+  "es": "Cupón "
+ },
+ "oferta removida": {
+  "en": "offer removed",
+  "es": "oferta quitada"
+ },
+ "Rafael Lima (treinador)": {
+  "en": "Rafael Lima (coach)",
+  "es": "Rafael Lima (entrenador)"
+ },
+ "Arquivar ": {
+  "en": "Archive ",
+  "es": "Archivar "
+ },
+ "Arquivar cupom": {
+  "en": "Archive coupon",
+  "es": "Archivar cupón"
+ },
+ " (fonte 99Coach).": {
+  "en": " (source: 99Coach).",
+  "es": " (fuente 99Coach)."
+ },
+ "Usar ": {
+  "en": "Use ",
+  "es": "Usar "
+ },
+ "Real (R$)": {
+  "en": "Real (R$)",
+  "es": "Real (R$)"
+ },
+ "Rascunho e envio": {
+  "en": "Draft and sending",
+  "es": "Borrador y envío"
+ },
+ "Descreva a oferta.": {
+  "en": "Describe the offer.",
+  "es": "Describe la oferta."
+ },
+ "Use o formato dd/mm.": {
+  "en": "Use the format dd/mm.",
+  "es": "Usa el formato dd/mm."
+ },
+ "Proposta v": {
+  "en": "Proposal v",
+  "es": "Propuesta v"
+ },
+ " salva como rascunho.": {
+  "en": " saved as a draft.",
+  "es": " guardada como borrador."
+ },
+ " enviada continua registrada.": {
+  "en": " sent stays on record.",
+  "es": " enviada sigue registrada."
+ },
+ " enviada a ": {
+  "en": " sent to ",
+  "es": " enviada a "
+ },
+ " pelo WhatsApp": {
+  "en": " via WhatsApp",
+  "es": " por WhatsApp"
+ },
+ "Entrega declarada": {
+  "en": "Delivery declared",
+  "es": "Entrega declarada"
+ },
+ " foi entregue a ": {
+  "en": " was delivered to ",
+  "es": " se entregó a "
+ },
+ "Criada": {
+  "en": "Created",
+  "es": "Creada"
+ },
+ "Enviada · v": {
+  "en": "Sent · v",
+  "es": "Enviada · v"
+ },
+ "Aceita": {
+  "en": "Accepted",
+  "es": "Aceptada"
+ },
+ " · conta 99Coach · aluna desde ": {
+  "en": " · 99Coach account · client since ",
+  "es": " · cuenta 99Coach · alumna desde "
+ },
+ "os materiais": {
+  "en": "the materials",
+  "es": "los materiales"
+ },
+ "o acesso": {
+  "en": "the access",
+  "es": "el acceso"
+ },
+ "sem venda": {
+  "en": "not for sale",
+  "es": "sin venta"
+ },
+ " publicada desde ": {
+  "en": " published since ",
+  "es": " publicada desde "
+ },
+ "Programa · v": {
+  "en": "Program · v",
+  "es": "Programa · v"
+ },
+ " publicada · v": {
+  "en": " published · v",
+  "es": " publicada · v"
+ },
+ " rascunho · salvo ": {
+  "en": " draft · saved ",
+  "es": " borrador · guardado "
+ },
+ " para publicar a v": {
+  "en": " to publish v",
+  "es": " para publicar la v"
+ },
+ "Participantes ativos": {
+  "en": "Active participants",
+  "es": "Participantes activos"
+ },
+ "Falta capa": {
+  "en": "Cover missing",
+  "es": "Falta portada"
+ },
+ "Tudo carregado": {
+  "en": "Everything loaded",
+  "es": "Todo cargado"
+ },
+ "Semana 1": {
+  "en": "Week 1",
+  "es": "Semana 1"
+ },
+ " continua publicada.": {
+  "en": " stays published.",
+  "es": " sigue publicada."
+ },
+ "card t4-mod": {
+  "en": "card t4-mod",
+  "es": "card t4-mod"
+ },
+ "lrow t4-item": {
+  "en": "lrow t4-item",
+  "es": "lrow t4-item"
+ },
+ "Mover ": {
+  "en": "Move ",
+  "es": "Mover "
+ },
+ " para cima": {
+  "en": " up",
+  "es": " hacia arriba"
+ },
+ " para baixo": {
+  "en": " down",
+  "es": " hacia abajo"
+ },
+ " publicada · editando v": {
+  "en": " published · editing v",
+  "es": " publicada · editando v"
+ },
+ "a definir": {
+  "en": "to be defined",
+  "es": "por definir"
+ },
+ "Nunca publicado": {
+  "en": "Never published",
+  "es": "Nunca publicado"
+ },
+ " para publicar": {
+  "en": " to publish",
+  "es": " para publicar"
+ },
+ "Publicar programa": {
+  "en": "Publish program",
+  "es": "Publicar programa"
+ },
+ "Resolva ": {
+  "en": "Resolve ",
+  "es": "Resuelve "
+ },
+ " participantes recebem um aviso e podem passar para a v": {
+  "en": " participants get a notice and can move to v",
+  "es": " participantes reciben un aviso y pueden pasar a la v"
+ },
+ " participantes continuam na v": {
+  "en": " participants stay on v",
+  "es": " participantes siguen en la v"
+ },
+ "Checklist consultado": {
+  "en": "Checklist viewed",
+  "es": "Checklist consultado"
+ },
+ "Habilitar venda": {
+  "en": "Enable sales",
+  "es": "Habilitar venta"
+ },
+ "Participantes consultados": {
+  "en": "Participants viewed",
+  "es": "Participantes consultados"
+ },
+ " participantes na v": {
+  "en": " participants on v",
+  "es": " participantes en la v"
+ },
+ "Direito confirmado": {
+  "en": "Rights confirmed",
+  "es": "Derecho confirmado"
+ },
+ "Enviamos a v": {
+  "en": "We sent v",
+  "es": "Enviamos la v"
+ },
+ "Publicar ": {
+  "en": "Publish ",
+  "es": "Publicar "
+ },
+ "Formato: ": {
+  "en": "Format: ",
+  "es": "Formato: "
+ },
+ " · candidata v": {
+  "en": " · candidate v",
+  "es": " · candidata v"
+ },
+ "acesso gratuito": {
+  "en": "free access",
+  "es": "acceso gratuito"
+ },
+ "Compra": {
+  "en": "Purchase",
+  "es": "Compra"
+ },
+ "Acesso gratuito": {
+  "en": "Free access",
+  "es": "Acceso gratuito"
+ },
+ "convite pendente": {
+  "en": "pending invite",
+  "es": "invitación pendiente"
+ },
+ "Convite pendente": {
+  "en": "Pending invite",
+  "es": "Invitación pendiente"
+ },
+ "Lucas Martins": {
+  "en": "Lucas Martins",
+  "es": "Lucas Martins"
+ },
+ "12 meses desde ": {
+  "en": "12 months from ",
+  "es": "12 meses desde "
+ },
+ "sem prazo": {
+  "en": "no time limit",
+  "es": "sin plazo"
+ },
+ "Origem: acesso gratuito · ": {
+  "en": "Source: free access · ",
+  "es": "Origen: acceso gratuito · "
+ },
+ " continua.": {
+  "en": " continues.",
+  "es": " continúa."
+ },
+ "Conceder acesso gratuito?": {
+  "en": "Grant free access?",
+  "es": "¿Conceder acceso gratuito?"
+ },
+ "Programa: ": {
+  "en": "Program: ",
+  "es": "Programa: "
+ },
+ "de hoje ": {
+  "en": "from today ",
+  "es": "de hoy "
+ },
+ "Concedido · ": {
+  "en": "Granted · ",
+  "es": "Concedido · "
+ },
+ " · origem: acesso gratuito · ": {
+  "en": " · source: free access · ",
+  "es": " · origen: acceso gratuito · "
+ },
+ "Rodrigo Teles": {
+  "en": "Rodrigo Teles",
+  "es": "Rodrigo Teles"
+ },
+ "Fernanda tem duas origens: compra (02/10) e acesso gratuito (20/10).": {
+  "en": "Fernanda has two sources: purchase (02/10) and free access (20/10).",
+  "es": "Fernanda tiene dos orígenes: compra (02/10) y acceso gratuito (20/10)."
+ },
+ "Mostrando ": {
+  "en": "Showing ",
+  "es": "Mostrando "
+ },
+ " com acesso recente de ": {
+  "en": " with recent access from ",
+  "es": " con acceso reciente de "
+ },
+ "Outra pessoa (e-mail)": {
+  "en": "Someone else (email)",
+  "es": "Otra persona (correo)"
+ },
+ "Pacote 8 aulas": {
+  "en": "8-class package",
+  "es": "Paquete de 8 clases"
+ },
+ " · pacote ": {
+  "en": " · package ",
+  "es": " · paquete "
+ },
+ "Pacote": {
+  "en": "Package",
+  "es": "Paquete"
+ },
+ "Usadas": {
+  "en": "Used",
+  "es": "Usadas"
+ },
+ "Reservadas": {
+  "en": "Booked",
+  "es": "Reservadas"
+ },
+ " · 1 pendente": {
+  "en": " · 1 pending",
+  "es": " · 1 pendiente"
+ },
+ " recebe o aviso no app": {
+  "en": " gets the notice in the app",
+  "es": " recibe el aviso en la app"
+ },
+ "Participante: ": {
+  "en": "Participant: ",
+  "es": "Participante: "
+ },
+ "Pedido: ": {
+  "en": "Request: ",
+  "es": "Solicitud: "
+ },
+ "Escolha mantida: ": {
+  "en": "Choice kept: ",
+  "es": "Elección mantenida: "
+ },
+ "nenhum nesta semana": {
+  "en": "none this week",
+  "es": "ninguno esta semana"
+ },
+ "Compromisso: ": {
+  "en": "Appointment: ",
+  "es": "Compromiso: "
+ },
+ "Manter": {
+  "en": "Keep",
+  "es": "Mantener"
+ },
+ "Compromisso cancelado. ": {
+  "en": "Appointment canceled. ",
+  "es": "Compromiso cancelado. "
+ },
+ "Participantes avisados.": {
+  "en": "Participants notified.",
+  "es": "Participantes avisados."
+ },
+ " agora em ": {
+  "en": " now in ",
+  "es": " ahora en "
+ },
+ "Manaus (UTC−4)": {
+  "en": "Manaus (UTC−4)",
+  "es": "Manaus (UTC−4)"
+ },
+ "Manaus": {
+  "en": "Manaus",
+  "es": "Manaus"
+ },
+ "Rio Branco (UTC−5)": {
+  "en": "Rio Branco (UTC−5)",
+  "es": "Rio Branco (UTC−5)"
+ },
+ "Rio Branco": {
+  "en": "Rio Branco",
+  "es": "Rio Branco"
+ },
+ "Noronha (UTC−2)": {
+  "en": "Noronha (UTC−2)",
+  "es": "Noronha (UTC−2)"
+ },
+ "Noronha": {
+  "en": "Noronha",
+  "es": "Noronha"
+ },
+ "sem atendimento": {
+  "en": "not available",
+  "es": "sin atención"
+ },
+ ", faixa ": {
+  "en": ", slot ",
+  "es": ", franja "
+ },
+ "Remover faixa ": {
+  "en": "Remove slot ",
+  "es": "Quitar franja "
+ },
+ "input t5-time": {
+  "en": "input t5-time",
+  "es": "input t5-time"
+ },
+ "compromisso marcado continua": {
+  "en": "scheduled appointment remains",
+  "es": "compromiso agendado sigue"
+ },
+ "compromissos marcados continuam": {
+  "en": "scheduled appointments remain",
+  "es": "compromisos agendados siguen"
+ },
+ " nesta data": {
+  "en": " on this date",
+  "es": " en esta fecha"
+ },
+ "Seg a sex": {
+  "en": "Mon to Fri",
+  "es": "Lun a vie"
+ },
+ "sem intervalo": {
+  "en": "no break",
+  "es": "sin pausa"
+ },
+ "compromisso continua marcado": {
+  "en": "appointment remains scheduled",
+  "es": "compromiso sigue agendado"
+ },
+ "compromissos continuam marcados": {
+  "en": "appointments remain scheduled",
+  "es": "compromisos siguen agendados"
+ },
+ "Continua marcado: ": {
+  "en": "Still scheduled: ",
+  "es": "Sigue agendado: "
+ },
+ "Fuso: ": {
+  "en": "Time zone: ",
+  "es": "Zona horaria: "
+ },
+ "Segunda: ": {
+  "en": "Monday: ",
+  "es": "Lunes: "
+ },
+ "Manter ": {
+  "en": "Keep ",
+  "es": "Mantener "
+ },
+ "Fuso ": {
+  "en": "Time zone ",
+  "es": "Zona horaria "
+ },
+ "compromisso fica": {
+  "en": "appointment stays",
+  "es": "compromiso queda"
+ },
+ "compromissos ficam": {
+  "en": "appointments stay",
+  "es": "compromisos quedan"
+ },
+ " continua valendo.": {
+  "en": " still applies.",
+  "es": " sigue vigente."
+ },
+ "Contatos": {
+  "en": "Contacts",
+  "es": "Contactos"
+ },
+ " · fonte Recebimentos": {
+  "en": " · source: Payouts",
+  "es": " · fuente Cobros"
+ },
+ "Base pequena (": {
+  "en": "Small sample (",
+  "es": "Base pequeña ("
+ },
+ " contatos e ": {
+  "en": " contacts and ",
+  "es": " contactos y "
+ },
+ " contatos de ": {
+  "en": " contacts out of ",
+  "es": " contactos de "
+ },
+ " visitas (": {
+  "en": " visits (",
+  "es": " visitas ("
+ },
+ " visitas.": {
+  "en": " visits.",
+  "es": " visitas."
+ },
+ "Visitas": {
+  "en": "Visits",
+  "es": "Visitas"
+ },
+ "das visitas": {
+  "en": "of visits",
+  "es": "de las visitas"
+ },
+ "dos contatos": {
+  "en": "of contacts",
+  "es": "de los contactos"
+ },
+ " · base pequena": {
+  "en": " · small sample",
+  "es": " · base pequeña"
+ },
+ "lrow t5-off": {
+  "en": "lrow t5-off",
+  "es": "lrow t5-off"
+ },
+ "lrow t5-cv": {
+  "en": "lrow t5-cv",
+  "es": "lrow t5-cv"
+ },
+ "Foto postural · frente.jpg": {
+  "en": "Foto postural · frente.jpg",
+  "es": "Foto postural · frente.jpg"
+ },
+ "Lida ": {
+  "en": "Read ",
+  "es": "Leída "
+ },
+ "Enter": {
+  "en": "Enter",
+  "es": "Enter"
+ },
+ "Tarefa": {
+  "en": "Task",
+  "es": "Tarea"
+ },
+ "Sistema": {
+  "en": "System",
+  "es": "Sistema"
+ },
+ "Tarefas": {
+  "en": "Tasks",
+  "es": "Tareas"
+ },
+ "Avisos novos": {
+  "en": "New notices",
+  "es": "Avisos nuevos"
+ },
+ "Aviso": {
+  "en": "Notice",
+  "es": "Aviso"
+ },
+ "lrow t5-nt": {
+  "en": "lrow t5-nt",
+  "es": "lrow t5-nt"
+ },
+ "aviso marcado como lido": {
+  "en": "notice marked as read",
+  "es": "aviso marcado como leído"
+ },
+ "avisos marcados como lidos": {
+  "en": "notices marked as read",
+  "es": "avisos marcados como leídos"
+ },
+ "Consumo estimado: ": {
+  "en": "Estimated usage: ",
+  "es": "Consumo estimado: "
+ },
+ "Ligar leitura": {
+  "en": "Turn on reading",
+  "es": "Activar lectura"
+ },
+ "Desligar a leitura?": {
+  "en": "Turn off reading?",
+  "es": "¿Desactivar la lectura?"
+ },
+ " sai desta tela.": {
+  "en": " leaves this screen.",
+  "es": " sale de esta pantalla."
+ },
+ "Consumo": {
+  "en": "Usage",
+  "es": "Consumo"
+ },
+ " (renova ": {
+  "en": " (renews ",
+  "es": " (se renueva "
+ },
+ " autorizado em ": {
+  "en": " authorized on ",
+  "es": " autorizado el "
+ },
+ " pela API oficial.": {
+  "en": " via the official API.",
+  "es": " por la API oficial."
+ },
+ "a receber": {
+  "en": "to be received",
+  "es": "por cobrar"
+ },
+ "Bruno Lima": {
+  "en": "Bruno Lima",
+  "es": "Bruno Lima"
+ },
+ "primeira sessão em 02/10 + 1 dia (Pix)": {
+  "en": "first session on 02/10 + 1 day (Pix)",
+  "es": "primera sesión el 02/10 + 1 día (Pix)"
+ },
+ "Fernanda Alves": {
+  "en": "Fernanda Alves",
+  "es": "Fernanda Alves"
+ },
+ "Acompanhamento online · outubro": {
+  "en": "Online coaching · October",
+  "es": "Acompañamiento online · octubre"
+ },
+ "ciclo iniciado em 05/10 + prazo do cartão (14 dias)": {
+  "en": "cycle started on 05/10 + card settlement period (14 days)",
+  "es": "ciclo iniciado el 05/10 + plazo de la tarjeta (14 días)"
+ },
+ "primeira sessão em 07/10 + 1 dia (Pix)": {
+  "en": "first session on 07/10 + 1 day (Pix)",
+  "es": "primera sesión el 07/10 + 1 día (Pix)"
+ },
+ "Beatriz Lopes": {
+  "en": "Beatriz Lopes",
+  "es": "Beatriz Lopes"
+ },
+ "Mobilidade 15 minutos": {
+  "en": "Mobility 15 minutes",
+  "es": "Movilidad 15 minutos"
+ },
+ "Diego Rocha": {
+  "en": "Diego Rocha",
+  "es": "Diego Rocha"
+ },
+ "primeira sessão em 13/10 + 1 dia (Pix)": {
+  "en": "first session on 13/10 + 1 day (Pix)",
+  "es": "primera sesión el 13/10 + 1 día (Pix)"
+ },
+ "Henrique Sales": {
+  "en": "Henrique Sales",
+  "es": "Henrique Sales"
+ },
+ "retido por disputa aberta pelo banco do comprador em 20/10": {
+  "en": "held due to a dispute opened by the buyer's bank on 20/10",
+  "es": "retenido por una disputa abierta por el banco del comprador el 20/10"
+ },
+ "reembolsada antes do início do serviço": {
+  "en": "refunded before the service started",
+  "es": "reembolsada antes del inicio del servicio"
+ },
+ "sessão de 17/10 cancelada por você (quadra fechada)": {
+  "en": "17/10 session canceled by you (court closed)",
+  "es": "sesión del 17/10 cancelada por ti (cancha cerrada)"
+ },
+ "Marcos Andrade": {
+  "en": "Marcos Andrade",
+  "es": "Marcos Andrade"
+ },
+ "Acompanhamento online · 21/10 a 20/11": {
+  "en": "Online coaching · 21/10 to 20/11",
+  "es": "Acompañamiento online · 21/10 al 20/11"
+ },
+ "ciclo iniciado em 21/10 + prazo do cartão (14 dias)": {
+  "en": "cycle started on 21/10 + card settlement period (14 days)",
+  "es": "ciclo iniciado el 21/10 + plazo de la tarjeta (14 días)"
+ },
+ "Camila Duarte": {
+  "en": "Camila Duarte",
+  "es": "Camila Duarte"
+ },
+ "Gustavo Reis": {
+  "en": "Gustavo Reis",
+  "es": "Gustavo Reis"
+ },
+ "Sessão presencial · novembro": {
+  "en": "In-person session · November",
+  "es": "Sesión presencial · noviembre"
+ },
+ "serviço ainda não começou: as sessões de novembro estão sem data": {
+  "en": "service hasn't started yet: the November sessions have no date",
+  "es": "el servicio aún no comenzó: las sesiones de noviembre no tienen fecha"
+ },
+ "Sessão presencial · hoje 14:00": {
+  "en": "In-person session · today 14:00",
+  "es": "Sesión presencial · hoy 14:00"
+ },
+ "após a sessão de hoje 14:00 + 1 dia (Pix)": {
+  "en": "after today's 14:00 session + 1 day (Pix)",
+  "es": "después de la sesión de hoy 14:00 + 1 día (Pix)"
+ },
+ "conta conectada ••7Q2": {
+  "en": "connected account ••7Q2",
+  "es": "cuenta conectada ••7Q2"
+ },
+ "Banco •• 4821": {
+  "en": "Bank •• 4821",
+  "es": "Banco •• 4821"
+ },
+ "Dados pessoais": {
+  "en": "Personal details",
+  "es": "Datos personales"
+ },
+ "Confirmados pelo provedor em 03/2026": {
+  "en": "Confirmed by the provider in 03/2026",
+  "es": "Confirmados por el proveedor en 03/2026"
+ },
+ "Confirmar a titularidade da conta •• 4821": {
+  "en": "Confirm ownership of account •• 4821",
+  "es": "Confirmar la titularidad de la cuenta •• 4821"
+ },
+ "Pedido depois da conta bancária": {
+  "en": "Requested after the bank account",
+  "es": "Solicitado después de la cuenta bancaria"
+ },
+ "Outubro 2026": {
+  "en": "October 2026",
+  "es": "Octubre 2026"
+ },
+ "Destino inválido: conta encerrada no banco. O valor voltou ao liberado em 18/09.": {
+  "en": "Invalid destination: account closed at the bank. The amount returned to the released balance on 18/09.",
+  "es": "Destino inválido: cuenta cerrada en el banco. El monto volvió al saldo liberado el 18/09."
+ },
+ "Reenvio de E-27 depois da correção do destino no provedor.": {
+  "en": "Resend of E-27 after the destination was fixed at the provider.",
+  "es": "Reenvío de E-27 después de la corrección del destino en el proveedor."
+ },
+ "Saldo liberado em setembro.": {
+  "en": "Balance released in September.",
+  "es": "Saldo liberado en septiembre."
+ },
+ "Pausado: falta 1 dado bancário no provedor. O valor segue no liberado.": {
+  "en": "Paused: 1 bank detail is missing at the provider. The amount stays in the released balance.",
+  "es": "Pausado: falta 1 dato bancario en el proveedor. El monto sigue en el saldo liberado."
+ },
+ "Conta conectada com cadastro incompleto naquele dia": {
+  "en": "Connected account had incomplete registration that day",
+  "es": "Cuenta conectada con registro incompleto ese día"
+ },
+ "Reenvio de P-70 depois do cadastro concluído": {
+  "en": "Resend of P-70 after registration was completed",
+  "es": "Reenvío de P-70 después de completar el registro"
+ },
+ "parcialmente revertida": {
+  "en": "partially reversed",
+  "es": "parcialmente revertida"
+ },
+ "Banco do comprador": {
+  "en": "Buyer's bank",
+  "es": "Banco del comprador"
+ },
+ "Compra não reconhecida pelo titular do cartão": {
+  "en": "Purchase not recognized by the cardholder",
+  "es": "Compra no reconocida por el titular de la tarjeta"
+ },
+ "Registro de acesso ao programa": {
+  "en": "Program access log",
+  "es": "Registro de acceso al programa"
+ },
+ "Datas em que o comprador abriu as sessões, sem dados de saúde": {
+  "en": "Dates the buyer opened the sessions, with no health data",
+  "es": "Fechas en que el comprador abrió las sesiones, sin datos de salud"
+ },
+ "Comprovante de entrega digital": {
+  "en": "Proof of digital delivery",
+  "es": "Comprobante de entrega digital"
+ },
+ "Termos aceitos na compra": {
+  "en": "Terms accepted at purchase",
+  "es": "Términos aceptados en la compra"
+ },
+ "Versão 3 da oferta CrossFit do zero": {
+  "en": "Version 3 of the CrossFit from scratch offer",
+  "es": "Versión 3 de la oferta CrossFit desde cero"
+ },
+ "Disputa aberta pelo banco do comprador": {
+  "en": "Dispute opened by the buyer's bank",
+  "es": "Disputa abierta por el banco del comprador"
+ },
+ "Você, a pedido do aluno": {
+  "en": "You, at the client's request",
+  "es": "Tú, a pedido del alumno"
+ },
+ "Bruno pediu o reembolso de 1 sessão": {
+  "en": "Bruno requested a refund for 1 session",
+  "es": "Bruno pidió el reembolso de 1 sesión"
+ },
+ "Reembolso parcial de R$ 80,00 feito por você": {
+  "en": "Partial refund of R$ 80,00 issued by you",
+  "es": "Reembolso parcial de R$ 80,00 hecho por ti"
+ },
+ "Sessão de 17/10 cancelada (quadra fechada)": {
+  "en": "Session on 17/10 canceled (court closed)",
+  "es": "Sesión del 17/10 cancelada (cancha cerrada)"
+ },
+ "Reembolso total de R$ 80,00 feito por você": {
+  "en": "Full refund of R$ 80,00 issued by you",
+  "es": "Reembolso total de R$ 80,00 hecho por ti"
+ },
+ "Taxa do processador (R$ 0,79) não é devolvida pelo provedor": {
+  "en": "Processor fee (R$ 0,79) is not returned by the provider",
+  "es": "La tarifa del procesador (R$ 0,79) no es devuelta por el proveedor"
+ },
+ "Outubro 2026 · corte 19/10": {
+  "en": "October 2026 · cutoff 19/10",
+  "es": "Octubre 2026 · corte 19/10"
+ },
+ "enviado ao banco": {
+  "en": "sent to bank",
+  "es": "enviado al banco"
+ },
+ "retido · disputa": {
+  "en": "held · dispute",
+  "es": "retenido · disputa"
+ },
+ "Taxa do processador (": {
+  "en": "Processor fee (",
+  "es": "Tarifa del procesador ("
+ },
+ "Venda · ": {
+  "en": "Sale · ",
+  "es": "Venta · "
+ },
+ "Pago por ": {
+  "en": "Paid by ",
+  "es": "Pagado por "
+ },
+ "Desconto · cupom ": {
+  "en": "Discount · coupon ",
+  "es": "Descuento · cupón "
+ },
+ "Cupom aplicado na compra": {
+  "en": "Coupon applied at purchase",
+  "es": "Cupón aplicado en la compra"
+ },
+ "Tarifa do processador · pendente": {
+  "en": "Processor fee · pending",
+  "es": "Tarifa del procesador · pendiente"
+ },
+ "Valor informado pelo processador": {
+  "en": "Amount reported by the processor",
+  "es": "Monto informado por el procesador"
+ },
+ "Liberação · ": {
+  "en": "Release · ",
+  "es": "Liberación · "
+ },
+ "Retenção · disputa ": {
+  "en": "Hold · dispute ",
+  "es": "Retención · disputa "
+ },
+ "Liberação · disputa ": {
+  "en": "Release · dispute ",
+  "es": "Liberación · disputa "
+ },
+ "Decisão do banco a seu favor": {
+  "en": "Bank decision in your favor",
+  "es": "Decisión del banco a tu favor"
+ },
+ "Reembolso ": {
+  "en": "Refund ",
+  "es": "Reembolso "
+ },
+ "ao aluno · ": {
+  "en": "to the client · ",
+  "es": "al alumno · "
+ },
+ "Comissão 99Coach devolvida (5%)": {
+  "en": "99Coach commission returned (5%)",
+  "es": "Comisión 99Coach devuelta (5%)"
+ },
+ "Encerramento ": {
+  "en": "Closure ",
+  "es": "Cierre "
+ },
+ " · taxa do processador não devolvida": {
+  "en": " · processor fee not returned",
+  "es": " · tarifa del procesador no devuelta"
+ },
+ "Envio ao banco · ": {
+  "en": "Transfer to bank · ",
+  "es": "Envío al banco · "
+ },
+ "siga um valor": {
+  "en": "follow an amount",
+  "es": "sigue un monto"
+ },
+ "Retido por disputa ": {
+  "en": "Held by dispute ",
+  "es": "Retenido por disputa "
+ },
+ "liberado em 26/10 após a decisão": {
+  "en": "released on 26/10 after the decision",
+  "es": "liberado el 26/10 tras la decisión"
+ },
+ "Liberado · ": {
+  "en": "Released · ",
+  "es": "Liberado · "
+ },
+ "Repasse ": {
+  "en": "Payout ",
+  "es": "Transferencia "
+ },
+ " para a conta conectada": {
+  "en": " to the connected account",
+  "es": " a la cuenta conectada"
+ },
+ " · automático": {
+  "en": " · automatic",
+  "es": " · automático"
+ },
+ "sem previsão · ": {
+  "en": "no estimate · ",
+  "es": "sin fecha prevista · "
+ },
+ "Enviado ao banco · ": {
+  "en": "Sent to bank · ",
+  "es": "Enviado al banco · "
+ },
+ " · previsão de chegada ": {
+  "en": " · expected arrival ",
+  "es": " · llegada prevista "
+ },
+ " (não confirma crédito)": {
+  "en": " (does not confirm the credit)",
+  "es": " (no confirma el abono)"
+ },
+ " (previsão do provedor)": {
+  "en": " (provider's estimate)",
+  "es": " (previsión del proveedor)"
+ },
+ "no próximo envio semanal": {
+  "en": "in the next weekly transfer",
+  "es": "en el próximo envío semanal"
+ },
+ "pausado até concluir o dado bancário": {
+  "en": "paused until the bank details are completed",
+  "es": "pausado hasta completar el dato bancario"
+ },
+ " · conclua até ": {
+  "en": " · complete by ",
+  "es": " · complétalo antes del "
+ },
+ "Disputa ": {
+  "en": "Dispute ",
+  "es": "Disputa "
+ },
+ " · enviar evidência": {
+  "en": " · submit evidence",
+  "es": " · enviar evidencia"
+ },
+ "Prazo ": {
+  "en": "Deadline ",
+  "es": "Plazo "
+ },
+ " · pedido ": {
+  "en": " · order ",
+  "es": " · pedido "
+ },
+ "Enviado ao provedor em 26/10 ": {
+  "en": "Sent to the provider on 26/10 ",
+  "es": "Enviado al proveedor el 26/10 "
+ },
+ " · em análise": {
+  "en": " · under review",
+  "es": " · en revisión"
+ },
+ "Titularidade confirmada pelo provedor em 26/10": {
+  "en": "Ownership confirmed by the provider on 26/10",
+  "es": "Titularidad confirmada por el proveedor el 26/10"
+ },
+ "Já validado com os dados pessoais": {
+  "en": "Already validated with your personal details",
+  "es": "Ya validado con los datos personales"
+ },
+ "Reagendado para o próximo envio semanal depois da confirmação do dado bancário.": {
+  "en": "Rescheduled for the next weekly transfer after the bank details are confirmed.",
+  "es": "Reprogramado para el próximo envío semanal después de la confirmación del dato bancario."
+ },
+ "Vender": {
+  "en": "Sell",
+  "es": "Vender"
+ },
+ "Receber repasse na conta conectada": {
+  "en": "Receive payout in the connected account",
+  "es": "Recibir la transferencia en la cuenta conectada"
+ },
+ "Enviar ao banco": {
+  "en": "Send to bank",
+  "es": "Enviar al banco"
+ },
+ "depois da conta": {
+  "en": "after the account",
+  "es": "después de la cuenta"
+ },
+ "na quinta": {
+  "en": "on Thursday",
+  "es": "el jueves"
+ },
+ "envio pausado": {
+  "en": "transfer paused",
+  "es": "envío pausado"
+ },
+ " retido por disputa": {
+  "en": " held by dispute",
+  "es": " retenido por disputa"
+ },
+ "aguardando o provedor confirmar": {
+  "en": "waiting for the provider to confirm",
+  "es": "esperando que el proveedor confirme"
+ },
+ "pronto para envio ao banco": {
+  "en": "ready to send to the bank",
+  "es": "listo para envío al banco"
+ },
+ " + tarifa pendente": {
+  "en": " + pending fee",
+  "es": " + tarifa pendiente"
+ },
+ "aguardando tarifa": {
+  "en": "awaiting fee",
+  "es": "esperando tarifa"
+ },
+ "Reembolso · ": {
+  "en": "Refund · ",
+  "es": "Reembolso · "
+ },
+ "Bruto (": {
+  "en": "Gross (",
+  "es": "Bruto ("
+ },
+ " · parte pendente": {
+  "en": " · partly pending",
+  "es": " · parte pendiente"
+ },
+ " + pendente": {
+  "en": " + pending",
+  "es": " + pendiente"
+ },
+ "Retido": {
+  "en": "Held",
+  "es": "Retenido"
+ },
+ "BRL · outubro · atualizado ": {
+  "en": "BRL · October · updated ",
+  "es": "BRL · octubre · actualizado "
+ },
+ " retido pela disputa D-12 e ": {
+  "en": " held by dispute D-12 and ",
+  "es": " retenido por la disputa D-12 y "
+ },
+ "Recebimento pendente": {
+  "en": "Pending payout",
+  "es": "Cobro pendiente"
+ },
+ "Tarifa pendente": {
+  "en": "Pending fee",
+  "es": "Tarifa pendiente"
+ },
+ "aguardando a tarifa": {
+  "en": "awaiting the fee",
+  "es": "esperando la tarifa"
+ },
+ "do liberado": {
+  "en": "of the released amount",
+  "es": "de lo liberado"
+ },
+ "do valor a receber": {
+  "en": "of the amount to receive",
+  "es": "del monto por cobrar"
+ },
+ "Venda ": {
+  "en": "Sale ",
+  "es": "Venta "
+ },
+ "Retido: ": {
+  "en": "Held: ",
+  "es": "Retenido: "
+ },
+ "Reembolsada: ": {
+  "en": "Refunded: ",
+  "es": "Reembolsada: "
+ },
+ "Tratar disputa ": {
+  "en": "Handle dispute ",
+  "es": "Gestionar disputa "
+ },
+ "nada mudou nesta venda.": {
+  "en": "nothing changed in this sale.",
+  "es": "nada cambió en esta venta."
+ },
+ "Reembolsar ": {
+  "en": "Refund ",
+  "es": "Reembolsar "
+ },
+ "Valor envolvido": {
+  "en": "Amount involved",
+  "es": "Monto involucrado"
+ },
+ "Regra ": {
+  "en": "Rule ",
+  "es": "Regla "
+ },
+ "liberado em ": {
+  "en": "released on ",
+  "es": "liberado el "
+ },
+ "Ajuste": {
+  "en": "Adjustment",
+  "es": "Ajuste"
+ },
+ " muda de etapa": {
+  "en": " moves to another stage",
+  "es": " cambia de etapa"
+ },
+ " (parte pendente)": {
+  "en": " (pending part)",
+  "es": " (parte pendiente)"
+ },
+ "Outubro": {
+  "en": "October",
+  "es": "Octubre"
+ },
+ "Reembolsos": {
+  "en": "Refunds",
+  "es": "Reembolsos"
+ },
+ " · corte ": {
+  "en": " · cutoff ",
+  "es": " · corte "
+ },
+ "a conciliar": {
+  "en": "to reconcile",
+  "es": "por conciliar"
+ },
+ "saldos iguais": {
+  "en": "balances match",
+  "es": "saldos iguales"
+ },
+ "link expirado": {
+  "en": "link expired",
+  "es": "enlace vencido"
+ },
+ "na conta conectada": {
+  "en": "in the connected account",
+  "es": "en la cuenta conectada"
+ },
+ "enviado ao provedor": {
+  "en": "sent to the provider",
+  "es": "enviado al proveedor"
+ },
+ "Repasse manual ": {
+  "en": "Manual payout ",
+  "es": "Transferencia manual "
+ },
+ "Consultamos ": {
+  "en": "We checked ",
+  "es": "Consultamos "
+ },
+ "Consultar P-78": {
+  "en": "Check P-78",
+  "es": "Consultar P-78"
+ },
+ "Repasse bloqueado: veja o motivo acima.": {
+  "en": "Payout blocked: see the reason above.",
+  "es": "Transferencia bloqueada: mira el motivo arriba."
+ },
+ "Destino: ": {
+  "en": "Destination: ",
+  "es": "Destino: "
+ },
+ ". Valor ": {
+  "en": ". Amount ",
+  "es": ". Monto "
+ },
+ "Falhou · corrigir conta": {
+  "en": "Failed · fix account",
+  "es": "Falló · corregir cuenta"
+ },
+ "envio previsto ": {
+  "en": "transfer expected ",
+  "es": "envío previsto "
+ },
+ "chegada prevista ": {
+  "en": "arrival expected ",
+  "es": "llegada prevista "
+ },
+ "Envio ": {
+  "en": "Transfer ",
+  "es": "Envío "
+ },
+ " (mascarado)": {
+  "en": " (masked)",
+  "es": " (enmascarado)"
+ },
+ "s · definido pelo provedor": {
+  "en": "s · set by the provider",
+  "es": "s · definido por el proveedor"
+ },
+ "Envios pausados desde ": {
+  "en": "Transfers paused since ",
+  "es": "Envíos pausados desde "
+ },
+ "Disputa #": {
+  "en": "Dispute #",
+  "es": "Disputa #"
+ },
+ "Reembolso #": {
+  "en": "Refund #",
+  "es": "Reembolso #"
+ },
+ "em aberto": {
+  "en": "open",
+  "es": "abierta"
+ },
+ "decidida a seu favor": {
+  "en": "decided in your favor",
+  "es": "decidida a tu favor"
+ },
+ "Pedido ": {
+  "en": "Order ",
+  "es": "Pedido "
+ },
+ " voltam ao liberado": {
+  "en": " return to the released amount",
+  "es": " vuelven a lo liberado"
+ },
+ "Retido ": {
+  "en": "Held ",
+  "es": "Retenido "
+ },
+ " (taxa 99Coach devolvida)": {
+  "en": " (99Coach fee returned)",
+  "es": " (tarifa de 99Coach devuelta)"
+ },
+ "Assinatura": {
+  "en": "Subscription",
+  "es": "Suscripción"
+ },
+ "Plano Essencial": {
+  "en": "Essential plan",
+  "es": "Plan Esencial"
+ },
+ "Manter teste": {
+  "en": "Keep trial",
+  "es": "Mantener prueba"
+ },
+ " · depois Essencial": {
+  "en": " · then Essential",
+  "es": " · después Esencial"
+ },
+ "Anual": {
+  "en": "Annual",
+  "es": "Anual"
+ },
+ "opt t6-opt": {
+  "en": "opt t6-opt",
+  "es": "opt t6-opt"
+ },
+ "Teste · ": {
+  "en": "Trial · ",
+  "es": "Prueba · "
+ },
+ "CrossFit Level 1 (CF-L1)": {
+  "en": "CrossFit Level 1 (CF-L1)",
+  "es": "CrossFit Level 1 (CF-L1)"
+ },
+ "Informada": {
+  "en": "Provided",
+  "es": "Informada"
+ },
+ "Verificada": {
+  "en": "Verified",
+  "es": "Verificada"
+ },
+ "oculta enquanto revisamos": {
+  "en": "hidden while we review",
+  "es": "oculta mientras revisamos"
+ },
+ "Oculta enquanto revisamos": {
+  "en": "Hidden while we review",
+  "es": "Oculta mientras revisamos"
+ },
+ " verificada · ": {
+  "en": " verified · ",
+  "es": " verificada · "
+ },
+ " verificado · ": {
+  "en": " verified · ",
+  "es": " verificado · "
+ },
+ "Credencial informada": {
+  "en": "Credential provided",
+  "es": "Credencial informada"
+ },
+ "Informe ": {
+  "en": "Enter ",
+  "es": "Indica "
+ },
+ "Use o formato 000000-G/UF (ex.: 012345-G/PR).": {
+  "en": "Use the format 000000-G/UF (e.g. 012345-G/PR).",
+  "es": "Usa el formato 000000-G/UF (ej.: 012345-G/PR)."
+ },
+ "Documento: ": {
+  "en": "Document: ",
+  "es": "Documento: "
+ },
+ " · restrito": {
+  "en": " · restricted",
+  "es": " · restringido"
+ },
+ "Felipe Duarte": {
+  "en": "Felipe Duarte",
+  "es": "Felipe Duarte"
+ },
+ "Conta removida": {
+  "en": "Account removed",
+  "es": "Cuenta eliminada"
+ },
+ "Mensagem pelo perfil": {
+  "en": "Message via profile",
+  "es": "Mensaje desde el perfil"
+ },
+ "Golpe": {
+  "en": "Scam",
+  "es": "Estafa"
+ },
+ "Denunciar e bloquear": {
+  "en": "Report and block",
+  "es": "Denunciar y bloquear"
+ },
+ "Motivo: ": {
+  "en": "Reason: ",
+  "es": "Motivo: "
+ },
+ "Bloquear: ": {
+  "en": "Block: ",
+  "es": "Bloquear: "
+ },
+ " Contato bloqueado.": {
+  "en": " Contact blocked.",
+  "es": " Contacto bloqueado."
+ },
+ "Bloquear ": {
+  "en": "Block ",
+  "es": "Bloquear "
+ },
+ "Desbloquear ": {
+  "en": "Unblock ",
+  "es": "Desbloquear "
+ },
+ "Contato desbloqueado.": {
+  "en": "Contact unblocked.",
+  "es": "Contacto desbloqueado."
+ },
+ "Pedir recurso?": {
+  "en": "Request an appeal?",
+  "es": "¿Pedir apelación?"
+ },
+ "Recurso pedido. Mesmo protocolo ": {
+  "en": "Appeal requested. Same ticket number ",
+  "es": "Apelación solicitada. Mismo número de protocolo "
+ },
+ "Studio Força Centro": {
+  "en": "Studio Força Centro",
+  "es": "Studio Força Centro"
+ },
+ "Academia": {
+  "en": "Gym",
+  "es": "Gimnasio"
+ },
+ "Mariana Teles (gestora)": {
+  "en": "Mariana Teles (manager)",
+  "es": "Mariana Teles (gestora)"
+ },
+ "Mariana Teles": {
+  "en": "Mariana Teles",
+  "es": "Mariana Teles"
+ },
+ "Thiago Pereira": {
+  "en": "Thiago Pereira",
+  "es": "Thiago Pereira"
+ },
+ "Renata Souza": {
+  "en": "Renata Souza",
+  "es": "Renata Souza"
+ },
+ "convite enviado": {
+  "en": "invite sent",
+  "es": "invitación enviada"
+ },
+ "Convite recebido": {
+  "en": "Invite received",
+  "es": "Invitación recibida"
+ },
+ "Recusar convite?": {
+  "en": "Decline invite?",
+  "es": "¿Rechazar la invitación?"
+ },
+ "Convite recusado.": {
+  "en": "Invite declined.",
+  "es": "Invitación rechazada."
+ },
+ "Vai aparecer: ": {
+  "en": "Will show: ",
+  "es": "Aparecerá: "
+ },
+ " · unidades ": {
+  "en": " · locations ",
+  "es": " · sedes "
+ },
+ " para a unidade ": {
+  "en": " for the location ",
+  "es": " para la sede "
+ },
+ "Espanhol": {
+  "en": "Spanish",
+  "es": "Español"
+ },
+ "Presencial · Londrina": {
+  "en": "In person · Londrina",
+  "es": "Presencial · Londrina"
+ },
+ "Escreva pelo menos ": {
+  "en": "Write at least ",
+  "es": "Escribe al menos "
+ },
+ "Formatos": {
+  "en": "Formats",
+  "es": "Formatos"
+ },
+ "Revise ": {
+  "en": "Review ",
+  "es": "Revisa "
+ },
+ "campo marcado": {
+  "en": "highlighted field",
+  "es": "campo marcado"
+ },
+ "campos marcados": {
+  "en": "highlighted fields",
+  "es": "campos marcados"
+ },
+ "Mudou: ": {
+  "en": "Changed: ",
+  "es": "Cambió: "
+ },
+ "atendimento online": {
+  "en": "online sessions",
+  "es": "atención online"
+ },
+ "Foto: ": {
+  "en": "Photo: ",
+  "es": "Foto: "
+ },
+ "a atual continua": {
+  "en": "the current one stays",
+  "es": "la actual se mantiene"
+ },
+ "Remover a foto?": {
+  "en": "Remove the photo?",
+  "es": "¿Quitar la foto?"
+ },
+ "Remover foto": {
+  "en": "Remove photo",
+  "es": "Quitar foto"
+ },
+ " confirmada.": {
+  "en": " confirmed.",
+  "es": " confirmada."
+ },
+ "Atende ": {
+  "en": "Coaches ",
+  "es": "Atiende "
+ },
+ "Continuar editando": {
+  "en": "Keep editing",
+  "es": "Seguir editando"
+ },
+ "Acompanhar e bloquear contatos": {
+  "en": "Track and block contacts",
+  "es": "Seguir y bloquear contactos"
+ },
+ "CREF verificado · ": {
+  "en": "CREF verified · ",
+  "es": "CREF verificado · "
+ },
+ "Aparece como: ": {
+  "en": "Shows as: ",
+  "es": "Aparece como: "
+ },
+ "Publicar perfil?": {
+  "en": "Publish profile?",
+  "es": "¿Publicar el perfil?"
+ },
+ "Presencial · ": {
+  "en": "In person · ",
+  "es": "Presencial · "
+ },
+ "Londrina, PR — ": {
+  "en": "Londrina, PR — ",
+  "es": "Londrina, PR — "
+ },
+ "Reivindicar": {
+  "en": "Claim",
+  "es": "Reclamar"
+ },
+ "Continuar aqui": {
+  "en": "Continue here",
+  "es": "Continuar aquí"
+ },
+ " na bio de ": {
+  "en": " in the bio of ",
+  "es": " en la bio de "
+ },
+ "Muitas consultas": {
+  "en": "Too many lookups",
+  "es": "Demasiadas consultas"
+ },
+ "Instagram confirmado": {
+  "en": "Instagram confirmed",
+  "es": "Instagram confirmado"
+ },
+ "Tentativas restantes: ": {
+  "en": "Attempts left: ",
+  "es": "Intentos restantes: "
+ },
+ " copiado.": {
+  "en": " copied.",
+  "es": " copiado."
+ },
+ "Comprovante: ": {
+  "en": "Proof: ",
+  "es": "Comprobante: "
+ },
+ "Pedido enviado. Protocolo ": {
+  "en": "Request sent. Ticket number ",
+  "es": "Solicitud enviada. Número de protocolo "
+ },
+ "prazo: ": {
+  "en": "deadline: ",
+  "es": "plazo: "
+ },
+ "America/Noronha": {
+  "en": "America/Noronha",
+  "es": "America/Noronha"
+ },
+ "America/Manaus": {
+  "en": "America/Manaus",
+  "es": "America/Manaus"
+ },
+ "America/Rio_Branco": {
+  "en": "America/Rio_Branco",
+  "es": "America/Rio_Branco"
+ },
+ "marcado pelo aluno": {
+  "en": "booked by the client",
+  "es": "reservado por el alumno"
+ },
+ "Livre ": {
+  "en": "Free ",
+  "es": "Libre "
+ },
+ "Bloqueando…": {
+  "en": "Blocking…",
+  "es": "Bloqueando…"
+ },
+ "Bloquear dia": {
+  "en": "Block day",
+  "es": "Bloquear día"
+ },
+ "Onde treina": {
+  "en": "Where they train",
+  "es": "Dónde entrena"
+ },
+ "Rotina “": {
+  "en": "Routine “",
+  "es": "Rutina “"
+ },
+ " · feito ": {
+  "en": " · done ",
+  "es": " · hecho "
+ },
+ "Comentar": {
+  "en": "Comment",
+  "es": "Comentar"
+ },
+ "Encerrado.": {
+  "en": "Ended.",
+  "es": "Finalizado."
+ },
+ " da rotina": {
+  "en": " of the routine",
+  "es": " de la rutina"
+ },
+ "Atribuindo…": {
+  "en": "Assigning…",
+  "es": "Asignando…"
+ },
+ "Confira ": {
+  "en": "Check ",
+  "es": "Revisa "
+ },
+ "Aguardando (": {
+  "en": "Waiting (",
+  "es": "En espera ("
+ },
+ "Aceitos (": {
+  "en": "Accepted (",
+  "es": "Aceptadas ("
+ },
+ "Vencidos e revogados (": {
+  "en": "Expired and revoked (",
+  "es": "Vencidas y revocadas ("
+ },
+ "o aluno": {
+  "en": "the client",
+  "es": "el alumno"
+ },
+ "Reemitir o convite?": {
+  "en": "Reissue the invite?",
+  "es": "¿Volver a emitir la invitación?"
+ },
+ " (link copiado).": {
+  "en": " (link copied).",
+  "es": " (enlace copiado)."
+ },
+ "pedido respondido": {
+  "en": "request answered",
+  "es": "solicitud respondida"
+ },
+ "pedidos respondidos": {
+  "en": "requests answered",
+  "es": "solicitudes respondidas"
+ },
+ "pedido sem resposta": {
+  "en": "unanswered request",
+  "es": "solicitud sin respuesta"
+ },
+ "pedidos sem resposta": {
+  "en": "unanswered requests",
+  "es": "solicitudes sin respuesta"
+ },
+ "Pedidos recebidos": {
+  "en": "Requests received",
+  "es": "Solicitudes recibidas"
+ },
+ "pedidos de acompanhamento": {
+  "en": "coaching requests",
+  "es": "solicitudes de acompañamiento"
+ },
+ "Pedidos aceitos": {
+  "en": "Requests accepted",
+  "es": "Solicitudes aceptadas"
+ },
+ "Acompanhamentos iniciados": {
+  "en": "Coaching started",
+  "es": "Acompañamientos iniciados"
+ },
+ "inclui os que vieram por convite": {
+  "en": "includes those that came by invite",
+  "es": "incluye los que llegaron por invitación"
+ },
+ " vagas em uso": {
+  "en": " spots in use",
+  "es": " cupos en uso"
+ },
+ "Plano ": {
+  "en": "Plan ",
+  "es": "Plan "
+ },
+ "aluno ativo ou pausado": {
+  "en": "active or paused client",
+  "es": "alumno activo o pausado"
+ },
+ "alunos ativos ou pausados": {
+  "en": "active or paused clients",
+  "es": "alumnos activos o pausados"
+ },
+ "vaga reservada por pedido aceito": {
+  "en": "spot reserved by an accepted request",
+  "es": "cupo reservado por solicitud aceptada"
+ },
+ "vagas reservadas por pedidos aceitos": {
+  "en": "spots reserved by accepted requests",
+  "es": "cupos reservados por solicitudes aceptadas"
+ },
+ "vaga livre": {
+  "en": "open spot",
+  "es": "cupo libre"
+ },
+ "vagas livres": {
+  "en": "open spots",
+  "es": "cupos libres"
+ },
+ " ao mesmo tempo": {
+  "en": " at the same time",
+  "es": " al mismo tiempo"
+ },
+ "reservada por pedido aceito": {
+  "en": "reserved by an accepted request",
+  "es": "reservado por solicitud aceptada"
+ },
+ "reservadas por pedidos aceitos": {
+  "en": "reserved by accepted requests",
+  "es": "reservados por solicitudes aceptadas"
+ },
+ "Abrindo o pagamento…": {
+  "en": "Opening payment…",
+  "es": "Abriendo el pago…"
+ },
+ "Assinar mensal · R$ 99": {
+  "en": "Subscribe monthly · R$ 99",
+  "es": "Suscribirme mensual · R$ 99"
+ },
+ "Cancele quando quiser.": {
+  "en": "Cancel anytime.",
+  "es": "Cancela cuando quieras."
+ },
+ "Retirando…": {
+  "en": "Withdrawing…",
+  "es": "Retirando…"
+ },
+ "Tirar ": {
+  "en": "Remove ",
+  "es": "Quitar "
+ },
+ "Formato curso: ": {
+  "en": "Course format: ",
+  "es": "Formato curso: "
+ },
+ "Desligar a venda?": {
+  "en": "Turn off sales?",
+  "es": "¿Desactivar la venta?"
+ },
+ "Venda ligada.": {
+  "en": "Sales on.",
+  "es": "Venta activada."
+ },
+ "Retirar \"": {
+  "en": "Withdraw \"",
+  "es": "Retirar \""
+ },
+ "Programa retirado. Quem tem acesso continua.": {
+  "en": "Program withdrawn. Those who have access keep it.",
+  "es": "Programa retirado. Quien tiene acceso lo conserva."
+ },
+ "Apagar o rascunho \"": {
+  "en": "Delete the draft \"",
+  "es": "Eliminar el borrador \""
+ },
+ "Rascunho apagado.": {
+  "en": "Draft deleted.",
+  "es": "Borrador eliminado."
+ },
+ "Cortesia": {
+  "en": "Complimentary",
+  "es": "Cortesía"
+ },
+ " · revogada": {
+  "en": " · revoked",
+  "es": " · revocada"
+ },
+ "Cortesia revogada.": {
+  "en": "Complimentary access revoked.",
+  "es": "Cortesía revocada."
+ },
+ "Acesso gratuito concedido (v": {
+  "en": "Free access granted (v",
+  "es": "Acceso gratuito concedido (v"
+ },
+ " publicada · venda ": {
+  "en": " published · sales ",
+  "es": " publicada · venta "
+ },
+ "Criando…": {
+  "en": "Creating…",
+  "es": "Creando…"
+ },
+ "a confirmar": {
+  "en": "to be confirmed",
+  "es": "por confirmar"
+ },
+ " Faltam ": {
+  "en": " Remaining: ",
+  "es": " Faltan "
+ },
+ "Pago · tarifa a confirmar": {
+  "en": "Paid · fee to be confirmed",
+  "es": "Pagado · tarifa por confirmar"
+ },
+ "Reembolsado": {
+  "en": "Refunded",
+  "es": "Reembolsado"
+ },
+ "Repasse agendado": {
+  "en": "Payout scheduled",
+  "es": "Transferencia programada"
+ },
+ "Repasse cancelado": {
+  "en": "Payout canceled",
+  "es": "Transferencia cancelada"
+ },
+ " pago pelo aluno": {
+  "en": " paid by the client",
+  "es": " pagado por el alumno"
+ },
+ " · reembolsado ": {
+  "en": " · refunded ",
+  "es": " · reembolsado "
+ },
+ "Repasse: ": {
+  "en": "Payout: ",
+  "es": "Transferencia: "
+ },
+ " criado.": {
+  "en": " created.",
+  "es": " creado."
+ },
+ "Desativado": {
+  "en": "Deactivated",
+  "es": "Desactivado"
+ },
+ "Cupom desativado.": {
+  "en": "Coupon deactivated.",
+  "es": "Cupón desactivado."
+ },
+ "Abrindo o Stripe…": {
+  "en": "Opening Stripe…",
+  "es": "Abriendo Stripe…"
+ },
+ "Ativar recebimento": {
+  "en": "Activate payouts",
+  "es": "Activar cobros"
+ },
+ "Aluna": {
+  "en": "Client",
+  "es": "Alumna"
+ },
+ "Descobrir": {
+  "en": "Discover",
+  "es": "Descubrir"
+ },
+ "treinador salvo": {
+  "en": "saved coach",
+  "es": "entrenador guardado"
+ },
+ "treinadores salvos": {
+  "en": "saved coaches",
+  "es": "entrenadores guardados"
+ },
+ "Treinadores salvos": {
+  "en": "Saved coaches",
+  "es": "Entrenadores guardados"
+ },
+ "Check-in semanal pendente": {
+  "en": "Weekly check-in pending",
+  "es": "Check-in semanal pendiente"
+ },
+ "Treinadores e programas salvos": {
+  "en": "Saved coaches and programs",
+  "es": "Entrenadores y programas guardados"
+ },
+ "Comece a treinar": {
+  "en": "Start training",
+  "es": "Empieza a entrenar"
+ },
+ "sem treinador": {
+  "en": "no coach",
+  "es": "sin entrenador"
+ },
+ "treino registrado": {
+  "en": "workout logged",
+  "es": "entrenamiento registrado"
+ },
+ "treinos registrados": {
+  "en": "workouts logged",
+  "es": "entrenamientos registrados"
+ },
+ "Aceito · acompanhamento iniciado": {
+  "en": "Accepted · coaching started",
+  "es": "Aceptada · acompañamiento iniciado"
+ },
+ "Abrindo pagamento…": {
+  "en": "Opening payment…",
+  "es": "Abriendo el pago…"
+ },
+ "Usar cupom": {
+  "en": "Use coupon",
+  "es": "Usar cupón"
+ },
+ " aplicado: ": {
+  "en": " applied: ",
+  "es": " aplicado: "
+ },
+ " · motivo: “": {
+  "en": " · reason: “",
+  "es": " · motivo: “"
+ },
+ "o treinador": {
+  "en": "the coach",
+  "es": "el entrenador"
+ },
+ "Manter pedido": {
+  "en": "Keep request",
+  "es": "Mantener solicitud"
+ },
+ "Pedido cancelado.": {
+  "en": "Request canceled.",
+  "es": "Solicitud cancelada."
+ },
+ "Ex.: 3 dias": {
+  "en": "E.g. 3 days",
+  "es": "Ej.: 3 días"
+ },
+ "Responda: ": {
+  "en": "Answer: ",
+  "es": "Responde: "
+ },
+ "Respostas enviadas a ": {
+  "en": "Answers sent to ",
+  "es": "Respuestas enviadas a "
+ },
+ " · descanse depois deste": {
+  "en": " · rest after this one",
+  "es": " · descansa después de este"
+ },
+ "Antes: ": {
+  "en": "Before: ",
+  "es": "Antes: "
+ },
+ " pediu um complemento": {
+  "en": " asked for more information",
+  "es": " pidió información adicional"
+ },
+ "Conta bloqueada.": {
+  "en": "Account blocked.",
+  "es": "Cuenta bloqueada."
+ },
+ "marcado por ": {
+  "en": "booked by ",
+  "es": "reservado por "
+ },
+ " min · ": {
+  "en": " min · ",
+  "es": " min · "
+ },
+ "feita em ": {
+  "en": "done on ",
+  "es": "hecha el "
+ },
+ " (pausado)": {
+  "en": " (paused)",
+  "es": " (pausado)"
+ },
+ " nesta semana": {
+  "en": " this week",
+  "es": " esta semana"
+ },
+ "dia restante": {
+  "en": "day left",
+  "es": "día restante"
+ },
+ "dias restantes": {
+  "en": "days left",
+  "es": "días restantes"
+ },
+ "Acompanhamento mensal": {
+  "en": "Monthly coaching",
+  "es": "Acompañamiento mensual"
+ },
+ "Aguarde…": {
+  "en": "Please wait…",
+  "es": "Espera…"
+ },
+ " pela conversa.": {
+  "en": " through the conversation.",
+  "es": " por la conversación."
+ },
+ " · descanso ": {
+  "en": " · rest ",
+  "es": " · descanso "
+ },
+ " · feita nesta semana": {
+  "en": " · done this week",
+  "es": " · hecha esta semana"
+ },
+ "acompanhamento pausado": {
+  "en": "coaching paused",
+  "es": "acompañamiento pausado"
+ },
+ "acompanhamento ativo": {
+  "en": "coaching active",
+  "es": "acompañamiento activo"
+ },
+ "Acompanhamento pausado. Retome quando quiser.": {
+  "en": "Coaching paused. Resume whenever you want.",
+  "es": "Acompañamiento pausado. Reanúdalo cuando quieras."
+ },
+ "Acompanhamento retomado.": {
+  "en": "Coaching resumed.",
+  "es": "Acompañamiento reanudado."
+ },
+ "Descanso pausado: ": {
+  "en": "Rest paused: ",
+  "es": "Descanso pausado: "
+ },
+ "Guardado neste aparelho": {
+  "en": "Saved on this device",
+  "es": "Guardado en este dispositivo"
+ },
+ "Continuar ": {
+  "en": "Continue ",
+  "es": "Continuar "
+ },
+ "height: ": {
+  "en": "height: ",
+  "es": "height: "
+ },
+ "Box Centro · Londrina": {
+  "en": "Box Centro · Londrina",
+  "es": "Box Centro · Londrina"
+ },
+ "este celular": {
+  "en": "this phone",
+  "es": "este celular"
+ },
+ "sem descanso": {
+  "en": "no rest",
+  "es": "sin descanso"
+ },
+ "Compromisso confirmado": {
+  "en": "Appointment confirmed",
+  "es": "Cita confirmada"
+ },
+ "ocupado agora": {
+  "en": "busy now",
+  "es": "ocupado ahora"
+ },
+ "Aguardando Rafael": {
+  "en": "Waiting for Rafael",
+  "es": "Esperando a Rafael"
+ },
+ "Remarcar chamada?": {
+  "en": "Reschedule call?",
+  "es": "¿Reprogramar la llamada?"
+ },
+ "Chamada cancelada. ": {
+  "en": "Call canceled. ",
+  "es": "Llamada cancelada. "
+ },
+ "Cancelamento tardio": {
+  "en": "Late cancellation",
+  "es": "Cancelación tardía"
+ },
+ "Origem: ": {
+  "en": "Source: ",
+  "es": "Origen: "
+ },
+ "Renova": {
+  "en": "Renews",
+  "es": "Se renueva"
+ },
+ "Aula": {
+  "en": "Lesson",
+  "es": "Clase"
+ },
+ "Aula liberada": {
+  "en": "Lesson unlocked",
+  "es": "Clase liberada"
+ },
+ "este aparelho": {
+  "en": "this device",
+  "es": "este dispositivo"
+ },
+ "Libera ": {
+  "en": "Unlocks ",
+  "es": "Se libera "
+ },
+ "Pulamos a aula retirada.": {
+  "en": "We skipped the removed lesson.",
+  "es": "Saltamos la clase retirada."
+ },
+ "Continuar daqui": {
+  "en": "Continue from here",
+  "es": "Continuar desde aquí"
+ },
+ " · aula ": {
+  "en": " · lesson ",
+  "es": " · clase "
+ },
+ "Como fazer": {
+  "en": "How to do it",
+  "es": "Cómo hacerlo"
+ },
+ "Ocultar estrutura": {
+  "en": "Hide structure",
+  "es": "Ocultar estructura"
+ },
+ " aulas)": {
+  "en": " lessons)",
+  "es": " clases)"
+ },
+ "Revisar e encerrar": {
+  "en": "Review and finish",
+  "es": "Revisar y finalizar"
+ },
+ "Ombro direito": {
+  "en": "Right shoulder",
+  "es": "Hombro derecho"
+ },
+ "Ombro esquerdo": {
+  "en": "Left shoulder",
+  "es": "Hombro izquierdo"
+ },
+ "Joelho": {
+  "en": "Knee",
+  "es": "Rodilla"
+ },
+ "Lombar": {
+  "en": "Lower back",
+  "es": "Zona lumbar"
+ },
+ "Outro local": {
+  "en": "Other area",
+  "es": "Otra zona"
+ },
+ "outro local": {
+  "en": "other area",
+  "es": "otra zona"
+ },
+ "Ana encerrou o ": {
+  "en": "Ana finished the ",
+  "es": "Ana finalizó el "
+ },
+ "Itens incompletos ficaram registrados como incompletos. ": {
+  "en": "Incomplete items were logged as incomplete. ",
+  "es": "Los ítems incompletos quedaron registrados como incompletos. "
+ },
+ "Escreva qual local doeu.": {
+  "en": "Write where it hurt.",
+  "es": "Escribe qué zona te dolió."
+ },
+ "Feito: ": {
+  "en": "Done: ",
+  "es": "Hecho: "
+ },
+ "Incompleto: ": {
+  "en": "Incomplete: ",
+  "es": "Incompleto: "
+ },
+ " min (desde ": {
+  "en": " min (since ",
+  "es": " min (desde "
+ },
+ " neste aparelho": {
+  "en": " on this device",
+  "es": " en este dispositivo"
+ },
+ "tudo sincronizado": {
+  "en": "all synced",
+  "es": "todo sincronizado"
+ },
+ " · corrigido": {
+  "en": " · corrected",
+  "es": " · corregido"
+ },
+ " · antes: ": {
+  "en": " · before: ",
+  "es": " · antes: "
+ },
+ "sem treino programado": {
+  "en": "no workout scheduled",
+  "es": "sin entrenamiento programado"
+ },
+ "Semana passada (19 a 25/10): ": {
+  "en": "Last week (19 to 25/10): ",
+  "es": "Semana pasada (19 al 25/10): "
+ },
+ "Tudo": {
+  "en": "All",
+  "es": "Todo"
+ },
+ " kg × 6 · mesma variante (barra livre)": {
+  "en": " kg × 6 · same variant (free barbell)",
+  "es": " kg × 6 · misma variante (barra libre)"
+ },
+ "Recorde: ": {
+  "en": "Record: ",
+  "es": "Récord: "
+ },
+ "Carga ": {
+  "en": "Load ",
+  "es": "Carga "
+ },
+ "Agachar 80 kg × 5": {
+  "en": "Squat 80 kg × 5",
+  "es": "Sentadilla 80 kg × 5"
+ },
+ " registrada.": {
+  "en": " logged.",
+  "es": " registrada."
+ },
+ "no aparelho": {
+  "en": "on the device",
+  "es": "en el dispositivo"
+ },
+ "Previsto ": {
+  "en": "Planned ",
+  "es": "Previsto "
+ },
+ "Sincronizando…": {
+  "en": "Syncing…",
+  "es": "Sincronizando…"
+ },
+ " · previsto ": {
+  "en": " · planned ",
+  "es": " · previsto "
+ },
+ "Tempo feito (s)": {
+  "en": "Time done (s)",
+  "es": "Tiempo hecho (s)"
+ },
+ "Pular descanso": {
+  "en": "Skip rest",
+  "es": "Saltar descanso"
+ },
+ " e sincronizados.": {
+  "en": " and synced.",
+  "es": " y sincronizados."
+ },
+ "Alguma dor?": {
+  "en": "Any pain?",
+  "es": "¿Algún dolor?"
+ },
+ "Faltam ": {
+  "en": "Remaining: ",
+  "es": "Faltan "
+ },
+ "Sono (1 a 5)": {
+  "en": "Sleep (1 to 5)",
+  "es": "Sueño (1 a 5)"
+ },
+ "Energia (1 a 5)": {
+  "en": "Energy (1 to 5)",
+  "es": "Energía (1 a 5)"
+ },
+ "Check-in semanal respondido": {
+  "en": "Weekly check-in answered",
+  "es": "Check-in semanal respondido"
+ },
+ " · dor relatada": {
+  "en": " · pain reported",
+  "es": " · dolor reportado"
+ },
+ "Ana respondeu o check-in semanal": {
+  "en": "Ana answered the weekly check-in",
+  "es": "Ana respondió el check-in semanal"
+ },
+ " (relatou dor)": {
+  "en": " (reported pain)",
+  "es": " (reportó dolor)"
+ },
+ "Check-in expirado": {
+  "en": "Check-in expired",
+  "es": "Check-in vencido"
+ },
+ "Avisar Rafael": {
+  "en": "Notify Rafael",
+  "es": "Avisar a Rafael"
+ },
+ "Abrimos o check-in pelo app.": {
+  "en": "We opened the check-in in the app.",
+  "es": "Abrimos el check-in desde la app."
+ },
+ "Energia": {
+  "en": "Energy",
+  "es": "Energía"
+ },
+ "Rafael Lima · v": {
+  "en": "Rafael Lima · v",
+  "es": "Rafael Lima · v"
+ },
+ "resposta fica salva": {
+  "en": "answer is saved",
+  "es": "respuesta queda guardada"
+ },
+ "respostas ficam salvas": {
+  "en": "answers are saved",
+  "es": "respuestas quedan guardadas"
+ },
+ " neste check-in.": {
+  "en": " in this check-in.",
+  "es": " en este check-in."
+ },
+ "Carolina Albuquerque · programa comprado": {
+  "en": "Carolina Albuquerque · purchased program",
+  "es": "Carolina Albuquerque · programa comprado"
+ },
+ "sem treino hoje": {
+  "en": "no workout today",
+  "es": "sin entrenamiento hoy"
+ },
+ " em andamento": {
+  "en": " in progress",
+  "es": " en curso"
+ },
+ "Registros sincronizados": {
+  "en": "Logs synced",
+  "es": "Registros sincronizados"
+ },
+ "Carolina Albuquerque": {
+  "en": "Carolina Albuquerque",
+  "es": "Carolina Albuquerque"
+ },
+ "Programa · Mobilidade 15 minutos": {
+  "en": "Program · Mobility 15 minutes",
+  "es": "Programa · Movilidad 15 minutos"
+ },
+ "Rafael publicou o ": {
+  "en": "Rafael published the ",
+  "es": "Rafael publicó el "
+ },
+ " · Rafael vai revisar": {
+  "en": " · Rafael will review",
+  "es": " · Rafael va a revisar"
+ },
+ "Compromissos e chamadas": {
+  "en": "Appointments and calls",
+  "es": "Citas y llamadas"
+ },
+ "Conversa ativa": {
+  "en": "Active conversation",
+  "es": "Conversación activa"
+ },
+ "Primeira conversa": {
+  "en": "First conversation",
+  "es": "Primera conversación"
+ },
+ "Acompanhamento online · ativo desde 03/2026": {
+  "en": "Online coaching · active since 03/2026",
+  "es": "Acompañamiento online · activo desde 03/2026"
+ },
+ "continuar de onde parou": {
+  "en": "continue where you left off",
+  "es": "continuar donde lo dejaste"
+ },
+ "Primeiro WOD: 10 minutos": {
+  "en": "First WOD: 10 minutes",
+  "es": "Primer WOD: 10 minutos"
+ },
+ "Kettlebell swing": {
+  "en": "Kettlebell swing",
+  "es": "Kettlebell swing"
+ },
+ "Semana 3 · posterior": {
+  "en": "Week 3 · posterior chain",
+  "es": "Semana 3 · cadena posterior"
+ },
+ "Prancha e core": {
+  "en": "Plank and core",
+  "es": "Plancha y core"
+ },
+ "Semana 4 · costas": {
+  "en": "Week 4 · back",
+  "es": "Semana 4 · espalda"
+ },
+ "Remada curvada": {
+  "en": "Bent-over row",
+  "es": "Remo inclinado"
+ },
+ "Semana 7 · empurrar": {
+  "en": "Week 7 · push",
+  "es": "Semana 7 · empuje"
+ },
+ "Supino reto": {
+  "en": "Flat bench press",
+  "es": "Press de banca plano"
+ },
+ "Semana 8 · fechamento": {
+  "en": "Week 8 · wrap-up",
+  "es": "Semana 8 · cierre"
+ },
+ "Como seguir depois": {
+  "en": "How to continue afterward",
+  "es": "Cómo seguir después"
+ },
+ "Compra · Pix · 02/08": {
+  "en": "Purchase · Pix · 02/08",
+  "es": "Compra · Pix · 02/08"
+ },
+ "Semana 1 · ombros": {
+  "en": "Week 1 · shoulders",
+  "es": "Semana 1 · hombros"
+ },
+ "Semana 2 · quadril": {
+  "en": "Week 2 · hips",
+  "es": "Semana 2 · cadera"
+ },
+ "Quadril 90/90": {
+  "en": "90/90 hip stretch",
+  "es": "Cadera 90/90"
+ },
+ "Agachamento profundo assistido": {
+  "en": "Assisted deep squat",
+  "es": "Sentadilla profunda asistida"
+ },
+ "Semana 3 · coluna": {
+  "en": "Week 3 · spine",
+  "es": "Semana 3 · columna"
+ },
+ "Gato e camelo": {
+  "en": "Cat-cow",
+  "es": "Gato-camello"
+ },
+ "Semana 4 · rotina completa": {
+  "en": "Week 4 · full routine",
+  "es": "Semana 4 · rutina completa"
+ },
+ "Rotina A": {
+  "en": "Routine A",
+  "es": "Rutina A"
+ },
+ "Rotina B": {
+  "en": "Routine B",
+  "es": "Rutina B"
+ },
+ " · acompanhamento online": {
+  "en": " · online coaching",
+  "es": " · acompañamiento online"
+ },
+ "Pausar acompanhamento?": {
+  "en": "Pause coaching?",
+  "es": "¿Pausar el acompañamiento?"
+ },
+ "Mensagens: continuam abertas.": {
+  "en": "Messages: stay open.",
+  "es": "Mensajes: siguen abiertos."
+ },
+ "Encerrar acompanhamento?": {
+  "en": "End coaching?",
+  "es": "¿Finalizar el acompañamiento?"
+ },
+ "Encerramento desfeito. Tudo continua como antes.": {
+  "en": "Ending undone. Everything stays as before.",
+  "es": "Finalización deshecha. Todo sigue como antes."
+ },
+ "Outro assunto": {
+  "en": "Other topic",
+  "es": "Otro asunto"
+ },
+ "Escolha o assunto.": {
+  "en": "Choose the topic.",
+  "es": "Elige el asunto."
+ },
+ "Caso aberto · protocolo ": {
+  "en": "Case open · ticket number ",
+  "es": "Caso abierto · número de protocolo "
+ },
+ "Anamnese": {
+  "en": "Health history",
+  "es": "Anamnesis"
+ },
+ "Check-ins": {
+  "en": "Check-ins",
+  "es": "Check-ins"
+ },
+ "Fotos": {
+  "en": "Photos",
+  "es": "Fotos"
+ },
+ "Acompanhamento online · desde ": {
+  "en": "Online coaching · since ",
+  "es": "Acompañamiento online · desde "
+ },
+ "Desde": {
+  "en": "Since",
+  "es": "Desde"
+ },
+ "Contratado": {
+  "en": "Purchased",
+  "es": "Contratado"
+ },
+ "Acesso liberado": {
+  "en": "Access granted",
+  "es": "Acceso liberado"
+ },
+ " semanas, ": {
+  "en": " weeks, ",
+  "es": " semanas, "
+ },
+ "Acompanhamento ": {
+  "en": "Coaching ",
+  "es": "Acompañamiento "
+ },
+ " · plano mensal": {
+  "en": " · monthly plan",
+  "es": " · plan mensual"
+ },
+ "Aulas ": {
+  "en": "Lessons ",
+  "es": "Clases "
+ },
+ "aguardando aceite": {
+  "en": "awaiting acceptance",
+  "es": "esperando aceptación"
+ },
+ "pagamento em dia": {
+  "en": "payment up to date",
+  "es": "pago al día"
+ },
+ "aguardando aceite de ": {
+  "en": "awaiting acceptance from ",
+  "es": "esperando aceptación de "
+ },
+ "convite aguardando aceite": {
+  "en": "invite awaiting acceptance",
+  "es": "invitación esperando aceptación"
+ },
+ "acesso ativo": {
+  "en": "access active",
+  "es": "acceso activo"
+ },
+ "Reembolsado · ": {
+  "en": "Refunded · ",
+  "es": "Reembolsado · "
+ },
+ "Pago ": {
+  "en": "Paid ",
+  "es": "Pagado "
+ },
+ " · convite enviado": {
+  "en": " · invite sent",
+  "es": " · invitación enviada"
+ },
+ "enquanto a assinatura estiver ativa": {
+  "en": "while the subscription is active",
+  "es": "mientras la suscripción esté activa"
+ },
+ "Oferta expirada": {
+  "en": "Offer expired",
+  "es": "Oferta vencida"
+ },
+ "Disponibilidade confirmada.": {
+  "en": "Availability confirmed.",
+  "es": "Disponibilidad confirmada."
+ },
+ "Oferta de Rafael Lima": {
+  "en": "Offer from Rafael Lima",
+  "es": "Oferta de Rafael Lima"
+ },
+ " aplicado · ": {
+  "en": " applied · ",
+  "es": " aplicado · "
+ },
+ " de desconto": {
+  "en": " off",
+  "es": " de descuento"
+ },
+ "Cupom removido.": {
+  "en": "Coupon removed.",
+  "es": "Cupón quitado."
+ },
+ " aplicado.": {
+  "en": " applied.",
+  "es": " aplicado."
+ },
+ "este acompanhamento": {
+  "en": "this coaching",
+  "es": "este acompañamiento"
+ },
+ "este programa": {
+  "en": "this program",
+  "es": "este programa"
+ },
+ "Ativo desde ": {
+  "en": "Active since ",
+  "es": "Activo desde "
+ },
+ "Conta atual": {
+  "en": "Current account",
+  "es": "Cuenta actual"
+ },
+ "Nome: Ana Carolina Souza": {
+  "en": "Name: Ana Carolina Souza",
+  "es": "Nombre: Ana Carolina Souza"
+ },
+ "E-mail: ": {
+  "en": "Email: ",
+  "es": "Correo: "
+ },
+ "Confirmar pagamento": {
+  "en": "Confirm payment",
+  "es": "Confirmar pago"
+ },
+ "Total calculado.": {
+  "en": "Total calculated.",
+  "es": "Total calculado."
+ },
+ "Valor recalculado: ": {
+  "en": "Recalculated amount: ",
+  "es": "Monto recalculado: "
+ },
+ "Pagamento cancelado": {
+  "en": "Payment canceled",
+  "es": "Pago cancelado"
+ },
+ "Aguardando o Pix": {
+  "en": "Waiting for Pix",
+  "es": "Esperando el Pix"
+ },
+ "Pedido #": {
+  "en": "Order #",
+  "es": "Pedido #"
+ },
+ " · Rafael Lima": {
+  "en": " · Rafael Lima",
+  "es": " · Rafael Lima"
+ },
+ "Pagar ": {
+  "en": "Pay ",
+  "es": "Pagar "
+ },
+ "Convite enviado a quem recebe": {
+  "en": "Invite sent to the recipient",
+  "es": "Invitación enviada a quien la recibe"
+ },
+ "Liberando acesso": {
+  "en": "Granting access",
+  "es": "Liberando acceso"
+ },
+ "Pagamento confirmado — compra": {
+  "en": "Payment confirmed — purchase",
+  "es": "Pago confirmado — compra"
+ },
+ " guardado.": {
+  "en": " saved.",
+  "es": " guardado."
+ },
+ "Pedido expirado": {
+  "en": "Order expired",
+  "es": "Pedido vencido"
+ },
+ "Teste ativado — assinatura 99Coach": {
+  "en": "Trial activated — 99Coach subscription",
+  "es": "Prueba activada — suscripción 99Coach"
+ },
+ "em instantes": {
+  "en": "in a moment",
+  "es": "en instantes"
+ },
+ "pronto na sua conta": {
+  "en": "ready in your account",
+  "es": "listo en tu cuenta"
+ },
+ "Acesso pronto": {
+  "en": "Access ready",
+  "es": "Acceso listo"
+ },
+ "avisamos por e-mail": {
+  "en": "we'll notify you by email",
+  "es": "te avisamos por correo"
+ },
+ "Pedido criado": {
+  "en": "Order created",
+  "es": "Pedido creado"
+ },
+ "Confirmando pagamento": {
+  "en": "Confirming payment",
+  "es": "Confirmando el pago"
+ },
+ "Consultando o provedor": {
+  "en": "Checking with the provider",
+  "es": "Consultando al proveedor"
+ },
+ " pago.": {
+  "en": " paid.",
+  "es": " pagado."
+ },
+ "Marina": {
+  "en": "Marina",
+  "es": "Marina"
+ },
+ " aceitar.": {
+  "en": " accepts.",
+  "es": " acepte."
+ },
+ "Acompanhamentos": {
+  "en": "Coaching",
+  "es": "Acompañamientos"
+ },
+ "Encerradas": {
+  "en": "Ended",
+  "es": "Finalizadas"
+ },
+ "Fornecedor": {
+  "en": "Supplier",
+  "es": "Proveedor"
+ },
+ "mensal · desde ": {
+  "en": "monthly · since ",
+  "es": "mensual · desde "
+ },
+ "acesso gratuito · ": {
+  "en": "free access · ",
+  "es": "acceso gratuito · "
+ },
+ "Caso S-": {
+  "en": "Case S-",
+  "es": "Caso S-"
+ },
+ "Protocolo #": {
+  "en": "Ticket #",
+  "es": "Protocolo #"
+ },
+ "confirmado · ": {
+  "en": "confirmed · ",
+  "es": "confirmado · "
+ },
+ "check is-on": {
+  "en": "check is-on",
+  "es": "check is-on"
+ },
+ "quem recebe precisa aceitar o convite": {
+  "en": "the recipient needs to accept the invite",
+  "es": "quien la recibe debe aceptar la invitación"
+ },
+ " · ana@email.com": {
+  "en": " · ana@email.com",
+  "es": " · ana@email.com"
+ },
+ "Assinatura ativa": {
+  "en": "Active subscription",
+  "es": "Suscripción activa"
+ },
+ "Cancelamento pendente": {
+  "en": "Cancellation pending",
+  "es": "Cancelación pendiente"
+ },
+ "Desfazer cancelamento": {
+  "en": "Undo cancellation",
+  "es": "Deshacer cancelación"
+ },
+ "Vou viajar": {
+  "en": "I'm going on a trip",
+  "es": "Me voy de viaje"
+ },
+ " · mensal": {
+  "en": " · monthly",
+  "es": " · mensual"
+ },
+ "pagamento atrasado": {
+  "en": "payment overdue",
+  "es": "pago atrasado"
+ },
+ " pela outra origem (": {
+  "en": " through the other source (",
+  "es": " por el otro origen ("
+ },
+ "Se aprovado, o acesso a ": {
+  "en": "If approved, access to ",
+  "es": "Si se aprueba, el acceso a "
+ },
+ "Continuam valendo: ": {
+  "en": "Still valid: ",
+  "es": "Siguen vigentes: "
+ },
+ "Outro motivo.": {
+  "en": "Other reason.",
+  "es": "Otro motivo."
+ },
+ "Analisado": {
+  "en": "Reviewed",
+  "es": "Analizado"
+ },
+ " quando aprovado": {
+  "en": " once approved",
+  "es": " cuando se apruebe"
+ },
+ "Reembolso parcial anterior: ": {
+  "en": "Previous partial refund: ",
+  "es": "Reembolso parcial anterior: "
+ },
+ "Pedido analisado pelo treinador e pela 99Coach.": {
+  "en": "Request reviewed by the coach and by 99Coach.",
+  "es": "Solicitud analizada por el entrenador y por 99Coach."
+ },
+ "Item: ": {
+  "en": "Item: ",
+  "es": "Ítem: "
+ },
+ "Iniciante": {
+  "en": "Beginner",
+  "es": "Principiante"
+ },
+ "Noite": {
+  "en": "Evening",
+  "es": "Noche"
+ },
+ "Pedido recusado": {
+  "en": "Request declined",
+  "es": "Solicitud rechazada"
+ },
+ "Pedido P-2041 segue expirado.": {
+  "en": "Request P-2041 is still expired.",
+  "es": "La solicitud P-2041 sigue expirada."
+ },
+ "Pediu: ": {
+  "en": "Requested: ",
+  "es": "Solicitó: "
+ },
+ "Ana Carolina Souza pediu ": {
+  "en": "Ana Carolina Souza requested ",
+  "es": "Ana Carolina Souza solicitó "
+ },
+ " cancelado.": {
+  "en": " canceled.",
+  "es": " cancelado."
+ },
+ " de 5 estrelas": {
+  "en": " out of 5 stars",
+  "es": " de 5 estrellas"
+ },
+ "width: ": {
+  "en": "width: ",
+  "es": "width: "
+ },
+ "Visitante": {
+  "en": "Visitor",
+  "es": "Visitante"
+ },
+ "Aluna (Ana)": {
+  "en": "Client (Ana)",
+  "es": "Alumna (Ana)"
+ },
+ "Treinador (Rafael)": {
+  "en": "Coach (Rafael)",
+  "es": "Entrenador (Rafael)"
+ },
+ " mais recentes de ": {
+  "en": " most recent of ",
+  "es": " más recientes de "
+ },
+ "Avaliar": {
+  "en": "Write a review",
+  "es": "Escribir reseña"
+ },
+ "Acompanhamento online · desde 03/2026 · contratado pelo 99Coach": {
+  "en": "Online coaching · since 03/2026 · purchased through 99Coach",
+  "es": "Acompañamiento online · desde 03/2026 · contratado a través de 99Coach"
+ },
+ "Mostrar como “Ana C.”": {
+  "en": "Show as “Ana C.”",
+  "es": "Mostrar como “Ana C.”"
+ },
+ "Contexto ativo": {
+  "en": "Active context",
+  "es": "Contexto activo"
+ },
+ "Apaga: modalidade, local, atendimento e idioma salvos neste aparelho.": {
+  "en": "Clears: sport, location, coaching format, and language saved on this device.",
+  "es": "Borra: deporte, lugar, tipo de atención e idioma guardados en este dispositivo."
+ },
+ "Yoga e Pilates": {
+  "en": "Yoga and Pilates",
+  "es": "Yoga y Pilates"
+ },
+ "Tanto faz": {
+  "en": "No preference",
+  "es": "Me da igual"
+ },
+ "Mantida a busca deste aparelho": {
+  "en": "Kept this device's search",
+  "es": "Se mantuvo la búsqueda de este dispositivo"
+ },
+ "CrossFit · Londrina · Online": {
+  "en": "CrossFit · Londrina · Online",
+  "es": "CrossFit · Londrina · Online"
+ },
+ "presencial e online": {
+  "en": "in person and online",
+  "es": "presencial y online"
+ },
+ "CrossFit e LPO": {
+  "en": "CrossFit and Olympic lifting",
+  "es": "CrossFit y Halterofilia"
+ },
+ "CrossFit e Funcional": {
+  "en": "CrossFit and Functional training",
+  "es": "CrossFit y Entrenamiento funcional"
+ },
+ "Agachamento livre": {
+  "en": "Barbell squat",
+  "es": "Sentadilla libre"
+ },
+ "Prancha frontal": {
+  "en": "Front plank",
+  "es": "Plancha frontal"
+ },
+ "Obrigado, Ana!": {
+  "en": "Thanks, Ana!",
+  "es": "¡Gracias, Ana!"
+ },
+ "a partir de ": {
+  "en": "from ",
+  "es": "desde "
+ },
+ "card p1-sug": {
+  "en": "card p1-sug",
+  "es": "card p1-sug"
+ },
+ " · idioma ": {
+  "en": " · language ",
+  "es": " · idioma "
+ },
+ "Atende online · mesmo idioma": {
+  "en": "Coaches online · same language",
+  "es": "Atiende online · mismo idioma"
+ },
+ "Programa · ": {
+  "en": "Program · ",
+  "es": "Programa · "
+ },
+ " semanas · ": {
+  "en": " weeks · ",
+  "es": " semanas · "
+ },
+ " · visto ": {
+  "en": " · viewed ",
+  "es": " · visto "
+ },
+ "Apaga modalidade, local, atendimento e idioma salvos neste aparelho.": {
+  "en": "Clears sport, location, coaching format, and language saved on this device.",
+  "es": "Borra deporte, lugar, tipo de atención e idioma guardados en este dispositivo."
+ },
+ "Busca limpa. Favoritos mantidos.": {
+  "en": "Search cleared. Favorites kept.",
+  "es": "Búsqueda borrada. Favoritos conservados."
+ },
+ "Buscar outra coisa": {
+  "en": "Search for something else",
+  "es": "Buscar otra cosa"
+ },
+ "Modalidade, local e como prefere treinar.": {
+  "en": "Sport, location, and how you prefer to train.",
+  "es": "Deporte, lugar y cómo prefieres entrenar."
+ },
+ "ordenados por proximidade e disponibilidade": {
+  "en": "sorted by proximity and availability",
+  "es": "ordenados por cercanía y disponibilidad"
+ },
+ "Salvos (": {
+  "en": "Saved (",
+  "es": "Guardados ("
+ },
+ "Vistos recentemente apagados. Favoritos mantidos.": {
+  "en": "Recently viewed cleared. Favorites kept.",
+  "es": "Vistos recientemente borrados. Favoritos conservados."
+ },
+ "Perfil completo": {
+  "en": "Full profile",
+  "es": "Perfil completo"
+ },
+ "Toda semana": {
+  "en": "Every week",
+  "es": "Cada semana"
+ },
+ "Programa retirado pelo treinador": {
+  "en": "Program withdrawn by the coach",
+  "es": "Programa retirado por el entrenador"
+ },
+ "Studio Norte Treinamento": {
+  "en": "Studio Norte Treinamento",
+  "es": "Studio Norte Treinamento"
+ },
+ "Treinamento funcional · Londrina": {
+  "en": "Functional training · Londrina",
+  "es": "Entrenamiento funcional · Londrina"
+ },
+ "liberado com o acesso": {
+  "en": "unlocked with access",
+  "es": "disponible con el acceso"
+ },
+ " publicada em ": {
+  "en": " published on ",
+  "es": " publicada el "
+ },
+ "Acompanhamento individual": {
+  "en": "One-on-one coaching",
+  "es": "Acompañamiento individual"
+ },
+ "Removendo": {
+  "en": "Removing",
+  "es": "Quitando"
+ },
+ "Salvo ": {
+  "en": "Saved ",
+  "es": "Guardado "
+ },
+ "Removendo…": {
+  "en": "Removing…",
+  "es": "Quitando…"
+ },
+ "Favoritos carregados": {
+  "en": "Favorites loaded",
+  "es": "Favoritos cargados"
+ },
+ "Cancelamento": {
+  "en": "Cancellation",
+  "es": "Cancelación"
+ },
+ "Quem pode usar": {
+  "en": "Who can use it",
+  "es": "Quién puede usarlo"
+ },
+ "Opcionais": {
+  "en": "Optional",
+  "es": "Opcionales"
+ },
+ "Publicar oferta": {
+  "en": "Publish offer",
+  "es": "Publicar oferta"
+ },
+ "Conta e acesso": {
+  "en": "Account and access",
+  "es": "Cuenta y acceso"
+ },
+ "reembolso em dobro": {
+  "en": "double refund",
+  "es": "reembolso doble"
+ },
+ "outro idioma": {
+  "en": "another language",
+  "es": "otro idioma"
+ },
+ "Guarde o protocolo ": {
+  "en": "Keep the ticket number ",
+  "es": "Guarda el número de protocolo "
+ },
+ "Campinas": {
+  "en": "Campinas",
+  "es": "Campinas"
+ },
+ "Bom Jesus": {
+  "en": "Bom Jesus",
+  "es": "Bom Jesus"
+ },
+ "São José": {
+  "en": "São José",
+  "es": "São José"
+ },
+ "Porto Alegre": {
+  "en": "Porto Alegre",
+  "es": "Porto Alegre"
+ },
+ "bom jesus": {
+  "en": "bom jesus",
+  "es": "bom jesus"
+ },
+ "a cidade anterior": {
+  "en": "the previous city",
+  "es": "la ciudad anterior"
+ },
+ "Mantivemos a cidade anterior: ": {
+  "en": "We kept the previous city: ",
+  "es": "Mantuvimos la ciudad anterior: "
+ },
+ "nenhuma escolhida": {
+  "en": "none chosen",
+  "es": "ninguna elegida"
+ },
+ "Ana Paula Ribeiro": {
+  "en": "Ana Paula Ribeiro",
+  "es": "Ana Paula Ribeiro"
+ },
+ "a partir de": {
+  "en": "from",
+  "es": "desde"
+ },
+ " treinadores em ": {
+  "en": " coaches in ",
+  "es": " entrenadores en "
+ },
+ " · aproximado": {
+  "en": " · approximate",
+  "es": " · aproximado"
+ },
+ " · presencial e online": {
+  "en": " · in person and online",
+  "es": " · presencial y online"
+ },
+ "Mostrando toda Londrina.": {
+  "en": "Showing all of Londrina.",
+  "es": "Mostrando toda Londrina."
+ },
+ "Unidade Centro": {
+  "en": "Centro branch",
+  "es": "Sede Centro"
+ },
+ "Unidade Gleba Palhano": {
+  "en": "Gleba Palhano branch",
+  "es": "Sede Gleba Palhano"
+ },
+ "Av. Ayrton Senna, 600 · Gleba Palhano": {
+  "en": "Av. Ayrton Senna, 600 · Gleba Palhano",
+  "es": "Av. Ayrton Senna, 600 · Gleba Palhano"
+ },
+ "Seg a sex 6h–21h": {
+  "en": "Mon to Fri 6am–9pm",
+  "es": "Lun a vie 6h–21h"
+ },
+ "CrossFit · Consultoria": {
+  "en": "CrossFit · Consulting",
+  "es": "CrossFit · Asesoría"
+ },
+ "Consultoria individual": {
+  "en": "One-on-one consulting",
+  "es": "Asesoría individual"
+ },
+ "Unidade ": {
+  "en": "Branch ",
+  "es": "Sede "
+ },
+ "Primeiro Ring Muscle-Up": {
+  "en": "First Ring Muscle-Up",
+  "es": "Primer Ring Muscle-Up"
+ },
+ "Renata Lopes": {
+  "en": "Renata Lopes",
+  "es": "Renata Lopes"
+ },
+ "sem compra agora": {
+  "en": "no purchase now",
+  "es": "sin compra por ahora"
+ },
+ "opt p2-optbtn": {
+  "en": "opt p2-optbtn",
+  "es": "opt p2-optbtn"
+ },
+ "Box de CrossFit": {
+  "en": "CrossFit box",
+  "es": "Box de CrossFit"
+ },
+ "Outra": {
+  "en": "Other",
+  "es": "Otra"
+ },
+ "Recebido": {
+  "en": "Received",
+  "es": "Recibido"
+ },
+ "Escolher pedido": {
+  "en": "Choose request",
+  "es": "Elegir solicitud"
+ },
+ "Pedir retirada deste perfil": {
+  "en": "Request removal of this profile",
+  "es": "Solicitar el retiro de este perfil"
+ },
+ "Envie, pelo Instagram ": {
+  "en": "Send, via Instagram ",
+  "es": "Envía, por Instagram "
+ },
+ "Perfil gerenciado pelo treinador": {
+  "en": "Profile managed by the coach",
+  "es": "Perfil gestionado por el entrenador"
+ },
+ "ao treinador": {
+  "en": "to the coach",
+  "es": "al entrenador"
+ },
+ "Quem edita": {
+  "en": "Who edits",
+  "es": "Quién edita"
+ },
+ "Recentes": {
+  "en": "Recent",
+  "es": "Recientes"
+ },
+ "Vazio · itens expiraram": {
+  "en": "Empty · items expired",
+  "es": "Vacío · los elementos expiraron"
+ },
+ " · expirado": {
+  "en": " · expired",
+  "es": " · expirado"
+ },
+ "Visto ": {
+  "en": "Viewed ",
+  "es": "Visto "
+ },
+ " dos vistos": {
+  "en": " from viewed",
+  "es": " de los vistos"
+ },
+ "Lista limpa": {
+  "en": "List cleared",
+  "es": "Lista borrada"
+ },
+ "Nada visto neste aparelho": {
+  "en": "Nothing viewed on this device",
+  "es": "Nada visto en este dispositivo"
+ },
+ "Limpar vistos recentemente?": {
+  "en": "Clear recently viewed?",
+  "es": "¿Borrar los vistos recientemente?"
+ },
+ " pediu acompanhamento": {
+  "en": " requested coaching",
+  "es": " solicitó acompañamiento"
+ },
+ " aceitou seu pedido": {
+  "en": " accepted your request",
+  "es": " aceptó tu solicitud"
+ },
+ " registrou um treino": {
+  "en": " logged a workout",
+  "es": " registró un entrenamiento"
+ },
+ " comentou um registro de treino": {
+  "en": " commented on a workout log",
+  "es": " comentó un registro de entrenamiento"
+ },
+ "aviso novo": {
+  "en": "new notice",
+  "es": "aviso nuevo"
+ },
+ "avisos novos": {
+  "en": "new notices",
+  "es": "avisos nuevos"
+ },
+ "Avisos marcados como vistos.": {
+  "en": "Notices marked as seen.",
+  "es": "Avisos marcados como vistos."
+ },
+ "Silenciado": {
+  "en": "Muted",
+  "es": "Silenciado"
+ },
+ "Ligado": {
+  "en": "On",
+  "es": "Activado"
+ },
+ "Aceitando…": {
+  "en": "Accepting…",
+  "es": "Aceptando…"
+ },
+ "Confirmar e aceitar convite": {
+  "en": "Confirm and accept invite",
+  "es": "Confirmar y aceptar invitación"
+ },
+ " + v.replace(/\"/g, ": {
+  "en": " + v.replace(/\"/g, ",
+  "es": " + v.replace(/\"/g, "
+ },
+ "registros de treino": {
+  "en": "workout logs",
+  "es": "registros de entrenamiento"
+ },
+ "Gerando…": {
+  "en": "Generating…",
+  "es": "Generando…"
+ },
+ "item guardado": {
+  "en": "saved item",
+  "es": "elemento guardado"
+ },
+ "itens guardados": {
+  "en": "saved items",
+  "es": "elementos guardados"
+ },
+ "Campo": {
+  "en": "Field",
+  "es": "Campo"
+ },
+ "Lado": {
+  "en": "Side",
+  "es": "Lado"
+ },
+ "Android": {
+  "en": "Android",
+  "es": "Android"
+ },
+ "Windows": {
+  "en": "Windows",
+  "es": "Windows"
+ },
+ "Linux": {
+  "en": "Linux",
+  "es": "Linux"
+ },
+ "Aparelho": {
+  "en": "Device",
+  "es": "Dispositivo"
+ },
+ "Edge": {
+  "en": "Edge",
+  "es": "Edge"
+ },
+ "Chrome": {
+  "en": "Chrome",
+  "es": "Chrome"
+ },
+ "Firefox": {
+  "en": "Firefox",
+  "es": "Firefox"
+ },
+ "Safari": {
+  "en": "Safari",
+  "es": "Safari"
+ },
+ "Saindo…": {
+  "en": "Logging out…",
+  "es": "Saliendo…"
+ },
+ "Processando…": {
+  "en": "Processing…",
+  "es": "Procesando…"
+ },
+ "Pedido enviado a ": {
+  "en": "Request sent to ",
+  "es": "Solicitud enviada a "
+ },
+ "este perfil": {
+  "en": "this profile",
+  "es": "este perfil"
+ },
+ "conta bloqueada": {
+  "en": "account blocked",
+  "es": "cuenta bloqueada"
+ },
+ "Cadastrar app autenticador": {
+  "en": "Set up authenticator app",
+  "es": "Registrar app de autenticación"
+ },
+ "conta sem nome": {
+  "en": "unnamed account",
+  "es": "cuenta sin nombre"
+ },
+ " · denunciado: ": {
+  "en": " · reported: ",
+  "es": " · denunciado: "
+ },
+ " contra a mesma conta": {
+  "en": " against the same account",
+  "es": " contra la misma cuenta"
+ },
+ "Mensagem apontada: “": {
+  "en": "Flagged message: “",
+  "es": "Mensaje señalado: “"
+ },
+ "Bloquear conta": {
+  "en": "Block account",
+  "es": "Bloquear cuenta"
+ },
+ "Conta bloqueada": {
+  "en": "Account blocked",
+  "es": "Cuenta bloqueada"
+ },
+ "99Coach · protocolo ": {
+  "en": "99Coach · ticket number ",
+  "es": "99Coach · número de protocolo "
+ },
+ "Chamado respondido": {
+  "en": "Ticket answered",
+  "es": "Ticket respondido"
+ },
+ "Chamado encerrado": {
+  "en": "Ticket closed",
+  "es": "Ticket cerrado"
+ },
+ "Complemento pedido": {
+  "en": "More information requested",
+  "es": "Información adicional solicitada"
+ },
+ "conta sem e-mail": {
+  "en": "account without email",
+  "es": "cuenta sin correo"
+ },
+ "outro pedido": {
+  "en": "other request",
+  "es": "otra solicitud"
+ },
+ "outros pedidos": {
+  "en": "other requests",
+  "es": "otras solicitudes"
+ },
+ " para o mesmo perfil": {
+  "en": " for the same profile",
+  "es": " para el mismo perfil"
+ },
+ "Transferir o perfil?": {
+  "en": "Transfer the profile?",
+  "es": "¿Transferir el perfil?"
+ },
+ "Ocultar": {
+  "en": "Hide",
+  "es": "Ocultar"
+ },
+ "esta conta": {
+  "en": "this account",
+  "es": "esta cuenta"
+ },
+ "Conta desbloqueada.": {
+  "en": "Account unblocked.",
+  "es": "Cuenta desbloqueada."
+ },
+ " · bloqueada": {
+  "en": " · blocked",
+  "es": " · bloqueada"
+ },
+ "sem e-mail": {
+  "en": "no email",
+  "es": "sin correo"
+ },
+ "sem papel": {
+  "en": "no role",
+  "es": "sin rol"
+ },
+ " · e-mail ": {
+  "en": " · email ",
+  "es": " · correo "
+ },
+ " · duas etapas ligada": {
+  "en": " · two-step verification on",
+  "es": " · verificación en dos pasos activada"
+ },
+ "Perfil ": {
+  "en": "Profile ",
+  "es": "Perfil "
+ },
+ "Aguardando pagamento": {
+  "en": "Awaiting payment",
+  "es": "Esperando pago"
+ },
+ " Desde ": {
+  "en": " Since ",
+  "es": " Desde "
+ },
+ "Treinadores publicados": {
+  "en": "Published coaches",
+  "es": "Entrenadores publicados"
+ },
+ "Perfis importados": {
+  "en": "Imported profiles",
+  "es": "Perfiles importados"
+ },
+ "Contas bloqueadas": {
+  "en": "Blocked accounts",
+  "es": "Cuentas bloqueadas"
+ },
+ "Acompanhamentos ativos": {
+  "en": "Active coaching relationships",
+  "es": "Acompañamientos activos"
+ },
+ "Pedidos aguardando": {
+  "en": "Requests waiting",
+  "es": "Solicitudes en espera"
+ },
+ "Pagamentos confirmados": {
+  "en": "Confirmed payments",
+  "es": "Pagos confirmados"
+ },
+ " pagos pelos alunos": {
+  "en": " paid by clients",
+  "es": " pagados por los alumnos"
+ },
+ " divergentes · ": {
+  "en": " mismatched · ",
+  "es": " divergentes · "
+ },
+ " sem pedido": {
+  "en": " without a request",
+  "es": " sin solicitud"
+ },
+ " · tarifa ": {
+  "en": " · fee ",
+  "es": " · tarifa "
+ },
+ "Divergente": {
+  "en": "Mismatched",
+  "es": "Divergente"
+ },
+ "sem detalhe": {
+  "en": "no details",
+  "es": "sin detalle"
+ },
+ "pode cobrar": {
+  "en": "can charge",
+  "es": "puede cobrar"
+ },
+ "repasse ativo": {
+  "en": "payout active",
+  "es": "transferencia activa"
+ },
+ "repasse pendente": {
+  "en": "payout pending",
+  "es": "transferencia pendiente"
+ },
+ "cadastro enviado": {
+  "en": "registration submitted",
+  "es": "registro enviado"
+ },
+ "cadastro incompleto": {
+  "en": "registration incomplete",
+  "es": "registro incompleto"
+ },
+ "Cancelada pela pessoa": {
+  "en": "Canceled by the person",
+  "es": "Cancelada por la persona"
+ },
+ " dias)": {
+  "en": " days)",
+  "es": " días)"
+ },
+ "CrossFit e Lutas": {
+  "en": "CrossFit and Combat sports",
+  "es": "CrossFit y Deportes de combate"
+ },
+ "CrossFit e Mobilidade": {
+  "en": "CrossFit and Mobility",
+  "es": "CrossFit y Movilidad"
+ },
+ "Felipe Andrade": {
+  "en": "Felipe Andrade",
+  "es": "Felipe Andrade"
+ },
+ "Henrique Saito": {
+  "en": "Henrique Saito",
+  "es": "Henrique Saito"
+ },
+ "Larissa Nunes": {
+  "en": "Larissa Nunes",
+  "es": "Larissa Nunes"
+ },
+ "Funcional e CrossFit": {
+  "en": "Functional training and CrossFit",
+  "es": "Entrenamiento funcional y CrossFit"
+ },
+ "Pilates e Yoga": {
+  "en": "Pilates and Yoga",
+  "es": "Pilates y Yoga"
+ },
+ "Aula presencial": {
+  "en": "In-person class",
+  "es": "Clase presencial"
+ },
+ "Funcional e Corrida": {
+  "en": "Functional training and Running",
+  "es": "Entrenamiento funcional y Running"
+ },
+ "Uberaba, MG": {
+  "en": "Uberaba, MG",
+  "es": "Uberaba, MG"
+ },
+ "Marcos Almeida": {
+  "en": "Marcos Almeida",
+  "es": "Marcos Almeida"
+ },
+ "Tamarana, PR": {
+  "en": "Tamarana, PR",
+  "es": "Tamarana, PR"
+ },
+ " (estado todo)": {
+  "en": " (entire state)",
+  "es": " (todo el estado)"
+ },
+ "Cidade, UF": {
+  "en": "City, state",
+  "es": "Ciudad, estado"
+ },
+ "Qualquer lugar (online)": {
+  "en": "Anywhere (online)",
+  "es": "Cualquier lugar (online)"
+ },
+ "Foco: ": {
+  "en": "Focus: ",
+  "es": "Enfoque: "
+ },
+ "Presencial e online juntos, identificados": {
+  "en": "In person and online together, labeled",
+  "es": "Presencial y online juntos, identificados"
+ },
+ "Qualquer idioma": {
+  "en": "Any language",
+  "es": "Cualquier idioma"
+ },
+ "base em ": {
+  "en": "based in ",
+  "es": "con base en "
+ },
+ "Publicado recentemente": {
+  "en": "Recently published",
+  "es": "Publicado recientemente"
+ },
+ " dos salvos": {
+  "en": " from saved",
+  "es": " de los guardados"
+ },
+ "nenhum treinador": {
+  "en": "no coaches",
+  "es": "ningún entrenador"
+ },
+ "Remover o idioma ": {
+  "en": "Remove the language ",
+  "es": "Quitar el idioma "
+ },
+ " nesta busca sem esse filtro": {
+  "en": " in this search without that filter",
+  "es": " en esta búsqueda sin ese filtro"
+ },
+ "treinador presencial": {
+  "en": "in-person coach",
+  "es": "entrenador presencial"
+ },
+ "treinadores presenciais": {
+  "en": "in-person coaches",
+  "es": "entrenadores presenciales"
+ },
+ "Escolher outra modalidade": {
+  "en": "Choose another sport",
+  "es": "Elegir otro deporte"
+ },
+ "Buscando treinadores…": {
+  "en": "Searching for coaches…",
+  "es": "Buscando entrenadores…"
+ },
+ "Pelo menos ": {
+  "en": "At least ",
+  "es": "Al menos "
+ },
+ " · mostrando ": {
+  "en": " · showing ",
+  "es": " · mostrando "
+ },
+ "left: ": {
+  "en": "left: ",
+  "es": "left: "
+ },
+ "Marcador ": {
+  "en": "Marker ",
+  "es": "Marcador "
+ },
+ "Força Base": {
+  "en": "Base Strength",
+  "es": "Fuerza Base"
+ },
+ "Functional Fitness — Ciclo completo": {
+  "en": "Functional Fitness — Full cycle",
+  "es": "Functional Fitness — Ciclo completo"
+ },
+ " presencialmente em ": {
+  "en": " in person in ",
+  "es": " presencialmente en "
+ },
+ " profissionais publicados atendem presencialmente": {
+  "en": " published professionals coach in person",
+  "es": " profesionales publicados atienden presencialmente"
+ },
+ " profissionais publicados atendem online": {
+  "en": " published professionals coach online",
+  "es": " profesionales publicados atienden online"
+ },
+ " profissionais publicados nesta modalidade": {
+  "en": " published professionals in this sport",
+  "es": " profesionales publicados en este deporte"
+ },
+ " profissionais publicados": {
+  "en": " published professionals",
+  "es": " profesionales publicados"
+ },
+ " | 99Coach": {
+  "en": " | 99Coach",
+  "es": " | 99Coach"
+ },
+ "Compare ": {
+  "en": "Compare ",
+  "es": "Compara "
+ },
+ " treinadores de ": {
+  "en": " coaches for ",
+  "es": " entrenadores de "
+ },
+ " que atendem online": {
+  "en": " who coach online",
+  "es": " que atienden online"
+ },
+ " que atendem ": {
+  "en": " who coach ",
+  "es": " que atienden "
+ },
+ " › Online": {
+  "en": " › Online",
+  "es": " › Online"
+ },
+ " · ocultar campos": {
+  "en": " · hide fields",
+  "es": " · ocultar campos"
+ },
+ " no mapa": {
+  "en": " on the map",
+  "es": " en el mapa"
+ },
+ "Qualquer cidade": {
+  "en": "Any city",
+  "es": "Cualquier ciudad"
+ },
+ "+ Modalidade · ": {
+  "en": "+ Sport · ",
+  "es": "+ Deporte · "
+ },
+ "todas as cidades": {
+  "en": "all cities",
+  "es": "todas las ciudades"
+ },
+ " treinador de ": {
+  "en": " coach for ",
+  "es": " entrenador de "
+ },
+ " · estado todo": {
+  "en": " · entire state",
+  "es": " · todo el estado"
+ },
+ "lrow v4-lrow": {
+  "en": "lrow v4-lrow",
+  "es": "lrow v4-lrow"
+ },
+ "Atendem presencialmente": {
+  "en": "Coach in person",
+  "es": "Atienden presencialmente"
+ },
+ "Atendem online": {
+  "en": "Coach online",
+  "es": "Atienden online"
+ },
+ "Publicados nesta modalidade": {
+  "en": "Published in this sport",
+  "es": "Publicados en este deporte"
+ },
+ "st vfe-st": {
+  "en": "st vfe-st",
+  "es": "st vfe-st"
+ },
+ "Cidades encontradas": {
+  "en": "Cities found",
+  "es": "Ciudades encontradas"
+ },
+ "Cidades · ": {
+  "en": "Cities · ",
+  "es": "Ciudades · "
+ },
+ "Cidade: ": {
+  "en": "City: ",
+  "es": "Ciudad: "
+ },
+ "Idioma: ": {
+  "en": "Language: ",
+  "es": "Idioma: "
+ },
+ "Toda a cidade": {
+  "en": "The whole city",
+  "es": "Toda la ciudad"
+ },
+ "treinador com oferta publicada": {
+  "en": "coach with a published offer",
+  "es": "entrenador con oferta publicada"
+ },
+ "treinadores com oferta publicada": {
+  "en": "coaches with a published offer",
+  "es": "entrenadores con oferta publicada"
+ },
+ "programa publicado": {
+  "en": "published program",
+  "es": "programa publicado"
+ },
+ "programas publicados": {
+  "en": "published programs",
+  "es": "programas publicados"
+ },
+ "Quanto custa ": {
+  "en": "How much is ",
+  "es": "Cuánto cuesta "
+ },
+ "w v4 vfe": {
+  "en": "w v4 vfe",
+  "es": "w v4 vfe"
+ },
+ " e outras modalidades": {
+  "en": " and other sports",
+  "es": " y otros deportes"
+ },
+ "Mobilidade e postura": {
+  "en": "Mobility and posture",
+  "es": "Movilidad y postura"
+ },
+ " · Presencial e online": {
+  "en": " · In person and online",
+  "es": " · Presencial y online"
+ },
+ " · Presencial": {
+  "en": " · In person",
+  "es": " · Presencial"
+ },
+ "Atende online · ": {
+  "en": "Coaches online · ",
+  "es": "Atiende online · "
+ },
+ " · presencial": {
+  "en": " · in person",
+  "es": " · presencial"
+ },
+ "presencial em ": {
+  "en": "in person in ",
+  "es": "presencial en "
+ },
+ " e online": {
+  "en": " and online",
+  "es": " y online"
+ },
+ "treino de hoje publicado": {
+  "en": "today's workout published",
+  "es": "entrenamiento de hoy publicado"
+ },
+ "visto ontem": {
+  "en": "viewed yesterday",
+  "es": "visto ayer"
+ },
+ "Como ordenamos": {
+  "en": "How we sort",
+  "es": "Cómo ordenamos"
+ },
+ "online · ": {
+  "en": "online · ",
+  "es": "online · "
+ },
+ "A busca vai junto: ": {
+  "en": "Your search comes along: ",
+  "es": "La búsqueda va incluida: "
+ },
+ "Recife, PE": {
+  "en": "Recife, PE",
+  "es": "Recife, PE"
+ },
+ "Belo Horizonte, MG": {
+  "en": "Belo Horizonte, MG",
+  "es": "Belo Horizonte, MG"
+ },
+ "Campinas, SP": {
+  "en": "Campinas, SP",
+  "es": "Campinas, SP"
+ },
+ "Salvador, BA": {
+  "en": "Salvador, BA",
+  "es": "Salvador, BA"
+ },
+ "Fortaleza, CE": {
+  "en": "Fortaleza, CE",
+  "es": "Fortaleza, CE"
+ },
+ "treino no app e ajuste semanal": {
+  "en": "workout in the app and weekly adjustments",
+  "es": "entrenamiento en la app y ajuste semanal"
+ },
+ "Diego": {
+  "en": "Diego",
+  "es": "Diego"
+ },
+ "Juliana": {
+  "en": "Juliana",
+  "es": "Juliana"
+ },
+ "Bruno": {
+  "en": "Bruno",
+  "es": "Bruno"
+ },
+ "Pedido cancelado": {
+  "en": "Request canceled",
+  "es": "Solicitud cancelada"
+ },
+ "Cross": {
+  "en": "Cross",
+  "es": "Cross"
+ },
+ "Fit e Lutas": {
+  "en": "Fit and Combat sports",
+  "es": "Fit y Deportes de combate"
+ },
+ "Fit e Funcional": {
+  "en": "Fit and Functional training",
+  "es": "Fit y Entrenamiento funcional"
+ },
+ "o perfil de ": {
+  "en": "the profile of ",
+  "es": "el perfil de "
+ },
+ " · CrossFit": {
+  "en": " · CrossFit",
+  "es": " · CrossFit"
+ },
+ " · Londrina · presencial": {
+  "en": " · Londrina · in person",
+  "es": " · Londrina · presencial"
+ },
+ "Personal trainer Londrina": {
+  "en": "Personal trainer Londrina",
+  "es": "Entrenador personal Londrina"
+ },
+ "crossfit iniciante": {
+  "en": "beginner crossfit",
+  "es": "crossfit principiante"
+ },
+ "Corrida 5 km": {
+  "en": "5 km run",
+  "es": "Running 5 km"
+ },
+ "crossfit tamarana": {
+  "en": "crossfit tamarana",
+  "es": "crossfit tamarana"
+ },
+ "top: ": {
+  "en": "top: ",
+  "es": "top: "
+ },
+ "Pesquisar treinadores, programas, esportes": {
+  "en": "Search coaches, programs, sports",
+  "es": "Buscar entrenadores, programas, deportes"
+ },
+ "qchip sx-iaq": {
+  "en": "qchip sx-iaq",
+  "es": "qchip sx-iaq"
+ },
+ "em alta": {
+  "en": "trending",
+  "es": "en tendencia"
+ },
+ "quero treinar crossfit perto de tamarana": {
+  "en": "i want to do crossfit near tamarana",
+  "es": "quiero entrenar crossfit cerca de tamarana"
+ },
+ "Meu pedido": {
+  "en": "My request",
+  "es": "Mi solicitud"
+ },
+ "Acompanhar pedido": {
+  "en": "Track request",
+  "es": "Seguir solicitud"
+ },
+ "Vistos recentemente limpos neste aparelho.": {
+  "en": "Recently viewed cleared on this device.",
+  "es": "Vistos recientemente borrados en este dispositivo."
+ },
+ "a lista de programas de ": {
+  "en": "the program list of ",
+  "es": "la lista de programas de "
+ },
+ "Entrar e continuar": {
+  "en": "Log in and continue",
+  "es": "Entrar y continuar"
+ },
+ "Pronto.": {
+  "en": "Done.",
+  "es": "Listo."
+ },
+ "Guias": {
+  "en": "Guides",
+  "es": "Guías"
+ },
+ "sua cidade": {
+  "en": "your city",
+  "es": "tu ciudad"
+ },
+ "Ana Carvalho": {
+  "en": "Ana Carvalho",
+  "es": "Ana Carvalho"
+ },
+ "box ou academia parceira": {
+  "en": "partner box or gym",
+  "es": "box o gimnasio asociado"
+ },
+ "parque ou ao ar livre": {
+  "en": "park or outdoors",
+  "es": "parque o al aire libre"
+ },
+ "na casa do aluno": {
+  "en": "at the client's home",
+  "es": "en casa del alumno"
+ },
+ "Combinado": {
+  "en": "By arrangement",
+  "es": "A convenir"
+ },
+ "Solicitar ": {
+  "en": "Request ",
+  "es": "Solicitar "
+ },
+ "Contratar ": {
+  "en": "Purchase ",
+  "es": "Contratar "
+ },
+ "Contratar": {
+  "en": "Purchase",
+  "es": "Contratar"
+ },
+ "Enquanto a assinatura estiver ativa": {
+  "en": "While the subscription is active",
+  "es": "Mientras la suscripción esté activa"
+ },
+ "Comprar": {
+  "en": "Buy",
+  "es": "Comprar"
+ },
+ "Declarada pelo treinador": {
+  "en": "Declared by the coach",
+  "es": "Declarada por el entrenador"
+ },
+ "Marina Costa": {
+  "en": "Marina Costa",
+  "es": "Marina Costa"
+ },
+ "Medidas corporais": {
+  "en": "Body measurements",
+  "es": "Medidas corporales"
+ },
+ "Ana Ribeiro": {
+  "en": "Ana Ribeiro",
+  "es": "Ana Ribeiro"
+ },
+ "Lond": {
+  "en": "Lond",
+  "es": "Lond"
+ },
+ "Toledo": {
+  "en": "Toledo",
+  "es": "Toledo"
+ },
+ "Tamarna": {
+  "en": "Tamarna",
+  "es": "Tamarna"
+ },
+ "Nome, modalidades, local e idioma": {
+  "en": "Name, sports, location, and language",
+  "es": "Nombre, deportes, lugar e idioma"
+ },
+ "Receber pagamentos": {
+  "en": "Receive payments",
+  "es": "Recibir pagos"
+ },
+ " · recomendadas ": {
+  "en": " · recommended ",
+  "es": " · recomendadas "
+ },
+ "vendas habilitadas": {
+  "en": "sales enabled",
+  "es": "ventas habilitadas"
+ },
+ "Continuar cadastro": {
+  "en": "Continue registration",
+  "es": "Continuar registro"
+ },
+ "Revisar e publicar": {
+  "en": "Review and publish",
+  "es": "Revisar y publicar"
+ },
+ "60 minutos de treino individual em ": {
+  "en": "60 minutes of one-on-one training in ",
+  "es": "60 minutos de entrenamiento individual en "
+ },
+ "ocard onb-choice": {
+  "en": "ocard onb-choice",
+  "es": "ocard onb-choice"
+ },
+ " · sujeito a aceite": {
+  "en": " · subject to acceptance",
+  "es": " · sujeto a aceptación"
+ },
+ "Tarde": {
+  "en": "Afternoon",
+  "es": "Tarde"
+ },
+ "Sim, aceito": {
+  "en": "Yes, I accept",
+  "es": "Sí, acepto"
+ },
+ "Pedidos ficam pausados": {
+  "en": "Requests are paused",
+  "es": "Las solicitudes quedan en pausa"
+ },
+ "do seu perfil": {
+  "en": "of your profile",
+  "es": "de tu perfil"
+ },
+ "input onb-codebox": {
+  "en": "input onb-codebox",
+  "es": "input onb-codebox"
+ },
+ "Vendas habilitadas.": {
+  "en": "Sales enabled.",
+  "es": "Ventas habilitadas."
+ },
+ "Mensal · R$ 99": {
+  "en": "Monthly · R$ 99",
+  "es": "Mensual · R$ 99"
+ },
+ "Anual · R$ 990": {
+  "en": "Yearly · R$ 990",
+  "es": "Anual · R$ 990"
+ },
+ "Termina": {
+  "en": "Ends",
+  "es": "Termina"
+ },
+ "Depois": {
+  "en": "Later",
+  "es": "Después"
+ },
+ "Completar": {
+  "en": "Complete",
+  "es": "Completar"
+ },
+ "Modalidades, local e idioma": {
+  "en": "Sports, location, and language",
+  "es": "Deportes, lugar e idioma"
+ },
+ "Pronta": {
+  "en": "Ready",
+  "es": "Lista"
+ },
+ "Recomendada": {
+  "en": "Recommended",
+  "es": "Recomendada"
+ },
+ "Habilitados": {
+  "en": "Enabled",
+  "es": "Habilitados"
+ },
+ "Publicando…": {
+  "en": "Publishing…",
+  "es": "Publicando…"
+ },
+ "Completar meu cadastro": {
+  "en": "Complete my registration",
+  "es": "Completar mi registro"
+ },
+ " · publicado": {
+  "en": " · published",
+  "es": " · publicado"
+ },
+ " · publique quando quiser": {
+  "en": " · publish whenever you want",
+  "es": " · publica cuando quieras"
+ },
+ "Criado": {
+  "en": "Created",
+  "es": "Creado"
+ },
+ "crie uma senha nova": {
+  "en": "create a new password",
+  "es": "crea una contraseña nueva"
+ },
+ "Salvando a senha nova…": {
+  "en": "Saving the new password…",
+  "es": "Guardando la contraseña nueva…"
+ },
+ "Entrando…": {
+  "en": "Logging in…",
+  "es": "Entrando…"
+ },
+ "Arapongas": {
+  "en": "Arapongas",
+  "es": "Arapongas"
+ },
+ "Apucarana": {
+  "en": "Apucarana",
+  "es": "Apucarana"
+ },
+ "Cascavel": {
+  "en": "Cascavel",
+  "es": "Cascavel"
+ },
+ "Santos": {
+  "en": "Santos",
+  "es": "Santos"
+ },
+ "Salvador": {
+  "en": "Salvador",
+  "es": "Salvador"
+ },
+ "Fortaleza": {
+  "en": "Fortaleza",
+  "es": "Fortaleza"
+ },
+ "Londrina|PR": {
+  "en": "Londrina|PR",
+  "es": "Londrina|PR"
+ },
+ " atendem aqui": {
+  "en": " coach here",
+  "es": " atienden aquí"
+ },
+ "uma modalidade": {
+  "en": "a sport",
+  "es": "un deporte"
+ },
+ "o formato de atendimento": {
+  "en": "the coaching format",
+  "es": "el formato de atención"
+ },
+ "Cidade enviada": {
+  "en": "City submitted",
+  "es": "Ciudad enviada"
+ },
+ "Recebemos “": {
+  "en": "We received “",
+  "es": "Recibimos “"
+ },
+ "Continuar preenchendo": {
+  "en": "Continue filling out",
+  "es": "Seguir completando"
+ },
+ "opcional para online": {
+  "en": "optional for online",
+  "es": "opcional para online"
+ },
+ "ArrowDown": {
+  "en": "ArrowDown",
+  "es": "ArrowDown"
+ },
+ "ArrowUp": {
+  "en": "ArrowUp",
+  "es": "ArrowUp"
+ },
+ "Cidade removida": {
+  "en": "City removed",
+  "es": "Ciudad eliminada"
+ },
+ "Backspace": {
+  "en": "Backspace",
+  "es": "Backspace"
+ },
+ "Delete": {
+  "en": "Delete",
+  "es": "Delete"
+ },
+ "aluno sem nome": {
+  "en": "unnamed client",
+  "es": "alumno sin nombre"
+ },
+ "WhatsApp": {
+  "en": "WhatsApp",
+  "es": "WhatsApp"
+ },
+ "Convite ignorado neste aparelho. ": {
+  "en": "Invite ignored on this device. ",
+  "es": "Invitación ignorada en este dispositivo. "
+ },
+ "Perder gordura": {
+  "en": "Lose fat",
+  "es": "Perder grasa"
+ },
+ "Conectado a ": {
+  "en": "Connected to ",
+  "es": "Conectado a "
+ },
+ " ainda vai revisar": {
+  "en": " will still review",
+  "es": " todavía va a revisar"
+ },
+ "Language and region": {
+  "en": "Language and region",
+  "es": "Language and region"
+ },
+ "Interface language": {
+  "en": "Interface language",
+  "es": "Interface language"
+ },
+ "This does not change the currency of your purchase or the languages coaches speak.": {
+  "en": "This does not change the currency of your purchase or the languages coaches speak.",
+  "es": "This does not change the currency of your purchase or the languages coaches speak."
+ },
+ "Time zone": {
+  "en": "Time zone",
+  "es": "Time zone"
+ },
+ "Units": {
+  "en": "Units",
+  "es": "Units"
+ },
+ "Purchase country": {
+  "en": "Purchase country",
+  "es": "Purchase country"
+ },
+ "Brazil · sales in reais in this version": {
+  "en": "Brazil · sales in reais in this version",
+  "es": "Brazil · sales in reais in this version"
+ },
+ "Currency": {
+  "en": "Currency",
+  "es": "Currency"
+ },
+ "Each offer shows the coach’s currency": {
+  "en": "Each offer shows the coach’s currency",
+  "es": "Each offer shows the coach’s currency"
+ },
+ "Save preferences": {
+  "en": "Save preferences",
+  "es": "Save preferences"
+ },
+ "Preferences saved. The interface changes right away.": {
+  "en": "Preferences saved. The interface changes right away.",
+  "es": "Preferences saved. The interface changes right away."
+ },
+ "Not saved": {
+  "en": "Not saved",
+  "es": "Not saved"
+ },
+ "We kept the previous language. Try again.": {
+  "en": "We kept the previous language. Try again.",
+  "es": "We kept the previous language. Try again."
+ },
+ "Zona horaria": {
+  "en": "Time zone",
+  "es": "Zona horaria"
+ },
+ "Moneda": {
+  "en": "Currency",
+  "es": "Moneda"
+ },
+ "Cada oferta muestra la moneda del entrenador": {
+  "en": "Each offer shows the coach’s currency",
+  "es": "Cada oferta muestra la moneda del entrenador"
+ },
+ "Guardar preferencias": {
+  "en": "Save preferences",
+  "es": "Guardar preferencias"
+ },
+ "Preferencias guardadas. La interfaz cambia al instante.": {
+  "en": "Preferences saved. The interface changes right away.",
+  "es": "Preferencias guardadas. La interfaz cambia al instante."
+ },
+ "Chrome · macOS": {
+  "en": "Chrome · macOS",
+  "es": "Chrome · macOS"
+ },
+ "Android · navegador": {
+  "en": "Android · browser",
+  "es": "Android · navegador"
+ },
+ "Desligada · recomendamos manter ligada": {
+  "en": "Off · we recommend keeping it on",
+  "es": "Desactivada · recomendamos mantenerla activada"
+ },
+ "Agendada": {
+  "en": "Scheduled",
+  "es": "Programada"
+ },
+ "Compartilhamento revogado": {
+  "en": "Sharing revoked",
+  "es": "Uso compartido revocado"
+ },
+ "Compartilhamento concedido · recibo #S-": {
+  "en": "Sharing granted · receipt #S-",
+  "es": "Uso compartido concedido · recibo #S-"
+ },
+ "Simular push liberado": {
+  "en": "Simulate push enabled",
+  "es": "Simular push habilitado"
+ },
+ "check onb-ck": {
+  "en": "check onb-ck",
+  "es": "check onb-ck"
+ },
+ "2 etapas ": {
+  "en": "2 steps ",
+  "es": "2 pasos "
+ },
+ "Perfil e cadastro": {
+  "en": "Profile and registration",
+  "es": "Perfil y registro"
+ },
+ "Convite aceito": {
+  "en": "Invite accepted",
+  "es": "Invitación aceptada"
+ },
+ "Conta criada": {
+  "en": "Account created",
+  "es": "Cuenta creada"
+ },
+ "Pronto, ": {
+  "en": "Done, ",
+  "es": "Listo, "
+ },
+ "w v4 onb": {
+  "en": "w v4 onb",
+  "es": "w v4 onb"
+ },
+ "Aluna · ": {
+  "en": "Client · ",
+  "es": "Alumna · "
+ },
+ "Londrina · local combinado": {
+  "en": "Londrina · location by arrangement",
+  "es": "Londrina · lugar a convenir"
+ },
+ "Ajuste a cada 15 dias": {
+  "en": "Adjustments every 15 days",
+  "es": "Ajuste cada 15 días"
+ },
+ "Mensal · Gleba Palhano": {
+  "en": "Monthly · Gleba Palhano",
+  "es": "Mensual · Gleba Palhano"
+ },
+ "Aula avulsa": {
+  "en": "Single class",
+  "es": "Clase suelta"
+ },
+ "Treina adultos desde 2017": {
+  "en": "Coaching adults since 2017",
+  "es": "Entrena adultos desde 2017"
+ },
+ "Acompanhamento online · set/2026": {
+  "en": "Online coaching · Sep/2026",
+  "es": "Acompañamiento online · sep/2026"
+ },
+ "Acompanhamento online · jul/2026": {
+  "en": "Online coaching · Jul/2026",
+  "es": "Acompañamiento online · jul/2026"
+ },
+ "Acompanhamento online · mai/2026": {
+  "en": "Online coaching · May/2026",
+  "es": "Acompañamiento online · may/2026"
+ },
+ "Gabriel": {
+  "en": "Gabriel",
+  "es": "Gabriel"
+ },
+ "Gleba Palhano, Londrina": {
+  "en": "Gleba Palhano, Londrina",
+  "es": "Gleba Palhano, Londrina"
+ },
+ "Declarada pela treinadora": {
+  "en": "Declared by the coach",
+  "es": "Declarada por la entrenadora"
+ },
+ "Bruna Tavares": {
+  "en": "Bruna Tavares",
+  "es": "Bruna Tavares"
+ },
+ "Bruna": {
+  "en": "Bruna",
+  "es": "Bruna"
+ },
+ "Treinadora de Funcional": {
+  "en": "Functional training coach",
+  "es": "Entrenadora de Entrenamiento funcional"
+ },
+ "Studio Norte": {
+  "en": "Studio Norte",
+  "es": "Studio Norte"
+ },
+ "Meu painel": {
+  "en": "My dashboard",
+  "es": "Mi panel"
+ },
+ " pelo Instagram": {
+  "en": " via Instagram",
+  "es": " por Instagram"
+ },
+ "Ativo desde 02/09/2026": {
+  "en": "Active since 02/09/2026",
+  "es": "Activo desde 02/09/2026"
+ },
+ "Consultar disponibilidade": {
+  "en": "Check availability",
+  "es": "Consultar disponibilidad"
+ },
+ "Acompanhar": {
+  "en": "Track",
+  "es": "Seguir"
+ },
+ "Escolher": {
+  "en": "Choose",
+  "es": "Elegir"
+ },
+ "Escolher programa": {
+  "en": "Choose program",
+  "es": "Elegir programa"
+ },
+ "Pix gerado · aguardando pagamento": {
+  "en": "Pix generated · awaiting payment",
+  "es": "Pix generado · esperando pago"
+ },
+ "Acompanhar depois": {
+  "en": "Track later",
+  "es": "Seguir después"
+ },
+ "Forma": {
+  "en": "Method",
+  "es": "Forma"
+ },
+ "Inclui": {
+  "en": "Includes",
+  "es": "Incluye"
+ },
+ "Desde 02/09/2026 · semana 8.": {
+  "en": "Since 02/09/2026 · week 8.",
+  "es": "Desde 02/09/2026 · semana 8."
+ },
+ "Mensagem enviada": {
+  "en": "Message sent",
+  "es": "Mensaje enviado"
+ },
+ " e perdeu o acesso, recupere a conta pelo e-mail cadastrado.": {
+  "en": " and lost access, recover the account using the registered email.",
+  "es": " y perdiste el acceso, recupera la cuenta con el correo registrado."
+ },
+ "Reivindicar ": {
+  "en": "Claim ",
+  "es": "Reclamar "
+ },
+ "ocard v4-ocard": {
+  "en": "ocard v4-ocard",
+  "es": "ocard v4-ocard"
+ },
+ "Pedido recebido": {
+  "en": "Request received",
+  "es": "Solicitud recibida"
+ },
+ "Pedido recebido · protocolo C-2611": {
+  "en": "Request received · ticket number C-2611",
+  "es": "Solicitud recibida · número de protocolo C-2611"
+ },
+ "Conduta inadequada": {
+  "en": "Inappropriate conduct",
+  "es": "Conducta inapropiada"
+ },
+ "Link copiado": {
+  "en": "Link copied",
+  "es": "Enlace copiado"
+ },
+ "Publicada": {
+  "en": "Published",
+  "es": "Publicada"
+ },
+ "Perfil de Diego Moraes": {
+  "en": "Diego Moraes's profile",
+  "es": "Perfil de Diego Moraes"
+ },
+ "w v4 vfp": {
+  "en": "w v4 vfp",
+  "es": "w v4 vfp"
+ },
+ "Ler menos": {
+  "en": "Read less",
+  "es": "Leer menos"
+ },
+ "Mostrar menos": {
+  "en": "Show less",
+  "es": "Mostrar menos"
+ },
+ "card v4-sheet": {
+  "en": "card v4-sheet",
+  "es": "card v4-sheet"
+ },
+ " · Centro e Zona Sul": {
+  "en": " · Centro and Zona Sul",
+  "es": " · Centro y Zona Sul"
+ },
+ " · Gleba Palhano": {
+  "en": " · Gleba Palhano",
+  "es": " · Gleba Palhano"
+ },
+ " · Zona Sul": {
+  "en": " · Zona Sul",
+  "es": " · Zona Sul"
+ },
+ "Escolher acompanhamento": {
+  "en": "Choose coaching",
+  "es": "Elegir acompañamiento"
+ },
+ "Perfil de Rafael Lima": {
+  "en": "Rafael Lima's profile",
+  "es": "Perfil de Rafael Lima"
+ },
+ "Titularidade": {
+  "en": "Ownership",
+  "es": "Titularidad"
+ },
+ "Presencial · Londrina, local combinado": {
+  "en": "In person · Londrina, location by arrangement",
+  "es": "Presencial · Londrina, lugar a convenir"
+ },
+ "depois do pagamento": {
+  "en": "after payment",
+  "es": "después del pago"
+ },
+ "no dia": {
+  "en": "on the day",
+  "es": "el mismo día"
+ },
+ "Recorrente mensal · sujeito a aceite · online": {
+  "en": "Monthly recurring · subject to acceptance · online",
+  "es": "Recurrente mensual · sujeto a aceptación · online"
+ },
+ "depois do aceite": {
+  "en": "after acceptance",
+  "es": "después de la aceptación"
+ },
+ "toda semana": {
+  "en": "every week",
+  "es": "cada semana"
+ },
+ "Recorrente mensal · sujeito a aceite · Londrina": {
+  "en": "Monthly recurring · subject to acceptance · Londrina",
+  "es": "Recurrente mensual · sujeto a aceptación · Londrina"
+ },
+ "Programa CrossFit Base": {
+  "en": "CrossFit Base Program",
+  "es": "Programa CrossFit Base"
+ },
+ "em alguns minutos": {
+  "en": "in a few minutes",
+  "es": "en unos minutos"
+ },
+ "Escolhida": {
+  "en": "Chosen",
+  "es": "Elegida"
+ },
+ "Quando sou cobrado?": {
+  "en": "When am I charged?",
+  "es": "¿Cuándo me cobran?"
+ },
+ "Programa escolhido": {
+  "en": "Program chosen",
+  "es": "Programa elegido"
+ },
+ "Semanal": {
+  "en": "Weekly",
+  "es": "Semanal"
+ },
+ "Quando quiser": {
+  "en": "Whenever you want",
+  "es": "Cuando quieras"
+ },
+ "Centro e Zona Sul": {
+  "en": "Centro and Zona Sul",
+  "es": "Centro y Zona Sul"
+ },
+ "Avulsa": {
+  "en": "Single",
+  "es": "Suelta"
+ },
+ "w v4 vfp vfs": {
+  "en": "w v4 vfp vfs",
+  "es": "w v4 vfp vfs"
+ },
+ "Boa tarde, ": {
+  "en": "Good afternoon, ",
+  "es": "Buenas tardes, "
+ },
+ "Boa noite, ": {
+  "en": "Good evening, ",
+  "es": "Buenas noches, "
+ },
+ "Oi, ": {
+  "en": "Hi, ",
+  "es": "Hola, "
+ },
+ " não lidas": {
+  "en": " unread",
+  "es": " sin leer"
+ },
+ " não lida": {
+  "en": " unread",
+  "es": " sin leer"
+ },
+ "hoje ": {
+  "en": "today ",
+  "es": "hoy "
+ },
+ "ontem ": {
+  "en": "yesterday ",
+  "es": "ayer "
+ },
+ "amanhã ": {
+  "en": "tomorrow ",
+  "es": "mañana "
+ },
+ "Hoje, ": {
+  "en": "Today, ",
+  "es": "Hoy, "
+ },
+ "hoje": {
+  "en": "today",
+  "es": "hoy"
+ },
+ "ontem": {
+  "en": "yesterday",
+  "es": "ayer"
+ },
+ "amanhã": {
+  "en": "tomorrow",
+  "es": "mañana"
+ },
+ "Ontem": {
+  "en": "Yesterday",
+  "es": "Ayer"
+ },
+ "Amanhã": {
+  "en": "Tomorrow",
+  "es": "Mañana"
+ },
+ "Seg ": {
+  "en": "Mon ",
+  "es": "Lun "
+ },
+ "Ter ": {
+  "en": "Tue ",
+  "es": "Mar "
+ },
+ "Qua ": {
+  "en": "Wed ",
+  "es": "Mié "
+ },
+ "Qui ": {
+  "en": "Thu ",
+  "es": "Jue "
+ },
+ "Sex ": {
+  "en": "Fri ",
+  "es": "Vie "
+ },
+ "Sáb ": {
+  "en": "Sat ",
+  "es": "Sáb "
+ },
+ "Dom ": {
+  "en": "Sun ",
+  "es": "Dom "
+ },
+ "seg ": {
+  "en": "Mon ",
+  "es": "lun "
+ },
+ "ter ": {
+  "en": "Tue ",
+  "es": "mar "
+ },
+ "qua ": {
+  "en": "Wed ",
+  "es": "mié "
+ },
+ "qui ": {
+  "en": "Thu ",
+  "es": "jue "
+ },
+ "sex ": {
+  "en": "Fri ",
+  "es": "vie "
+ },
+ "sáb ": {
+  "en": "Sat ",
+  "es": "sáb "
+ },
+ "dom ": {
+  "en": "Sun ",
+  "es": "dom "
+ },
+ "Demonstração · dados fictícios · ": {
+  "en": "Demo · sample data · ",
+  "es": "Demostración · datos ficticios · "
+ },
+ "presencial": {
+  "en": "in person",
+  "es": "presencial"
+ },
+ "presencial · ": {
+  "en": "in person · ",
+  "es": "presencial · "
+ },
+ " exercício": {
+  "en": " exercise",
+  "es": " ejercicio"
+ },
+ " semanas": {
+  "en": " weeks",
+  "es": " semanas"
+ },
+ " semana": {
+  "en": " week",
+  "es": " semana"
+ },
+ " sessão": {
+  "en": " session",
+  "es": " sesión"
+ },
+ " alunos": {
+  "en": " clients",
+  "es": " alumnos"
+ },
+ " aluno": {
+  "en": " client",
+  "es": " alumno"
  }
 }
