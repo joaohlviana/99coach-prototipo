@@ -35,12 +35,45 @@
       var v = T[k];
       // padrões com números e nomes: $1 copia o trecho, $t1 traduz o trecho, $l1 traduz cada item de uma lista "a, b, c"
       if (v === undefined) for (var i = 0; i < P.length; i++) { var m = P[i][0].exec(k); if (m) { v = P[i][1].replace(/\$([tl]?)(\d)/g, function (_, t, n) { var g = m[+n] || ''; return t === 't' ? tr(g).trim() : t === 'l' ? g.split(', ').map(function (x) { return tr(x).trim(); }).join(', ') : g; }); break; } }
+      // frases montadas no código com nomes e números ("Aguardando a resposta de " + nome): traduz os pedaços conhecidos
+      if (v === undefined) v = pedacos(k);
       if (v === undefined) return s;
       var a = /^\s*/.exec(s)[0], b = /\s*$/.exec(s)[0];
       return a + v + b;
     };
+    // Pedaços de frase (dicionário das áreas com conta). Os longos valem em qualquer ponto do texto; os curtos, só no
+    // começo ou no fim. Só vale quando os pedaços cobrem boa parte do texto: nome, mensagem ou nota de alguém não muda.
+    var F = {}, IDX = null, FMAX = 0;
+    var letras = function (x) { return (x.match(/[A-Za-zÀ-ú]/g) || []).length; };
+    var pedacos = function (k) {
+      if (!IDX) return undefined;
+      var coberto = 0, y = '', i = 0, n, c, j, achou;
+      // pedaços longos em qualquer ponto (índice pelos 4 primeiros caracteres; o mais longo ganha)
+      while (i < k.length) {
+        c = IDX[k.substr(i, 4)]; achou = '';
+        if (c) for (j = 0; j < c.length; j++) if (k.startsWith(c[j], i)) { achou = c[j]; break; }
+        if (achou) { y += F[achou]; coberto += letras(achou); i += achou.length; } else { y += k.charAt(i); i++; }
+      }
+      // pedaços curtos só nas pontas
+      var ini = '', fim = '';
+      for (n = Math.min(9, y.length - 1); n >= 3 && !ini; n--) { var p = y.slice(0, n); if (F[p] !== undefined && k.slice(0, n) === p && letras(p) >= 2) ini = p; }
+      if (ini) { coberto += letras(ini); y = F[ini] + y.slice(ini.length); }
+      for (n = Math.min(9, y.length - 1); n >= 2 && !fim; n--) { var q = y.slice(-n); if (F[q] !== undefined && k.slice(-n) === q && letras(q) >= 2) fim = q; }
+      if (fim) { coberto += letras(fim); y = y.slice(0, y.length - fim.length) + F[fim]; }
+      if (!coberto || coberto * 2 < letras(k)) return undefined;
+      return y;
+    };
+    // segundo dicionário (painel do treinador, área do aluno, cadastro): entra depois, só quando a pessoa vai para lá
+    window.__trMais = function (d2) {
+      var k; for (k in (d2.t || {})) if (T[k] === undefined) T[k] = d2.t[k];
+      IDX = IDX || {};
+      for (k in (d2.f || {})) { F[k] = d2.f[k]; if (k.length >= 10) { var h = k.substr(0, 4); (IDX[h] = IDX[h] || []).push(k); } }
+      for (k in IDX) IDX[k].sort(function (x, y) { return y.length - x.length; });
+      tudo(document.body);
+    };
     var ATTR = ['placeholder', 'aria-label', 'title', 'alt'];
-    var fora = function (el) { return !el || (el.closest && el.closest('#ssr,[data-no-tr],script,style')); };
+    // fora da tradução: o HTML do servidor (já vem no idioma) e o que as pessoas escrevem (mensagens, notas, campos)
+    var fora = function (el) { return !el || (el.closest && el.closest('#ssr,[data-no-tr],script,style,textarea,[contenteditable],.a1-msg__b,.a1-msg__m,.t2-pre,.t1-wrap')); };
     var um = function (n) {
       if (n.nodeType === 3) { if (fora(n.parentNode)) return; var v = n.nodeValue, t = tr(v); if (t !== v) n.nodeValue = t; return; }
       if (n.nodeType !== 1 || fora(n)) return;
@@ -64,6 +97,15 @@
     var ti = document.querySelector('title');
     if (ti) new MutationObserver(function () { var v = document.title, t = tr(v); if (t !== v) document.title = t; }).observe(ti, { childList: true, characterData: true, subtree: true });
     window.__tr = tr;
+    // dicionário das áreas com conta: baixa quando a pessoa entra em /app ou abre uma área (painel, área do aluno)
+    var pediu = false, conta = function () {
+      if (pediu) return; pediu = true;
+      fetch('/data/i18n-' + LANG + '-conta.json' + V).then(function (r) { return r.ok ? r.json() : null; }).then(function (d2) { if (d2) window.__trMais(d2); }).catch(function () { pediu = false; });
+    };
+    var ver = function () { if (location.pathname === '/app') conta(); };
+    ['pushState', 'replaceState'].forEach(function (m) { var o = history[m]; history[m] = function () { var r = o.apply(this, arguments); ver(); return r; }; });
+    addEventListener('popstate', ver); addEventListener('hashchange', ver); ver();
+    window.__dicConta = conta;
   }
   fetch('/shell/templates.html' + V).then(function (r) { if (!r.ok) throw new Error('telas'); return r.text(); }).then(function (html) {
     var box = document.createElement('div'); box.innerHTML = html;
