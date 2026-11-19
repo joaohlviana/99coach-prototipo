@@ -26,7 +26,18 @@
     try { LS.setItem('c99.dono', s.user.id); } catch (_) {}
   }
   var slugAsked = false;
-  function keep(s) { ownerCheck(s); sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} }
+  function keep(s) { ownerCheck(s); sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} if (s) setTimeout(syncLang, 1500); }
+  // Idioma da conta ('pt', 'en' ou 'es'): o do site que a pessoa está usando. Fica nos dados do usuário e decide o
+  // idioma dos e-mails (avisos e login). É gravado no cadastro e atualizado quando a pessoa entra por outro idioma.
+  function siteLang() { var l = window.__LANG; return l === 'en' || l === 'es' ? l : 'pt'; }
+  function syncLang() {
+    if (!sess || !sess.access_token || !sess.user) return;
+    var l = siteLang(), k = 'c99.langConta', marca = sess.user.id + ':' + l;
+    try { if (LS.getItem(k) === marca) return; } catch (_) {}
+    fetch(URL0 + '/auth/v1/user', { method: 'PUT', headers: { apikey: KEY, Authorization: 'Bearer ' + sess.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ data: { lang: l } }) })
+      .then(function (r) { if (r.ok) { try { LS.setItem(k, marca); } catch (_) {} } }).catch(function () {});
+  }
+  setTimeout(syncLang, 4000);
   // resposta: { ok, data, offline, msg }
   function call(method, path, body, auth) {
     var h = { apikey: KEY, 'Content-Type': 'application/json' };
@@ -458,7 +469,7 @@
     user: function () { return sess && sess.user || null; },
     // cria a conta com e-mail e senha; o servidor confirma na hora e já devolve a sessão
     signUp: function (email, password, name) {
-      return call('POST', '/auth/v1/signup', { email: String(email || '').trim().toLowerCase(), password: password, data: { name: name || '' } }).then(function (r) {
+      return call('POST', '/auth/v1/signup', { email: String(email || '').trim().toLowerCase(), password: password, data: { name: name || '', lang: siteLang() } }).then(function (r) {
         var d = r.data || {};
         if (r.ok && d.access_token) keep({ access_token: d.access_token, refresh_token: d.refresh_token, user: { id: d.user && d.user.id, email: d.user && d.user.email } });
         r.session = !!(r.ok && d.access_token);
@@ -488,7 +499,7 @@
     setName: function (name) { return sess && name ? call('PATCH', '/rest/v1/profiles?id=eq.' + encodeURIComponent(sess.user.id), { display_name: name }, true) : Promise.resolve({ ok: false }); },
     // envia o código de 6 dígitos para o e-mail (cria a conta se ainda não existir)
     sendCode: function (email, name) {
-      return call('POST', '/auth/v1/otp', { email: String(email || '').trim().toLowerCase(), create_user: true, data: { name: name || '' } });
+      return call('POST', '/auth/v1/otp', { email: String(email || '').trim().toLowerCase(), create_user: true, data: { name: name || '', lang: siteLang() } });
     },
     // confere o código e abre a sessão
     verify: function (email, token) {
