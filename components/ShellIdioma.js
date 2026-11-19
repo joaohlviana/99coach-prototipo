@@ -1,5 +1,6 @@
 // Moldura das páginas públicas em inglês e espanhol: só o HTML do servidor (leve). As ações levam ao app, em português.
 import { t as tr, esporteNome } from '../lib/i18n.js';
+import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 
 const F = {
   en: { tag: 'Compare coaches, sports and formats to choose with confidence.', train: 'Train', coaches: 'For coaches', helpH: 'Help', tabE: 'Explore', tabU: 'Account' },
@@ -39,6 +40,7 @@ export default function ShellIdioma({ l, children }) {
         <div className="ssr-foot__word" aria-hidden="true">99Coach</div>
         <span className="ssr-foot__m">© 2026 99coach</span>
       </footer>
+      <script dangerouslySetInnerHTML={{ __html: IDIOMA_LINKS }} />
       <nav className="ssr-tab" aria-label="Site">
         <a href={'/' + l}><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><span>{F[l].tabE}</span></a>
         <a href="/cidades" hrefLang="pt-BR"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg><span>{x.cities}</span></a>

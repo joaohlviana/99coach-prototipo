@@ -2,6 +2,7 @@
 // `route` diz ao app qual tela abrir (a mesma que o servidor acabou de montar).
 
 import pacote from '../public/shell/version.json';
+import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 
 // onde: lugar da página (cidade ou estado) mostrado na busca do topo; a busca procura só nele
 export function Topo({ onde } = {}) {
@@ -63,6 +64,7 @@ export default function Shell({ route, children, soServidor, espera, onde }) {
         <Topo onde={onde} />
         <main id="conteudo-ssr">{children}</main>
         <Rodape />
+        <script dangerouslySetInnerHTML={{ __html: IDIOMA_LINKS }} />
         {soServidor ? <nav className="ssr-tab" aria-label="Navegação do site">
           <a href="/"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><span>Explorar</span></a>
           <a href="/cidades"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg><span>Cidades</span></a>
