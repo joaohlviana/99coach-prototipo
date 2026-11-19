@@ -248,7 +248,9 @@
   // As áreas com conta ficam em /app#<tela> e não são indexadas.
   function slug(t) { return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   function sportSlug(mod) { var s = window.SPORTS && window.SPORTS.get(mod); return s ? s.slug : slug(mod); }
-  function urlFor(name, props, st) {
+  // em inglês e espanhol, o mesmo endereço traduzido (/treinador/x -> /en/coach/x); ver lib/idiomaLinks.js
+  function urlFor(name, props, st) { var u = urlForPt(name, props, st); return window.__urlIdioma ? window.__urlIdioma(u) : u; }
+  function urlForPt(name, props, st) {
     if (!window.__NEXT) return '#' + token(name, props);
     if (name === 'home') return '/';
     if (name === 'esporte') {

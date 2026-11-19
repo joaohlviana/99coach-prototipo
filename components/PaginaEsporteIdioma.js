@@ -36,7 +36,7 @@ export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina =
   const pre = '/treinadores/';
   const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: itens.length, itemListElement: naPagina.map((t, i) => ({ '@type': 'ListItem', position: ini + i + 1, url: abs(l, '/treinador/' + t.id, SITE), name: t.name })) };
   return (
-    <ShellIdioma l={l}>
+    <ShellIdioma l={l} route={pagina > 1 ? undefined : { name: 'esporte', params: { slug: esp.slug, mod: esp.label, city: d.uf ? 'UF:' + d.uf.toUpperCase() : (d.cid ? d.cid.label : ''), fmt: online ? 'Online' : (d.cid || d.uf ? 'Presencial' : 'Qualquer') } }}>
       <nav className="ssr-crumb" aria-label={x.youAreHere}>
         <a href={hr(l, '/')}>{x.home}</a> › {cid || online ? <a href={hr(l, pre + esp.slug)}>{nome}</a> : <span>{nome}</span>}
         {cid ? <> › <span>{cid.label}</span></> : null}{online ? <> › <span>Online</span></> : null}

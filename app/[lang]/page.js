@@ -24,7 +24,7 @@ export default async function Home({ params }) {
   }
   const x = tr(l), esp = esportes(), cidades = cidadesDo('musculacao', 5).slice(0, 18);
   return (
-    <ShellIdioma l={l}>
+    <ShellIdioma l={l} route={{ name: 'home', params: {} }}>
       <section className="ssr-hero"><h1>{x.heroH1}</h1><p>{x.heroP}</p><p className="ssr-note">{x.inCatalog(todos().length)}</p></section>
       <section id="sports" aria-labelledby="h-esp"><h2 id="h-esp">{x.sports}</h2>
         <ul className="ssr-chips">{esp.map((s) => <li key={s.slug}><a href={hr(l, '/treinadores/' + s.slug)}>{esporteNome(l, s.slug, s.label)} <small>{s.n.toLocaleString(l === 'en' ? 'en-US' : 'es-ES')}</small></a></li>)}</ul></section>

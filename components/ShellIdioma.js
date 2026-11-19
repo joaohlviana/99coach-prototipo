@@ -4,16 +4,19 @@ import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 import { mapaCliente } from '../lib/rotas.js';
 import { esportes as listaEsportes } from '../lib/catalogo.js';
 import { href as hr, abs, versoes } from '../lib/rotas.js';
+import { EsperaApp, MontaApp } from './Shell.js';
 
 const F = {
   en: { tag: 'Compare coaches, sports and formats to choose with confidence.', train: 'Train', coaches: 'For coaches', helpH: 'Help', tabE: 'Explore', tabU: 'Account' },
   es: { tag: 'Compara profesionales, deportes y formatos para elegir con claridad.', train: 'Entrenar', coaches: 'Para entrenadores', helpH: 'Ayuda', tabE: 'Explorar', tabU: 'Cuenta' }
 };
 
-export default function ShellIdioma({ l, children }) {
+export default function ShellIdioma({ l, children, route }) {
   const x = tr(l);
   return (
-    <div id="ssr" className="ssr ssr--solo" lang={x.htmlLang}>
+    <>
+    {route ? <EsperaApp /> : null}
+    <div id="ssr" className={route ? 'ssr' : 'ssr ssr--solo'} lang={x.htmlLang}>
       <script dangerouslySetInnerHTML={{ __html: 'document.documentElement.lang=' + JSON.stringify(x.htmlLang) + ";document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av,.ssr-perfil'))t.style.visibility='hidden'},true);" }} />
       <a className="ssr-skip" href="#conteudo-ssr">{x.skip}</a>
       <header className="ssr-top">
@@ -50,6 +53,8 @@ export default function ShellIdioma({ l, children }) {
         <a href="/app#onboarding-entrar"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></svg><span>{F[l].tabU}</span></a>
       </nav>
     </div>
+    {route ? <MontaApp route={route} lang={l} /> : null}
+    </>
   );
 }
 

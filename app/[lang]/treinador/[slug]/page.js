@@ -34,7 +34,7 @@ export default async function Page({ params }) {
     mainEntity: { '@type': 'Person', name: nomeLimpo(t.name), ...(t.photo ? { image: t.photo } : {}), ...(esp.length ? { knowsAbout: esp.map((s) => esporteNome(l, s.slug, s.label)) } : {}) } };
   const data = t.pub ? t.pub.split('-').reverse().join('/') : '';
   return (
-    <ShellIdioma l={l}>
+    <ShellIdioma l={l} route={{ name: 'perfil', params: { id: t.id } }}>
       <nav className="ssr-crumb" aria-label={x.youAreHere}><a href={hr(l, '/')}>{x.home}</a>{p ? <> › <a href={hr(l, pre + p.slug)}>{esporteNome(l, p.slug, p.label)}</a></> : null}{p && cid ? <> › <a href={hr(l, pre + p.slug + '/' + cid)}>{t.city}</a></> : null} › <span>{t.name}</span></nav>
       <section className="ssr-hero ssr-perfil">
         {t.photo ? <img className="ssr-foto" src={t.photo} alt={t.name} width="88" height="88" fetchPriority="high" /> : <span className="ssr-av ssr-av--lg" aria-hidden="true">{t.ini || t.name.slice(0, 1)}</span>}
