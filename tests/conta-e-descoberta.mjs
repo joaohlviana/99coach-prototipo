@@ -68,7 +68,7 @@ await press(/^Pausar e sair$/);
 await p.evaluate(() => NAV.go('home', {}, null)); await p.waitForTimeout(700);
 await p.evaluate(() => { const e = [...document.querySelectorAll('#app .rail__item')].find((x) => x.textContent.trim() === 'Pilates'); e.click(); }); await p.waitForTimeout(800);
 await p.evaluate(() => NAV.go('home', {}, null)); await p.waitForTimeout(800);
-t = await txt(); console.log('5 continue de onde parou:', /CONTINUE DE ONDE PAROU/i.test(t), /Pilates/.test(t), /guardada só neste aparelho/.test(t), '| sem vistos recentes:', !/Vistos recentemente/i.test(t));
+t = await txt(); console.log('5 continue de onde parou:', /CONTINUE DE ONDE PAROU/i.test(t), /Pilates/.test(t), !/Gerenciar histórico|Você autorizou/.test(t), '| sem vistos recentes:', !/Vistos recentemente/i.test(t));
 await press(/^Limpar$/); await p.waitForTimeout(500);
 t = await txt(); console.log('  limpar volta à busca:', !/CONTINUE DE ONDE PAROU/i.test(t), await p.evaluate(() => localStorage.getItem('c99.tela.busca')));
 // 6. meus dados

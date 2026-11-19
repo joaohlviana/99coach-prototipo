@@ -39,10 +39,10 @@ console.log('5 falha não é vazio:', /Não conseguimos carregar a lista de trei
 fora = false;
 await q.locator('#app button', { hasText: /^Tentar de novo$/ }).first().click(); await q.waitForTimeout(2500); u = await tq();
 console.log('  tentar de novo recupera:', (await q.evaluate(() => window.REAL.count())) > 1000, !/Não conseguimos carregar a lista|A lista pode estar incompleta/.test(u));
-// fim da lista: numa busca pequena a tela diz que acabou
+// busca pequena: uma página só, sem paginação
 const peq = await q.evaluate(() => { const c = {}; (window.REAL.esporte() || []).forEach((t) => { if (t.city && t.fmts.indexOf('Presencial') >= 0 && t.mods.indexOf('Musculação') >= 0) c[t.city] = (c[t.city] || 0) + 1; }); return Object.keys(c).filter((k) => c[k] >= 1 && c[k] <= 5)[0] || ''; });
 await q.evaluate((city) => NAV.go('esporte', { mod: 'Musculação', city, fmt: 'Presencial' }, null), peq); await q.waitForTimeout(1200); u = await tq();
-console.log('6 fim da lista em', peq + ':', /Fim da lista: (este é o único treinador|você viu os \d+ treinadores) desta busca/.test(u));
+console.log('6 busca pequena em', peq + ': cartões aparecem, sem paginação nem aviso de fim:', (await q.locator('#lista .tc__name').count()) >= 1, (await q.locator('.vfe-pager').count()) === 0, !/Fim da lista|Carregar mais/.test(u));
 await q.evaluate(() => NAV.go('esporte', { mod: 'Musculação', city: '', fmt: 'Qualquer' }, null)); await q.waitForTimeout(1200);
 console.log('  lista longa não diz fim:', !/Fim da lista:/.test(await tq()));
 console.log('errs', JSON.stringify(errs));
