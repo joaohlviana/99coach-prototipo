@@ -26,3 +26,11 @@ console.log('  inicio pt aponta para en:', /hrefLang="en"/i.test(x.h));
 // endereços antigos com trechos em português levam (301) ao endereço traduzido
 const r7 = await fetch(B + '/en/treinador/' + slug, { redirect: 'manual' }), r8 = await fetch(B + '/es/treinadores/musculacao', { redirect: 'manual' });
 console.log('7 antigos levam ao traduzido:', r7.status === 301 && r7.headers.get('location').endsWith('/en/coach/' + slug), r8.status === 301 && r8.headers.get('location').endsWith('/es/entrenadores/musculacion'));
+// a página já sai do servidor no idioma certo, e nada na moldura em inglês/espanhol leva a página em português
+const lang = async (u) => (/<html[^>]*lang="([^"]*)"/.exec((await get(u)).h) || [])[1];
+console.log('8 idioma do HTML:', (await lang('/')) === 'pt-BR', (await lang('/en')) === 'en', (await lang('/es/entrenadores/musculacion')) === 'es', (await lang('/en/coach/' + slug)) === 'en');
+x = await get('/en/coaches/judo');
+const ssr = x.h.split('id="app"')[0];
+console.log('9 moldura em inglês fica em inglês:', /<form[^>]*action="\/en\/search"/.test(ssr), !/href="\/cidades"/.test(ssr), !/href="\/buscar/.test(ssr), /hrefLang="x-default" href="[^"]*\/en\/coaches\/judo"/i.test(x.h));
+x = await get('/en/search?q=judo');
+console.log('10 busca em inglês:', x.s === 200, /Results for/.test(x.h), /href="\/en\/coaches\/judo"/.test(x.h), (await get('/es/buscar')).s === 200);
