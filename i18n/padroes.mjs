@@ -54,6 +54,16 @@ export default [
   ['Presencial em ' + X, 'In person in $1', 'Presencial en $1'],
   ['Atende em ' + X, 'Speaks $t1', 'Atiende en $t1'],
   [X + ' \\| 99coach', '$t1 | 99coach', '$t1 | 99coach'],
+  ['Busca atual: ' + X + ' · ' + X + ' · ' + X, 'Current search: $t1 · $t2 · $t3', 'Búsqueda actual: $t1 · $t2 · $t3'],
+  ['Modalidade ' + X + ', trocar', 'Sport $t1, change', 'Deporte $t1, cambiar'],
+  ['Onde ' + X + ', trocar', 'Where $t1, change', 'Dónde $t1, cambiar'],
+  ['treinadores de ' + X + ' · ' + X, '$t1 coaches · $t2', 'entrenadores de $t1 · $t2'],
+  ['Programas de ' + X, '$t1 programs', 'Programas de $t1'],
+  ['Treinadores de ' + X, '$t1 coaches', 'Entrenadores de $t1'],
+  ['(.{1,40}?) · ([^·]+, [A-Z]{2})', '$t1 · $2', '$t1 · $2'],
+  // especialidades: "Musculação, Funcional e CrossFit"
+  ['([A-ZÀ-Ú][^,]{1,24}(?:, [A-ZÀ-Ú][^,]{1,24})*) e ([A-ZÀ-Ú][^,]{1,24})', '$l1 and $t2', '$l1 y $t2'],
+  ['((?:[^,]{2,30}, )+[^,]{2,30})', '$l1', '$l1'],
   // genéricos curtos (cabeçalhos): só valem quando a primeira parte é conhecida pelo dicionário
   ['(.{1,40}?) online', '$t1 online', '$t1 online'],
   ['(.{1,40}?) em (.{1,40})', '$t1 in $2', '$t1 en $2'],

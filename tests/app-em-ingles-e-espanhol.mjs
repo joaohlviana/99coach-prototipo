@@ -1,0 +1,20 @@
+// Inglês e espanhol: o mesmo app do português (mesmo design), traduzido; links e endereços nos caminhos traduzidos.
+const { chromium } = (await import('node:module')).createRequire('/')(process.env.PW);
+const fs = await import('node:fs');
+const cat = JSON.parse(fs.readFileSync(new URL('../public/data/treinadores.json', import.meta.url), 'utf8')).items;
+const B = 'http://localhost:5173', id = cat[0][0];
+const b = await chromium.launch(); const errs = [];
+const p = await (await b.newContext({ viewport: { width: 1280, height: 900 }, timezoneId: 'America/Sao_Paulo' })).newPage();
+p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
+const ve = async (u) => { await p.goto(B + u); await p.waitForTimeout(4000); return p.evaluate(() => ({ on: document.documentElement.classList.contains('app-on'), t: document.getElementById('app').innerText, lang: document.getElementById('app').lang, links: [...document.querySelectorAll('#app a[href^="/"]')].map((a) => a.getAttribute('href')) })); };
+let r = await ve('/en');
+console.log('1 início em inglês é o app:', r.on, r.lang === 'en', /FIND YOUR/i.test(r.t), !/ENCONTRE SEU/i.test(r.t), /All sports/.test(r.t));
+console.log('  links do app em inglês:', r.links.length > 0 && r.links.every((h) => !/^\/(treinador|treinadores|cidade)\//.test(h)), r.links.some((h) => /^\/en\/coaches\//.test(h)));
+r = await ve('/es/entrenadores/musculacion/sao-paulo-sp');
+console.log('2 modalidade em espanhol:', r.on, /Musculación/.test(r.t), /Todos los deportes/.test(r.t), !/Todos os esportes/.test(r.t));
+r = await ve('/en/coach/' + id);
+console.log('3 perfil em inglês:', r.on, /Overview/.test(r.t), /Offers/.test(r.t), !/Visão geral/.test(r.t));
+r = await ve('/treinadores/musculacao');
+console.log('4 português continua em português:', r.on, r.lang === 'pt-BR', /Todos os esportes/.test(r.t));
+console.log('errs', errs);
+await b.close();

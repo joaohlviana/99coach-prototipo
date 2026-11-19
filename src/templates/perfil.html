@@ -88,7 +88,7 @@
             </div>
           </div>
               <sc-if value="{{showMstats}}" hint-placeholder-val="{{ true }}"><ul class="vfp-mstats" aria-label="Números do perfil"><sc-for list="{{mstats}}" as="d" hint-placeholder-count="3"><li><b>{{d.v}}</b><span>{{d.k}}</span></li></sc-for></ul></sc-if>
-          <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avCls}} v4-bw">{{t.avText}}</span></sc-if><span><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></sc-if></div>
+          <div class="vfp-mav"><sc-if value="{{t.showAv}}" hint-placeholder-val="{{ true }}"><span class="{{t.avChip}}"><i class="{{t.avIc}}" aria-hidden="true"></i>{{t.avText}}</span></sc-if><span class="fact"><i class="ic ic--sm i-monitor" aria-hidden="true"></i>{{t.formats}}</span><sc-if value="{{t.lang}}" hint-placeholder-val="{{ true }}"><span><i class="ic ic--sm i-message" aria-hidden="true"></i>{{t.lang}}</span></sc-if></div>
           <nav class="vfp-tabs no-sb" aria-label="Seções do perfil"><div class="seg seg--fit seg--sm"><sc-for list="{{anchors}}" as="a" hint-placeholder-count="6"><button type="button" class="{{a.cls}}" aria-current="{{a.cur}}" onClick="{{a.pick}}">{{a.label}}</button></sc-for></div></nav>
         </section>
 

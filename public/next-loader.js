@@ -27,8 +27,8 @@
     var tr = function (s) {
       var k = s.replace(/\s+/g, ' ').trim(); if (!k || k.length > 400) return s;
       var v = T[k];
-      // padrões com números e nomes: $1 copia o trecho, $t1 traduz o trecho (ex.: nome da modalidade)
-      if (v === undefined) for (var i = 0; i < P.length; i++) { var m = P[i][0].exec(k); if (m) { v = P[i][1].replace(/\$(t?)(\d)/g, function (_, t, n) { var g = m[+n] || ''; return t ? tr(g).trim() : g; }); break; } }
+      // padrões com números e nomes: $1 copia o trecho, $t1 traduz o trecho, $l1 traduz cada item de uma lista "a, b, c"
+      if (v === undefined) for (var i = 0; i < P.length; i++) { var m = P[i][0].exec(k); if (m) { v = P[i][1].replace(/\$([tl]?)(\d)/g, function (_, t, n) { var g = m[+n] || ''; return t === 't' ? tr(g).trim() : t === 'l' ? g.split(', ').map(function (x) { return tr(x).trim(); }).join(', ') : g; }); break; } }
       if (v === undefined) return s;
       var a = /^\s*/.exec(s)[0], b = /\s*$/.exec(s)[0];
       return a + v + b;
