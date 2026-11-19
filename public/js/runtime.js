@@ -265,7 +265,7 @@
     if (name === 'perfil' && props && props.rid) return '/treinador/' + encodeURIComponent(props.rid);
     return '/app#' + token(name, props);
   }
-  var entries = {}, order = [], pos = -1, seq = 0, pushOk = true;
+  var entries = {}, order = [], pos = -1, seq = Date.now(), pushOk = true; // a numeração não recomeça a cada carga: uma entrada antiga do histórico nunca se confunde com a tela atual
   function saveCurrent(extra) {
     if (!cur) return;
     var st = Object.assign({}, cur.comp.state, CLEAN[cur.name], extra || {});
@@ -448,6 +448,8 @@
     var k = e.state && e.state.k;
     var ent = k && entries[k];
     saveCurrent();
+    // entrada de uma carga anterior da página (a pessoa recarregou e voltou): abre o endereço de verdade, em vez de ficar em branco
+    if (!ent && k) { location.reload(); return; }
     if (!ent) { start(); return; }
     // voltar ou avançar pelo navegador: o sentido vem da posição na pilha
     var np = order.indexOf(k); navDir = np < pos ? 'backward' : 'forward'; pos = np;

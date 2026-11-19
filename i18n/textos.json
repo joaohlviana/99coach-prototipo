@@ -7038,5 +7038,21 @@
  "Mundo todo": {
   "en": "Worldwide",
   "es": "Todo el mundo"
+ },
+ "presencial e online": {
+  "en": "in person and online",
+  "es": "presencial y online"
+ },
+ "presencial, em todo o Brasil": {
+  "en": "in person, all over Brazil",
+  "es": "presencial, en todo Brasil"
+ },
+ "atendimento online, de qualquer cidade": {
+  "en": "online coaching, from any city",
+  "es": "atención online, desde cualquier ciudad"
+ },
+ "Não conseguimos carregar os treinadores": {
+  "en": "We couldn't load the coaches",
+  "es": "No pudimos cargar los entrenadores"
  }
 }

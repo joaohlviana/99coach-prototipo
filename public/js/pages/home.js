@@ -113,11 +113,11 @@ class Component extends DCLogic {
     else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl));
     // carregando: esqueletos no lugar dos cartões, até a lista certa chegar (nada de mostrar uns e trocar por outros)
     const CST = PRD && window.REAL && window.REAL.status ? window.REAL.status() : null;
-    const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && (main.length < 4 || !!CST.incerto)));
+    const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && CST.base !== 'falha' && (main.length < 4 || !!CST.incerto)));
     // não carregou (sem conexão): avisa e deixa tentar de novo, em vez de dizer que não há ninguém
-    const tFail = !!CST && !tLoad && CST.base === 'falha' && T.length === 0;
+    const tFail = !!CST && !tLoad && CST.base === 'falha' && (T.length === 0 || (!!CST.parcial && main.length < 4));
     if (CST && CST.parcial && main.length < 4 && window.REAL.ensure) window.REAL.ensure();
-    const tEmpty = !tNoLoc && !tLoad && !tFail && main.length === 0, tHas = !tLoad && main.length > 0;
+    const tEmpty = !tNoLoc && !tLoad && !tFail && main.length === 0, tHas = !tLoad && !tFail && main.length > 0;
     const tlist = main.slice(0, 4).map((t) => card(t, S.mode));
     const nTot = main.length;
     const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + cityTxt.replace(', PR', '') : 'Treinadores de ' + sportLabel);
@@ -125,9 +125,9 @@ class Component extends DCLogic {
     const nearCity = S.city === 'Tamarana, PR' ? 'Londrina, PR (cerca de 50 km)' : 'Londrina, PR';
     const alts = [
       { label: 'Ver quem atende online', go: setMode('online') },
-      { label: 'Mudar para ' + nearCity, go: () => set({ city: 'Londrina, PR', hidden: {}, toast: null }) },
+      { label: 'Mudar para ' + nearCity, go: () => set({ city: 'Londrina, PR', hidden: {}, toast: null }), demo: true },
       { label: 'Escolher outra modalidade', go: open('sport') }
-    ];
+    ].filter((a) => !(PRD && a.demo));
     const emptyText = S.mode === 'online' ? 'Ninguém oferece ' + sportLabel + ' online por enquanto.' : (S.city ? 'Ninguém atende ' + sportLabel + ' presencialmente em ' + cityTxt + '. Não mostramos profissionais de outra cidade como se atendessem aí.' : 'Ninguém atende ' + sportLabel + ' presencialmente por enquanto.');
 
     // Vitrine 2: o formato complementar
@@ -353,7 +353,7 @@ class Component extends DCLogic {
       chips, allSports, editSports, goals, cities, cq: S.cq || '', setCq: (e) => set({ cq: (e && e.target && e.target.value) || '' }), noCityQ: !!String(S.cq || '').trim() && !cities.length,
       // topo
       showLink, twoLinks, linkTabs, lk, linkTitle: twoLinks ? 'Seus acompanhamentos' : 'Seu acompanhamento',
-      pedPhoto: myReq ? avatar(myReq.trainerName) : B('272071ea45b1ee18'), contNote: PRODH ? 'Sua última escolha, guardada só neste aparelho.' : 'Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou.',
+      pedPhoto: myReq ? avatar(myReq.trainerName) : B('272071ea45b1ee18'), contNote: PRODH ? '' : 'Sua última escolha, guardada neste aparelho em 25/10 às 21:10 com o histórico que você autorizou.',
       showPending, pedStatus: myReq ? 'Aguardando resposta' : pedLine[0], pedCls: pedLine[2] + (S.pedCanceled ? '' : ''), pedTitle: myReq ? 'Pedido de acompanhamento para ' + (myReq.trainerName || 'o treinador') : (S.pedCanceled ? 'Pedido para Rafael Lima cancelado' : 'Pedido de acompanhamento para Rafael Lima'),
       pedText: myReq ? 'Enviado em ' + dmy(myReq.at) + (myReq.due ? ' · vale até ' + dmy(myReq.due) : '') + (myReq.offer ? ' · ' + myReq.offer : '') + '. Pedido não é vínculo: ainda não há acompanhamento ativo e nada foi cobrado.' : S.pedCanceled ? 'Nada foi cobrado. Você pode enviar um novo pedido pelo perfil quando quiser.' : 'Enviado em 26/10 às 09:40 · Acompanhamento online · R$ 200 / mês. Rafael responde até 28/10. Ainda não há acompanhamento ativo e nada foi cobrado.',
       pedCta: S.pedCanceled ? 'Ver perfil de Rafael' : 'Acompanhar pedido', openPedido: myReq ? () => window.NAV.go('aluno', {}, this) : (S.pedCanceled ? () => window.NAV.go('perfil', { id: 'rafael', scn: 'comparando' }, this) : open('pedido')),

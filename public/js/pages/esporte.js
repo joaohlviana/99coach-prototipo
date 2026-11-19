@@ -68,7 +68,7 @@ class Component extends DCLogic {
     const saveHid = (h) => { try { localStorage.setItem('c99.ocultos', JSON.stringify(h)); } catch (_) {} };
     const hidN = Object.keys(HID).length;
     let res = T.filter((t) => match(t, st) && !HID[t.id]);
-    res = res.slice().sort((a, b) => st.sort === 'rec' ? (a.pub < b.pub ? 1 : -1) : a.rank - b.rank);
+    res = res.slice().sort((a, b) => st.sort === 'rec' ? (String(b.pub || '').localeCompare(String(a.pub || '')) || a.rank - b.rank) : a.rank - b.rank);
     const n = res.length;
     const pagesN = Math.max(1, Math.ceil(n / PER));
     const page = Math.min(st.page, pagesN);

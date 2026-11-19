@@ -56,7 +56,7 @@
       if (cache.home && cache.homeKey === key) return cache.home;
       cache.homeKey = key;
       return (cache.home = (mine ? [mine] : []).concat(items.map(function (t) {
-        return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl || !t.city, sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
+        return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl, sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
           cref: 'Perfil importado: credencial não confirmada', av: 'unknown', avLong: 'Não informada', more: 0 };
       })));
     },
@@ -476,14 +476,14 @@
   // estado real do carregamento, para a busca separar "vazio" de "falha" (plano: vazio × falha × fim)
   var LOADST = { base: 'carregando', live: 'carregando' };
   REAL.status = function () { return LOADST; };
-  REAL.retry = function () { LOADST = { base: 'carregando', live: 'carregando' }; rerender(); fetchLive(); baseAsked = true; fetchBase(); };
+  REAL.retry = function () { LOADST = { base: 'carregando', live: 'carregando' }; Object.keys(slices).forEach(function (k) { if (slices[k] === 'falha') delete slices[k]; }); rerender(); fetchLive(); baseAsked = true; fetchBase(); };
   setTimeout(fetchLive, 0);
 
   // base completa gerada por `npm run sync`
   function fetchBase() {
     if (!window.fetch) { LOADST.base = 'falha'; return; }
     fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (d && d.items && d.items.length) { LOADST.parcial = false; LOADST.incerto = false; setItems(comLive(d.items)); LOADST.base = 'ok'; }
+      if (d && d.items && d.items.length) { LOADST.parcial = false; LOADST.incerto = false; LOADST.inteiro = true; setItems(comLive(d.items)); LOADST.base = 'ok'; }
       else LOADST.base = 'falha';
       rerender();
     }).catch(function () { LOADST.base = 'falha'; rerender(); });
@@ -497,24 +497,29 @@
   function ensureSoon() { if (baseAsked || soon) return; soon = true; setTimeout(ensureBase, 3500); ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) { window.addEventListener(ev, ensureBase, { once: true, passive: true, capture: true }); }); }
   REAL.ensure = ensureBase;
   // fatias: página de modalidade e perfil baixam só o necessário; o catálogo inteiro fica para a página inicial
-  var slices = {}, sliceRows = [];
+  var slices = {}, sliceRows = [], POS = {};
   function fetchSlice(url, key) {
     if (baseAsked || slices[key]) return; slices[key] = 'carregando';
     if (LOADST.base !== 'ok') LOADST.base = 'carregando';
     fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (baseAsked && LOADST.base === 'ok') return;
-      if (!d || !Array.isArray(d.items)) { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); return; }
-      slices[key] = 'ok'; sliceRows = sliceRows.concat(d.items);
+      // falhou: não pede de novo a cada redesenho (era um pedido atrás do outro, sem parar); o catálogo inteiro assume
+      if (!d || !Array.isArray(d.items)) { slices[key] = 'falha'; ensureBase(); return; }
+      // cada fatia vem com a posição de cada perfil no catálogo: juntar fatias não bagunça a ordem de relevância
+      d.items.forEach(function (r, i) { if (POS[r[0]] === undefined) POS[r[0]] = d.pos && d.pos[i] >= 0 ? d.pos[i] : 1e9 + sliceRows.length + i; });
+      slices[key] = 'ok'; sliceRows = sliceRows.concat(d.items).sort(function (a, b) { return POS[a[0]] - POS[b[0]]; });
       if (key === 'inicio') LOADST.parcial = true;
       setItems(comLive(sliceRows)); LOADST.base = 'ok'; rerender();
-    }).catch(function () { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); });
+    }).catch(function () { slices[key] = 'falha'; ensureBase(); });
   }
   var SLUG = {}; Object.keys(LABEL).forEach(function (k) { SLUG[LABEL[k]] = k; });
+  // o endereço da fatia usa o mesmo nome da página (jiu-jitsu), não o identificador interno (jiujitsu)
+  function slugDe(modLabel) { var sp = window.SPORTS && window.SPORTS.get && window.SPORTS.get(modLabel); return (sp && sp.slug) || SLUG[modLabel] || ''; }
   // a vitrine pede a modalidade que está mostrando; sem fatia conhecida, cai no catálogo inteiro
-  REAL.need = function (modLabel) { if (baseAsked) return; var k = SLUG[modLabel]; if (k) fetchSlice('/dados/esporte/' + encodeURIComponent(k), 'e:' + k); else ensureBase(); };
+  REAL.need = function (modLabel) { if (baseAsked) return; var k = slugDe(modLabel); if (k) fetchSlice('/dados/esporte/' + encodeURIComponent(k), 'e:' + k); else ensureBase(); };
   REAL.needAll = ensureBase;
   // a lista desta modalidade já está inteira? (catálogo completo, ou a fatia dela chegou)
-  REAL.completo = function (modLabel) { return !LOADST.parcial || slices['e:' + SLUG[modLabel]] === 'ok'; };
+  REAL.completo = function (modLabel) { return !!LOADST.inteiro || LOADST.base === 'falha' || slices['e:' + slugDe(modLabel)] === 'ok'; };
   // alguma fatia pedida (mesmo ainda chegando) / alguma fatia já chegou
   window.__sliceLoaded = function () { return Object.keys(slices).length > 0; };
   window.__sliceReady = function () { return Object.keys(slices).some(function (k) { return slices[k] === 'ok'; }) && !Object.keys(slices).some(function (k) { return slices[k] === 'carregando'; }); };
