@@ -20,7 +20,7 @@ if (fs.existsSync(arq)) {
     for (const [pt, v] of Object.entries(conta)) {
       if (!v || !v[l] || v[l] === pt) continue;
       const k = pt.replace(/\s+/g, ' ');
-      if (k !== k.trim()) f[k] = v[l]; else { t[k] = v[l]; if (k.length >= 10) f[k] = v[l]; }
+      if (k !== k.trim()) f[k] = v[l]; else t[k] = v[l];
     }
     fs.writeFileSync(new URL('../public/data/i18n-' + l + '-conta.json', import.meta.url), JSON.stringify({ t, f }));
     console.log(l + '-conta', Object.keys(t).length, 'textos,', Object.keys(f).length, 'pedaços');

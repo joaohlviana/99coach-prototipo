@@ -30,11 +30,16 @@
   var dic = LANG ? fetch('/data/i18n-' + LANG + '.json' + V).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
   function traduzir(d) {
     var T = d.t || {}, P = (d.p || []).map(function (x) { return [new RegExp('^' + x[0] + '$'), x[1]]; });
+    var SOBRA_PT = /(^|[^A-Za-zÀ-ú])(você|não|para|com|sem|seu|sua|seus|suas|ainda|são|está|estão|por|que|uma|um|os|as|em|no|na|nos|nas|ao|aos|às|foi|já|mais|este|esta|esse|essa|isso|até|ou|como|quando|treino|treinos|aluno|alunos|treinador|hoje|ontem|amanhã|semana|semanas|sessão|sessões|mês|meses|dias|dia|versão|preço|acesso|feita|feito|pelo|pela)([^A-Za-zÀ-ú]|$)/i;
     var tr = function (s) {
       var k = s.replace(/\s+/g, ' ').trim(); if (!k || k.length > 400) return s;
       var v = T[k];
       // padrões com números e nomes: $1 copia o trecho, $t1 traduz o trecho, $l1 traduz cada item de uma lista "a, b, c"
-      if (v === undefined) for (var i = 0; i < P.length; i++) { var m = P[i][0].exec(k); if (m) { v = P[i][1].replace(/\$([tl]?)(\d)/g, function (_, t, n) { var g = m[+n] || ''; return t === 't' ? tr(g).trim() : t === 'l' ? g.split(', ').map(function (x) { return tr(x).trim(); }).join(', ') : g; }); break; } }
+      if (v === undefined) for (var i = 0; i < P.length; i++) { var m = P[i][0].exec(k); if (m) {
+        // um trecho que deveria ser traduzido e continuou em português derruba o padrão (nada de frase meio a meio)
+        var falhou = false, w = P[i][1].replace(/\$([tl]?)(\d)/g, function (_, t, n) { var g = m[+n] || ''; if (!t) return g; var r = t === 't' ? tr(g).trim() : g.split(', ').map(function (x) { return tr(x).trim(); }).join(', '); if (r === g.trim() && SOBRA_PT.test(g)) falhou = true; return r; });
+        if (!falhou) { v = w; break; }
+      } }
       // frases montadas no código com nomes e números ("Aguardando a resposta de " + nome): traduz os pedaços conhecidos
       if (v === undefined) v = pedacos(k);
       if (v === undefined) return s;
@@ -47,27 +52,31 @@
     var letras = function (x) { return (x.match(/[A-Za-zÀ-ú]/g) || []).length; };
     var pedacos = function (k) {
       if (!IDX) return undefined;
-      var coberto = 0, y = '', i = 0, n, c, j, achou;
+      var coberto = 0, y = '', resto = '', i = 0, n, c, j, achou;
       // pedaços longos em qualquer ponto (índice pelos 4 primeiros caracteres; o mais longo ganha)
       while (i < k.length) {
         c = IDX[k.substr(i, 4)]; achou = '';
         if (c) for (j = 0; j < c.length; j++) if (k.startsWith(c[j], i)) { achou = c[j]; break; }
-        if (achou) { y += F[achou]; coberto += letras(achou); i += achou.length; } else { y += k.charAt(i); i++; }
+        if (achou) { y += F[achou]; coberto += letras(achou); i += achou.length; resto += ' | '; } else { y += k.charAt(i); resto += k.charAt(i); i++; }
       }
       // pedaços curtos só nas pontas
       var ini = '', fim = '';
       for (n = Math.min(9, y.length - 1); n >= 3 && !ini; n--) { var p = y.slice(0, n); if (F[p] !== undefined && k.slice(0, n) === p && letras(p) >= 2) ini = p; }
-      if (ini) { coberto += letras(ini); y = F[ini] + y.slice(ini.length); }
+      if (ini) { coberto += letras(ini); y = F[ini] + y.slice(ini.length); resto = resto.slice(ini.length); }
       for (n = Math.min(9, y.length - 1); n >= 2 && !fim; n--) { var q = y.slice(-n); if (F[q] !== undefined && k.slice(-n) === q && letras(q) >= 2) fim = q; }
-      if (fim) { coberto += letras(fim); y = y.slice(0, y.length - fim.length) + F[fim]; }
+      if (fim) { coberto += letras(fim); y = y.slice(0, y.length - fim.length) + F[fim]; resto = resto.slice(0, Math.max(0, resto.length - fim.length)); }
       if (!coberto || coberto * 2 < letras(k)) return undefined;
+      // se o que sobrou ainda tem português (e não só um nome, número ou data), a frase fica inteira como estava:
+      // melhor em português do que meio a meio
+      if (SOBRA_PT.test(resto) || /(^|[^A-Za-zÀ-ú@.\d_-])[a-zà-ú]{4,}([^A-Za-zÀ-ú@\d_-]|$)/.test(resto)) return undefined;
       return y;
     };
     // segundo dicionário (painel do treinador, área do aluno, cadastro): entra depois, só quando a pessoa vai para lá
     window.__trMais = function (d2) {
-      var k; for (k in (d2.t || {})) if (T[k] === undefined) T[k] = d2.t[k];
-      IDX = IDX || {};
-      for (k in (d2.f || {})) { F[k] = d2.f[k]; if (k.length >= 10) { var h = k.substr(0, 4); (IDX[h] = IDX[h] || []).push(k); } }
+      var k, h; IDX = IDX || {};
+      // textos inteiros também valem como pedaço (o código junta frases prontas com nomes e números)
+      for (k in (d2.t || {})) { if (T[k] === undefined) T[k] = d2.t[k]; if (k.length >= 10 && F[k] === undefined) { F[k] = d2.t[k]; h = k.substr(0, 4); (IDX[h] = IDX[h] || []).push(k); } }
+      for (k in (d2.f || {})) { F[k] = d2.f[k]; if (k.length >= 10) { h = k.substr(0, 4); (IDX[h] = IDX[h] || []).push(k); } }
       for (k in IDX) IDX[k].sort(function (x, y) { return y.length - x.length; });
       tudo(document.body);
     };
