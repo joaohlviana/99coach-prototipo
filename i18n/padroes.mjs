@@ -3,6 +3,7 @@
 const N = '([\\d.,]+)', X = '(.+?)';
 export default [
   ['Página (\\d+)', 'Page $1', 'Página $1'],
+  ['Fale com (\\S+)', 'Talk to $1', 'Habla con $1'],
   [N + ' treinadores', '$1 coaches', '$1 entrenadores'],
   [N + ' treinador', '$1 coach', '$1 entrenador'],
   [N + ' profissionais', '$1 professionals', '$1 profesionales'],
