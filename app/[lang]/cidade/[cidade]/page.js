@@ -5,6 +5,7 @@ import { dados } from '../../../cidade/[cidade]/page.js';
 import { curta, SITE, resumo, cidadesProximas } from '../../../../lib/catalogo.js';
 import { ok, t as tr, esporteNome } from '../../../../lib/i18n.js';
 import { href as hr, abs, versoes } from '../../../../lib/rotas.js';
+import { CidadeMundo, metaCidadeMundo } from '../../../../components/PaginaCidadeMundo.js';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -16,7 +17,9 @@ const L = {
 };
 
 export async function generateMetadata({ params }) {
-  const { lang: l, cidade: k } = await params; const d = ok(l) ? dados(k, 1) : null;
+  const { lang: l, cidade: k } = await params;
+  if (ok(l) && !dados(k, 1)) { const m = metaCidadeMundo(l, k); if (m) return m; }
+  const d = ok(l) ? dados(k, 1) : null;
   if (!d) return { title: 'Not found', robots: { index: false } };
   const x = tr(l), y = L[l], titulo = y.h1(curta(d.cid.label));
   const descricao = resumo(y.p(d.itens.length, d.cid.label) + ' ' + d.esportes.slice(0, 5).map((s) => esporteNome(l, s.slug, s.label)).join(', ') + '.');
@@ -26,7 +29,7 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { lang: l, cidade: k } = await params; if (!ok(l)) notFound();
-  const d = dados(k, 1); if (!d) notFound();
+  const d = dados(k, 1); if (!d) return <CidadeMundo l={l} k={k} />;
   const x = tr(l), y = L[l], { cid, itens, paginas, esportes, base } = d, c = curta(cid.label);
   const naPagina = itens.slice(0, POR_PAGINA), pre = '/treinadores/', perto = cidadesProximas(k);
   const trilha = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: x.home, item: abs(l, '/', SITE) }, { '@type': 'ListItem', position: 2, name: cid.label, item: abs(l, base , SITE)}] };

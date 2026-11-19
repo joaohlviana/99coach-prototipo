@@ -1,8 +1,8 @@
 // Moldura das páginas públicas em inglês e espanhol: só o HTML do servidor (leve). As ações levam ao app, em português.
-import { t as tr, esporteNome } from '../lib/i18n.js';
+import { t as tr, esporteNome, especialidade } from '../lib/i18n.js';
 import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 import { mapaCliente } from '../lib/rotas.js';
-import { esportes as listaEsportes } from '../lib/catalogo.js';
+import { esportes as listaEsportes, lugarMundo } from '../lib/catalogo.js';
 import { href as hr, abs, versoes } from '../lib/rotas.js';
 import { EsperaApp, MontaApp } from './Shell.js';
 
@@ -60,11 +60,11 @@ export default function ShellIdioma({ l, children, route }) {
 
 export function CartaoIdioma({ l, t }) {
   const x = tr(l);
-  const onde = [t.pres ? x.inPersonIn(t.city) : '', t.onl ? x.onlineCard : ''].filter(Boolean).join(' · ') || (t.city ? t.city : x.noPlace);
+  const onde = [t.pres ? x.inPersonIn(t.city) : (t.pais ? x.inPersonIn(lugarMundo(t, l)) : ''), t.onl ? x.onlineCard : ''].filter(Boolean).join(' · ') || (t.city ? t.city : x.noPlace);
   return (
     <li className="ssr-card">
       <a className="ssr-ph" href={hr(l, '/treinador/' + t.id)} tabIndex={-1} aria-hidden="true"><span>{t.ini || t.name.slice(0, 1)}</span>{t.photo ? <img src={t.photo} alt="" width="320" height="320" loading="lazy" decoding="async" /> : null}</a>
-      <div><a href={hr(l, '/treinador/' + t.id)}><b>{t.name}</b></a>{t.spec ? <span lang="pt-BR">{t.spec}</span> : null}<span>{onde}</span></div>
+      <div><a href={hr(l, '/treinador/' + t.id)}><b>{t.name}</b></a>{t.spec ? (() => { const e = especialidade(l, t.spec, listaEsportes()); return <span lang={e.pt ? 'pt-BR' : undefined}>{e.txt}</span>; })() : null}<span>{onde}</span></div>
     </li>
   );
 }

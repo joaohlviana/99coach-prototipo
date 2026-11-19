@@ -12,8 +12,12 @@ const um = fora[0], nome = um[1], local = um[12];
 const { execFileSync } = await import('node:child_process');
 const r1 = execFileSync('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code} %{redirect_url}', '-H', 'Host: www.99coach.com', B + '/treinadores/musculacao']).toString();
 console.log('1 .com leva ao .com.br com o mesmo caminho:', r1 === '308 https://www.99coach.com.br/treinadores/musculacao');
+// Worldwide lista as cidades; cada cidade tem página com os profissionais de lá
 const w = await (await fetch(B + '/worldwide')).text();
-console.log('2 página Worldwide:', w.includes(nome), w.includes('Presencial em ' + local));
+const links = [...w.matchAll(/href="(\/cidade\/[a-z0-9-]+-[a-z]{2})"/g)].map((m) => m[1]);
+let achou = false, presencial = false;
+for (const u of links) { const h = await (await fetch(B + u)).text(); if (h.includes(nome)) { achou = true; presencial = /Presencial em /.test(h); break; } }
+console.log('2 página Worldwide:', links.length > 0, achou, presencial);
 const sp = await (await fetch(B + '/treinadores/' + um[5][0])).text();
 console.log('3 fora do Brasil não aparece na página do Brasil:', !sp.includes('/treinador/' + um[0] + '"'));
 

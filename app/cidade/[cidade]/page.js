@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import Shell, { Cartao, Paginacao } from '../../../components/Shell.js';
 import { cidade, listaCidade, esportesNaCidade, plural, curta, nomeUF, SITE, cidadeUF, caber, resumo, cidadesProximas } from '../../../lib/catalogo.js';
 import { versoes } from '../../../lib/rotas.js';
+import { cidadeMundo } from '../../../lib/catalogo.js';
+import { CidadeMundo, metaCidadeMundo } from '../../../components/PaginaCidadeMundo.js';
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -26,7 +28,7 @@ export function meta(k, p) {
   const url = d.base + (p > 1 ? '/pagina/' + p : '');
   return { title: titulo, description: descricao, alternates: { canonical: url, ...(p > 1 ? {} : { languages: versoes(d.base, SITE) }) }, openGraph: { siteName: '99coach', locale: 'pt_BR', type: 'website', title: titulo, description: descricao, url, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
-export async function generateMetadata({ params }) { const { cidade: k } = await params; return meta(k, 1); }
+export async function generateMetadata({ params }) { const { cidade: k } = await params; return !cidade(k) && metaCidadeMundo('pt', k) ? metaCidadeMundo('pt', k) : meta(k, 1); }
 
 export function Cidade({ k, pagina }) {
   const d = dados(k, pagina);
@@ -58,4 +60,5 @@ export function Cidade({ k, pagina }) {
   );
 }
 
-export default async function Page({ params }) { const { cidade: k } = await params; return <Cidade k={k} pagina={1} />; }
+// cidade fora do Brasil (miami-us, london-gb): página própria, com os mesmos dados nos três idiomas
+export default async function Page({ params }) { const { cidade: k } = await params; return !cidade(k) && cidadeMundo(k) ? <CidadeMundo l="pt" k={k} /> : <Cidade k={k} pagina={1} />; }

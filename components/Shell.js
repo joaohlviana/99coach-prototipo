@@ -4,7 +4,7 @@
 import pacote from '../public/shell/version.json';
 import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 import { mapaCliente } from '../lib/rotas.js';
-import { esportes as listaEsportes } from '../lib/catalogo.js';
+import { esportes as listaEsportes, lugarMundo } from '../lib/catalogo.js';
 
 // onde: lugar da página (cidade ou estado) mostrado na busca do topo; a busca procura só nele
 export function Topo({ onde } = {}) {
@@ -102,7 +102,7 @@ export default function Shell({ route, children, soServidor, espera, onde }) {
 
 // cartão de treinador nas listas do servidor: só o que o catálogo afirma (nome, especialidade, cidade, formato)
 export function Cartao({ t }) {
-  const onde = [t.pres ? 'Presencial em ' + t.city : (t.local ? 'Presencial em ' + t.local : ''), t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
+  const onde = [t.pres ? 'Presencial em ' + t.city : (t.pais ? 'Presencial em ' + lugarMundo(t, 'pt') : ''), t.onl ? 'Online' : ''].filter(Boolean).join(' · ') || (t.city ? t.city : 'Local não informado');
   return (
     <li className="ssr-card">
       <a className="ssr-ph" href={'/treinador/' + t.id} tabIndex={-1} aria-hidden="true"><span>{t.ini || t.name.slice(0, 1)}</span>{t.photo ? <img src={t.photo} alt="" width="320" height="320" loading="lazy" decoding="async" /> : null}</a>
