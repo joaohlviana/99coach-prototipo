@@ -467,7 +467,10 @@
   // perfil vindo do banco entra no lugar que já tinha no catálogo (a lista não pula); só o que ainda não está no catálogo vai para o começo
   function comLive(rows) {
     var visto = {}, out = (rows || []).map(function (r) { var id = Array.isArray(r) ? r[0] : (r && r.slug); if (id && live[id]) { visto[id] = 1; return live[id]; } return r; });
-    return Object.keys(live).filter(function (k) { return !visto[k]; }).map(function (k) { return live[k]; }).concat(out);
+    var novos = Object.keys(live).filter(function (k) { return !visto[k]; }).map(function (k) { return live[k]; });
+    // só com o começo do catálogo não dá para saber se o perfil é novo ou está mais abaixo: pede o catálogo inteiro e a tela espera por ele
+    if (LOADST.parcial && novos.length) { LOADST.incerto = true; setTimeout(ensureBase, 0); }
+    return novos.concat(out);
   }
   REAL.isLive = function (id) { return !!live[id]; };
   // estado real do carregamento, para a busca separar "vazio" de "falha" (plano: vazio × falha × fim)
@@ -480,7 +483,7 @@
   function fetchBase() {
     if (!window.fetch) { LOADST.base = 'falha'; return; }
     fetch('data/treinadores.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      if (d && d.items && d.items.length) { setItems(comLive(d.items)); LOADST.base = 'ok'; LOADST.parcial = false; }
+      if (d && d.items && d.items.length) { LOADST.parcial = false; LOADST.incerto = false; setItems(comLive(d.items)); LOADST.base = 'ok'; }
       else LOADST.base = 'falha';
       rerender();
     }).catch(function () { LOADST.base = 'falha'; rerender(); });
@@ -502,13 +505,16 @@
       if (baseAsked && LOADST.base === 'ok') return;
       if (!d || !Array.isArray(d.items)) { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); return; }
       slices[key] = 'ok'; sliceRows = sliceRows.concat(d.items);
-      setItems(comLive(sliceRows)); LOADST.base = 'ok'; if (key === 'inicio') LOADST.parcial = true; rerender();
+      if (key === 'inicio') LOADST.parcial = true;
+      setItems(comLive(sliceRows)); LOADST.base = 'ok'; rerender();
     }).catch(function () { slices[key] = null; if (key === 'inicio') { ensureBase(); return; } if (!sliceRows.length) LOADST.base = 'falha'; rerender(); });
   }
   var SLUG = {}; Object.keys(LABEL).forEach(function (k) { SLUG[LABEL[k]] = k; });
   // a vitrine pede a modalidade que está mostrando; sem fatia conhecida, cai no catálogo inteiro
   REAL.need = function (modLabel) { if (baseAsked) return; var k = SLUG[modLabel]; if (k) fetchSlice('/dados/esporte/' + encodeURIComponent(k), 'e:' + k); else ensureBase(); };
   REAL.needAll = ensureBase;
+  // a lista desta modalidade já está inteira? (catálogo completo, ou a fatia dela chegou)
+  REAL.completo = function (modLabel) { return !LOADST.parcial || slices['e:' + SLUG[modLabel]] === 'ok'; };
   // alguma fatia pedida (mesmo ainda chegando) / alguma fatia já chegou
   window.__sliceLoaded = function () { return Object.keys(slices).length > 0; };
   window.__sliceReady = function () { return Object.keys(slices).some(function (k) { return slices[k] === 'ok'; }) && !Object.keys(slices).some(function (k) { return slices[k] === 'carregando'; }); };

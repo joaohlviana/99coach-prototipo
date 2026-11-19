@@ -113,9 +113,11 @@ class Component extends DCLogic {
     else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl));
     // carregando: esqueletos no lugar dos cartões, até a lista certa chegar (nada de mostrar uns e trocar por outros)
     const CST = PRD && window.REAL && window.REAL.status ? window.REAL.status() : null;
-    const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && main.length < 4));
+    const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && (main.length < 4 || !!CST.incerto)));
+    // não carregou (sem conexão): avisa e deixa tentar de novo, em vez de dizer que não há ninguém
+    const tFail = !!CST && !tLoad && CST.base === 'falha' && T.length === 0;
     if (CST && CST.parcial && main.length < 4 && window.REAL.ensure) window.REAL.ensure();
-    const tEmpty = !tNoLoc && !tLoad && main.length === 0, tHas = !tLoad && main.length > 0;
+    const tEmpty = !tNoLoc && !tLoad && !tFail && main.length === 0, tHas = !tLoad && main.length > 0;
     const tlist = main.slice(0, 4).map((t) => card(t, S.mode));
     const nTot = main.length;
     const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + cityTxt.replace(', PR', '') : 'Treinadores de ' + sportLabel);
@@ -362,7 +364,7 @@ class Component extends DCLogic {
       openEdit: open('edit'), clearSearch: (e) => { if (PRODH) lsSet('c99.tela.busca', null); set(Object.assign({ retCleared: true }, toastAt(e, 'Busca limpa. Seus salvos continuam em Salvos.', { k: 'clear' }))); },
       showRecent: !PRODH && !S.recentCleared, recent, clearRecent: (e) => set(Object.assign({ recentCleared: true }, toastAt(e, 'Vistos recentemente limpos neste aparelho.', { k: 'recent' }))),
       // vitrines
-      tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tLoad, skels: [1, 2, 3, 4], tlist, alts, emptyText, openOrder: open('order'),
+      tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tLoad, tFail, retryT: () => { if (window.REAL && window.REAL.retry) window.REAL.retry(); }, skels: [1, 2, 3, 4], tlist, alts, emptyText, openOrder: open('order'),
       seeAllT: () => window.NAV.go('esporte', {}, this),
       altHas, altNote, altList, altTitle, altSub, altAll, seeAllAlt: () => window.NAV.go('esporte', { fmt: S.mode === 'presencial' ? 'Online' : 'Presencial' }, this),
       pFail, pLoading, pHas, pEmpty, plist, retryP, seeAllP: goto('Programas', 'a lista de programas de ' + sportLabel),

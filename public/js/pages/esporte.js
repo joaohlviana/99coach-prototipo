@@ -173,7 +173,7 @@ class Component extends DCLogic {
     if (!document.documentElement.classList.contains('demo') && window.REAL && window.REAL.need) window.REAL.need(st.mod);
     if (window.TRACK) window.TRACK('catalog.search_performed', { sport: st.mod || '', city: st.city || '', format: st.fmt || '' }, 'busca:' + [st.mod, st.city, st.fmt].join('|'));
     const CAT = !document.documentElement.classList.contains('demo') && window.REAL && window.REAL.status ? window.REAL.status() : null;
-    const loading = st.load === 'loading' || (!!CAT && CAT.base === 'carregando');
+    const loading = st.load === 'loading' || (!!CAT && (CAT.base === 'carregando' || (window.REAL.completo && !window.REAL.completo(st.mod))));
     const showFail = !loading && !!CAT && n === 0 && (CAT.base === 'falha' || CAT.live === 'falha');
     const showEmpty = !loading && !showFail && n === 0;
     const showList = !loading && n > 0;
@@ -207,9 +207,6 @@ class Component extends DCLogic {
     const pageArr = []; for (let i = 1; i <= pagesN; i++) { if (i === 1 || i === pagesN || Math.abs(i - page) <= 1) pageArr.push(i); else if (pageArr[pageArr.length - 1] !== 0) pageArr.push(0); }
     const pages = st.load === 'total' ? [{ n: String(page), cls: 'e-pg is-on', cur: 'page', pick: () => {} }] : pageArr.map((i) => i === 0 ? { n: '…', cls: 'e-pg is-gap', cur: 'false', pick: () => {} } : ({ n: String(i), cls: 'e-pg' + (i === page ? ' is-on' : ''), cur: i === page ? 'page' : 'false', pick: () => irPagina(i) }));
     const pagStatus = st.load === 'total' ? 'Página ' + page : 'Página ' + page + ' de ' + pagesN;
-    const canMore = false;
-    const nextN = Math.min(PER, n - end);
-    const moreLabel = 'Carregar mais ' + nextN;
 
     // mapa
     const markers = mapIds.map((t) => ({ n: mkNum[t.id], short: t.name.split(' ')[0] + ' · ' + t.area, on: String(st.sel === t.id), cls: 'e-mk' + (st.sel === t.id ? ' is-sel' : ''), lcls: 'e-btn e-btn--sm' + (st.sel === t.id ? ' e-btn--ink' : ''), pos: 'left: ' + t.pos[0] + '%; top: ' + t.pos[1] + '%', aria: 'Marcador ' + mkNum[t.id] + ', ' + t.name + ', ' + t.area, pick: () => set({ sel: t.id }) }));
@@ -310,10 +307,8 @@ class Component extends DCLogic {
       undoHide: () => { if (!st.hidUndo) return; const h = Object.assign({}, HID); delete h[st.hidUndo.id]; saveHid(h); set({ hidUndo: null }); }, closeHidUndo: () => set({ hidUndo: null }),
       hasHidden: hidN > 0 && !st.hidUndo, hiddenTxt: hidN === 1 ? '1 perfil oculto por você' : hidN + ' perfis ocultos por você', showHidden: () => { saveHid({}); set({ hidUndo: null }); },
       updating, loading, showEmpty, showList, showFail, stale, retryCat, skels: [1, 2, 3, 4, 5, 6], alts, cards,
-      showEnd: false, endTxt: 'Fim da lista: ' + (n === 1 ? 'este é o único treinador' : 'você viu os ' + n.toLocaleString('pt-BR') + ' treinadores') + ' desta busca. Mudar cidade, formato ou modalidade mostra outros.',
       layCls: 'e-lay' + (mapOn ? ' is-map' : '') + (updating ? ' is-dim' : ''),
-      pages, pagStatus, prevPage: () => page > 1 && irPagina(page - 1), nextPage: () => page < pagesN && irPagina(page + 1), umaPagina: pagesN <= 1 && st.load !== 'total', variasPaginas: !(pagesN <= 1 && st.load !== 'total'), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
-      canMore, moreLabel, loadMore: () => set({ more: st.more + 1 }),
+      pages, pagStatus, prevPage: () => page > 1 && irPagina(page - 1), nextPage: () => page < pagesN && irPagina(page + 1), variasPaginas: !(pagesN <= 1 && st.load !== 'total'), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
       mapShown: mapOn, mapOk: mapOn && st.mapCap === 'on', mapFail: mapOn && st.mapCap === 'fail', markers, mapNote, mapTitle: markers.length + ' no mapa', toList: () => set({ view: 'lista' }), retryMap: () => set({ mapCap: 'on', scen: '' }),
       progs, progFail, progsOk: !progFail && progs.length > 0, retryProgs: () => set({ load: 'ok', scen: '' }), pg,
       edTitleA: edA, edTitleB: edB, localTxt, facts, faqs, rel, hasRel: rel.length > 0, ftrLinks,
@@ -431,7 +426,6 @@ class Component extends DCLogic {
       fmtFddTxt: 'Formato: ' + fmtL[st.fmt], langFddCls: 'fdd' + (st.lang !== 'Qualquer' ? ' is-set' : ''), langFddTxt: st.lang === 'Qualquer' ? 'Idioma do atendimento' : 'Idioma: ' + st.lang,
       pFmt4, pLang4, pSwCls: 'switch' + (pend.avail ? ' is-on' : ''), modOpts4,
       pages4, prevCls4: 'v4-pgb' + (page <= 1 ? ' is-dis' : ''), nextCls4: 'v4-pgb' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
-      pbarW: 'width: ' + (n ? Math.round(end / n * 100) : 0) + '%; background: var(--ink)', showPbar: st.load !== 'total' && n > 0, moreLabel4: 'Carregar mais ' + nextN + (nextN === 1 ? ' treinador' : ' treinadores'),
       markers4, progs4, facts4, faqs4, rel4, hasRel4: rel4.length > 0, alts4, pfTrust4, pgCoach: B(COACH[pg.by] || COACH['Rafael Lima']),
       seoBadge: 'tag tag--white', showTabbar: !st.sheet && !st.open,
       askLocWide: () => { set({ sheet: 'city', dd: '' }); locGo(); },

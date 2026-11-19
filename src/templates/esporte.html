@@ -146,9 +146,7 @@
             </li>
             </sc-for>
           </ul>
-          <sc-if value="{{showEnd}}" hint-placeholder-val="{{ false }}"><p class="field__help vfe-end" role="status" style="text-align: center; margin: 16px 0 0">{{endTxt}}</p></sc-if>
           <div class="vfe-more">
-            <sc-if value="{{canMore}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{loadMore}}">{{moreLabel4}}<i class="ic ic--sm i-plus"></i></button><sc-if value="{{showPbar}}" hint-placeholder-val="{{ true }}"><div class="pbar vfe-pbar" aria-hidden="true"><span style="{{pbarW}}"></span></div></sc-if></sc-if>
             <sc-if value="{{variasPaginas}}" hint-placeholder-val="{{ true }}"><nav class="vfe-pager" aria-label="Páginas de resultados">
               <div class="pager">
                 <button type="button" class="{{prevCls4}}" onClick="{{prevPage}}" aria-disabled="{{prevDis}}" aria-label="Página anterior"><span><i class="ic ic--sm i-chev-l"></i></span></button>
