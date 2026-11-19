@@ -296,25 +296,40 @@
     if (!l.__p) l.__p = new Promise(function (ok) { var done = function () { l.__ok = true; ok(); }; l.addEventListener('load', done); l.addEventListener('error', done); setTimeout(done, 5000); if (!has) l.href = l.getAttribute('data-href'); });
     return l.__p;
   }
-  function mount(name, props, state, key) {
+  // direção da troca de tela para a animação: 'forward' ao avançar, 'backward' ao voltar
+  var navDir = 'forward';
+  function mount(name, props, state, key, after) {
     var my = ++navSeq;
     if (window.__needArea && !window.__areaReady(name)) {
       var html = document.documentElement; html.classList.add('area-loading');
       // se a pessoa foi para outra página enquanto a área carregava, a área não passa por cima
-      return window.__needArea(name).then(function () { html.classList.remove('area-loading'); if (my === navSeq) mount(name, props, state, key); }, function () { html.classList.remove('area-loading'); if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); });
+      return window.__needArea(name).then(function () { html.classList.remove('area-loading'); if (my === navSeq) mount(name, props, state, key, after); }, function () { html.classList.remove('area-loading'); if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); });
     }
     var P = PAGES[name];
     // a folha de estilo da tela é baixada quando a tela abre; a tela só entra depois que ela chegou
     var wcss = needCss(P.css);
-    if (wcss) return wcss.then(function () { if (my === navSeq) mount(name, props, state, key); });
-    for (var k in PAGES) PAGES[k].css.media = k === name ? 'all' : 'not all';
-    var c = new P.Comp(props);
-    if (state) c.state = state;
-    cur = { name: name, comp: c, key: key };
-    var bs = document.querySelectorAll('[data-pv]');
-    for (var b = 0; b < bs.length; b++) { if (bs[b].getAttribute('data-pv') === name) bs[b].setAttribute('aria-current', 'page'); else bs[b].removeAttribute('aria-current'); }
-    rendering = true;
-    try { render(true); } finally { rendering = false; }
+    if (wcss) return wcss.then(function () { if (my === navSeq) mount(name, props, state, key, after); });
+    var swap = function () {
+      for (var k in PAGES) PAGES[k].css.media = k === name ? 'all' : 'not all';
+      var c = new P.Comp(props);
+      if (state) c.state = state;
+      cur = { name: name, comp: c, key: key };
+      var bs = document.querySelectorAll('[data-pv]');
+      for (var b = 0; b < bs.length; b++) { if (bs[b].getAttribute('data-pv') === name) bs[b].setAttribute('aria-current', 'page'); else bs[b].removeAttribute('aria-current'); }
+      rendering = true;
+      try { render(true); } finally { rendering = false; }
+      if (after) after();
+    };
+    var dir = navDir; navDir = 'forward';
+    // troca de tela com View Transitions (desliza no sentido da navegação; o topo fica parado). Sem suporte,
+    // com movimento reduzido ou na primeira tela, troca na hora e o conteúdo só aparece com a entrada leve.
+    var semMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!firstIn && !semMov && document.startViewTransition && !document.hidden) {
+      try { document.startViewTransition({ update: swap, types: [dir] }); }
+      catch (_) { try { document.startViewTransition(swap); } catch (__) { swap(); } }
+      return;
+    }
+    swap();
     pageIn();
   }
   // troca de página visível: barra no topo, conteúdo entra de baixo e os cartões passam por um instante de esqueleto
@@ -372,8 +387,8 @@
       order = order.slice(0, pos + 1); order.push(key); pos = order.length - 1;
       entries[key] = { name: name, props: props, state: null, scroll: 0 };
       try { history.pushState({ k: key }, '', urlFor(name, props)); } catch (_) { pushOk = false; }
-      mount(name, props, null, key);
-      scrollLater(0);
+      navDir = 'forward';
+      mount(name, props, null, key, function () { scrollLater(0); });
     },
     // "Voltar para a busca": volta de fato quando a tela anterior é a busca; senão abre a busca com o contexto atual
     toSearch: function (from) {
@@ -389,8 +404,8 @@
       saveCurrent();
       pos -= 1;
       var k = order[pos], ent = entries[k];
-      mount(ent.name, ent.props, ent.state, k);
-      scrollLater(ent.scroll || 0);
+      navDir = 'backward';
+      mount(ent.name, ent.props, ent.state, k, function () { scrollLater(ent.scroll || 0); });
     },
     ctxLabel: function () {
       var c = ctx.city ? ctx.city.split(',')[0] : '';
@@ -432,9 +447,9 @@
     var ent = k && entries[k];
     saveCurrent();
     if (!ent) { start(); return; }
-    pos = order.indexOf(k);
-    mount(ent.name, ent.props, ent.state, k);
-    scrollLater(ent.scroll || 0);
+    // voltar ou avançar pelo navegador: o sentido vem da posição na pilha
+    var np = order.indexOf(k); navDir = np < pos ? 'backward' : 'forward'; pos = np;
+    mount(ent.name, ent.props, ent.state, k, function () { scrollLater(ent.scroll || 0); });
   });
 
   function start() {
