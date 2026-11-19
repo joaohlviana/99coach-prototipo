@@ -172,3 +172,15 @@ html.tem-espera.app-wait body::after{display:none}
 html.tem-espera.app-wait:not(.app-on):not(.app-off) #ssr{display:none}
 html.tem-espera.app-off:not(.app-on) #app [data-espera]{display:none}
 html.tem-espera:not(.espera-ok):not(.app-on) #app [data-espera]{visibility:hidden}
+/* lugar da página dentro da busca do topo (cidade ou estado): clicar troca o lugar */
+/* busca do topo com lugar: mesmo padrão do app (Modalidade | Onde) */
+.ssr-top .ssr-search.ssr-hs{flex-basis:440px;height:52px;min-height:52px;padding:0 6px;gap:0;align-items:stretch}
+.ssr-hsb{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:8px;padding:0 8px;border-radius:999px;color:inherit;text-decoration:none;transition:background-color .18s ease}
+.ssr-hsb:hover{background:var(--paper,#F4F2EE)}
+.ssr-hsb>svg{flex:none;color:var(--text-3,#71717A)}
+.ssr-hsl{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.ssr-hsl small{font-family:var(--font-mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3,#71717A)}
+.ssr-hsl b{font-size:14.5px;font-weight:600;color:var(--fg,#121214);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ssr-hsep{align-self:center;width:1px;height:26px;background:var(--line-2,#E4E1DC);flex:none}
+.ssr-hclr{flex:none;align-self:center;width:32px;height:32px;border-radius:50%;background:var(--paper,#F1EFEB);display:grid;place-items:center;color:var(--fg,#121214);margin-left:2px}
+.ssr-hclr:hover{background:#E4E1DC}

@@ -64,7 +64,7 @@ export default function PaginaEsporte({ esporteSlug, ondeSlug, pagina = 1 }) {
       .concat(cid || online || uf ? [{ '@type': 'ListItem', position: ufCid ? 4 : 3, name: online ? 'Online' : (uf ? nomeDoUF(uf) : cid.label), item: SITE + caminho }] : [])
   };
   return (
-    <Shell route={route} soServidor={pagina > 1}>
+    <Shell route={route} soServidor={pagina > 1} onde={cid ? { label: cid.label, curto: curta(cid.label), chave: cid.slug, mod: esp.label, limpar: '/treinadores/' + esp.slug } : (uf ? { label: nomeDoUF(uf), chave: 'uf-' + uf, mod: esp.label, limpar: '/treinadores/' + esp.slug } : undefined)}>
       <nav className="ssr-crumb" aria-label="Você está em">
         <a href="/">Início</a> › {cid || online || uf ? <a href={'/treinadores/' + esp.slug}>{esp.label}</a> : <span>{esp.label}</span>}
         {ufCid ? <> › <a href={'/treinadores/' + esp.slug + '/' + ufCid}>{nomeDoUF(ufCid)}</a></> : null}

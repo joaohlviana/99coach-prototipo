@@ -30,7 +30,7 @@ export default async function Estado({ params }) {
   const outros = estadosDo('').filter((e) => e.uf !== k);
   const trilha = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Início', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Cidades', item: SITE + '/cidades' }, { '@type': 'ListItem', position: 3, name: nome, item: SITE + base }] };
   return (
-    <Shell soServidor>
+    <Shell soServidor onde={{ label: nome, chave: 'uf-' + k }}>
       <nav className="ssr-crumb" aria-label="Você está em"><a href="/">Início</a> › <a href="/cidades">Cidades</a> › <span>{nome}</span></nav>
       <section className="ssr-hero">
         <h1>Personal trainer e aulas {no}</h1>

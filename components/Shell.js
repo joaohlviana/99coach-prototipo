@@ -3,11 +3,22 @@
 
 import pacote from '../public/shell/version.json';
 
-export function Topo() {
+// onde: lugar da página (cidade ou estado) mostrado na busca do topo; a busca procura só nele
+export function Topo({ onde } = {}) {
   return (
     <header className="ssr-top">
       <a className="ssr-logo" href="/" aria-label="99coach, página inicial"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="126" height="32" /></a>
-      <form className="ssr-search" action="/buscar" method="get" role="search"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><input name="q" type="search" placeholder="Nome, modalidade ou cidade" aria-label="Buscar treinador por nome, modalidade ou cidade" /></form>
+      {onde ? (
+        // mesmo padrão da busca do app: "Modalidade | Onde", cada parte leva à troca, e o x limpa o lugar
+        <div className="ssr-search ssr-hs" role="group" aria-label={'Busca atual: ' + (onde.mod || 'Todos os esportes') + ' · ' + onde.label}>
+          <a className="ssr-hsb" href="/esportes" aria-label={'Modalidade ' + (onde.mod || 'Todos os esportes') + ', trocar'}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><span className="ssr-hsl"><small>Modalidade</small><b>{onde.mod || 'Todos os esportes'}</b></span></a>
+          <span className="ssr-hsep" aria-hidden="true" />
+          <a className="ssr-hsb ssr-hsb--city" href="/cidades" aria-label={'Onde ' + onde.label + ', trocar'}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg><span className="ssr-hsl"><small>Onde</small><b>{onde.curto || onde.label}</b></span></a>
+          <a className="ssr-hclr" href={onde.limpar || '/'} aria-label="Limpar o lugar e ver todo o Brasil" title="Limpar o lugar"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg></a>
+        </div>
+      ) : (
+        <form className="ssr-search" action="/buscar" method="get" role="search"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg><input name="q" type="search" placeholder="Nome, modalidade ou cidade" aria-label="Buscar treinador por nome, modalidade ou cidade" /></form>
+      )}
       <nav aria-label="Principal">
         <a href="/">Treinadores</a>
         <a href="/#esportes">Esportes</a>
@@ -37,7 +48,7 @@ export function Rodape() {
 }
 
 // soServidor: página que fica só com o HTML do servidor (leve, sem carregar o app); os links levam às páginas interativas
-export default function Shell({ route, children, soServidor, espera }) {
+export default function Shell({ route, children, soServidor, espera, onde }) {
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';';
   return (
     <>
@@ -49,7 +60,7 @@ export default function Shell({ route, children, soServidor, espera }) {
         {/* foto que não carrega some e ficam as iniciais (sem ícone de imagem quebrada) */}
         <script dangerouslySetInnerHTML={{ __html: "document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.closest&&t.closest('.ssr-ph,.ssr-av,.ssr-perfil'))t.style.visibility='hidden'},true);" }} />
         <a className="ssr-skip" href="#conteudo-ssr">Pular para o conteúdo</a>
-        <Topo />
+        <Topo onde={onde} />
         <main id="conteudo-ssr">{children}</main>
         <Rodape />
         {soServidor ? <nav className="ssr-tab" aria-label="Navegação do site">

@@ -35,7 +35,7 @@ export function Cidade({ k, pagina }) {
   const ini = (pagina - 1) * POR_PAGINA, naPagina = itens.slice(ini, ini + POR_PAGINA);
   const trilha = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Início', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: cid.label, item: SITE + base }] };
   return (
-    <Shell soServidor>
+    <Shell soServidor onde={{ label: cid.label, curto: cid.label.replace(/, [A-Z]{2}$/, ''), chave: cid.slug }}>
       <nav className="ssr-crumb" aria-label="Você está em"><a href="/">Início</a> › <span>{cid.label}</span></nav>
       <section className="ssr-hero">
         <h1>Personal trainer e aulas em {curta(cid.label)}</h1>
