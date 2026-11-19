@@ -80,7 +80,7 @@
       for (k in IDX) IDX[k].sort(function (x, y) { return y.length - x.length; });
       tudo(document.body);
     };
-    var ATTR = ['placeholder', 'aria-label', 'title', 'alt'];
+    var ATTR = ['placeholder', 'aria-label', 'title', 'alt', 'data-tip'];
     // fora da tradução: o HTML do servidor (já vem no idioma) e o que as pessoas escrevem (mensagens, notas, campos)
     var fora = function (el) { return !el || (el.closest && el.closest('#ssr,[data-no-tr],script,style,textarea,[contenteditable],.a1-msg__b,.a1-msg__m,.t2-pre,.t1-wrap')); };
     var um = function (n) {

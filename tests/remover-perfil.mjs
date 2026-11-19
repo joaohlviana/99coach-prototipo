@@ -13,7 +13,7 @@ await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', (r) => { const u = r.r
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
 await p.goto('http://localhost:5173/treinador/' + alvo, { waitUntil: 'load' }); await p.waitForTimeout(3500);
 let t = await p.evaluate(() => document.getElementById('app').innerText.replace(/\s+/g, ' '));
-console.log('1 caixa de contato:', /Fale com \S+/.test(t) && /Instagram/.test(t), '| sem linhas repetidas:', !/Instagram abre fora da 99Coach/.test(t), '| reivindicar:', /Reivindique e acesse seu perfil/.test(t), '| remover:', /Remover este perfil/.test(t));
+console.log('1 caixa de contato:', /Fale com \S+/.test(t) && /Instagram/.test(t), '| sem linhas repetidas:', !/Instagram abre fora da 99Coach/.test(t), '| reivindicar:', (await p.locator('.vfp-crow[data-tip="Reivindique e acesse seu perfil"]').count()) === 1, '| remover:', /Remover este perfil/.test(t));
 await p.evaluate(() => [...document.querySelectorAll('#app .vfp-crow button')].find((x) => x.innerText.trim() === 'Remover').click()); await p.waitForTimeout(1500);
 console.log('2 abre a tela do pedido:', /#publico-perfilpedido-/.test(p.url()));
 await p.fill('#app textarea', 'Não autorizo meus dados neste site.');

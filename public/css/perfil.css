@@ -1407,3 +1407,8 @@ html,body{margin:0;background:#EFEDEA}
 .fact--warn{background:rgba(245,180,0,.16);border-color:transparent;color:#92400E}
 .vfp-facts .tc__rate.fact{min-height:26px;color:var(--fg,#121214)}
 .vfp-facts .tc__rate.fact small{font-weight:500;color:var(--text-3,#71717A)}
+
+.vfp-crow[data-tip]{position:relative}
+.vfp-crow[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% - 6px);z-index:5;max-width:min(280px,100%);padding:7px 10px;border-radius:8px;background:#121214;color:#fff;font-size:12px;line-height:1.35;font-weight:500;opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .15s,transform .15s,visibility .15s;pointer-events:none}
+.vfp-crow[data-tip]:is(:hover,:focus-within)::after{opacity:1;visibility:visible;transform:none}
+@media (prefers-reduced-motion:reduce){.vfp-crow[data-tip]::after{transition:none}}
