@@ -55,7 +55,7 @@ class Component extends DCLogic {
         offers: [], progs: [], creds: [], where: [['Presencial', 'Londrina, PR (região ainda não informada)'], ['Online', 'Informa que atende online'], ['Idioma', 'Português']], map: '', reviews: [] },
       studio: { id: 'studio', name: 'Studio Norte Treinamento', first: 'Studio Norte', photo: '', ini: 'SN', role: 'Estúdio de treinamento funcional · dados públicos importados', city: 'Londrina, PR', formats: 'Presencial (informação pública)', lang: 'Idioma não informado', avail: 'importado', imported: true, cref: 'na', avg: '', n: 0, ext: '@studionorte.treino',
         pitch: 'Informações públicas importadas sobre um estúdio de treinamento funcional em Londrina. O conteúdo não foi revisado pelo estúdio.', bio: '',
-        offers: [], progs: [], creds: [], where: [['Endereço', 'Não exibido em perfis importados'], ['Contato público', 'Instagram @studionorte.treino (abre fora da 99Coach)']], map: '', reviews: [] }
+        offers: [], progs: [], creds: [], where: [['Endereço', 'Não exibido em perfis importados'], ['Contato público', 'Instagram @studionorte.treino']], map: '', reviews: [] }
     };
     const __dd = window.NAV && window.NAV.draft ? window.NAV.draft() : null; if (__dd) { TR.thiago = __dd.tr; Object.assign(OF, __dd.of); }
     const WHO = { novo: 'thiago', comparando: 'rafael', oferta: 'rafael', aceite: 'rafael', pedido: 'rafael', vinculo: 'rafael', horarios: 'rafael', proprio: 'rafael', retirado: 'rafael', importado: 'studio', semvaga: 'gabriel', desconhecida: 'carolina', semoferta: 'bruna' };

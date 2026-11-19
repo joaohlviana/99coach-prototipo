@@ -124,7 +124,7 @@
       var fm = t.pres && t.onl ? 'Presencial e online' : (t.pres ? 'Presencial' : (t.onl ? 'Online' : ''));
       var where = (d.serviceArea || []).map(function (w) { return [w.label, w.value]; });
       if (!where.length) { if (t.pres && t.city) where.push(['Presencial', t.city]); if (t.onl) where.push(['Online', 'Informado no perfil']); if (!where.length) where.push(['Local', 'Não informado']); }
-      if (d.externalHandle) where.push(['Contato público', 'Instagram ' + d.externalHandle + ' (abre fora da 99Coach)']);
+      if (d.externalHandle) where.push(['Contato público', 'Instagram ' + d.externalHandle]);
       if (!details[id]) fetchDetail(id);
       // perfil criado no cadastro (não importado) nunca aparece como importado, mesmo antes dos detalhes chegarem
       if (live[id] || d.imported === false || t.own) {
