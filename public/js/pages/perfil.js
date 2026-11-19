@@ -313,7 +313,7 @@ class Component extends DCLogic {
 
     // seção vazia não aparece para visitante: só o dono vê o que falta preencher
     const mine = own || ownReal;
-    const anchors = [['Visão geral', 'visao'], ['Ofertas', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => !x.imported || (l === 'Ofertas' ? offers.length > 0 : l === 'Programas' ? progs.length > 0 : l !== 'Avaliações')).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
+    const anchors = [['Visão geral', 'visao'], ['Ofertas', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => !x.imported || (l === 'Ofertas' ? offers.length > 0 : l === 'Programas' ? progs.length > 0 : l !== 'Avaliações' && l !== 'Perguntas')).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
 
     return {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
@@ -358,7 +358,7 @@ class Component extends DCLogic {
       favOn: String(!!st.fav), favIc: st.fav ? 'color: var(--brand)' : '', favLabel: st.fav ? 'Salvo' : 'Salvar', toggleFav, favNote: !!st.favNote, undoFav: () => set({ fav: false, favNote: false }), openShare: open('share', { copied: false }),
       claimable: !own, openClaim: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('claim', { claim: x.imported ? 'inicio' : 'conflito' }), openExt: x.imported ? igGo : open('ext'),
       anchors, bioOpen: !!st.bio, bioExp: String(!!st.bio), bioLabel: st.bio ? 'Ler menos' : 'Ler mais', toggleBio: () => set({ bio: !st.bio }),
-      sSlots: !x.imported, sFaq: !x.pending, sMsgNo: false,
+      sSlots: !x.imported, sFaq: !x.pending && !x.imported, sMsgNo: false,
       sCred: !(x.imported && !x.creds.length), sAvr: !x.imported, sOf: !(x.imported && !offers.length), sPg: !(x.imported && !progs.length), sAvHead: !x.imported, sTwo: !(x.imported && !x.creds.length),
       svcSub, hasOffers: offers.length > 0, noOffers: offers.length === 0, offers, noOffersTitle, noOffersText,
       hasProgs: progs.length > 0, noProgs: progs.length === 0, progs, noProgsText: x.imported ? 'Perfis importados não mostram programas.' : 'Quando houver, programas de compra única aparecem aqui com duração, preço e prazo de acesso.',

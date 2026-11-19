@@ -13,7 +13,7 @@ console.log('  links do app em inglês:', r.links.length > 0 && r.links.every((h
 r = await ve('/es/entrenadores/musculacion/sao-paulo-sp');
 console.log('2 modalidade em espanhol:', r.on, /Musculación/.test(r.t), /Todos los deportes/.test(r.t), !/Todos os esportes/.test(r.t));
 r = await ve('/en/coach/' + id);
-console.log('3 perfil em inglês:', r.on, /Overview/.test(r.t), /Frequently asked|FAQ|Questions/.test(r.t), !/Visão geral/.test(r.t));
+console.log('3 perfil em inglês:', r.on, /Overview/.test(r.t), /Contact & availability/.test(r.t), !/Visão geral/.test(r.t));
 r = await ve('/treinadores/musculacao');
 console.log('4 português continua em português:', r.on, r.lang === 'pt-BR', /Todos os esportes/.test(r.t));
 // painel do treinador e área do aluno (modo demonstração) no idioma: menu, botões e saudação traduzidos, sem frase meio a meio
