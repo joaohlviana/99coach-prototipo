@@ -256,9 +256,9 @@
     if (name === 'esporte') {
       var e = st || (props && props.init) || {};
       // página e ordem ficam no endereço (?pagina=2&ordem=rec): o link compartilhado abre igual
-      var q = []; if (e.page > 1) q.push('pagina=' + e.page); if (e.sort && e.sort !== 'rel') q.push('ordem=' + e.sort);
+      var q = []; if (e.city === 'MUNDO' && e.fmt !== 'Online') q.push('onde=mundo'); if (e.page > 1) q.push('pagina=' + e.page); if (e.sort && e.sort !== 'rel') q.push('ordem=' + e.sort);
       // "Todos os esportes" e "Worldwide" não têm página por modalidade: o endereço leva à página pública equivalente
-      if (e.city === 'MUNDO' && e.fmt !== 'Online') return e.mod === TODOS ? '/worldwide' : '/treinadores/' + sportSlug(e.mod || 'CrossFit');
+      if (e.city === 'MUNDO' && e.fmt !== 'Online') return e.mod === TODOS ? '/buscar?onde=mundo' : '/treinadores/' + sportSlug(e.mod || 'CrossFit') + '?' + q.join('&');
       if (e.mod === TODOS) return e.fmt === 'Online' || !e.city ? '/buscar' : (/^UF:/.test(e.city) ? '/estado/' + e.city.slice(3).toLowerCase() : '/cidade/' + slug(e.city));
       return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (/^UF:/.test(e.city || '') ? '/' + e.city.slice(3).toLowerCase() : (e.city ? '/' + slug(e.city) : ''))) + (q.length ? '?' + q.join('&') : '');
     }
@@ -378,7 +378,7 @@
       // mesmo título que o servidor entrega para este endereço
       var e = cur.comp.state, T0 = window.__T0 || (window.__T0 = { path: location.pathname, title: document.title });
       // no endereço em que a pessoa chegou vale o título do servidor; ao trocar esporte ou cidade, um título simples e correto
-      document.title = location.pathname === T0.path ? T0.title : (e.mod + (e.fmt === 'Online' ? ' online' : (e.city ? ' em ' + String(e.city).split(',')[0] : '')) + ' | 99coach');
+      document.title = location.pathname === T0.path ? T0.title : (e.mod + (e.fmt === 'Online' ? ' online' : (e.city === 'MUNDO' ? ' · mundo todo' : (e.city ? ' em ' + String(e.city).split(',')[0] : ''))) + ' | 99coach');
     },
     go: function (name, params, from, extra) {
       if (window.__needArea && !window.__areaReady(name)) { var self = this, args = arguments, my = ++navSeq; return window.__needArea(name).then(function () { if (my === navSeq) return self.go.apply(self, args); }, function () { if (window.NOTICE) window.NOTICE('Sem conexão para abrir esta área. Tente de novo.'); }); }

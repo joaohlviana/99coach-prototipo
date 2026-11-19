@@ -17,8 +17,8 @@ const T = {
     titulo: (c, p) => `Personal trainer em ${c} (${p})`,
     desc: (c, p, n, e) => `Personal trainer em ${c}, ${p}: ${n} ${n === 1 ? 'profissional atende' : 'profissionais atendem'} presencialmente. ${e}. Compare perfis na 99coach.`,
     intro: (n, c, p) => `${n} ${n === 1 ? 'profissional atende' : 'profissionais atendem'} presencialmente em ${c}, ${p}. Perfis montados com dados públicos; o contato é pelo Instagram de cada um.`,
-    esportes: 'Modalidades', lista: (c) => `Profissionais em ${c}`, mesmoPais: (p) => `Outras cidades em ${p}`, outras: 'Outras cidades no mundo', todas: 'Ver todos os países (Worldwide)',
-    wTitulo: 'Worldwide: personal trainers fora do Brasil', wH1: 'Worldwide',
+    esportes: 'Modalidades', lista: (c) => `Profissionais em ${c}`, mesmoPais: (p) => `Outras cidades em ${p}`, outras: 'Outras cidades no mundo', todas: 'Ver todos os países',
+    wTitulo: 'Personal trainers fora do Brasil, por cidade', wH1: 'Mundo todo',
     wDesc: 'Personal trainers e professores fora do Brasil, por cidade: Londres, Miami, Boston, Lisboa, Dubai e mais. Compare perfis na 99coach.',
     wIntro: (n, c, p) => `${n} ${n === 1 ? 'profissional' : 'profissionais'} em ${c} ${c === 1 ? 'cidade' : 'cidades'} de ${p} ${p === 1 ? 'país' : 'países'}. Escolha a cidade.`,
     cidades: 'Cidades', prof: (n) => `${n} ${n === 1 ? 'profissional' : 'profissionais'}`
@@ -39,8 +39,8 @@ const T = {
     titulo: (c, p) => `Entrenadores personales en ${c}, ${p}`,
     desc: (c, p, n, e) => `Entrenadores personales en ${c}, ${p}: ${n} ${n === 1 ? 'profesional atiende' : 'profesionales atienden'} presencialmente. ${e}. Compara perfiles en 99coach.`,
     intro: (n, c, p) => `${n} ${n === 1 ? 'profesional atiende' : 'profesionales atienden'} presencialmente en ${c}, ${p}. Perfiles armados con datos públicos; el contacto es por el Instagram de cada uno.`,
-    esportes: 'Deportes', lista: (c) => `Profesionales en ${c}`, mesmoPais: (p) => `Otras ciudades en ${p}`, outras: 'Otras ciudades del mundo', todas: 'Ver todos los países (Worldwide)',
-    wTitulo: 'Entrenadores personales en el mundo, por ciudad', wH1: 'Worldwide',
+    esportes: 'Deportes', lista: (c) => `Profesionales en ${c}`, mesmoPais: (p) => `Otras ciudades en ${p}`, outras: 'Otras ciudades del mundo', todas: 'Ver todos los países',
+    wTitulo: 'Entrenadores personales en el mundo, por ciudad', wH1: 'Todo el mundo',
     wDesc: 'Entrenadores personales y profesores en el mundo, por ciudad: Londres, Miami, Boston, Madrid, Dubái y más. Compara perfiles en 99coach.',
     wIntro: (n, c, p) => `${n} ${n === 1 ? 'profesional' : 'profesionales'} en ${c} ${c === 1 ? 'ciudad' : 'ciudades'} de ${p} ${p === 1 ? 'país' : 'países'}. Elige la ciudad.`,
     cidades: 'Ciudades', prof: (n) => `${n} ${n === 1 ? 'profesional' : 'profesionales'}`
@@ -70,7 +70,7 @@ export function CidadeMundo({ l, k }) {
   const ld = [
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: x.home, item: abs(l, '/', SITE) },
-      { '@type': 'ListItem', position: 2, name: 'Worldwide', item: abs(l, '/worldwide', SITE) },
+      { '@type': 'ListItem', position: 2, name: x.wH1, item: abs(l, '/worldwide', SITE) },
       { '@type': 'ListItem', position: 3, name: nome, item: url }] },
     { '@context': 'https://schema.org', '@type': 'ItemList', name: x.h1(nome), numberOfItems: itens.length,
       itemListElement: itens.map((t, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(l, '/treinador/' + t.id, SITE), name: t.name })) }
@@ -78,7 +78,7 @@ export function CidadeMundo({ l, k }) {
   const chip = (y) => <li key={y.slug}><a href={hr(l, '/cidade/' + y.slug)}>{nomeCidadeMundo(y.cid, l)} <small>{y.n.toLocaleString(NUM[l])}</small></a></li>;
   const corpo = (
     <>
-      <nav className="ssr-crumb" aria-label={x.ondeEsta}><a href={hr(l, '/')}>{x.home}</a> › <a href={hr(l, '/worldwide')}>Worldwide</a> › <span>{nome}</span></nav>
+      <nav className="ssr-crumb" aria-label={x.ondeEsta}><a href={hr(l, '/')}>{x.home}</a> › <a href={hr(l, '/worldwide')}>{x.wH1}</a> › <span>{nome}</span></nav>
       <section className="ssr-hero">
         <h1>{x.h1(nome)}</h1>
         <p>{x.intro(itens.length, nome, pais)}</p>
@@ -105,10 +105,10 @@ export function Mundo({ l }) {
   const x = T[l], G = mundo(), C = cidadesMundo(1);
   const total = G.reduce((n, g) => n + g.itens.length, 0);
   const porPais = G.map((g) => ({ codigo: g.codigo, nome: nomePais(g.codigo, l), cidades: C.filter((c) => c.pais === g.codigo), n: g.itens.length }));
-  const ld = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: x.home, item: abs(l, '/', SITE) }, { '@type': 'ListItem', position: 2, name: 'Worldwide', item: abs(l, '/worldwide', SITE) }] };
+  const ld = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: x.home, item: abs(l, '/', SITE) }, { '@type': 'ListItem', position: 2, name: x.wH1, item: abs(l, '/worldwide', SITE) }] };
   const corpo = (
     <>
-      <nav className="ssr-crumb" aria-label={x.ondeEsta}><a href={hr(l, '/')}>{x.home}</a> › <span>Worldwide</span></nav>
+      <nav className="ssr-crumb" aria-label={x.ondeEsta}><a href={hr(l, '/')}>{x.home}</a> › <span>{x.wH1}</span></nav>
       <section className="ssr-hero">
         <h1>{x.wH1}</h1>
         <p>{x.wIntro(total, C.length, G.length)}</p>

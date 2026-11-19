@@ -9,7 +9,7 @@ const URL0 = process.env.SUPABASE_URL || 'https://rycaxboqkkiopjdecgld.supabase.
 const KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_dPQ0596gx0ok94wUE4POtw_T-QjY8Cq';
 const OUT = new URL('../public/data/treinadores.json', import.meta.url);
 const PAGE = 1000;
-const sel = 'slug,name,initials,photo_url,specialty,formats,published_at,origin,external_handle,country,locality,cities(name,uf),trainer_sports(sport_slug)';
+const sel = 'slug,name,initials,photo_url,specialty,formats,published_at,origin,external_handle,country,locality,cities(name,uf),trainer_sports(sport_slug),trainer_rank(score)';
 
 async function page(from) {
   const u = `${URL0}/rest/v1/trainers?select=${encodeURIComponent(sel)}&status=eq.publicado&origin=neq.demonstracao&order=slug.asc`;
@@ -33,7 +33,8 @@ try {
       const FOTOS = 'https://rycaxboqkkiopjdecgld.supabase.co/storage/v1/object/public/trainer-photos/';
       const u = t.photo_url || '';
       const photo = u.startsWith(FOTOS) ? u.slice(FOTOS.length) : (t.origin === 'importado' ? '' : u);
-      rows.push([t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
+      const nota = Number((Array.isArray(t.trainer_rank) ? t.trainer_rank[0] : t.trainer_rank || {}).score) || 0;
+      rows.push([nota, t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
         f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '', /^@?[A-Za-z0-9._]{1,30}$/.test(t.external_handle || '') ? t.external_handle : '',
         // fora do Brasil: país (ISO) e local por extenso; no Brasil ficam vazios
         t.country && t.country !== 'BR' ? t.country : '', t.country && t.country !== 'BR' ? (t.locality || '') : '']);
@@ -41,6 +42,9 @@ try {
     process.stdout.write(`\r${rows.length}${total ? ' de ' + total : ''} perfis`);
     if (p.rows.length < PAGE) break;
   }
+  // a lista do site sai nesta ordem: relevância calculada no banco (maior primeiro); empate pelo endereço
+  rows.sort((a, b) => b[0] - a[0] || (a[1] < b[1] ? -1 : 1));
+  for (const r of rows) r.shift();
   if (rows.length < 100) throw new Error(`poucos perfis (${rows.length}); mantendo o arquivo anterior`);
   writeFileSync(OUT, JSON.stringify({ fonte: 'supabase', baixadoEm: new Date().toISOString(), total: rows.length, items: rows }));
   console.log(`\ncatálogo atualizado do banco: ${rows.length} perfis publicados`);

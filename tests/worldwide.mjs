@@ -41,8 +41,8 @@ console.log('5 Todo o Brasil exclui, Worldwide inclui:', (await conta('')) === f
 await p.goto(B + '/', { waitUntil: 'load' }); await p.waitForTimeout(3500);
 await p.evaluate(() => { const e = [...document.querySelectorAll('#app button.v4-qf')].find((x) => /Onde/.test(x.textContent)); if (e) e.click(); });
 await p.waitForTimeout(800);
-const temOpc = await p.evaluate(() => /Worldwide/.test(document.getElementById('app').innerText));
-await p.evaluate(() => { const e = [...document.querySelectorAll('#app button, #app [role=option], #app li')].find((x) => /^Worldwide/.test(x.textContent.trim()) && x.offsetParent); if (e) e.click(); });
+const temOpc = await p.evaluate(() => /Mundo todo/.test(document.getElementById('app').innerText));
+await p.evaluate(() => { const e = [...document.querySelectorAll('#app button, #app [role=option], #app li')].find((x) => /^Mundo todo/.test(x.textContent.trim()) && x.offsetParent); if (e) e.click(); });
 await p.waitForTimeout(1200);
 const ck = await p.evaluate(() => document.cookie);
 console.log('6 busca tem Worldwide e guarda a escolha:', temOpc, /c99_cidade=MUNDO/.test(ck));
@@ -67,6 +67,6 @@ const veja = async (tz) => {
 };
 const br = await veja('America/Sao_Paulo'), ext = await veja('Europe/London');
 console.log('7 padrão em todos os esportes:', /Todos os esportes/.test(br.t), /TREINADORES/i.test(br.t2) && !/Treinadores de CrossFit/i.test(br.t2));
-console.log('8 no Brasil começa em Todo o Brasil; fora, em Worldwide:', /Todo o Brasil/.test(br.t), /Worldwide/.test(ext.t), !/MUNDO/.test(ext.t2));
+console.log('8 no Brasil começa em Todo o Brasil; fora, em Worldwide:', /Todo o Brasil/.test(br.t), /Mundo todo/.test(ext.t), !/MUNDO(?! TODO)/.test(ext.t2));
 console.log('errs', br.e2.concat(ext.e2));
 await b2.close();

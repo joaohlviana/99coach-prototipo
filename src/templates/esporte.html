@@ -149,14 +149,14 @@
           <sc-if value="{{showEnd}}" hint-placeholder-val="{{ false }}"><p class="field__help vfe-end" role="status" style="text-align: center; margin: 16px 0 0">{{endTxt}}</p></sc-if>
           <div class="vfe-more">
             <sc-if value="{{canMore}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--lg" onClick="{{loadMore}}">{{moreLabel4}}<i class="ic ic--sm i-plus"></i></button><sc-if value="{{showPbar}}" hint-placeholder-val="{{ true }}"><div class="pbar vfe-pbar" aria-hidden="true"><span style="{{pbarW}}"></span></div></sc-if></sc-if>
-            <nav class="vfe-pager" aria-label="Páginas de resultados">
+            <sc-if value="{{variasPaginas}}" hint-placeholder-val="{{ true }}"><nav class="vfe-pager" aria-label="Páginas de resultados">
               <div class="pager">
                 <button type="button" class="{{prevCls4}}" onClick="{{prevPage}}" aria-disabled="{{prevDis}}" aria-label="Página anterior"><span><i class="ic ic--sm i-chev-l"></i></span></button>
                 <sc-for list="{{pages4}}" as="p" hint-placeholder-count="2"><button type="button" class="v4-pgb" onClick="{{p.pick}}" aria-current="{{p.cur}}" aria-label="Página {{p.n}}"><span class="{{p.cls}}">{{p.n}}</span></button></sc-for>
                 <button type="button" class="{{nextCls4}}" onClick="{{nextPage}}" aria-disabled="{{nextDis}}" aria-label="Próxima página"><span><i class="ic ic--sm i-chev-r"></i></span></button>
               </div>
               <span class="label">{{pagStatus}}</span>
-            </nav>
+            </nav></sc-if>
           </div>
         </sc-if>
       </div>
@@ -214,7 +214,7 @@
   <footer class="ftr">
     <div class="wrap"><div class="ftr__grid">
       <div class="ftr__col"><img src="@@IMG:c994186ea30c1564@@" alt="99Coach" style="height: 28px; width: auto; margin-bottom: 16px"><p class="t2" style="font-size: 14px; line-height: 1.6; max-width: 280px">Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p><p class="ftr-langs" style="display:flex;gap:12px;margin:16px 0 8px;font-size:14px"><b lang="pt-BR">Português</b><a href="/en" hreflang="en" lang="en">English</a><a href="/es" hreflang="es" lang="es">Español</a></p><p class="t2" style="font-size:12px;line-height:1.5;max-width:280px">Valores em reais (R$). Contas, pagamentos e atendimento no Brasil, em qualquer idioma.</p></div>
-      <div class="ftr__col"><b>Para treinar</b><sc-for list="{{ftrLinks}}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{r.pick}}">{{r.label}}</button></sc-for><button type="button" onClick="{{openSaved}}">Salvos</button><a href="/worldwide">Worldwide</a></div>
+      <div class="ftr__col"><b>Para treinar</b><sc-for list="{{ftrLinks}}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{r.pick}}">{{r.label}}</button></sc-for><button type="button" onClick="{{openSaved}}">Salvos</button><a href="/worldwide">Mundo todo</a></div>
       <div class="ftr__col"><b>Para treinadores</b><button type="button" onClick="{{openPro}}">Sou treinador</button><button type="button" onClick="{{openLogin}}">Entrar no painel</button></div>
       <div class="ftr__col"><b>Ajuda</b><button type="button" onClick="{{info_ajuda}}">Central de ajuda</button></div>
       <div class="ftr__col"><b>Legal</b><button type="button" onClick="{{info_termos}}">Termos de uso</button><button type="button" onClick="{{info_priv}}">Privacidade</button></div>

@@ -1786,3 +1786,4 @@ div.p2-mrow__main{cursor:default}
 }
 
 [data-t=table]{display:table;width:100%;border-collapse:collapse}[data-t=thead]{display:table-header-group}[data-t=tbody]{display:table-row-group}[data-t=tfoot]{display:table-footer-group}[data-t=tr]{display:table-row}[data-t=td],[data-t=th]{display:table-cell}[data-t=th]{font-weight:700;text-align:left}
+.onb .onb-choice.is-on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--paper-2)}

@@ -73,7 +73,7 @@ await press(/^Limpar$/); await p.waitForTimeout(500);
 t = await txt(); console.log('  limpar volta à busca:', !/CONTINUE DE ONDE PAROU/i.test(t), await p.evaluate(() => localStorage.getItem('c99.tela.busca')));
 // 6. meus dados
 await p.evaluate(() => GO('AMENU')); await p.waitForTimeout(600);
-console.log('6 conta:', await press(/^Meus dados/), '->', await p.evaluate(() => location.hash));
+console.log('6 conta:', await press(/^Meus dados/), '->', await p.evaluate(() => location.hash)); await p.waitForTimeout(1500);
 const dls = []; p.on('download', (d) => dls.push(d));
 await press(/^Baixar meus dados$/); await p.waitForTimeout(2500);
 { const [pop] = await Promise.all([p.context().waitForEvent('page', { timeout: 8000 }).catch(() => null), press(/^Imprimir ou salvar em PDF$/)]); const ht = pop ? await pop.evaluate(() => document.body.innerText.replace(/\s+/g, ' ')).catch(() => '') : ''; console.log('  versão para PDF abre com os dados:', !!pop, /Meus dados no 99coach/.test(ht), /Treinos registrados/i.test(ht)); if (pop) await pop.close(); }

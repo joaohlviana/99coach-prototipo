@@ -55,7 +55,7 @@ REG.screen({
     var ST = { recebido: 'Recebido', em_analise: 'Em análise', precisa_complemento: 'Precisa de complemento', concluido: 'Concluído', recusado: 'Recusado', nao_encontrado: 'Não encontrado' };
     return {
       name: name, first: first, hasT: !!t, noT: !t,
-      kinds: [['corrigir', 'Corrigir dados', 'Algo está errado: nome, cidade, modalidade, contato.'], ['retirar', 'Remover o perfil', 'Sai do site na hora e fica guardado até a equipe revisar.']].map(function (k) { var on = (ui.kind || 'corrigir') === k[0]; return { label: k[1], sub: k[2], on: String(on), cls: 'onb-choice' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ kind: k[0], err: '' }); } }; }),
+      kinds: [['corrigir', 'Corrigir dados', 'Algo está errado: nome, cidade, modalidade, contato.'], ['retirar', 'Remover o perfil', 'Sai do site na hora e fica guardado até a equipe revisar.']].map(function (k) { var on = (ui.kind || 'corrigir') === k[0]; return { label: k[1], sub: k[2], on: String(on), cls: 'ocard onb-choice' + (on ? ' is-on' : ''), pick: function () { ctx.setUi({ kind: k[0], err: '' }); } }; }),
       reason: ui.reason || '', setReason: function (e) { ctx.setUi({ reason: U.val(e), err: '' }); }, contact: ui.contact || '', setContact: function (e) { ctx.setUi({ contact: U.val(e), err: '' }); },
       send: send, sendLabel: ui.busy ? 'Enviando…' : 'Enviar pedido', err: ui.err || '', hasErr: !!ui.err,
       paused: !!ui.paused, notPaused: !ui.paused, sent: !!ui.sent, protocol: ui.sent || (prev && prev.protocol) || '', hasPrev: !!prev && !ui.sent,

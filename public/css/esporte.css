@@ -1362,3 +1362,4 @@ html,body{margin:0;background:var(--concrete)}
 /* motivo do cartão e "não tenho interesse" */
 .vf-why { color: var(--ok, #0a7a3f); }
 .vf-hide { background: none; border: 0; padding: 4px 0; text-align: left; text-decoration: underline; cursor: pointer; min-height: 24px; }
+.v4-pgb:has(.is-gap){pointer-events:none;min-width:24px;color:var(--text-3)}

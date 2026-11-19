@@ -15,6 +15,7 @@ html.app-on #ssr{display:none}
 .ssr-hero h1{font-family:var(--font-display,Anton,Impact,sans-serif);font-weight:400;text-transform:uppercase;font-size:clamp(30px,5vw,56px);line-height:1;margin:0 0 12px}
 .ssr-hero p{max-width:68ch;margin:0 0 8px;color:rgba(255,255,255,.82);font-size:16px}
 .ssr-hero a{color:#fff}
+.ssr-hero .ssr-chips a{color:var(--ink,#121214)}
 .ssr-eyebrow{font-family:var(--font-mono,'Space Mono',monospace);text-transform:uppercase;letter-spacing:.18em;font-size:12px!important}
 .ssr-note{font-size:14px!important}
 .ssr-perfil{display:flex;gap:20px;align-items:center;flex-wrap:wrap}

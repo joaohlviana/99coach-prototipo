@@ -4,7 +4,7 @@ PAGES.esporte = { Comp: (function () {
 class Component extends DCLogic {
   static img(id) { return window.__IMG[id] || ''; }
 
-  constructor(props) { super(props); this.state = Object.assign({}, this.base(), (props && props.init) || {}); try { const mp = /[?&]pagina=(\d{1,4})(&|$)/.exec(location.search), mo = /[?&]ordem=(rel|rec)(&|$)/.exec(location.search); if (mp && +mp[1] > 1) this.state.page = +mp[1]; if (mo) this.state.sort = mo[1]; } catch (_) {} try { const mu = /[?&]uf=([a-z]{2})(&|$)/i.exec(location.search); if (mu && props && props.init && !props.init.city && /^\/treinadores\/[^/]+\/?$/.test(location.pathname)) { this.state.city = 'UF:' + mu[1].toUpperCase(); this.state.fmt = 'Presencial'; } } catch (_) {} try { if (!Component.__cap && typeof document !== 'undefined' && document.addEventListener) { Component.__cap = 1; document.addEventListener('click', (e) => { try { const t = e.target; const el = (t && t.closest && t.closest('button,a,[role=switch]')) || t; const r = el.getBoundingClientRect(); Component.__y = Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) {} }, true); } } catch (_) {} }
+  constructor(props) { super(props); this.state = Object.assign({}, this.base(), (props && props.init) || {}); try { const mp = /[?&]pagina=(\d{1,4})(&|$)/.exec(location.search), mo = /[?&]ordem=(rel|rec)(&|$)/.exec(location.search); if (mp && +mp[1] > 1) this.state.page = +mp[1]; if (mo) this.state.sort = mo[1]; if (/[?&]onde=mundo(&|$)/.test(location.search) && /^(\/(en|es))?\/[^/]+\/[^/]+\/?$/.test(location.pathname) && !(props && props.init && props.init.city)) this.state.city = 'MUNDO'; } catch (_) {} try { const mu = /[?&]uf=([a-z]{2})(&|$)/i.exec(location.search); if (mu && props && props.init && !props.init.city && /^\/treinadores\/[^/]+\/?$/.test(location.pathname)) { this.state.city = 'UF:' + mu[1].toUpperCase(); this.state.fmt = 'Presencial'; } } catch (_) {} try { if (!Component.__cap && typeof document !== 'undefined' && document.addEventListener) { Component.__cap = 1; document.addEventListener('click', (e) => { try { const t = e.target; const el = (t && t.closest && t.closest('button,a,[role=switch]')) || t; const r = el.getBoundingClientRect(); Component.__y = Math.max(12, Math.round(r.top + (window.scrollY || window.pageYOffset || 0) - 24)); } catch (_) {} }, true); } } catch (_) {} }
   base() { return { scen: 'londrina', mod: 'CrossFit', city: 'Londrina, PR', fmt: 'Presencial', lang: 'Qualquer', avail: false, sort: 'rel', sortInfo: false, page: 1, more: 0, view: 'lista', mapCap: 'off', load: 'ok', removed: false, sheet: '', pend: null, favs: {}, toast: null, sel: '', open: '', back: '', faq: 0, seo: false, codeSent: false, auth: 'login', loc: '', info: '', prog: -1, dd: '', foco: '', area: '' }; }
   renderVals() {
     if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
@@ -13,7 +13,7 @@ class Component extends DCLogic {
     if (window.ONDE && !document.documentElement.classList.contains('demo') && st.fmt !== 'Online') { const c0 = st.city || ''; if (this.__c0 === undefined) this.__c0 = c0; else if (this.__c0 !== c0) { this.__c0 = c0; window.ONDE.set(c0); } }
     const set = (o) => { if (o && o.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(o.favs); this.setState(o); };
     const B = (id) => Component.img(id);
-    const PER = 8;
+    const PER = 24;
     const TD = [
       { id: 'rafael', name: 'Rafael Lima', ph: 'bdc7ef1c8dbf05558c3bf8d575fc3a04', spec: 'CrossFit e Musculação', mods: ['CrossFit', 'Musculação'], city: 'Londrina, PR', area: 'Região central', fmts: ['Presencial', 'Online'], langs: ['português'], avail: 'sim', ad: '20/10', rating: '4,9', reviews: 23, pres: ['Sessão presencial', 'R$ 80', '/ sessão'], onl: ['Acompanhamento online', 'R$ 200', '/ mês'], extra: [['Treino presencial 2x por semana', 'R$ 520 / mês', '8 sessões por mês · recorrente'], ['Avaliação física', 'Sob consulta', 'Condição declarada pelo treinador']], pub: '2026-03-12', rank: 1, pos: [50, 42], trust: [['Titularidade confirmada', 'ok'], ['CREF 012345-G/PR verificado · válido até 12/2027', 'ok']] },
       { id: 'diego', name: 'Diego Moraes', ph: '348bafe032c42fc5274e3de9d8004df2', spec: 'CrossFit e Lutas', mods: ['CrossFit', 'Lutas', 'Funcional'], city: 'Londrina, PR', area: 'Zona Leste', fmts: ['Presencial'], langs: ['português'], avail: 'sim', ad: '18/10', rating: '4,8', reviews: 56, pres: ['Sessão presencial', 'R$ 90', '/ sessão'], pub: '2025-08-14', rank: 2, pos: [79, 42], trust: [['Titularidade confirmada', 'ok'], ['CREF verificado', 'ok']] },
@@ -41,8 +41,8 @@ class Component extends DCLogic {
     const UFN = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
     const UFA = { AC: 'no', AP: 'no', AM: 'no', BA: 'na', CE: 'no', DF: 'no', ES: 'no', MA: 'no', PA: 'no', PB: 'na', PR: 'no', PI: 'no', RJ: 'no', RN: 'no', RS: 'no', TO: 'no' };
     const isUf = (c) => /^UF:/.test(c || '');
-    const cityShort = (c) => c === 'MUNDO' ? 'Worldwide' : (isUf(c) ? (UFN[c.slice(3)] || c.slice(3)) : (c || '').split(',')[0]);
-    const cityFull = (c) => c === 'MUNDO' ? 'Worldwide (todos os países)' : (isUf(c) ? cityShort(c) + ' (estado todo)' : (c || ''));
+    const cityShort = (c) => c === 'MUNDO' ? 'Mundo todo' : (isUf(c) ? (UFN[c.slice(3)] || c.slice(3)) : (c || '').split(',')[0]);
+    const cityFull = (c) => c === 'MUNDO' ? 'Mundo todo' : (isUf(c) ? cityShort(c) + ' (estado todo)' : (c || ''));
     const emC = (c) => c === 'MUNDO' ? ' · ' : ' ' + ((isUf(c) && UFA[c.slice(3)]) || 'em') + ' ';
     // sem cidade escolhida = Todo o Brasil ("Cidade, UF"); "MUNDO" = Worldwide, qualquer país
     const inCity = (tc, c) => !c ? (!tc || /, [A-Z]{2}$/.test(tc)) : c === 'MUNDO' ? true : (isUf(c) ? String(tc || '').slice(-4) === ', ' + c.slice(3) : tc === c);
@@ -201,10 +201,13 @@ class Component extends DCLogic {
     else { countMain = n + (n === 1 ? ' treinador' : ' treinadores'); countSub = ctxLine; }
 
     // paginação
-    const pageArr = []; for (let i = 1; i <= pagesN; i++) pageArr.push(i);
-    const pages = st.load === 'total' ? [{ n: String(page), cls: 'e-pg is-on', cur: 'page', pick: () => {} }] : pageArr.map((i) => ({ n: String(i), cls: 'e-pg' + (i === page ? ' is-on' : ''), cur: i === page ? 'page' : 'false', pick: () => set({ page: i, more: 0, back: '' }) }));
-    const pagStatus = st.load === 'total' ? 'Página ' + page : 'Página ' + page + ' de ' + pagesN + ' · mostrando ' + (n ? start + 1 : 0) + '–' + end + ' de ' + n;
-    const canMore = end < n;
+    // trocar de página leva ao começo da lista (não deixa a pessoa no rodapé)
+    const irPagina = (i) => { set({ page: i, more: 0, back: '' }); setTimeout(() => { try { const l = document.getElementById('lista'); if (l) window.scrollTo({ top: Math.max(0, l.getBoundingClientRect().top + window.scrollY - 96) }); } catch (_) {} }, 0); };
+    // só a primeira, a última e as vizinhas da atual; o resto vira "…"
+    const pageArr = []; for (let i = 1; i <= pagesN; i++) { if (i === 1 || i === pagesN || Math.abs(i - page) <= 1) pageArr.push(i); else if (pageArr[pageArr.length - 1] !== 0) pageArr.push(0); }
+    const pages = st.load === 'total' ? [{ n: String(page), cls: 'e-pg is-on', cur: 'page', pick: () => {} }] : pageArr.map((i) => i === 0 ? { n: '…', cls: 'e-pg is-gap', cur: 'false', pick: () => {} } : ({ n: String(i), cls: 'e-pg' + (i === page ? ' is-on' : ''), cur: i === page ? 'page' : 'false', pick: () => irPagina(i) }));
+    const pagStatus = st.load === 'total' ? 'Página ' + page : 'Página ' + page + ' de ' + pagesN;
+    const canMore = false;
     const nextN = Math.min(PER, n - end);
     const moreLabel = 'Carregar mais ' + nextN;
 
@@ -299,7 +302,7 @@ class Component extends DCLogic {
       scens, reset, seoOpen: st.seo, toggleSeo: () => set({ seo: !st.seo }), seoToggleLabel: st.seo ? ' · ocultar campos' : ' · ver campos', seoIndex: seoOk ? 'indexar' : 'não indexar', seoPillCls: 'e-pill ' + (seoOk ? 'e-pill--ok' : 'e-pill--no'), seoWhy, seoTitle, seoDesc, seoCrumb,
       h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? emC(st.city) + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Todo o Brasil'), hasCity: !!st.city && !online, clearCity: () => change({ city: '', fmt: 'Qualquer', cuf: '' }), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
       cityPickCls: 'e-pick' + (!st.city && !online ? ' is-empty' : ''),
-      crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? (st.city === 'MUNDO' ? 'Worldwide' : st.city) : st.mod),
+      crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? (st.city === 'MUNDO' ? 'Mundo todo' : st.city) : st.mod),
       fmtSeg, sortSeg, viewSeg, mapToggle, sortInfo: st.sortInfo, toggleSortInfo: () => set({ sortInfo: !st.sortInfo }),
       applied, hasApplied: applied.length > 0, hasExtra: applied.length > 0, extraCount, clearExtra,
       countMain, countSub, removedNote: st.removed, dismissRemoved: () => set({ removed: false, back: '' }), noCityNote: !st.city && !online && !loading,
@@ -307,9 +310,9 @@ class Component extends DCLogic {
       undoHide: () => { if (!st.hidUndo) return; const h = Object.assign({}, HID); delete h[st.hidUndo.id]; saveHid(h); set({ hidUndo: null }); }, closeHidUndo: () => set({ hidUndo: null }),
       hasHidden: hidN > 0 && !st.hidUndo, hiddenTxt: hidN === 1 ? '1 perfil oculto por você' : hidN + ' perfis ocultos por você', showHidden: () => { saveHid({}); set({ hidUndo: null }); },
       updating, loading, showEmpty, showList, showFail, stale, retryCat, skels: [1, 2, 3, 4, 5, 6], alts, cards,
-      showEnd: showList && end >= n, endTxt: 'Fim da lista: ' + (n === 1 ? 'este é o único treinador' : 'você viu os ' + n.toLocaleString('pt-BR') + ' treinadores') + ' desta busca. Mudar cidade, formato ou modalidade mostra outros.',
+      showEnd: false, endTxt: 'Fim da lista: ' + (n === 1 ? 'este é o único treinador' : 'você viu os ' + n.toLocaleString('pt-BR') + ' treinadores') + ' desta busca. Mudar cidade, formato ou modalidade mostra outros.',
       layCls: 'e-lay' + (mapOn ? ' is-map' : '') + (updating ? ' is-dim' : ''),
-      pages, pagStatus, prevPage: () => page > 1 && set({ page: page - 1, more: 0, back: '' }), nextPage: () => page < pagesN && set({ page: page + 1, more: 0, back: '' }), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
+      pages, pagStatus, prevPage: () => page > 1 && irPagina(page - 1), nextPage: () => page < pagesN && irPagina(page + 1), umaPagina: pagesN <= 1 && st.load !== 'total', variasPaginas: !(pagesN <= 1 && st.load !== 'total'), prevDis: String(page <= 1), nextDis: String(page >= pagesN && st.load !== 'total'), prevCls: 'e-pg' + (page <= 1 ? ' is-dis' : ''), nextCls: 'e-pg' + (page >= pagesN && st.load !== 'total' ? ' is-dis' : ''),
       canMore, moreLabel, loadMore: () => set({ more: st.more + 1 }),
       mapShown: mapOn, mapOk: mapOn && st.mapCap === 'on', mapFail: mapOn && st.mapCap === 'fail', markers, mapNote, mapTitle: markers.length + ' no mapa', toList: () => set({ view: 'lista' }), retryMap: () => set({ mapCap: 'on', scen: '' }),
       progs, progFail, progsOk: !progFail && progs.length > 0, retryProgs: () => set({ load: 'ok', scen: '' }), pg,
@@ -387,7 +390,7 @@ class Component extends DCLogic {
     const fmtL = { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' };
     const cuf = st.cuf || '', cqOn = !!(st.cq || '').trim();
     const cityBase = (window.REAL && window.REAL.cities(st.city && !isUf(st.city) ? st.city : '', st.cq, cuf)) || [['Londrina, PR', ''], ['Tamarana, PR', '50 km de Londrina']];
-    const cityMenu = (cqOn ? [] : [['', 'Presencial e online']].concat(cuf ? [['UF:' + cuf, 'Todas as cidades do estado']] : [['MUNDO', 'Worldwide · todos os países']])).concat(cityBase).map(([c, sub]) => { const on = !online && (st.city || '') === c; const k = countFor({ city: c, fmt: c && c !== 'MUNDO' ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); const s2 = /Brasil$/.test(sub) ? '' : String(sub || '').replace(/^.*Brasil · /, ''); return { label: c === '' ? 'Todo o Brasil' : c === 'MUNDO' ? 'Worldwide' : (isUf(c) ? cityShort(c) + ' · estado todo' : c), sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), cls3: 'cs-row' + (on ? ' is-on' : '') + (c === '' || c === 'MUNDO' || isUf(c) ? ' cs-row--wide' : ''), nTxt: k + (k === 1 ? ' treinador' : ' treinadores'), sub2: s2, hasSub2: !!s2, pick: () => change({ city: c, fmt: c && c !== 'MUNDO' ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '', cuf: '', cq: '' }) }; });
+    const cityMenu = (cqOn ? [] : [['', 'Presencial e online']].concat(cuf ? [['UF:' + cuf, 'Todas as cidades do estado']] : [['MUNDO', 'Mundo todo']])).concat(cityBase).map(([c, sub]) => { const on = !online && (st.city || '') === c; const k = countFor({ city: c, fmt: c && c !== 'MUNDO' ? 'Presencial' : 'Qualquer', lang: 'Qualquer', avail: false }); const s2 = /Brasil$/.test(sub) ? '' : String(sub || '').replace(/^.*Brasil · /, ''); return { label: c === '' ? 'Todo o Brasil' : c === 'MUNDO' ? 'Mundo todo' : (isUf(c) ? cityShort(c) + ' · estado todo' : c), sub, n: String(k), on: String(on), cls: 'menu__it' + (on ? ' is-on' : ''), cls2: 'lrow v4-lrow' + (on ? ' is-on' : ''), cls3: 'cs-row' + (on ? ' is-on' : '') + (c === '' || c === 'MUNDO' || isUf(c) ? ' cs-row--wide' : ''), nTxt: k + (k === 1 ? ' treinador' : ' treinadores'), sub2: s2, hasSub2: !!s2, pick: () => change({ city: c, fmt: c && c !== 'MUNDO' ? (st.fmt === 'Online' ? 'Presencial' : st.fmt) : 'Qualquer', sheet: '', cuf: '', cq: '' }) }; });
     const ufChips = ((window.REAL && window.REAL.ufs && window.REAL.ufs()) || []).map(([uf]) => ({ label: uf, title: UFN[uf] || uf, on: String(cuf === uf), cls: 'chip' + (cuf === uf ? ' is-on' : ''), pick: () => set({ cuf: cuf === uf ? '' : uf, cq: '' }) }));
     const fmtMenu = [['Presencial', 'Encontro no local combinado'], ['Online', 'Treino e conversa pelo app'], ['Qualquer', 'Presencial e online juntos, identificados']].map(([k, sub]) => ({ label: fmtL[k], sub, on: String(st.fmt === k), cls: 'menu__it' + (st.fmt === k ? ' is-on' : ''), pick: () => change({ fmt: k }) }));
     const langMenu = ['Qualquer', 'Português', 'Inglês', 'Espanhol'].map((k) => ({ sub: k === 'Qualquer' ? 'Sem filtro de idioma' : 'Atendimento em ' + k.toLowerCase(), label: k === 'Qualquer' ? 'Qualquer idioma' : k, on: String(st.lang === k), cls: 'menu__it' + (st.lang === k ? ' is-on' : ''), pick: () => change({ lang: k }), k: k })).filter((o) => o.k === 'Qualquer' || o.on === 'true' || countFor({ lang: o.k }) > 0);
@@ -403,7 +406,7 @@ class Component extends DCLogic {
     const modOpts4 = RAILS.map(([m, id]) => ({ label: m, icon: id, n: String(countFor({ mod: m })), cls: 'lrow v4-lrow' + (st.mod === m ? ' is-on' : ''), on: String(st.mod === m), pick: () => change({ mod: m, sheet: '' }) }));
 
     // paginação, mapa, programas, conteúdo local
-    const pages4 = pages.map((p) => ({ n: p.n, cur: p.cur, pick: p.pick, cls: p.cls.indexOf('is-on') >= 0 ? 'is-on' : '' }));
+    const pages4 = pages.map((p) => ({ n: p.n, cur: p.cur, pick: p.pick, cls: p.cls.indexOf('is-on') >= 0 ? 'is-on' : (p.cls.indexOf('is-gap') >= 0 ? 'is-gap' : '') }));
     const markers4 = markers.map((m) => Object.assign({}, m, { cls: 'v4-mk' + (m.on === 'true' ? ' is-sel' : ''), lcls: 'chip' + (m.on === 'true' ? ' is-on' : '') }));
     const progs4 = progs.map((p) => ({ title: p.title, by: p.by, n: p.n, price: p.price, access: p.access, cover: p.cover, open: p.open, mod: st.mod, weeks: ((p.dur.match(/\d+/) || [''])[0]) + ' semanas', coachImg: B(COACH[p.by] || COACH['Rafael Lima']) }));
     const facts4 = [];

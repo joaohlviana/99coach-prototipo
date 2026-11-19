@@ -127,12 +127,16 @@
 
   // Medição de uso (eventos do plano): só o nome do evento e propriedades sem dado pessoal; nunca quebra a tela.
   // Uma vez por combinação e por aba, para não inflar contagens com recarregamentos.
+  // como a visita chegou: busca (Google e afins), direto (link aberto sem página anterior), site (clique aqui dentro) ou outro
+  var CHEGADA = (function () { try { var r = document.referrer; if (!r) return 'direto'; var h = new URL(r).hostname; if (h === location.hostname) return 'site'; return /(^|\.)(google|bing|duckduckgo|yahoo|yandex|ecosia|brave)\./.test(h) ? 'busca' : 'outro'; } catch (_) { return 'direto'; } })();
+  var ENTROU_EM = ''; try { ENTROU_EM = decodeURIComponent(location.pathname); } catch (_) {}
   window.TRACK = function (name, props, onceKey) {
     try {
+      if (/^trainer\.profile_viewed/.test(name) && props && props.trainer_slug && !props.entry) props.entry = ENTROU_EM.indexOf('/' + props.trainer_slug) >= 0 ? CHEGADA : 'site';
       if (document.documentElement.classList.contains('demo')) return;
       if (onceKey) { var k = 'c99.ev.' + onceKey; if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); }
       fetch(URL0 + '/rest/v1/funnel_events', { method: 'POST', keepalive: true, headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-        body: JSON.stringify({ event_name: /\.v\d+$/.test(name) ? name : name + '.v1', channel: 'web', locale: 'pt-BR', properties: props || {} }) }).catch(function () {});
+        body: JSON.stringify({ event_name: /\.v\d+$/.test(name) ? name : name + '.v1', channel: 'web', locale: ({ en: 'en', es: 'es' })[window.__LANG] || 'pt-BR', properties: props || {} }) }).catch(function () {});
     } catch (_) {}
   };
   // cartão da vitrine visto: metade do cartão na tela; uma vez por perfil e por página nesta visita

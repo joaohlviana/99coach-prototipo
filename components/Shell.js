@@ -39,7 +39,7 @@ export function Rodape() {
         <div className="ssr-foot__brand"><img src="/img/c994186ea30c1564.svg" alt="99coach" width="110" height="28" />
           <p>Compare profissionais, modalidades e formatos de atendimento para escolher com mais clareza.</p>
           <p className="ssr-foot__langs"><b lang="pt-BR">Português</b><a href={abs('en', '/', SITE)} hrefLang="en" lang="en">English</a><a href={abs('es', '/', SITE)} hrefLang="es" lang="es">Español</a></p></div>
-        <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a><a href="/worldwide">Worldwide</a></div>
+        <div><b>Para treinar</b><a href="/">Treinadores</a><a href="/#esportes">Esportes</a><a href="/cidades">Cidades</a><a href="/worldwide">Mundo todo</a></div>
         <div><b>Para treinadores</b><a href="/sou-treinador">Sou treinador</a><a href="/app#onboarding-entrar">Entrar no painel</a></div>
         <div><b>Esportes</b><a href="/treinadores/musculacao">Musculação</a><a href="/treinadores/funcional">Funcional</a><a href="/treinadores/pilates">Pilates</a><a href="/treinadores/corrida">Corrida</a></div>
         <div><b>Ajuda</b><a href="/ajuda">Central de ajuda</a><a href="/ajuda/termos">Termos</a><a href="/ajuda/privacidade">Privacidade</a></div>
