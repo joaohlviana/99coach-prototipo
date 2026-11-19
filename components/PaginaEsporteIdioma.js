@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import ShellIdioma, { CartaoIdioma, PaginacaoIdioma } from './ShellIdioma.js';
 import { dados } from './PaginaEsporte.js';
 import { lista, cidadesDo, esportes, curta, SITE, nomeDoUF, cidadesDoUF } from '../lib/catalogo.js';
-import { t as tr, esporteNome, servico, idiomas, ok } from '../lib/i18n.js';
+import { t as tr, esporteNome, servico, ok } from '../lib/i18n.js';
+import { href as hr, abs, versoes } from '../lib/rotas.js';
 
 const POR_PAGINA = 36;
 
@@ -15,8 +16,8 @@ export function metadadosIdioma(l, esporteSlug, ondeSlug, pagina = 1) {
   const lugar = d.cid ? curta(d.cid.label) : (d.uf ? nomeDoUF(d.uf) : '');
   const titulo = (d.online ? x.onlineOf(serv) : (lugar ? x.inCity(serv, lugar) : serv)) + (pagina > 1 ? x.page(pagina) : '');
   const descricao = d.online ? x.whoOnline(nome) : x.sportDesc(serv, d.itens.length, d.cid ? d.cid.label : (d.uf ? nomeDoUF(d.uf) : ''));
-  return { title: titulo, description: descricao, alternates: { canonical: '/' + l + d.caminho, languages: idiomas(d.caminho) },
-    openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: titulo, description: descricao, url: '/' + l + d.caminho, images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
+  return { title: titulo, description: descricao, alternates: { canonical: abs(l, d.caminho, SITE), languages: versoes(d.caminho, SITE) },
+    openGraph: { siteName: '99coach', locale: x.locale, type: 'website', title: titulo, description: descricao, url: abs(l, d.caminho, SITE), images: [{ url: '/img/og-99coach.png', width: 1200, height: 630, alt: '99coach' }] } };
 }
 
 export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina = 1 }) {
@@ -32,12 +33,12 @@ export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina =
   const cidades = d.uf ? cidadesDoUF(d.uf, esp.slug) : cidadesDo(esp.slug, 1).filter((c) => !cid || c.slug !== cid.slug);
   const nOnline = lista(esp.slug, 'online').length;
   const outros = esportes().filter((s) => s.slug !== esp.slug).slice(0, 16);
-  const pre = '/' + l + '/treinadores/';
-  const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: itens.length, itemListElement: naPagina.map((t, i) => ({ '@type': 'ListItem', position: ini + i + 1, url: SITE + '/' + l + '/treinador/' + t.id, name: t.name })) };
+  const pre = '/treinadores/';
+  const ld = { '@context': 'https://schema.org', '@type': 'ItemList', name: h1, numberOfItems: itens.length, itemListElement: naPagina.map((t, i) => ({ '@type': 'ListItem', position: ini + i + 1, url: abs(l, '/treinador/' + t.id, SITE), name: t.name })) };
   return (
     <ShellIdioma l={l}>
       <nav className="ssr-crumb" aria-label={x.youAreHere}>
-        <a href={'/' + l}>{x.home}</a> › {cid || online ? <a href={pre + esp.slug}>{nome}</a> : <span>{nome}</span>}
+        <a href={hr(l, '/')}>{x.home}</a> › {cid || online ? <a href={hr(l, pre + esp.slug)}>{nome}</a> : <span>{nome}</span>}
         {cid ? <> › <span>{cid.label}</span></> : null}{online ? <> › <span>Online</span></> : null}
       </nav>
       <section className="ssr-hero">
@@ -48,14 +49,14 @@ export default function PaginaEsporteIdioma({ l, esporteSlug, ondeSlug, pagina =
       </section>
       <section aria-labelledby="h-lista"><h2 id="h-lista">{cid ? x.inCity(nome, curta(cid.label)) : (online ? x.onlineOf(nome) : x.proOf(nome))}</h2>
         <ul className="ssr-list">{naPagina.map((t) => <CartaoIdioma key={t.id} l={l} t={t} />)}</ul>
-        <PaginacaoIdioma l={l} base={'/' + l + d.base} pagina={pagina} paginas={paginas} total={itens.length} ini={ini} n={naPagina.length} />
+        <PaginacaoIdioma l={l} base={d.base} pagina={pagina} paginas={paginas} total={itens.length} ini={ini} n={naPagina.length} />
       </section>
-      {!online && nOnline > 0 ? <section aria-labelledby="h-on"><h2 id="h-on">{x.alsoOnline}</h2><p><a href={pre + esp.slug + '/online'}>{x.nOnline(nOnline, nome)}</a></p></section> : null}
+      {!online && nOnline > 0 ? <section aria-labelledby="h-on"><h2 id="h-on">{x.alsoOnline}</h2><p><a href={hr(l, pre + esp.slug + '/online')}>{x.nOnline(nOnline, nome)}</a></p></section> : null}
       {cidades.length ? <section aria-labelledby="h-cid"><h2 id="h-cid">{x.otherCities(nome)}</h2>
-        <ul className="ssr-chips">{cidades.slice(0, 24).map((c) => <li key={c.slug}><a href={pre + esp.slug + '/' + c.slug}>{c.label} <small>{c.n}</small></a></li>)}</ul>
-        {cidades.length > 24 ? <details className="ssr-mais"><summary>+ {cidades.length - 24}</summary><ul className="ssr-chips">{cidades.slice(24).map((c) => <li key={c.slug}><a href={pre + esp.slug + '/' + c.slug}>{c.label} <small>{c.n}</small></a></li>)}</ul></details> : null}</section> : null}
+        <ul className="ssr-chips">{cidades.slice(0, 24).map((c) => <li key={c.slug}><a href={hr(l, pre + esp.slug + '/' + c.slug)}>{c.label} <small>{c.n}</small></a></li>)}</ul>
+        {cidades.length > 24 ? <details className="ssr-mais"><summary>+ {cidades.length - 24}</summary><ul className="ssr-chips">{cidades.slice(24).map((c) => <li key={c.slug}><a href={hr(l, pre + esp.slug + '/' + c.slug)}>{c.label} <small>{c.n}</small></a></li>)}</ul></details> : null}</section> : null}
       <section aria-labelledby="h-out"><h2 id="h-out">{x.otherSports}</h2>
-        <ul className="ssr-chips">{outros.filter((s) => !cid || lista(s.slug, cid.slug).length > 0).map((s) => <li key={s.slug}><a href={pre + s.slug + (cid ? '/' + cid.slug : '')}>{esporteNome(l, s.slug, s.label)}</a></li>)}</ul></section>
+        <ul className="ssr-chips">{outros.filter((s) => !cid || lista(s.slug, cid.slug).length > 0).map((s) => <li key={s.slug}><a href={hr(l, pre + s.slug + (cid ? '/' + cid.slug : ''))}>{esporteNome(l, s.slug, s.label)}</a></li>)}</ul></section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }} />
     </ShellIdioma>
   );

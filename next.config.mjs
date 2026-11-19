@@ -8,8 +8,9 @@ const config = {
   async redirects() {
     const r = (source, destination) => ({ source, destination, permanent: false });
     return [
-      // 99coach.com (com e sem www) leva ao mesmo endereço no site oficial .com.br: uma versão só para o Google e o login
-      { source: '/:path*', has: [{ type: 'host', value: '^(www\\.)?99coach\\.com$' }], destination: 'https://www.99coach.com.br/:path*', permanent: true },
+      // enquanto o domínio internacional (INTL_URL) não está ligado, 99coach.com leva ao mesmo endereço no .com.br;
+      // com ele ligado, o .com serve inglês e espanhol (ver proxy.js) e esta regra sai
+      ...(process.env.INTL_URL ? [] : [{ source: '/:path*', has: [{ type: 'host', value: '^(www\\.)?99coach\\.com$' }], destination: 'https://www.99coach.com.br/:path*', permanent: true }]),
       r('/entrar', '/app#onboarding-entrar'), r('/recuperar', '/app#onboarding-entrar'),
       r('/cadastro/treinador', '/app#onboarding-treinador'), r('/cadastro/treinador/previa', '/app#onboarding-treinador'),
       r('/painel', '/app'), r('/painel/:resto*', '/app'), r('/dashboard', '/app'), r('/conta', '/app'), r('/conta/:resto*', '/app'),
