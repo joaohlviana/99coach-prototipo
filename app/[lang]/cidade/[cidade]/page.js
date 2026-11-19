@@ -1,7 +1,7 @@
 // "Coaches in <city>" em inglês ou espanhol: mesmos dados e regras da versão em português (sem profissional presencial, 404).
 import { notFound } from 'next/navigation';
 import ShellIdioma, { CartaoIdioma } from '../../../../components/ShellIdioma.js';
-import { dados } from '../../../cidade/[cidade]/page.js';
+import { dados } from '../../../(pt)/cidade/[cidade]/page.js';
 import { curta, SITE, resumo, cidadesProximas } from '../../../../lib/catalogo.js';
 import { ok, t as tr, esporteNome } from '../../../../lib/i18n.js';
 import { href as hr, abs, versoes } from '../../../../lib/rotas.js';
