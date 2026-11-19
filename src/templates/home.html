@@ -63,7 +63,7 @@
       <!-- Treinadores para a sua busca: linhas (máx. 4) -->
       <section class="vfm-sec{{nearLoad}}" id="treinadores-app" aria-labelledby="vfm-t">
         <div class="vfm-head"><h2 id="vfm-t" class="vfm-title">Treinadores para a sua busca</h2></div>
-        <p class="vfm-sub">{{tSub}}<button type="button" class="vfm-u vfm-why-b" onClick="{{openOrder}}">Por que estes?</button></p>
+        <p class="vfm-sub">{{tSub}}</p>
         <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-pin" aria-hidden="true"></i><b>Escolha uma cidade</b><span>Sem cidade não existe “perto de você”.</span><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button></div></sc-if>
         <sc-if value="{{tEmpty}}" hint-placeholder-val="{{ false }}"><div class="vfm-card vfm-empty"><i class="ic ic--sm i-search" aria-hidden="true"></i><b>Ninguém com estes filtros</b><span>{{emptyText}}</span><div class="vfm-row-btns"><sc-for list="{{alts}}" as="a" hint-placeholder-count="2"><button type="button" class="btn btn--outline btn--sm" onClick="{{a.go}}">{{a.label}}</button></sc-for></div></div></sc-if>
         <sc-if value="{{tHas}}" hint-placeholder-val="{{ true }}">
@@ -76,6 +76,7 @@
               <div class="vfm-row__b">
                 <button type="button" class="vfm-name" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></button>
                 <span class="vfm-meta"><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><i class="ic ic--xs i-star" aria-hidden="true"></i><b>{{t.rating}}</b> ({{t.n}})</sc-if></span>
+                <sc-if value="{{t.hasSpec}}" hint-placeholder-val="{{ true }}"><span class="tc__sport">{{t.spec}}</span></sc-if>
                 <span class="vfm-why {{t.whyCls}}">{{t.why2}}</span>
                 <sc-if value="{{t.hasPrice}}" hint-placeholder-val="{{ true }}"><span class="vfm-pricel"><b>{{t.price}}</b> {{t.unit}}</span></sc-if>
               </div>
@@ -222,7 +223,7 @@
         </div>
         <button type="submit" class="qbar__btn">Encontrar treinadores<i class="ic ic--sm i-arrow-r" aria-hidden="true"></i></button>
       </form>
-      <p class="v4-hint"><span>A ordem dos resultados nunca é paga.</span><button type="button" class="link-arrow" onClick="{{useLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></p>
+      <p class="v4-hint"><button type="button" class="link-arrow" onClick="{{useLoc}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></p>
     </div>
   </section>
   </sc-if>
@@ -250,7 +251,7 @@
 
   <!-- Treinadores para a sua busca (Hub H01) -->
   <section id="treinadores" class="wrap vf-sec vf-sec--near{{nearLoad}}" aria-labelledby="vf-t-t">
-    <div class="vf-sh"><h2 id="vf-t-t" class="sec-title sec-title--sm">Treinadores para a sua busca</h2><p class="vf-shsub">{{tSub}} · <button type="button" class="vf-u" onClick="{{openOrder}}">por que estes?</button></p><button type="button" class="link-arrow vf-shr" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Salvos ({{favN}})</button></div>
+    <div class="vf-sh"><h2 id="vf-t-t" class="sec-title sec-title--sm">Treinadores para a sua busca</h2><p class="vf-shsub">{{tSub}}</p><button type="button" class="link-arrow vf-shr" onClick="{{openSaved}}"><i class="ic ic--sm i-heart" aria-hidden="true"></i>Salvos ({{favN}})</button></div>
     <sc-if value="{{tNoLoc}}" hint-placeholder-val="{{ false }}">
       <div class="card empty" style="align-items: flex-start; text-align: left"><i class="ic  i-pin" aria-hidden="true"></i><b>Escolha uma cidade para ver quem atende presencialmente</b><span>Sem cidade, não existe “perto de você”. A localização só é pedida se você tocar em “Usar minha localização”.</span>
         <div class="v4-row" style="gap: 8px; margin-top: 10px"><button type="button" class="btn btn--primary btn--sm" onClick="{{openCity}}">Escolher cidade</button><button type="button" class="btn btn--outline btn--sm" onClick="{{useLoc}}">Usar minha localização</button><button type="button" class="btn btn--outline btn--sm" onClick="{{modeO}}">Ver quem atende online</button></div></div>
@@ -268,6 +269,7 @@
               <button type="button" class="{{t.favCls}}" onClick="{{t.fav}}" aria-label="{{t.favLabel}}" aria-pressed="{{t.favOn}}"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 28c7-4.73 14-10 14-17a6.98 6.98 0 0 0-7-7c-1.8 0-3.58.68-4.95 2.05L16 8.1l-2.05-2.05A6.98 6.98 0 0 0 9 4a6.98 6.98 0 0 0-7 7c0 7 7 12.27 14 17z"/></svg></button></div>
             <div class="vf-tc__b">
               <div class="vf-tc__row"><a class="tc__name" href="{{t.href}}" data-spa="1" onClick="{{t.open}}"><span>{{t.name}}</span><sc-if value="{{t.verified}}" hint-placeholder-val="{{ true }}"><svg class="verified" viewBox="0 0 24 24" role="img" aria-label="CREF verificado"><path fill="#2563EB" d="M12 1.5l2.3 1.9 3-.3 1 2.8 2.6 1.5-.7 2.9.7 2.9-2.6 1.5-1 2.8-3-.3L12 22.5l-2.3-1.9-3 .3-1-2.8L3.1 16.5l.7-2.9-.7-2.9L5.7 9.2l1-2.8 3 .3z"/><path d="M16.2 9.3l-4.9 4.9-2.6-2.6" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if></a><sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}"><span class="tc__rate" aria-label="Nota {{t.rating}} de 5, {{t.nrev}}"><i class="ic ic--xs i-star" aria-hidden="true"></i>{{t.rating}}<small>({{t.n}})</small></span></sc-if></div>
+              <sc-if value="{{t.hasSpec}}" hint-placeholder-val="{{ true }}"><span class="tc__sport">{{t.spec}}</span></sc-if>
               <span class="vf-meta">{{t.where}}</span>
               <sc-if value="{{t.hasWhy2}}" hint-placeholder-val="{{ true }}"><span class="vf-reason {{t.whyCls}}">{{t.why2}}</span></sc-if>
               <sc-if value="{{t.pend}}" hint-placeholder-val="{{ false }}"><span class="badge badge--warn" style="align-self: flex-start">Pedido enviado · aguardando resposta</span></sc-if>

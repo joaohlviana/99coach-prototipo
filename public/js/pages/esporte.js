@@ -472,7 +472,7 @@ class Component extends DCLogic {
     const isLondrina = st.city === 'Londrina, PR' && !online;
     const VF = {
       rootCls: 'w v4 vfe' + (sheet || st.open ? ' has-sheet' : ''), sheetTop: sy + 'px', syVar: '--sy: ' + sy + 'px', toastTop: (this.__ty || 160) + 'px',
-      impNote: res.some((t) => t.imported), 
+
       focoChips, hasFoco: focoChips.length > 2 || !!st.foco, showArea, areaMenu, ddArea: dd === 'area', tgArea: tg('area'), areaFddCls: 'fdd' + (st.area ? ' is-set' : ''), areaFddTxt: st.area ? 'Região: ' + st.area : 'Bairro ou região',
       nearChips, hasNear: nearChips.length > 0, nearTitle: online ? 'Outras modalidades online' : (st.city && !isUf(st.city) ? 'Perto de ' + cityShort(st.city) + ' e outras modalidades' : 'Outras modalidades'),
       fmtSeg4, ranges, showPrices, priceTitle, priceNote, isLondrina,

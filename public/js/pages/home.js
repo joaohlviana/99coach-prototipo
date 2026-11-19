@@ -93,7 +93,7 @@ class Component extends DCLogic {
       const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || 'Local não informado')));
       const reason = t.imp ? 'Perfil importado de dados públicos' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + (t.city || cityTxt) + ' · presencial';
       return {
-        name: t.name, spec: t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
+        name: t.name, spec: t.spec || '', hasSpec: !!t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
         hasRating: !!t.rating, noRating: !t.rating, rating: t.rating || '', n: String(t.n), nrev: t.n + ' avaliações', verified: t.ver,
         hasAvail: t.av !== 'unknown', avail: t.av === 'yes' ? 'Aceita novos alunos' : 'Sem vagas no momento', avYes: t.av === 'yes',
         pend: S.scen === 'pendente' && !S.pedCanceled && t.id === 'rafael',
@@ -115,7 +115,7 @@ class Component extends DCLogic {
     const tlist = main.slice(0, 4).map((t) => card(t, S.mode));
     const nTot = main.length;
     const tTitle = S.mode === 'online' ? sportLabel + ' online' : (S.city ? 'Treinadores de ' + sportLabel + ' em ' + cityTxt.replace(', PR', '') : 'Treinadores de ' + sportLabel);
-    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : (tHas ? (PRD && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' ? '' : nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ') + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? (S.city ? 'presencial em ' + cityTxt + ' e online' : 'presencial e online') : (S.city ? 'presencial' : 'presencial, em todo o Brasil'))) + ' · ordem por relevância' : 'Nenhum perfil com esta combinação.');
+    const tSub = tNoLoc ? 'Escolha uma cidade para ver quem atende presencialmente.' : (tHas ? (PRD && window.REAL && window.REAL.status && window.REAL.status().base === 'carregando' ? '' : nTot + (nTot === 1 ? ' treinador' : ' treinadores') + ' · ') + (S.mode === 'online' ? 'atendimento online, de qualquer cidade' : (S.mode === 'qualquer' ? (S.city ? 'presencial em ' + cityTxt + ' e online' : 'presencial e online') : (S.city ? 'presencial' : 'presencial, em todo o Brasil'))) : 'Nenhum perfil com esta combinação.');
     const nearCity = S.city === 'Tamarana, PR' ? 'Londrina, PR (cerca de 50 km)' : 'Londrina, PR';
     const alts = [
       { label: 'Ver quem atende online', go: setMode('online') },

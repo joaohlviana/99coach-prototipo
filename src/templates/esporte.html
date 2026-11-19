@@ -81,7 +81,6 @@
       <div class="v4-dd"><button type="button" class="sortbtn" onClick="{{tgSortC}}" aria-expanded="{{ddSortC}}" aria-haspopup="menu">Ordenar por <b>{{sortLabel}}</b><i class="ic ic--xs i-chev-d"></i></button><sc-if value="{{ddSortC}}" hint-placeholder-val="{{ false }}"><div class="menu vfe-dmenu v4-menu--r" role="menu"><sc-for list="{{sortMenu}}" as="o" hint-placeholder-count="2"><button type="button" class="{{o.cls}}" role="menuitemradio" aria-checked="{{o.on}}" onClick="{{o.pick}}"><span><b>{{o.label}}</b><small>{{o.sub}}</small></span></button></sc-for></div></sc-if></div>
     </div>
     <sc-if value="{{hasLocNote}}" hint-placeholder-val="{{ false }}"><p class="vfe-imp" role="status">{{locNote}}</p></sc-if>
-    <sc-if value="{{impNote}}" hint-placeholder-val="{{ false }}"><p class="vfe-imp">Perfis importados de dados públicos: o contato é pelo Instagram de cada profissional.</p></sc-if>
     <div class="vfe-res">
       <span class="vfe-res__n" role="status" aria-live="polite"><sc-if value="{{hasCountB}}" hint-placeholder-val="{{ true }}"><b>{{countB}}</b></sc-if>{{countT}}</span>
       <sc-for list="{{applied}}" as="c" hint-placeholder-count="1"><button type="button" class="ftoken" onClick="{{c.remove}}" aria-label="Remover filtro {{c.label}}">{{c.label}}<i class="ic ic--sm i-x"></i></button></sc-for>
