@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const config = {
+  // dois layouts raiz (português e inglês/espanhol, cada um com seu <html lang>): a página 404 geral fica em app/global-not-found.js
+  experimental: { globalNotFound: true },
   // o catálogo e o cadastro de esportes são lidos no servidor para montar as páginas públicas
   outputFileTracingIncludes: { '/**': ['./public/data/treinadores.json', './public/data/municipios.json', './public/js/sports.js'] },
   // a busca ao vivo e os detalhes de perfil ainda vêm da API do site anterior

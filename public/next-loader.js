@@ -20,6 +20,12 @@
   var V = window.__V ? '?v=' + window.__V : '';
   // inglês e espanhol: o mesmo app, com o dicionário do idioma (public/data/i18n-<idioma>.json). As telas são
   // traduzidas no momento em que entram na página (antes de aparecer), e os endereços vão para a versão traduzida.
+  // área com conta (/app) no domínio internacional: abre no idioma em que a pessoa estava (inglês por padrão)
+  try {
+    var R0 = window.__ROTAS, ih = R0 && R0.intl ? R0.intl.replace(/^https?:\/\//, '') : '';
+    if (window.__LANG) { if (ih && location.host === ih) localStorage.setItem('c99.lang', window.__LANG); }
+    else if (ih && location.host === ih) { window.__LANG = localStorage.getItem('c99.lang') || 'en'; var ap = document.getElementById('app'); if (ap) ap.lang = window.__LANG; }
+  } catch (_) { }
   var LANG = window.__LANG || '';
   var dic = LANG ? fetch('/data/i18n-' + LANG + '.json' + V).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }) : Promise.resolve(null);
   function traduzir(d) {
