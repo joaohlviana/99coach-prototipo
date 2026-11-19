@@ -198,7 +198,7 @@
 
     <!-- Avaliações: número (G08) + distribuição (barra) + Avaliação (G18 · rev) -->
     <section id="avaliacoes" class="vf-sec vfp-sec" aria-labelledby="h-av">
-      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2><p class="sec-sub">Só de alunos com contratação concluída pela 99Coach.</p></div></div></sc-if>
+      <sc-if value="{{sAvHead}}" hint-placeholder-val="{{ true }}"><div class="sec-head"><div><h2 id="h-av" class="sec-title sec-title--nonum">Avaliações</h2></div></div></sc-if>
       <sc-if value="{{t.hasRating}}" hint-placeholder-val="{{ true }}">
       <div class="vfp-rev">
         <div class="card vfp-card">
@@ -218,7 +218,7 @@
 
     <!-- Atendimento: chave e valor (G08) · agenda por dia (G05/G07) · contato (G10 · linhas) -->
     <section id="atendimento" class="vf-sec vfp-sec" aria-labelledby="h-at">
-      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2><p class="sec-sub">Onde, quando e como falar com {{t.first}}.</p></div></div>
+      <div class="sec-head"><div><h2 id="h-at" class="sec-title sec-title--nonum">Atendimento</h2></div></div>
       <div class="vfp-g3">
         <div class="card vfp-card">
           <h3 class="vfp-h4"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Onde atende</h3>
@@ -265,7 +265,7 @@
 
     <!-- Parecidos em Londrina (G17 · treinador em lista, mesmo card da Home VFINAL) -->
     <section class="vf-sec" aria-labelledby="h-par">
-      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2><p class="sec-sub">Para comparar. Sua escolha neste perfil continua salva.</p></div></div>
+      <div class="sec-head"><div><h2 id="h-par" class="sec-title sec-title--nonum">Outros profissionais</h2></div></div>
       <ul class="vf-g4"><sc-for list="{{others}}" as="o" hint-placeholder-count="4"><li class="vf-tc card" aria-label="{{o.name}}">
         <div class="vf-tc__m"><a class="v4-ph" href="{{o.href}}" data-spa="1" onClick="{{o.open}}" tabindex="-1" aria-label="Ver perfil de {{o.name}}"><sc-if value="{{o.hasPhoto}}" hint-placeholder-val="{{ true }}"><img loading="lazy" decoding="async" src="{{o.photo}}" alt="Foto de {{o.name}}"></sc-if><sc-if value="{{o.noPhoto}}" hint-placeholder-val="{{ false }}"><span class="v4-ini" aria-hidden="true">{{o.ini}}</span></sc-if></a></div>
         <div class="vf-tc__b">

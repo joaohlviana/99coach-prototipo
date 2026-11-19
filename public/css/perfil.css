@@ -1412,3 +1412,4 @@ html,body{margin:0;background:#EFEDEA}
 .vfp-crow[data-tip]::after{content:attr(data-tip);position:absolute;left:0;bottom:calc(100% - 6px);z-index:5;max-width:min(280px,100%);padding:7px 10px;border-radius:8px;background:#121214;color:#fff;font-size:12px;line-height:1.35;font-weight:500;opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .15s,transform .15s,visibility .15s;pointer-events:none}
 .vfp-crow[data-tip]:is(:hover,:focus-within)::after{opacity:1;visibility:visible;transform:none}
 @media (prefers-reduced-motion:reduce){.vfp-crow[data-tip]::after{transition:none}}
+.sec-sub:empty{display:none}

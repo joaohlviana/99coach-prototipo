@@ -96,10 +96,10 @@ class Component extends DCLogic {
     if (x.cref === 'ver') chips.push({ cls: 'trust trust--ver', ic: '', t: 'CREF verificado', seal: true, noSeal: false });
     else if (x.cref === 'inf') chips.push({ cls: 'trust trust--decl', ic: 'ic ic--xs i-file', t: 'CREF informado', seal: false, noSeal: true });
     const t = Object.assign({}, x, {
-      hasPhoto: !!x.photo, noPhoto: !x.photo, avCls: av[0], avIc: av[1], avChip: 'fact' + (av[0].indexOf('badge--ok') >= 0 ? ' fact--ok' : av[0].indexOf('badge--warn') >= 0 ? ' fact--warn' : ''), avText: av[2], hasRating: !!x.avg, noRating: !x.avg, nLabel: x.n === 1 ? '1 avaliação' : x.n + ' avaliações',
+      hasPhoto: !!x.photo, noPhoto: !x.photo, avCls: av[0], avIc: av[1], avChip: 'fact' + (av[0].indexOf('badge--ok') >= 0 ? ' fact--ok' : av[0].indexOf('badge--warn') >= 0 ? ' fact--warn' : ''), avText: av[2], hasRating: !!x.avg, noRating: !x.avg && !x.imported, nLabel: x.n === 1 ? '1 avaliação' : x.n + ' avaliações',
       noRatingText: x.imported ? 'Perfis importados não recebem avaliações.' : (x.realLive ? 'Ainda sem avaliações. Só quem teve acompanhamento com ' + x.first + ' pela 99Coach pode avaliar; nenhuma nota aparece até lá.' : 'Só alunos com contratação concluída pela 99Coach podem avaliar. Nenhuma nota aparece até lá.'),
-      trust: trust, chips: chips, verified: x.cref === 'ver', showAv: !x.pending, formats: x.formats || (x.pending ? '' : 'Atendimento não informado'), lang: x.lang || (x.pending ? '' : 'Atende em português'), pitch: x.pitch || x.bio || (x.pending || !x.role ? '' : x.role + (x.city ? ' em ' + x.city : '') + '.'), hasBio: !!x.bio, hasExt: !!x.ext, hasMap: !!x.map,
-      hasCreds: x.creds.length > 0, noCreds: x.creds.length === 0, noCredsTitle: x.imported ? 'Credenciais não exibidas' : 'Sem credencial informada', noCredsText: x.imported ? 'Perfis importados não mostram formação nem registro profissional até a reivindicação.' : x.first + ' ainda não informou CREF ou formação. Pergunte antes de contratar.',
+      trust: trust, chips: chips, verified: x.cref === 'ver', showAv: !x.pending && !(x.imported && x.avail !== 'aceita' && x.avail !== 'nao'), formats: x.formats || (x.pending ? '' : 'Atendimento não informado'), lang: x.lang || (x.pending ? '' : 'Atende em português'), pitch: x.pitch || x.bio || (x.pending || !x.role ? '' : x.role + (x.city ? ' em ' + x.city : '') + '.'), hasBio: !!x.bio, hasExt: !!x.ext, hasMap: !!x.map,
+      hasCreds: x.creds.length > 0, noCreds: x.creds.length === 0 && !x.imported, noCredsTitle: x.imported ? 'Credenciais não exibidas' : 'Sem credencial informada', noCredsText: x.imported ? 'Perfis importados não mostram formação nem registro profissional até a reivindicação.' : x.first + ' ainda não informou CREF ou formação. Pergunte antes de contratar.',
       creds: x.creds.map((c) => ({ k: c[0], v: c[1], st: c[2], cls: 'badge ' + (c[3] ? 'badge--ok' : 'badge--plain'), ic: 'ic ic--sm ' + (c[3] ? 'i-shield' : 'i-file') })),
       where: x.where.map((w) => ({ k: w[0], v: w[1] })),
       avStyle: x.photo ? 'background-image: url(' + x.photo + ')' : '', avIni: x.photo ? '' : x.ini
@@ -127,7 +127,7 @@ class Component extends DCLogic {
       ['Como corrigir ou denunciar um perfil?', 'Use “Corrigir ou retirar dados públicos” ou “Denunciar perfil”, na seção Avaliações. Para pedir correção não precisa de cadastro.', 'Regra da 99Coach']
     ];
     const faqs = (x.id === 'rafael' ? FAQ_R : FAQ_G).map((f, i) => ({ q: f[0], a: f[1], who: f[2], open: st.faq === i, exp: String(st.faq === i), rot: st.faq === i ? 'transform: rotate(180deg)' : '', pick: () => set({ faq: st.faq === i ? -1 : i }) }));
-    const ownLine = x.imported ? 'Perfil importado de dados públicos · ninguém confirmou a titularidade' : (x.own ? 'Titularidade confirmada em ' + x.own + ' pelo método oficial de verificação' : 'Perfil criado e mantido pelo próprio profissional na 99Coach');
+    const ownLine = x.imported ? 'Perfil importado de dados públicos' : (x.own ? 'Titularidade confirmada em ' + x.own + ' pelo método oficial de verificação' : 'Perfil criado e mantido pelo próprio profissional na 99Coach');
     const msgTopic = x.id === 'rafael' ? 'servico' : x.avail === 'desconhecida' ? 'disp' : x.avail === 'nao' ? 'vaga' : 'geral';
     // produto: o dono do perfil não vê "Pedir acompanhamento" para si mesmo
     const ownReal = !!x.realLive && !document.documentElement.classList.contains('demo') && !!window.CONTA && !!window.CONTA.session() && window.CONTA.mySlug() === x.id;
@@ -313,7 +313,7 @@ class Component extends DCLogic {
 
     // seção vazia não aparece para visitante: só o dono vê o que falta preencher
     const mine = own || ownReal;
-    const anchors = [['Visão geral', 'visao'], ['Ofertas', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
+    const anchors = [['Visão geral', 'visao'], ['Ofertas', 'ofertas'], ['Programas', 'programas'], ['Avaliações', 'avaliacoes'], ['Atendimento', 'atendimento'], ['Perguntas', 'perguntas']].filter(([l]) => !x.imported || (l === 'Ofertas' ? offers.length > 0 : l === 'Programas' ? progs.length > 0 : l !== 'Avaliações')).map(([l, h]) => ({ label: l, cls: 'seg__it' + (st.sec === l ? ' is-on' : ''), cur: st.sec === l ? 'true' : 'false', pick: () => { set({ sec: l }); goSec(h); } }));
 
     return {
       rootCls: 'w v4 vfp' + (barOn ? ' v4-has-bar' : '') + (raw ? ' has-sheet' : ''), scnChips, flowChips, reset: () => set(this.base(st.scn)),
@@ -358,8 +358,8 @@ class Component extends DCLogic {
       favOn: String(!!st.fav), favIc: st.fav ? 'color: var(--brand)' : '', favLabel: st.fav ? 'Salvo' : 'Salvar', toggleFav, favNote: !!st.favNote, undoFav: () => set({ fav: false, favNote: false }), openShare: open('share', { copied: false }),
       claimable: !own, openClaim: (window.REAL && window.REAL.has(x.id) && !document.documentElement.classList.contains('demo')) ? () => GO('@publico', { s: 'perfilpedido', id: x.id }) : open('claim', { claim: x.imported ? 'inicio' : 'conflito' }), openExt: x.imported ? igGo : open('ext'),
       anchors, bioOpen: !!st.bio, bioExp: String(!!st.bio), bioLabel: st.bio ? 'Ler menos' : 'Ler mais', toggleBio: () => set({ bio: !st.bio }),
-      sSlots: true, sFaq: !x.pending, sMsgNo: false,
-      sCred: true, sAvr: true, sOf: true, sPg: true, sAvHead: true, sTwo: true,
+      sSlots: !x.imported, sFaq: !x.pending, sMsgNo: false,
+      sCred: !(x.imported && !x.creds.length), sAvr: !x.imported, sOf: !(x.imported && !offers.length), sPg: !(x.imported && !progs.length), sAvHead: !x.imported, sTwo: !(x.imported && !x.creds.length),
       svcSub, hasOffers: offers.length > 0, noOffers: offers.length === 0, offers, noOffersTitle, noOffersText,
       hasProgs: progs.length > 0, noProgs: progs.length === 0, progs, noProgsText: x.imported ? 'Perfis importados não mostram programas.' : 'Quando houver, programas de compra única aparecem aqui com duração, preço e prazo de acesso.',
       showSlots: x.id === 'rafael', noSlots: x.id !== 'rafael', noSlotsText: x.avail === 'nao' ? x.first + ' não está recebendo novos alunos; a agenda não é exibida.' : x.imported ? 'Perfis importados não mostram agenda.' : x.first + ' não publicou agenda. Os horários são combinados depois da contratação ou do aceite.', slotDays, mapOff: !st.map, mapOn: !!st.map, loadMap: () => set({ map: true }),
@@ -368,10 +368,10 @@ class Component extends DCLogic {
       hasA: !!A, A: A || {}, goSvc: () => { set({ sec: 'Ofertas' }); goSec('ofertas'); }, showPicker, picker, barOn, others,
       sheetOn: !!raw, sh, close, payOpts, dlgCls: 'card v4-sheet' + (st.sheet === 'menu' ? ' v4-sheet--menu' : ''), sheetTop: st.y + 'px', toastTop: st.ty + 'px',
       vline: LINE[x.id] || (x.role + ' · ' + x.city), vrole: x.role + ' · ' + x.city + ({ rafael: ' · Centro e Zona Sul', gabriel: ' · Gleba Palhano', carolina: ' · Zona Sul' }[x.id] || ''), dist, how, hasHow: how.length > 0, faqs,
-      faqSub: x.id === 'rafael' ? 'Respostas escritas pelo Rafael. Regras de pagamento e reembolso são da 99Coach.' : 'Regras da 99Coach, válidas para qualquer perfil.',
+      faqSub: x.id === 'rafael' ? 'Respostas escritas pelo Rafael. Regras de pagamento e reembolso são da 99Coach.' : '',
       ownLine, rev1: reviews[0] || { who: '', what: '', text: '' }, rev2: reviews[1] || { who: '', what: '', text: '' }, hasRev2: reviews.length > 1, bioRot: st.bio ? 'transform: rotate(180deg)' : '',
       noPicker: !showPicker, showBox: !showPicker || !o || !(A && A.price), sideLabel: showPicker ? 'Serviços' : 'Próxima etapa',
-      showMsg: x.id === 'rafael' && !(own && !preview), canMsg: !x.imported && !(own && !preview), noMsg: !!x.imported, openMsg: preview ? open('previa') : open('msg', { topic: msgTopic }),
+      showMsg: x.id === 'rafael' && !(own && !preview), canMsg: !x.imported && !(own && !preview), noMsg: false, openMsg: preview ? open('previa') : open('msg', { topic: msgTopic }),
       showCmp: x.id === 'rafael', pickBase: () => set({ offer: 'base' }), pickOnline: () => set({ offer: 'online' }),
       cmpProgCls: 'btn btn--sm ' + (st.offer === 'base' ? 'btn--primary' : 'btn--outline'), cmpProgLbl: st.bought === 'base' ? 'Comprado' : st.offer === 'base' ? 'Escolhido' : 'Escolher programa',
       cmpOnCls: 'btn btn--sm ' + (st.offer === 'online' ? 'btn--primary' : 'btn--outline'), cmpOnLbl: st.user === 'ana' ? 'Seu acompanhamento' : st.offer === 'online' ? 'Escolhido' : 'Escolher acompanhamento',
@@ -379,7 +379,7 @@ class Component extends DCLogic {
       mrole: x.role, mcity: x.city + ({ rafael: ' · Centro e Zona Sul', gabriel: ' · Gleba Palhano', carolina: ' · Zona Sul' }[x.id] || ''),
       mcref: { on: x.cref === 'ver' || x.cref === 'inf', ver: x.cref === 'ver', inf: x.cref === 'inf', t: x.cref === 'ver' ? 'CREF ' + x.crefNum : 'CREF informado · não verificado' },
       mchips: x.role.replace(/^Treinadora? de /, '').split(/ e |, /).filter(Boolean).concat([x.formats.replace(' (informação pública)', '')]),
-      showMstats: true,
+      showMstats: !x.imported,
       mstats: [
         { v: x.avg ? '★ ' + x.avg : 'Sem nota', k: 'nota' },
         { v: x.n ? String(x.n) : 'Nenhuma', k: 'avaliações' },
