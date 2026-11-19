@@ -185,12 +185,21 @@
   // cidade escolhida pela pessoa: fica em um cookie por um ano. Sem escolha, o site abre em "Todo o Brasil".
   var ONDE = window.ONDE = {
     get: function () { try { var m = /(?:^|; )c99_cidade=([^;]*)/.exec(document.cookie || ''); return m ? decodeURIComponent(m[1]) : ''; } catch (_) { return ''; } },
-    set: function (c) { try { document.cookie = 'c99_cidade=' + encodeURIComponent(c || '') + '; path=/; max-age=31536000; SameSite=Lax'; } catch (_) {} }
+    set: function (c) { try { document.cookie = 'c99_cidade=' + encodeURIComponent(c || '') + '; path=/; max-age=31536000; SameSite=Lax'; } catch (_) {} },
+    // sem escolha da pessoa: no Brasil começa em "Todo o Brasil" (''), fora dele em "Worldwide" ('MUNDO').
+    // O país vem do servidor (/geo, guardado neste aparelho); até lá, o fuso horário dá o palpite.
+    padrao: function () {
+      var p = ''; try { p = window.localStorage.getItem('c99.pais') || ''; } catch (_) {}
+      if (!p) { var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (_) {} p = !tz || /^America\/(Sao_Paulo|Bahia|Fortaleza|Recife|Belem|Maceio|Araguaina|Manaus|Cuiaba|Campo_Grande|Porto_Velho|Boa_Vista|Rio_Branco|Eirunepe|Noronha|Santarem)$/.test(tz) ? 'BR' : 'XX'; }
+      return p === 'BR' ? '' : 'MUNDO';
+    }
   };
-  function prodCtx() { if (ctx.set || ctx.__c || document.documentElement.classList.contains('demo')) return false; ctx.__c = 1; ctx.city = ONDE.get(); if (!ctx.city) ctx.fmt = 'Qualquer'; return true; }
+  try { if (!window.localStorage.getItem('c99.pais') && window.fetch) fetch('/geo').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d && d.pais) window.localStorage.setItem('c99.pais', d.pais); }).catch(function () {}); } catch (_) {}
+  function prodCtx() { if (ctx.set || ctx.__c || document.documentElement.classList.contains('demo')) return false; ctx.__c = 1; ctx.mod = TODOS; var g = ONDE.get(); ctx.city = g || ONDE.padrao(); if (!g) ctx.fmt = 'Qualquer'; return true; }
 
-  function modOf(id) { for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][0] === id) return SPORTS[i][1]; return 'CrossFit'; }
-  function idOf(mod) { for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][1] === mod) return SPORTS[i][0]; return 'crossfit'; }
+  var TODOS = window.TODOS_ESPORTES = 'Todos os esportes';
+  function modOf(id) { if (id === 'todos') return TODOS; for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][0] === id) return SPORTS[i][1]; return 'CrossFit'; }
+  function idOf(mod) { if (mod === TODOS) return 'todos'; for (var i = 0; i < SPORTS.length; i++) if (SPORTS[i][1] === mod) return SPORTS[i][0]; return 'crossfit'; }
 
   function updateCtx(name, s) {
     if (name === 'home') { ctx = { mod: modOf(s.sport), city: s.city || '', fmt: FMT[s.mode] || 'Presencial', avail: false, homeScen: s.scen, set: true }; }
@@ -201,7 +210,7 @@
     prodCtx();
     if (name === 'home') {
       var init = ctx.set ? { sport: idOf(ctx.mod), city: ctx.city || null, mode: (ctx.fmt || 'Presencial').toLowerCase() } : ((window.STORE && window.STORE.loadPage('home')) || {});
-      if (!ctx.set && !document.documentElement.classList.contains('demo')) { var guardada = ONDE.get(); init = Object.assign({}, init, { city: guardada || null }); if (!guardada) init.mode = 'qualquer'; }
+      if (!ctx.set && !document.documentElement.classList.contains('demo')) { var guardada = ONDE.get(); init = Object.assign({}, init, { city: guardada || ONDE.padrao() || null }); if (!guardada) init.mode = 'qualquer'; }
       return { scen: ctx.homeScen || 'primeira', init: init };
     }
     if (name === 'esporte') {
@@ -246,6 +255,9 @@
       var e = st || (props && props.init) || {};
       // página e ordem ficam no endereço (?pagina=2&ordem=rec): o link compartilhado abre igual
       var q = []; if (e.page > 1) q.push('pagina=' + e.page); if (e.sort && e.sort !== 'rel') q.push('ordem=' + e.sort);
+      // "Todos os esportes" e "Worldwide" não têm página por modalidade: o endereço leva à página pública equivalente
+      if (e.city === 'MUNDO' && e.fmt !== 'Online') return e.mod === TODOS ? '/worldwide' : '/treinadores/' + sportSlug(e.mod || 'CrossFit');
+      if (e.mod === TODOS) return e.fmt === 'Online' || !e.city ? '/buscar' : (/^UF:/.test(e.city) ? '/estado/' + e.city.slice(3).toLowerCase() : '/cidade/' + slug(e.city));
       return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (/^UF:/.test(e.city || '') ? '/' + e.city.slice(3).toLowerCase() : (e.city ? '/' + slug(e.city) : ''))) + (q.length ? '?' + q.join('&') : '');
     }
     if (name === 'perfil' && props && props.rid) return '/treinador/' + encodeURIComponent(props.rid);

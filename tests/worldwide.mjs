@@ -18,7 +18,7 @@ const sp = await (await fetch(B + '/treinadores/' + um[5][0])).text();
 console.log('3 fora do Brasil não aparece na página do Brasil:', !sp.includes('/treinador/' + um[0] + '"'));
 
 const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, timezoneId: 'America/Sao_Paulo' });
 await ctx.route('**/rycaxboqkkiopjdecgld.supabase.co/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
 await ctx.route('**/api/v1/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"items":[]}' }));
 const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message.slice(0, 160)));
@@ -44,3 +44,25 @@ const ck = await p.evaluate(() => document.cookie);
 console.log('6 busca tem Worldwide e guarda a escolha:', temOpc, /c99_cidade=MUNDO/.test(ck));
 console.log('errs', errs);
 await b.close();
+
+// Padrão: "Todos os esportes"; lugar pelo país (fuso horário como palpite enquanto o servidor não responde)
+const b2 = await chromium.launch();
+const veja = async (tz) => {
+  const c = await b2.newContext({ viewport: { width: 1280, height: 900 }, timezoneId: tz });
+  await c.route('**/rycaxboqkkiopjdecgld.supabase.co/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }));
+  await c.route('**/api/v1/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"items":[]}' }));
+  await c.route('**/geo', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"pais":""}' }));
+  const q = await c.newPage(); const e2 = []; q.on('pageerror', (e) => e2.push(e.message.slice(0, 160)));
+  await q.goto(B + '/', { waitUntil: 'load' }); await q.waitForTimeout(3500);
+  const t = await q.evaluate(() => document.getElementById('app').innerText);
+  // abre a busca por esporte pela lista "Todos os esportes"
+  await q.evaluate(() => { const e = [...document.querySelectorAll('#app .rail__item, #app button')].find((x) => /^Todos os esportes$/.test(x.textContent.trim()) && x.offsetParent); if (e) e.click(); });
+  await q.waitForTimeout(1500);
+  const t2 = await q.evaluate(() => document.getElementById('app').innerText);
+  await c.close(); return { t, t2, e2 };
+};
+const br = await veja('America/Sao_Paulo'), ext = await veja('Europe/London');
+console.log('7 padrão em todos os esportes:', /Todos os esportes/.test(br.t), /TREINADORES/i.test(br.t2) && !/Treinadores de CrossFit/i.test(br.t2));
+console.log('8 no Brasil começa em Todo o Brasil; fora, em Worldwide:', /Todo o Brasil/.test(br.t), /Worldwide/.test(ext.t), !/MUNDO/.test(ext.t2));
+console.log('errs', br.e2.concat(ext.e2));
+await b2.close();

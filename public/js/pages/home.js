@@ -7,7 +7,7 @@ class Component extends DCLogic {
   constructor(props) { super(props); const p = props || {}; this.state = Object.assign(Component.init(p.scen || 'primeira'), p.init || {}); }
   static init(scen) {
     const prd = !document.documentElement.classList.contains('demo');
-    return { scen: scen, sport: 'crossfit', city: prd ? null : (scen === 'semloc' ? null : (scen === 'semres' ? 'Tamarana, PR' : 'Londrina, PR')), mode: prd ? 'qualquer' : 'presencial',
+    return { scen: scen, sport: prd ? 'todos' : 'crossfit', city: prd ? null : (scen === 'semloc' ? null : (scen === 'semres' ? 'Tamarana, PR' : 'Londrina, PR')), mode: prd ? 'qualquer' : 'presencial',
       favs: (scen === 'retorno' || scen === 'vinculo' || scen === 'dois') ? { rafael: true, larissa: true } : {}, hidden: {},
       sheet: null, sd: null, y: 120, toast: null, ty: 0, link: 0, retry: false, loadingP: false, retCleared: false, recentCleared: false,
       code: 0, loc: 0, pedCanceled: false, sx: null, sxq: '', sxIa: false, sxTab: 'Treinadores', sxR1: true, sxR2: true, sxY: 150, sxX: 40, sxW: 640 };
@@ -40,11 +40,13 @@ class Component extends DCLogic {
 
     const SP = window.SPORTS.ordered(window.REAL && window.REAL.sportCounts()).map((x) => [x.id, x.label, window.SPORTS.icon(x.id)])
     { const HO = ['crossfit', 'musculacao', 'funcional', 'corrida', 'pilates', 'yoga', 'natacao', 'lutas', 'ciclismo', 'danca']; const head = HO.map((id) => SP.find((x) => x[0] === id)); SP.splice(0, 10, ...head); }
+    // fora da demonstração a lista começa por "Todos os esportes"
+    if (!document.documentElement.classList.contains('demo')) SP.unshift(['todos', 'Todos os esportes', '/img/todos-esportes.svg']);
     const sp = SP.find((x) => x[0] === S.sport) || SP[0];
     const sportLabel = sp[1];
     const pickSport = (id) => () => set({ sport: id, hidden: {}, sheet: null, toast: null });
     // clicar em um esporte abre a página do esporte (com a cidade e o formato já escolhidos)
-    const goSport = (id) => () => { try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} set({ sport: id, hidden: {}, sheet: null, toast: null }); window.NAV.go('esporte', { mod: window.NAV.modOf(id) }, this); };
+    const goSport = (id) => () => { try { window.localStorage.setItem('c99.tela.busca', '1'); } catch (_) {} set({ sport: id, hidden: {}, sheet: null, toast: null }); window.NAV.go('esporte', { mod: id === 'todos' ? 'Todos os esportes' : window.NAV.modOf(id) }, this); };
     const chips = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'rail__item' + (S.sport === id ? ' is-on' : ''), on: S.sport === id ? 'true' : 'false', pick: goSport(id) }));
     const allSports = SP.map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: goSport(id) }));
     const editSports = SP.slice(0, 6).map(([id, label, ic]) => ({ label, icon: ic, cls: 'opt' + (S.sport === id ? ' is-on' : ''), pick: () => set({ sport: id, hidden: {} }) }));
@@ -81,7 +83,7 @@ class Component extends DCLogic {
     const byId = (id) => T.find((t) => t.id === id) || TD.find((t) => t.id === id);
     // "Todo o Brasil": só cidades do Brasil ("Cidade, UF"); "Worldwide": qualquer país
     const inCity = (t) => !S.city ? (PRD && /, [A-Z]{2}$/.test(t.city || '')) : S.city === 'MUNDO' ? !!t.city : (/^UF:/.test(S.city) ? String(t.city || '').slice(-4) === ', ' + S.city.slice(3) : t.city === S.city);
-    const sportOk = (t) => t.sports.indexOf(S.sport) >= 0;
+    const sportOk = (t) => S.sport === 'todos' || t.sports.indexOf(S.sport) >= 0;
     const visitor = ['vinculo', 'dois', 'pendente'].indexOf(S.scen) < 0, logged = !visitor;
     const offerFor = (t, ctx) => (ctx === 'online' ? t.offO : (ctx === 'presencial' ? t.offP : ((t.pres && inCity(t)) ? t.offP : t.offO))) || null;
     const ctxLine = sportLabel + ' · ' + cityTxt + ' · ' + modeLabel;

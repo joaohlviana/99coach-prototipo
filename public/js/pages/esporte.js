@@ -32,7 +32,10 @@ class Component extends DCLogic {
     ];
     const T = (window.REAL && window.REAL.esporte()) || TD;
     const SPL = window.SPORTS.ordered(window.REAL && window.REAL.sportCounts());
-    const MODS = SPL.map((x) => x.label);
+    const TODOS = 'Todos os esportes', PRD = !document.documentElement.classList.contains('demo');
+    // fora da demonstração dá para buscar em todos os esportes de uma vez
+    const MODS = (PRD ? [TODOS] : []).concat(SPL.map((x) => x.label));
+    const de = (m) => m === TODOS ? 'Treinadores' : 'Treinadores de ' + m;
     const NEAR = { 'Tamarana, PR': 'Londrina, PR' };
     // cidade pode ser um estado inteiro: "UF:PR"
     const UFN = { AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia', CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás', MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais', PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí', RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul', RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo', SE: 'Sergipe', TO: 'Tocantins' };
@@ -45,7 +48,7 @@ class Component extends DCLogic {
     const inCity = (tc, c) => !c ? (!tc || /, [A-Z]{2}$/.test(tc)) : c === 'MUNDO' ? true : (isUf(c) ? String(tc || '').slice(-4) === ', ' + c.slice(3) : tc === c);
     const has = (a, x) => (a || []).indexOf(x) >= 0;
     const match = (t, s) => {
-      if (!has(t.mods, s.mod)) return false;
+      if (s.mod !== TODOS && !has(t.mods, s.mod)) return false;
       if (s.removed && t.id === 'diego') return false;
       const pres = has(t.fmts, 'Presencial') && inCity(t.city, s.city);
       const onl = has(t.fmts, 'Online');
@@ -75,7 +78,7 @@ class Component extends DCLogic {
 
     // título e contexto
     const online = st.fmt === 'Online';
-    const h1 = online ? 'Treinadores de ' + st.mod + ' online' : (st.city ? 'Treinadores de ' + st.mod + emC(st.city) + cityShort(st.city) : 'Treinadores de ' + st.mod);
+    const h1 = online ? de(st.mod) + ' online' : (st.city ? de(st.mod) + emC(st.city) + cityShort(st.city) : de(st.mod));
     const fmtWord = { Presencial: 'presencial', Online: 'online', Qualquer: 'qualquer formato' }[st.fmt];
     const cityLabel = online ? 'Qualquer lugar (online)' : (st.city ? cityFull(st.city) : 'Todo o Brasil');
     const ctxShort = (online ? 'online' : (st.city ? cityShort(st.city) + ' · ' + fmtWord : 'todas as cidades · ' + fmtWord));
@@ -296,7 +299,7 @@ class Component extends DCLogic {
       scens, reset, seoOpen: st.seo, toggleSeo: () => set({ seo: !st.seo }), seoToggleLabel: st.seo ? ' · ocultar campos' : ' · ver campos', seoIndex: seoOk ? 'indexar' : 'não indexar', seoPillCls: 'e-pill ' + (seoOk ? 'e-pill--ok' : 'e-pill--no'), seoWhy, seoTitle, seoDesc, seoCrumb,
       h1, lede, mod: st.mod, iosTitle: st.mod + (online ? ' online' : (st.city ? emC(st.city) + cityShort(st.city) : '')), ctxShort, ctxLine, cityLabel, cityLabelShort: online ? 'Online' : (st.city ? cityShort(st.city) : 'Todo o Brasil'), hasCity: !!st.city && !online, clearCity: () => change({ city: '', fmt: 'Qualquer', cuf: '' }), fmtLabel: { Presencial: 'Presencial', Online: 'Online', Qualquer: 'Qualquer formato' }[st.fmt],
       cityPickCls: 'e-pick' + (!st.city && !online ? ' is-empty' : ''),
-      crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? st.city : st.mod),
+      crumbModLink: !!st.city || online, crumbMod: () => change({ city: '', fmt: 'Qualquer' }), crumbLast: online ? 'Online' : (st.city ? (st.city === 'MUNDO' ? 'Worldwide' : st.city) : st.mod),
       fmtSeg, sortSeg, viewSeg, mapToggle, sortInfo: st.sortInfo, toggleSortInfo: () => set({ sortInfo: !st.sortInfo }),
       applied, hasApplied: applied.length > 0, hasExtra: applied.length > 0, extraCount, clearExtra,
       countMain, countSub, removedNote: st.removed, dismissRemoved: () => set({ removed: false, back: '' }), noCityNote: !st.city && !online && !loading,
@@ -329,7 +332,7 @@ class Component extends DCLogic {
     // ---------- v4 · Design System ----------
     const TINTS = { forca: 'var(--sp-forca)', funcional: 'var(--sp-funcional)', corrida: 'var(--sp-corrida)', lutas: 'var(--sp-lutas)', mente: 'var(--sp-mente)', agua: 'var(--sp-agua)' };
     const HERO = (m) => window.SPORTS.hero(m);
-    const RAILS = SPL.map((x) => [x.label, window.SPORTS.icon(x.id)]);
+    const RAILS = (PRD ? [[TODOS, '/img/todos-esportes.svg']] : []).concat(SPL.map((x) => [x.label, window.SPORTS.icon(x.id)]));
     const COACH = { 'Rafael Lima': 'bdc7ef1c8dbf05558c3bf8d575fc3a04', 'Larissa Nunes': 'eeb5e0340d20ffe1859010e8d3911dc0', 'Gabriel Santos': '4534df06b7d037ae994cb151849342b0', 'Marcos Almeida': '848c200425592389106d38549e36440a', 'Bruno Teixeira': '349006eab36388172034672605e15a49', 'Renata Lopes': 'cdd8dbf615cdeed2e5c5bd489c64e674' };
     const tintOf = (m) => window.SPORTS.tint(m);
     const dd = st.dd || '';
