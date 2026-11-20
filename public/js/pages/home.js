@@ -90,7 +90,7 @@ class Component extends DCLogic {
 
     const card = (t, ctx) => {
       const off = t.imp ? null : offerFor(t, ctx), on = !!S.favs[t.id];
-      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || 'Local não informado')));
+      const where = t.pres && t.onl ? t.city + ' · Presencial e online' : (t.pres ? t.city + ' · Presencial' : (t.onl ? (t.city ? 'Atende online · ' + t.city : 'Atende online') : (t.city || '')));
       const reason = t.imp ? 'Perfil importado de dados públicos' : ctx === 'online' || (!t.pres || !inCity(t)) ? 'Oferece atendimento online de ' + sportLabel : 'Atende em ' + (t.city || cityTxt) + ' · presencial';
       return {
         name: t.name, spec: t.spec || '', hasSpec: !!t.spec, where, ini: t.ini || '', photo: t.photo || '', hasPhoto: !!t.photo, noPhoto: !t.photo,
@@ -110,7 +110,7 @@ class Component extends DCLogic {
     let main = [], tNoLoc = false;
     if (S.mode === 'presencial') { if (!S.city && !PRD) tNoLoc = true; else main = T.filter((t) => t.pres && inCity(t) && sportOk(t)); }
     else if (S.mode === 'online') main = T.filter((t) => t.onl && sportOk(t));
-    else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl));
+    else main = T.filter((t) => sportOk(t) && ((t.pres && inCity(t)) || t.onl || (!t.city && (!S.city || S.city === 'MUNDO'))));
     // carregando: esqueletos no lugar dos cartões, até a lista certa chegar (nada de mostrar uns e trocar por outros)
     const CST = PRD && window.REAL && window.REAL.status ? window.REAL.status() : null;
     const tLoad = !!CST && !tNoLoc && (CST.base === 'carregando' || (!!CST.parcial && CST.base !== 'falha' && (main.length < 4 || !!CST.incerto)));

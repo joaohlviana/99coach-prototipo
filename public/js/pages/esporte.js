@@ -54,7 +54,8 @@ class Component extends DCLogic {
       const onl = has(t.fmts, 'Online');
       if (s.fmt === 'Presencial' && !pres) return false;
       if (s.fmt === 'Online' && !onl) return false;
-      if (s.fmt === 'Qualquer' && !pres && !onl) return false;
+      // perfil sem local informado: aparece só na lista geral (Brasil inteiro ou mundo todo), nunca em cidade ou estado
+      if (s.fmt === 'Qualquer' && !pres && !onl && !(!t.city && (!s.city || s.city === 'MUNDO'))) return false;
       if (s.lang !== 'Qualquer' && !has(t.langs, s.lang.toLowerCase())) return false;
       if (s.avail && t.avail !== 'sim') return false;
       if (s.foco && t.spec.indexOf(s.foco) < 0) return false;
