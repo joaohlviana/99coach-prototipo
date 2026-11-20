@@ -4,7 +4,7 @@
 import pacote from '../public/shell/version.json';
 import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 import { mapaCliente, abs } from '../lib/rotas.js';
-import { esportes as listaEsportes, lugarMundo, SITE, totais, fraseTotais } from '../lib/catalogo.js';
+import { esportes as listaEsportes, lugarMundo, SITE, totais, fraseTotais, fraseTotaisCurta } from '../lib/catalogo.js';
 
 // onde: lugar da página (cidade ou estado) mostrado na busca do topo; a busca procura só nele
 export function Topo({ onde } = {}) {
@@ -62,7 +62,7 @@ export function MontaApp({ route, espera, lang }) {
   const tot = totais();
   const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';window.__TOTAIS=' + JSON.stringify(tot) + ';' + (lang ? 'window.__LANG=' + JSON.stringify(lang) + ';' : '');
   // a cópia estática do topo foi gerada com o catálogo de quando foi tirada: troca pelo número de agora
-  if (espera) espera = espera.replace(/[\d.]+ treinador(es)?( em \d+ países)?(?=<)/g, fraseTotais(tot));
+  if (espera) espera = espera.replace(/[\d.]+ treinadores · \d+ modalidades · \d+ pa[ií]s(es)?(?=<)/g, fraseTotais(tot)).replace(/[\d.]+ treinadores · \d+ pa[ií]s(es)?(?=<)/g, fraseTotaisCurta(tot));
   return (
     <>
       <div id="app" lang={lang || 'pt-BR'} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: espera || '' }} />

@@ -55,7 +55,9 @@ class Component extends DCLogic {
     const PRD = !document.documentElement.classList.contains('demo');
     // topo: quantos treinadores e em quantos países (número do catálogo, escrito pelo servidor)
     const TT = PRD ? window.__TOTAIS : null;
-    const heroTotal = TT && TT.n ? TT.n.toLocaleString('pt-BR') + (TT.n === 1 ? ' treinador' : ' treinadores') + (TT.paises > 1 ? ' em ' + TT.paises + ' países' : '') : '';
+    // no celular a linha é mais curta: só treinadores e países
+    const heroCurto = TT && TT.n ? TT.n.toLocaleString('pt-BR') + ' treinadores · ' + TT.paises + (TT.paises === 1 ? ' país' : ' países') : '';
+    const heroTotal = TT && TT.n ? TT.n.toLocaleString('pt-BR') + ' treinadores · ' + TT.modalidades + ' modalidades · ' + TT.paises + (TT.paises === 1 ? ' país' : ' países') : '';
     // cidade escolhida fica guardada (cookie); a primeira leitura desta tela não grava nada
     if (PRD && window.ONDE) { const c0 = S.city || ''; if (this.__c0 === undefined) this.__c0 = c0; else if (this.__c0 !== c0) { this.__c0 = c0; window.ONDE.set(c0); } }
     const cityTxt = !S.city ? (PRD ? 'Todo o Brasil' : 'sem cidade') : (S.city === 'MUNDO' ? 'Mundo todo' : (/^UF:/.test(S.city) ? S.city.slice(3) : S.city));
@@ -367,7 +369,7 @@ class Component extends DCLogic {
       openEdit: open('edit'), clearSearch: (e) => { if (PRODH) lsSet('c99.tela.busca', null); set(Object.assign({ retCleared: true }, toastAt(e, 'Busca limpa. Seus salvos continuam em Salvos.', { k: 'clear' }))); },
       showRecent: !PRODH && !S.recentCleared, recent, clearRecent: (e) => set(Object.assign({ recentCleared: true }, toastAt(e, 'Vistos recentemente limpos neste aparelho.', { k: 'recent' }))),
       // vitrines
-      heroLead: heroTotal || 'Escolha uma modalidade e como quer treinar.', heroLead2: heroTotal || 'Por esporte e cidade, presencial ou online.', tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tLoad, tFail, retryT: () => { if (window.REAL && window.REAL.retry) window.REAL.retry(); }, skels: [1, 2, 3, 4], tlist, alts, emptyText, openOrder: open('order'),
+      heroLead: heroTotal || 'Escolha uma modalidade e como quer treinar.', heroLead2: heroCurto || 'Por esporte e cidade, presencial ou online.', tTitle, tSub, nTotal: String(nTot), tNoLoc, tEmpty, tHas, tLoad, tFail, retryT: () => { if (window.REAL && window.REAL.retry) window.REAL.retry(); }, skels: [1, 2, 3, 4], tlist, alts, emptyText, openOrder: open('order'),
       seeAllT: () => window.NAV.go('esporte', {}, this),
       altHas, altNote, altList, altTitle, altSub, altAll, seeAllAlt: () => window.NAV.go('esporte', { fmt: S.mode === 'presencial' ? 'Online' : 'Presencial' }, this),
       pFail, pLoading, pHas, pEmpty, plist, retryP, seeAllP: goto('Programas', 'a lista de programas de ' + sportLabel),
