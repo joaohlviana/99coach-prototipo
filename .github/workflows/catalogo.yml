@@ -1,0 +1,34 @@
+# O catálogo do site (lista de treinadores e o número do topo da página inicial) é gerado na publicação.
+# Este fluxo roda de 3 em 3 horas, pergunta ao banco quantos perfis publicados existem e qual foi a última alteração,
+# e grava isso num arquivo pequeno. Se mudou, o envio para a main faz a Vercel publicar de novo e o catálogo sai atualizado.
+# A data entra na marca para garantir pelo menos uma publicação por dia (a relevância é recalculada toda madrugada).
+# Usa só a chave pública do site: lê o mesmo que qualquer visitante pode ver.
+name: catalogo
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: catalogo
+jobs:
+  marca:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Marca do catálogo
+        run: node scripts/marca-catalogo.mjs
+      - name: Publica se mudou
+        run: |
+          if git diff --quiet -- public/data/versao-catalogo.txt && git ls-files --error-unmatch public/data/versao-catalogo.txt >/dev/null 2>&1; then echo "catálogo em dia"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/versao-catalogo.txt
+          git commit -m "Catálogo: $(cat public/data/versao-catalogo.txt)"
+          git push origin HEAD:main
