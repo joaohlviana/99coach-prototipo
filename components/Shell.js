@@ -4,7 +4,7 @@
 import pacote from '../public/shell/version.json';
 import { IDIOMA_LINKS } from '../lib/idiomaLinks.js';
 import { mapaCliente, abs } from '../lib/rotas.js';
-import { esportes as listaEsportes, lugarMundo, SITE } from '../lib/catalogo.js';
+import { esportes as listaEsportes, lugarMundo, SITE, totais, fraseTotais } from '../lib/catalogo.js';
 
 // onde: lugar da página (cidade ou estado) mostrado na busca do topo; a busca procura só nele
 export function Topo({ onde } = {}) {
@@ -58,7 +58,11 @@ export function EsperaApp({ espera }) {
 // o app interativo monta no #app (o React não mexe no que estiver dentro). Em inglês e espanhol, o mesmo app,
 // com window.__LANG: o carregador baixa o dicionário do idioma e traduz as telas (public/next-loader.js).
 export function MontaApp({ route, espera, lang }) {
-  const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';' + (lang ? 'window.__LANG=' + JSON.stringify(lang) + ';' : '');
+  // total de treinadores e países: o app mostra no topo da página inicial o mesmo número que o servidor escreveu
+  const tot = totais();
+  const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';window.__TOTAIS=' + JSON.stringify(tot) + ';' + (lang ? 'window.__LANG=' + JSON.stringify(lang) + ';' : '');
+  // a cópia estática do topo foi gerada com o catálogo de quando foi tirada: troca pelo número de agora
+  if (espera) espera = espera.replace(/[\d.]+ treinador(es)?( em \d+ países)?(?=<)/g, fraseTotais(tot));
   return (
     <>
       <div id="app" lang={lang || 'pt-BR'} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: espera || '' }} />

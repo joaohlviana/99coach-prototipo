@@ -4,6 +4,7 @@ const N = '([\\d.,]+)', X = '(.+?)';
 export default [
   ['Página (\\d+)', 'Page $1', 'Página $1'],
   ['Fale com (\\S+)', 'Talk to $1', 'Habla con $1'],
+  [N + ' treinadores em (\\d+) países', '$1 coaches in $2 countries', '$1 entrenadores en $2 países'],
   [N + ' treinadores · presencial em ' + X + ' e online', '$1 coaches · in person in $2 and online', '$1 entrenadores · presencial en $2 y online'],
   [N + ' treinador · presencial em ' + X + ' e online', '$1 coach · in person in $2 and online', '$1 entrenador · presencial en $2 y online'],
   [N + ' treinadores · ' + X, '$1 coaches · $t2', '$1 entrenadores · $t2'],
