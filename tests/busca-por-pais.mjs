@@ -15,7 +15,7 @@ let [c, p] = await novo(1400, 900);
 await p.goto(B + '/', { waitUntil: 'load' }); await p.waitForFunction(() => window.REAL && (window.REAL.cities('miami') || []).length, null, { timeout: 20000 });
 await abrirOnde(p); await p.waitForTimeout(500);
 const campo = () => p.locator('#app input[placeholder="Digite o nome da cidade"]:visible').last();
-for (const q of ['eua', 'usa', 'estados unidos']) { await campo().fill(''); await campo().type(q, { delay: 10 }); await p.waitForTimeout(400); const o = await opcoes(p, '#app .opt'); ok('computador: "' + q + '" oferece o país', o.some((t) => /^Estados Unidos( ?País · \d+ treinador(es)?)?$/.test(t)), o.slice(0, 8)); }
+for (const q of ['eua', 'usa', 'estados unidos']) { await campo().fill(''); await campo().type(q, { delay: 10 }); await p.waitForTimeout(400); const o = await opcoes(p, '#app .opt'); ok('computador: "' + q + '" oferece o país', o.some((t) => /^Estados Unidos ?\d+$/.test(t)), o.slice(0, 8)); }
 await campo().fill(''); await campo().type('miami', { delay: 10 }); await p.waitForTimeout(400);
 ok('computador: "miami" oferece a cidade', (await opcoes(p, '#app .opt')).some((t) => /^Miami, Estados Unidos/.test(t)));
 await campo().fill(''); await campo().type('eua', { delay: 10 }); await p.waitForTimeout(400);

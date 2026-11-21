@@ -85,12 +85,13 @@
     // busca por nome, especialidade, modalidade ou cidade (sem acento, qualquer ordem de palavras)
     search: function (q, max) {
       var words = fold(q).split(' ').filter(Boolean); if (!words.length) return [];
-      var out = [];
-      for (var i = 0; i < items.length && out.length < (max || 6); i++) {
+      var out = [], n = max || 6;
+      // lê um pouco além do pedido para pôr quem tem foto antes (a ordem de relevância continua valendo dentro de cada grupo)
+      for (var i = 0; i < items.length && out.length < n * 8; i++) {
         var t = items[i], hay = t._h || (t._h = fold(t.name + ' ' + t.spec + ' ' + t.city + ' ' + t.sports.join(' ')));
         if (words.every(function (w) { return hay.indexOf(w) >= 0; })) out.push(t);
       }
-      return out;
+      return out.filter(function (t) { return t.photo; }).concat(out.filter(function (t) { return !t.photo; })).slice(0, n);
     },
     total: function (q) {
       var words = fold(q).split(' ').filter(Boolean); if (!words.length) return 0;
@@ -100,7 +101,7 @@
     // nome do país em português
     paisNome: function (cc, l) { try { return new Intl.DisplayNames([l || 'pt-BR'], { type: 'region' }).of(cc) || cc; } catch (_) { return cc; } },
     // como mostrar um lugar escolhido
-    lugar: function (c) { return /^PAIS:/.test(c || '') ? REAL.paisNome(c.slice(5)) : (c || ''); },
+    lugar: function (c) { return /^PAIS:/.test(c || '') ? REAL.paisNome(c.slice(5)) : (/^UF:/.test(c || '') ? (UF[c.slice(3)] || c.slice(3)) : (c || '')); },
     // países com treinadores: [código, nome, quantos], do que tem mais para o que tem menos
     paises: function () {
       if (cache.paises) return cache.paises;
@@ -145,9 +146,20 @@
       var L;
       var pool = uf ? cache.citAll.filter(function (c) { return c.slice(-4) === ', ' + uf; }) : cache.citAll;
       var PA = [];
-      if (plain(q)) { var k = plain(q); L = pool.filter(function (c) { return plain(c).indexOf(k) >= 0; }).slice(0, 12);
-        // país que combina com o que foi digitado vem antes das cidades ("eua", "estados unidos", "canadá")
-        if (!uf) PA = REAL.paisesPara(q).slice(0, 3).map(function (p) { return ['PAIS:' + p[0], 'País · ' + p[2].toLocaleString('pt-BR') + (p[2] === 1 ? ' treinador' : ' treinadores')]; }); }
+      if (plain(q)) { var k = plain(q).replace(/\s+/g, ' ');
+        // apelidos e nomes em outro idioma: "floripa", "bh", "nova york", "londres"
+        var AK = { floripa: 'florianopolis', bh: 'belo horizonte', beaga: 'belo horizonte', sampa: 'sao paulo', poa: 'porto alegre', bsb: 'brasilia', 'nova york': 'new york', 'nova iorque': 'new york', ny: 'new york', nyc: 'new york', londres: 'london', lisbon: 'lisboa', 'cape town': 'cidade do cabo', amsterdam: 'amsterda', 'los angeles': 'los angeles', la: 'los angeles', paris: 'paris', roma: 'rome', milao: 'milan', munique: 'munich', genebra: 'geneva', zurique: 'zurich', dublin: 'dublin', toquio: 'tokyo', 'cidade do mexico': 'mexico city' };
+        var k2 = AK[k] || k;
+        L = pool.filter(function (c) { var pc = plain(c); return pc.indexOf(k) >= 0 || (k2 !== k && pc.indexOf(k2) >= 0); });
+        // quem começa pelo texto vem antes de quem só contém
+        L.sort(function (a, b) { var x = plain(a).indexOf(k2) === 0 || plain(a).indexOf(k) === 0 ? 0 : 1, y = plain(b).indexOf(k2) === 0 || plain(b).indexOf(k) === 0 ? 0 : 1; return x - y; });
+        // nada igual: aceita uma letra trocada, faltando ou sobrando ("curitba", "sao palo")
+        if (!L.length && k.length >= 4) { var lim = k.length >= 8 ? 2 : 1; L = pool.filter(function (c) { var nm = plain(c.split(', ')[0]); return parecido(k, nm, lim) || (nm.length > k.length + 1 && (parecido(k, nm.slice(0, k.length), lim) || parecido(k, nm.slice(0, k.length + 1), lim))); }); }
+        L = L.slice(0, 12);
+        // país e estado que combinam com o que foi digitado vêm antes das cidades ("eua", "canadá", "paraná", "pr")
+        if (!uf) { PA = REAL.paisesPara(q).slice(0, 3).map(function (p) { return ['PAIS:' + p[0], 'País · ' + p[2].toLocaleString('pt-BR') + (p[2] === 1 ? ' treinador' : ' treinadores')]; });
+          var nu = {}; REAL.ufs().forEach(function (u) { nu[u[0]] = u[1]; });
+          Object.keys(UF).forEach(function (u) { var nm = plain(UF[u]); if (!nu[u]) return; if (k === u.toLowerCase() || (k.length >= 3 && (nm.indexOf(k) === 0 || nm.split(' ').some(function (w) { return w.length > 2 && w.indexOf(k) === 0; }))) || (k.length >= 5 && parecido(k, nm, 1))) PA.push(['UF:' + u, 'Estado · ' + nu[u].toLocaleString('pt-BR') + (nu[u] === 1 ? ' treinador' : ' treinadores')]); }); } }
       else if (uf) { L = pool.slice(0, 40); }
       else { L = cache.cit.slice(); if (keep && L.indexOf(keep) < 0) L.push(keep); }
       return PA.concat(L.map(function (c) { var uf = c.split(', ').slice(-1)[0] || ''; return [c, UF[uf] ? UF[uf] + ' · Brasil' : uf]; }));
@@ -554,6 +566,18 @@
   }
   var SLUG = {}; Object.keys(LABEL).forEach(function (k) { SLUG[LABEL[k]] = k; });
   // o endereço da fatia usa o mesmo nome da página (jiu-jitsu), não o identificador interno (jiujitsu)
+  // textos quase iguais: até `lim` letras trocadas, faltando, sobrando ou invertidas
+  function parecido(a, b, lim) {
+    if (Math.abs(a.length - b.length) > lim) return false; if (a === b) return true;
+    var p2 = null, p1 = [], i, j, c; for (j = 0; j <= b.length; j++) p1[j] = j;
+    for (i = 1; i <= a.length; i++) { c = [i]; var min = i;
+      for (j = 1; j <= b.length; j++) { var k = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1; c[j] = Math.min(p1[j] + 1, c[j - 1] + 1, p1[j - 1] + k);
+        if (p2 && i > 1 && j > 1 && a.charAt(i - 1) === b.charAt(j - 2) && a.charAt(i - 2) === b.charAt(j - 1)) c[j] = Math.min(c[j], p2[j - 2] + 1);
+        if (c[j] < min) min = c[j]; }
+      if (min > lim) return false; p2 = p1; p1 = c; }
+    return p1[b.length] <= lim;
+  }
+  REAL.parecido = parecido;
   function slugDe(modLabel) { var sp = window.SPORTS && window.SPORTS.get && window.SPORTS.get(modLabel); return (sp && sp.slug) || SLUG[modLabel] || ''; }
   // a vitrine pede a modalidade que está mostrando; sem fatia conhecida, cai no catálogo inteiro
   REAL.need = function (modLabel) { if (baseAsked) return; var k = slugDe(modLabel); if (k) fetchSlice('/dados/esporte/' + encodeURIComponent(k), 'e:' + k); else ensureBase(); };

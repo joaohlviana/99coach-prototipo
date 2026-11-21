@@ -984,6 +984,7 @@ html,body{margin:0;background:#EFEDEA}
 .v4-sheet__hd .icon-btn{border:0;background:none}
 .v4-sheet__bd{padding:8px 24px 24px;display:flex;flex-direction:column;gap:14px}
 .v4-opts{display:flex;flex-wrap:wrap;gap:8px}
+.v4-opts .opt__n{margin-left:6px;font-weight:400;opacity:.62}
 .v4-opts .opt{border:1px solid var(--line);font-family:var(--font)}
 .v4-opts .opt img{width:20px;height:20px;filter:brightness(0) saturate(100%) invert(14%)}
 .v4-opts .opt.is-on img{filter:brightness(0) invert(1)}

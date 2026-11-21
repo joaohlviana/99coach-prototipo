@@ -450,7 +450,7 @@
           <sc-if value="{{locDenied}}" hint-placeholder-val="{{ false }}"><span class="badge badge--plain">Tudo bem. Escolha a cidade na lista.</span></sc-if>
           <div class="input input--search cs-in"><i class="ic ic--sm i-search" aria-hidden="true"></i><input id="hcq" type="search" autocomplete="off" placeholder="Digite o nome da cidade" aria-label="Buscar cidade" value="{{cq}}" onInput="{{setCq}}"></div>
           <sc-if value="{{noCityQ}}" hint-placeholder-val="{{ false }}"><p class="t3" role="status" style="font-size: 14px">Nenhuma cidade com treinador para essa busca.</p></sc-if>
-          <div class="v4-opts"><sc-for list="{{cities}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+          <div class="v4-opts"><sc-for list="{{cities}}" as="c" hint-placeholder-count="4"><button type="button" class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}<sc-if value="{{c.hasN}}" hint-placeholder-val="{{ false }}"><small class="opt__n">{{c.n}}</small></sc-if></button></sc-for></div>
           <div class="v4-row" style="gap: 8px"><sc-if value="{{locBtn}}" hint-placeholder-val="{{ true }}"><button type="button" class="btn btn--outline btn--sm" onClick="{{locStart}}"><i class="ic ic--sm i-pin" aria-hidden="true"></i>Usar minha localização</button></sc-if><button type="button" class="btn btn--outline btn--sm" onClick="{{onlyOnline}}">Treinar só online</button></div>
           <p class="t3" style="font-size: 13px">Distância só aparece quando a base e a precisão permitem.</p>
         </sc-if>

@@ -66,6 +66,24 @@ class Component extends DCLogic {
       if (s.area && !(has(t.fmts, 'Presencial') && t.area === s.area)) return false;
       return true;
     };
+    // cidades vizinhas com treinador desta modalidade: no Brasil, até 40 km (base de municípios, carregada só quando há cidade
+    // escolhida); fora, as do mesmo país com o nome da cidade ("Miami Beach", "North Miami")
+    const perto = (() => {
+      const c = st.city; if (!c || c === 'MUNDO' || isUf(c) || isPais(c) || st.fmt === 'Online' || document.documentElement.classList.contains('demo')) return [];
+      const n = {}; for (let i = 0; i < T.length; i++) { const t = T[i]; if (t.city && t.city !== c && has(t.fmts, 'Presencial') && (st.mod === TODOS || has(t.mods, st.mod))) n[t.city] = (n[t.city] || 0) + 1; }
+      const sem = (x) => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      let L = [];
+      if (/, [A-Z]{2}$/.test(c)) {
+        if (!Component.__mun) { if (window.GEO && window.GEO.all && !Component.__munP) Component.__munP = window.GEO.all().then((it) => { const m = {}; it.forEach((x) => { m[x[0] + ', ' + x[1]] = [x[2], x[3]]; }); Component.__mun = m; this.setState({ munOk: 1 }); }).catch(() => { Component.__munP = null; }); return []; }
+        const M = Component.__mun, a = M[c]; if (!a) return [];
+        const km = (b) => { const r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos((a[0] + b[0]) / 2 * r), y = (b[0] - a[0]) * r; return Math.sqrt(x * x + y * y) * 6371; };
+        L = Object.keys(n).filter((k) => M[k]).map((k) => [k, n[k], km(M[k])]).filter((x) => x[2] <= 40).sort((x, y) => x[2] - y[2]);
+      } else {
+        const base = sem(c.split(', ')[0]), pais = c.split(', ').slice(1).join(', ');
+        L = Object.keys(n).filter((k) => k.split(', ').slice(1).join(', ') === pais).filter((k) => { const b = sem(k.split(', ')[0]); return (' ' + b + ' ').indexOf(' ' + base + ' ') >= 0 || (' ' + base + ' ').indexOf(' ' + b + ' ') >= 0; }).map((k) => [k, n[k], 0]).sort((x, y) => y[1] - x[1]);
+      }
+      return L.slice(0, 5).map((x) => ({ label: x[0].split(', ')[0] + ' · ' + x[1], go: () => change({ city: x[0] }) }));
+    })();
     const countFor = (o) => { const s2 = Object.assign({}, st, o); let k = 0; for (let i = 0; i < T.length; i++) if (match(T[i], s2)) k++; return k; };
     const pl = (k, a, b) => k + ' ' + (k === 1 ? a : b);
     // "Não tenho interesse": some das buscas neste aparelho (não é denúncia e não avisa o profissional); dá para desfazer
@@ -426,6 +444,7 @@ class Component extends DCLogic {
     const pfTrust4 = pt ? pt.trust.map(([label, k]) => ({ label, cls: 'trust ' + (k === 'imp' ? 'trust--decl' : (/verificado/.test(label) && !/não verificado|ainda não/.test(label) ? 'trust--ver' : (/Titularidade/.test(label) ? 'trust--owner' : 'trust--decl'))) })) : [];
     const V4 = {
       sports4, scens4, kpis, hasKpis: kpis.length > 0, bannerImg: HERO(st.mod).img, heroCls: 'vfe-hero' + (HERO(st.mod).art ? ' vfe-hero--art' : ''), tint4: '--tint: ' + tintOf(st.mod), eyebrow4,
+      perto, hasPerto: perto.length > 0,
       cards4, countB, countT, hasCountB: !!countB,
       ddCity: dd === 'city', ddFmt: dd === 'fmt', ddLang: dd === 'lang', ddSort: dd === 'sort', ddSortC: dd === 'sortc', tgCity: tg('city'), tgFmt: tg('fmt'), tgLang: tg('lang'), tgSort: tg('sort'), tgSortC: tg('sortc'),
       cq: st.cq || '', setCq: (e) => set({ cq: e && e.target ? e.target.value : '' }), noCity: cqOn && cityMenu.length === 0, cityMenu, cityLab: cqOn ? 'Cidades encontradas' : (cuf ? 'Cidades · ' + (UFN[cuf] || cuf) : 'Onde'), ufChips, hasUfs: ufChips.length > 0 && !cqOn, fmtMenu, langMenu, showLang, hasQ: qchips4.length > 0, showAvail: qchips4.length > 0, showFmt: true, sortMenu, qchips4, sortLabel: st.sort === 'rec' ? 'Mais recentes' : 'Relevância',

@@ -31,7 +31,10 @@
   function traduzir(d) {
     var T = d.t || {}, P = (d.p || []).map(function (x) { return [new RegExp('^' + x[0] + '$'), x[1]]; });
     var SOBRA_PT = /(^|[^A-Za-zÀ-ú])(você|não|para|com|sem|seu|sua|seus|suas|ainda|são|está|estão|por|que|uma|um|os|as|em|no|na|nos|nas|ao|aos|às|foi|já|mais|este|esta|esse|essa|isso|até|ou|como|quando|treino|treinos|aluno|alunos|treinador|hoje|ontem|amanhã|semana|semanas|sessão|sessões|mês|meses|dias|dia|versão|preço|acesso|feita|feito|pelo|pela)([^A-Za-zÀ-ú]|$)/i;
-    var tr = function (s) {
+    // país no fim de um lugar ("Miami, Estados Unidos", "presencial em Estados Unidos"): troca só o nome do país
+    var CP = d.c || {}, CPRE = null; try { var nomes = Object.keys(CP).sort(function (x, y) { return y.length - x.length; }).map(function (x) { return x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }); if (nomes.length) CPRE = new RegExp('(, | in | en )(' + nomes.join('|') + ')(?![A-Za-zÀ-ú])', 'g'); } catch (_) { }
+    var tr = function (s) { var r = tr0(s); return CPRE && /, | in | en /.test(r) ? r.replace(CPRE, function (_, a, n) { return a + CP[n]; }) : r; };
+    var tr0 = function (s) {
       var k = s.replace(/\s+/g, ' ').trim(); if (!k || k.length > 400) return s;
       var v = T[k];
       // padrões com números e nomes: $1 copia o trecho, $t1 traduz o trecho, $l1 traduz cada item de uma lista "a, b, c"

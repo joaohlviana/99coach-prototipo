@@ -7,7 +7,10 @@ for (const [l, col] of [['en', 1], ['es', 2]]) {
   const t = {};
   for (const [pt, v] of Object.entries(textos)) if (v && v[l] && v[l] !== pt) t[pt.replace(/\s+/g, ' ').trim()] = v[l];
   const p = padroes.map((x) => [x[0], x[col]]);
-  fs.writeFileSync(new URL('../public/data/i18n-' + l + '.json', import.meta.url), JSON.stringify({ t, p }));
+  // nomes de país: o catálogo traz "Miami, Estados Unidos"; no idioma vira "Miami, United States"
+  const c = {}, pt = new Intl.DisplayNames(['pt-BR'], { type: 'region' }), al = new Intl.DisplayNames([l], { type: 'region' });
+  for (let a = 65; a <= 90; a++) for (let b = 65; b <= 90; b++) { const cc = String.fromCharCode(a, b); let x, y; try { x = pt.of(cc); y = al.of(cc); } catch (_) { continue; } if (x && y && x !== cc && y !== cc && x !== y) { c[x] = y; if (t[x] === undefined) t[x] = y; } }
+  fs.writeFileSync(new URL('../public/data/i18n-' + l + '.json', import.meta.url), JSON.stringify({ t, p, c }));
   console.log(l, Object.keys(t).length, 'textos,', p.length, 'padrões');
 }
 // áreas com conta (painel, área do aluno, cadastro): i18n/textos-conta.json -> i18n-<idioma>-conta.json

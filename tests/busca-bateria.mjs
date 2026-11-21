@@ -27,6 +27,17 @@ const LUGARES = [
   ['portugal', /^Portugal ?País/], ['reino unido', /^Reino Unido ?País/], ['uk', /^Reino Unido ?País/], ['inglaterra', /^Reino Unido ?País/], ['espanha', /^Espanha ?País/], ['africa do sul', /^África do Sul ?País/],
 ];
 for (const [q, re] of LUGARES) { const l = await digita(q); ok('digitar "' + q + '" oferece o lugar', l.some((t) => re.test(t)), l.slice(0, 4)); }
+// estado como lugar, apelidos, nomes em outro idioma e letra trocada
+const MAIS = [
+  ['parana', /^Paraná ?Estado · [\d.]+ treinador/], ['paraná', /^Paraná ?Estado/], ['pr', /^Paraná ?Estado/], ['sp', /^São Paulo ?Estado/], ['minas', /^Minas Gerais ?Estado/], ['rio grande', /^Rio Grande do Sul ?Estado/], ['bahia', /^Bahia ?Estado/],
+  ['curitba', /^Curitiba, PR/], ['sao palo', /^São Paulo, SP/], ['londrnia', /^Londrina, PR/], ['recfe', /^Recife, PE/], ['bh', /^Belo Horizonte, MG/], ['floripa', /^Florianópolis, SC/], ['sampa', /^São Paulo, SP/],
+  ['londres', /^London, Reino Unido/], ['lisbon', /^Lisboa, Portugal/], ['cape town', /^Cidade do Cabo, África do Sul/], ['mimai', /^Miami, Estados Unidos/],
+];
+for (const [q, re] of MAIS) { const l = await digita(q); ok('digitar "' + q + '" oferece o lugar', l.some((t) => re.test(t)), l.slice(0, 4)); }
+for (const [q, re] of [['crosfit', /^CrossFit/], ['pilatis', /^Pilates/], ['musculacão', /^Musculação/]]) { const l = await digita(q); ok('modalidade com letra trocada "' + q + '"', l.some((t) => re.test(t)), l.slice(0, 4)); }
+// nas sugestões, quem tem foto vem antes de quem não tem
+// (as fotos dependem do banco, simulado aqui: confere só que nenhum sem foto fica à frente de um com foto)
+{ const f = await p.evaluate(() => ['a', 'miami', 'sao paulo'].map((q) => window.REAL.search(q, 6).map((t) => !!t.photo))); ok('sugestões: ninguém sem foto à frente de quem tem', f.every((x) => x.length > 0 && x.join() === x.slice().sort((a, b) => b - a).join()), f); }
 const MODS = [['crossfit', /^CrossFit/], ['musculacao', /^Musculação/], ['musculação', /^Musculação/], ['yoga', /^Yoga/], ['pilates', /^Pilates/], ['corrida', /^Corrida/], ['funcional', /^Funcional/], ['jiu jitsu', /^Jiu-?jitsu/i], ['muay thai', /^Muay Thai/i], ['natacao', /^Natação/]];
 for (const [q, re] of MODS) { const l = await digita(q); ok('digitar "' + q + '" oferece a modalidade', l.some((t) => re.test(t)), l.slice(0, 4)); }
 // nomes de quem está no catálogo: o primeiro, um do meio e os de fora
@@ -79,5 +90,23 @@ for (const [mod, L, F] of [['Musculação', 'São Paulo, SP'], ['Musculação', 
   await p.goto(u, { waitUntil: 'load' }); await p.waitForFunction(() => window.REAL && window.REAL.status && window.REAL.status().base !== 'carregando' && /treinador(es)? de /.test(document.getElementById('app').innerText) && !document.querySelector('#lista .vf-sk'), null, { timeout: 30000 }).catch(() => {}); await p.waitForTimeout(1500);
   const d = await le(); ok('recarregar ' + u.replace(B, '') + ' mantém a lista (' + a.n + ')', d.n === a.n && d.metas[0] === a.metas[0], { antes: a.n, depois: d.n, m0: [a.metas[0], d.metas[0]] });
 }
+// estado escolhido na busca abre a lista do estado
+await p.goto(B + '/', { waitUntil: 'load' }); await p.waitForFunction(() => window.REAL && (window.REAL.cities('', 'parana') || []).length, null, { timeout: 20000 }); await p.waitForTimeout(1200);
+{ const topo = p.locator('#app input.sx-field:visible').first(); await topo.click(); await topo.type('parana', { delay: 10 }); await p.waitForTimeout(700);
+  await p.evaluate(() => { const e = [...document.querySelectorAll('#app .sx-row')].find((x) => /^\s*Paraná\s*Estado/.test(x.textContent) && x.offsetParent); e && e.click(); });
+  await p.waitForFunction(() => /\/estado\/pr$/.test(location.pathname), null, { timeout: 10000 }).catch(() => {}); ok('escolher o estado abre /estado/pr', /\/estado\/pr$/.test(p.url()), p.url()); }
+// cidades vizinhas (até 40 km) aparecem como atalho na lista
+{ await vai('Musculação', 'São Paulo, SP', 'Qualquer'); await p.waitForFunction(() => document.querySelector('.vfe-perto .chip'), null, { timeout: 15000 }).catch(() => {});
+  const pt = await p.evaluate(() => [...document.querySelectorAll('.vfe-perto .chip')].map((x) => x.textContent.trim())); ok('São Paulo mostra cidades perto', pt.length >= 2 && pt.every((t) => /^.+ · \d+$/.test(t)) && !pt.some((t) => /^São Paulo ·/.test(t)), pt);
+  const alvo = pt[0] ? pt[0].split(' · ') : ['', '0']; await p.evaluate(() => document.querySelector('.vfe-perto .chip').click()); await p.waitForTimeout(900); const r = await le();
+  ok('atalho de perto troca a cidade (' + alvo[0] + ')', r.metas.length > 0 && r.metas.slice(0, Math.min(+alvo[1], r.metas.length)).every((t) => t.indexOf(alvo[0] + ', ') >= 0), r.metas.slice(0, 3));
+  await vai('Musculação', 'UF:PR', 'Qualquer'); ok('estado não mostra "perto"', (await p.locator('.vfe-perto .chip').count()) === 0); }
+await c.close();
+// inglês: o país aparece no idioma
+[c, p] = await novo(390, 844);
+await p.goto(B + '/en', { waitUntil: 'load' }); await p.waitForFunction(() => window.REAL && window.REAL.ensure, null, { timeout: 20000 }); await p.evaluate(() => window.REAL.ensure()); await pronto(p);
+await p.evaluate(() => document.querySelector('#app .vfm-qtx').click()); await p.waitForTimeout(600);
+{ const l = await digita('miami'); ok('inglês: "Miami, United States"', l.some((t) => /^Miami, United States/.test(t)) && !l.some((t) => /Estados Unidos/.test(t)), l.slice(0, 4)); }
+{ const l = await digita('usa'); ok('inglês: país "United States"', l.some((t) => /^United States ?Country · \d+ coach/.test(t)), l.slice(0, 3)); }
 await c.close(); await b.close();
 console.log(falhas ? '!! ' + falhas + ' falha(s) em ' + feitos : 'bateria de buscas: ' + feitos + ' verificações, tudo certo'); process.exit(falhas ? 1 : 0);

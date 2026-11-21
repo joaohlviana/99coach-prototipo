@@ -1071,6 +1071,9 @@ html,body{margin:0;background:var(--concrete)}
 .v4-list{display:flex;flex-direction:column;gap:8px}
 .v4-opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .v4-opts .opt{font-family:var(--font)}
+.v4-opts .opt__n{margin-left:6px;font-weight:400;opacity:.62}
+.vfe-perto{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.vfe-perto .label{margin-right:2px}
 .v4-sheet .v4-row{width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit}
 .v4-toast{position:absolute;left:50%;transform:translateX(-50%);z-index:70;flex-wrap:wrap;width:max-content;max-width:calc(100% - 32px)}
 .v4-toast .icon-btn{color:var(--paper)}
