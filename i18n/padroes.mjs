@@ -3,6 +3,8 @@
 const N = '([\\d.,]+)', X = '(.+?)';
 export default [
   ['Página (\\d+)', 'Page $1', 'Página $1'],
+  ['Cidade · ' + N + ' treinador(es)?', 'City · $1 coach$2', 'Ciudad · $1 entrenador$2'],
+  ['Ver treinadores em ' + X, 'See coaches in $1', 'Ver entrenadores en $1'],
   ['País · ' + N + ' treinador(es)?', 'Country · $1 coach$2', 'País · $1 entrenador$2'],
   ['Fale com (\\S+)', 'Talk to $1', 'Habla con $1'],
   [N + ' treinadores · (\\d+) países', '$1 coaches · $2 countries', '$1 entrenadores · $2 países'],

@@ -131,12 +131,14 @@
       for (var c in cid) if (REAL.chaveLugar(c) === k) return c;
       return '';
     },
+    // quantos treinadores têm base nesta cidade
+    cityCount: function (c) { REAL.cities(''); return (cache.citN || {})[c] || 0; },
     // cidades com treinadores, da mais numerosa para a menos
     cities: function (keep, q, uf) {
       if (!items.length) return null;
       if (!cache.cit) {
         var n = {}; items.forEach(function (t) { if (t.city) n[t.city] = (n[t.city] || 0) + 1; });
-        cache.citAll = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || a.localeCompare(b); });
+        cache.citN = n; cache.citAll = Object.keys(n).sort(function (a, b) { return n[b] - n[a] || a.localeCompare(b); });
         cache.cit = cache.citAll.slice(0, 12);
       }
       var plain = function (x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };

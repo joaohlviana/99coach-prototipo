@@ -19,10 +19,10 @@ const campo = () => p.locator('#app input:visible').last();
 const linhas = () => p.evaluate(() => [...document.querySelectorAll('#app .sx-row')].filter((x) => x.offsetParent).map((x) => x.textContent.replace(/\s+/g, ' ').trim()));
 const digita = async (q) => { await campo().fill(''); await campo().type(q, { delay: 5 }); await p.waitForTimeout(450); return linhas(); };
 const LUGARES = [
-  ['sao paulo', /^São Paulo, SP ?Cidade$/], ['São Paulo', /^São Paulo, SP ?Cidade$/], ['SAO PAULO', /^São Paulo, SP ?Cidade$/], ['  sao paulo  ', /^São Paulo, SP ?Cidade$/],
-  ['londrina', /^Londrina, PR ?Cidade$/], ['curitiba', /^Curitiba, PR ?Cidade$/], ['rio de janeiro', /^Rio de Janeiro, RJ ?Cidade$/], ['belo horizonte', /^Belo Horizonte, MG ?Cidade$/],
-  ['brasilia', /^Brasília, DF ?Cidade$/], ['goiania', /^Goiânia, GO ?Cidade$/], ['recife', /^Recife, PE ?Cidade$/], ['campinas', /^Campinas, SP ?Cidade$/],
-  ['miami', /^Miami, Estados Unidos ?Cidade$/], ['dallas', /^Dallas, Estados Unidos ?Cidade$/],
+  ['sao paulo', /^São Paulo, SP ?Cidade( · [\d.]+ treinador(es)?)?$/], ['São Paulo', /^São Paulo, SP ?Cidade( · [\d.]+ treinador(es)?)?$/], ['SAO PAULO', /^São Paulo, SP ?Cidade( · [\d.]+ treinador(es)?)?$/], ['  sao paulo  ', /^São Paulo, SP ?Cidade( · [\d.]+ treinador(es)?)?$/],
+  ['londrina', /^Londrina, PR ?Cidade( · [\d.]+ treinador(es)?)?$/], ['curitiba', /^Curitiba, PR ?Cidade( · [\d.]+ treinador(es)?)?$/], ['rio de janeiro', /^Rio de Janeiro, RJ ?Cidade( · [\d.]+ treinador(es)?)?$/], ['belo horizonte', /^Belo Horizonte, MG ?Cidade( · [\d.]+ treinador(es)?)?$/],
+  ['brasilia', /^Brasília, DF ?Cidade( · [\d.]+ treinador(es)?)?$/], ['goiania', /^Goiânia, GO ?Cidade( · [\d.]+ treinador(es)?)?$/], ['recife', /^Recife, PE ?Cidade( · [\d.]+ treinador(es)?)?$/], ['campinas', /^Campinas, SP ?Cidade( · [\d.]+ treinador(es)?)?$/],
+  ['miami', /^Miami, Estados Unidos ?Cidade( · \d+ treinador(es)?)?$/], ['dallas', /^Dallas, Estados Unidos ?Cidade( · \d+ treinador(es)?)?$/],
   ['eua', /^Estados Unidos ?País · \d+ treinador/], ['usa', /^Estados Unidos ?País/], ['estados unidos', /^Estados Unidos ?País/], ['united states', /^Estados Unidos ?País/],
   ['portugal', /^Portugal ?País/], ['reino unido', /^Reino Unido ?País/], ['uk', /^Reino Unido ?País/], ['inglaterra', /^Reino Unido ?País/], ['espanha', /^Espanha ?País/], ['africa do sul', /^África do Sul ?País/],
 ];
