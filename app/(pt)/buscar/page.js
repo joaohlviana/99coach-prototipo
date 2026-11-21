@@ -17,7 +17,8 @@ export default async function Buscar({ searchParams }) {
   const ondeK = String(sp.onde || '').toLowerCase().slice(0, 80);
   const ufK = /^uf-([a-z]{2})$/.exec(ondeK), ufOk = ufK && ehUF(ufK[1]) ? ufK[1] : '';
   const cidOk = !ufOk && ondeK ? cidade(ondeK) : null;
-  const onde = ondeK === 'mundo' ? { label: 'Mundo todo', chave: 'mundo', ok: () => true } : ufOk ? { label: nomeDoUF(ufOk), chave: 'uf-' + ufOk, ok: (t) => !!t.city && t.city.slice(-4) === ', ' + ufOk.toUpperCase() } : (cidOk ? { label: cidOk.label, chave: cidOk.slug, ok: (t) => slug(t.city) === cidOk.slug } : null);
+  const paisK = /^pais-([a-z]{2})$/.exec(ondeK), paisOk = paisK ? paisK[1].toUpperCase() : '';
+  const onde = ondeK === 'mundo' ? { label: 'Mundo todo', chave: 'mundo', ok: () => true } : paisOk ? { label: nomePais(paisOk, 'pt'), chave: 'pais-' + paisOk.toLowerCase(), ok: (t) => t.pais === paisOk } : ufOk ? { label: nomeDoUF(ufOk), chave: 'uf-' + ufOk, ok: (t) => !!t.city && t.city.slice(-4) === ', ' + ufOk.toUpperCase() } : (cidOk ? { label: cidOk.label, chave: cidOk.slug, ok: (t) => slug(t.city) === cidOk.slug } : null);
   const termos = k ? k.split('-').filter((w) => w.length > 1) : [];
   const esp = k ? esportes().filter((s) => termos.some((w) => slug(s.label).includes(w))).slice(0, 8) : [];
   const cid = k ? cidades(1).filter((c) => termos.every((w) => slug(c.label).includes(w)) || slug(c.label).startsWith(k)).slice(0, 8) : [];

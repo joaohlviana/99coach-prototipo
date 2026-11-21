@@ -56,7 +56,7 @@
       if (cache.home && cache.homeKey === key) return cache.home;
       cache.homeKey = key;
       return (cache.home = (mine ? [mine] : []).concat(items.map(function (t) {
-        return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl, sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
+        return { id: t.id, name: t.name, spec: t.spec, city: t.city, pres: t.pres && !!t.city, onl: t.onl, pais: t.pais || '', sports: t.sports, photo: t.photo || null, ini: t.ini, rating: null, n: 0, ver: false, imp: true,
           cref: 'Perfil importado: credencial não confirmada', av: 'unknown', avLong: 'Não informada', more: 0 };
       })));
     },
@@ -96,6 +96,41 @@
       var words = fold(q).split(' ').filter(Boolean); if (!words.length) return 0;
       return items.filter(function (t) { var hay = t._h || (t._h = fold(t.name + ' ' + t.spec + ' ' + t.city + ' ' + t.sports.join(' '))); return words.every(function (w) { return hay.indexOf(w) >= 0; }); }).length;
     },
+    // ---------- lugares fora do Brasil: país ("PAIS:US") e cidade ("Miami, Estados Unidos") ----------
+    // nome do país em português
+    paisNome: function (cc, l) { try { return new Intl.DisplayNames([l || 'pt-BR'], { type: 'region' }).of(cc) || cc; } catch (_) { return cc; } },
+    // como mostrar um lugar escolhido
+    lugar: function (c) { return /^PAIS:/.test(c || '') ? REAL.paisNome(c.slice(5)) : (c || ''); },
+    // países com treinadores: [código, nome, quantos], do que tem mais para o que tem menos
+    paises: function () {
+      if (cache.paises) return cache.paises;
+      var n = {}, cid = {}; items.forEach(function (t) { if (t.pais) { n[t.pais] = (n[t.pais] || 0) + 1; if (t.city) cid[t.city] = t.pais; } });
+      cache.cidPais = cid;
+      return (cache.paises = Object.keys(n).sort(function (a, b) { return n[b] - n[a]; }).map(function (cc) { return [cc, REAL.paisNome(cc), n[cc]]; }));
+    },
+    // país de uma cidade de fora do Brasil ('' para cidade do Brasil)
+    paisDe: function (c) { REAL.paises(); return (cache.cidPais || {})[c] || ''; },
+    // países que combinam com o que a pessoa digitou (nome, sigla ou apelido: "eua", "usa", "uk")
+    paisesPara: function (q) {
+      var k = fold(q); if (k.length < 2) return [];
+      var AP = { US: 'eua usa us estados unidos america', GB: 'uk reino unido inglaterra gra bretanha england', AE: 'emirados dubai', NL: 'holanda paises baixos', DE: 'alemanha germany', ES: 'espanha spain', FR: 'franca france', IT: 'italia italy', JP: 'japao japan', CH: 'suica', IE: 'irlanda ireland', NZ: 'nova zelandia new zealand', ZA: 'africa do sul south africa', MX: 'mexico', CA: 'canada', AU: 'australia', PT: 'portugal' };
+      return REAL.paises().filter(function (p) { var h = fold(p[1]) + ' ' + p[0].toLowerCase() + ' ' + (AP[p[0]] || '') + ' ' + fold(REAL.paisNome(p[0], 'en')) + ' ' + fold(REAL.paisNome(p[0], 'es')); return h.split(' ').some(function (w) { return w.indexOf(k) === 0; }) || fold(p[1]).indexOf(k) === 0 || (AP[p[0]] || '').indexOf(k) === 0 || fold(REAL.paisNome(p[0], 'en')).indexOf(k) === 0 || fold(REAL.paisNome(p[0], 'es')).indexOf(k) === 0; });
+    },
+    // endereço de um lugar de fora: país -> "pais-us"; cidade -> "miami-us" (a mesma chave das páginas do servidor)
+    chaveLugar: function (c) {
+      if (/^PAIS:/.test(c || '')) return 'pais-' + c.slice(5).toLowerCase();
+      var cc = REAL.paisDe(c); if (!cc) return '';
+      var EN = { 'Lisboa': 'Lisbon', 'Cidade do Cabo': 'Cape Town', 'Amsterdã': 'Amsterdam', 'New York City': 'New York' };
+      var s = String(c).replace(/^currently in\s+/i, '').trim(), i = s.lastIndexOf(', '), nome = (i > 0 ? s.slice(0, i) : s).trim();
+      return fold(EN[nome] || nome).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + cc.toLowerCase();
+    },
+    // o caminho de volta: "pais-us" -> "PAIS:US"; "miami-us" -> "Miami, Estados Unidos" ('' se ainda não dá para saber)
+    lugarDaChave: function (k) {
+      var m = /^pais-([a-z]{2})$/.exec(k || ''); if (m) return 'PAIS:' + m[1].toUpperCase();
+      REAL.paises(); var cid = cache.cidPais || {};
+      for (var c in cid) if (REAL.chaveLugar(c) === k) return c;
+      return '';
+    },
     // cidades com treinadores, da mais numerosa para a menos
     cities: function (keep, q, uf) {
       if (!items.length) return null;
@@ -107,10 +142,13 @@
       var plain = function (x) { return String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };
       var L;
       var pool = uf ? cache.citAll.filter(function (c) { return c.slice(-4) === ', ' + uf; }) : cache.citAll;
-      if (plain(q)) { var k = plain(q); L = pool.filter(function (c) { return plain(c).indexOf(k) >= 0; }).slice(0, 12); }
+      var PA = [];
+      if (plain(q)) { var k = plain(q); L = pool.filter(function (c) { return plain(c).indexOf(k) >= 0; }).slice(0, 12);
+        // país que combina com o que foi digitado vem antes das cidades ("eua", "estados unidos", "canadá")
+        if (!uf) PA = REAL.paisesPara(q).slice(0, 3).map(function (p) { return ['PAIS:' + p[0], 'País · ' + p[2].toLocaleString('pt-BR') + (p[2] === 1 ? ' treinador' : ' treinadores')]; }); }
       else if (uf) { L = pool.slice(0, 40); }
       else { L = cache.cit.slice(); if (keep && L.indexOf(keep) < 0) L.push(keep); }
-      return L.map(function (c) { var uf = c.split(', ').slice(-1)[0] || ''; return [c, UF[uf] ? UF[uf] + ' · Brasil' : uf]; });
+      return PA.concat(L.map(function (c) { var uf = c.split(', ').slice(-1)[0] || ''; return [c, UF[uf] ? UF[uf] + ' · Brasil' : uf]; }));
     },
     // estados com profissional, do que tem mais para o que tem menos
     ufs: function () {

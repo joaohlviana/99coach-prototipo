@@ -258,6 +258,11 @@
       // página e ordem ficam no endereço (?pagina=2&ordem=rec): o link compartilhado abre igual
       var q = []; if (e.city === 'MUNDO' && e.fmt !== 'Online') q.push('onde=mundo'); if (e.page > 1) q.push('pagina=' + e.page); if (e.sort && e.sort !== 'rel') q.push('ordem=' + e.sort);
       // "Todos os esportes" e "Worldwide" não têm página por modalidade: o endereço leva à página pública equivalente
+      // país ou cidade de fora do Brasil: a cidade tem página própria (/cidade/miami-us); o resto leva o lugar no endereço (?onde=)
+      var kf = e.city && e.fmt !== 'Online' && window.REAL && window.REAL.chaveLugar ? window.REAL.chaveLugar(e.city) : '';
+      // o formato só entra no endereço quando foge do que a página abre sozinha (cidade do Brasil abre em presencial; lugar de fora, em qualquer formato)
+      if (e.mod !== TODOS && e.city && e.city !== 'MUNDO') { if (kf && e.fmt === 'Presencial') q.push('formato=presencial'); if (!kf && e.fmt === 'Qualquer') q.push('formato=qualquer'); }
+      if (kf) { if (e.mod === TODOS) return /^pais-/.test(kf) ? '/buscar?onde=' + kf : '/cidade/' + kf; q.unshift('onde=' + kf); return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + '?' + q.join('&'); }
       if (e.city === 'MUNDO' && e.fmt !== 'Online') return e.mod === TODOS ? '/buscar?onde=mundo' : '/treinadores/' + sportSlug(e.mod || 'CrossFit') + '?' + q.join('&');
       if (e.mod === TODOS) return e.fmt === 'Online' || !e.city ? '/buscar' : (/^UF:/.test(e.city) ? '/estado/' + e.city.slice(3).toLowerCase() : '/cidade/' + slug(e.city));
       return '/treinadores/' + sportSlug(e.mod || 'CrossFit') + (e.fmt === 'Online' ? '/online' : (/^UF:/.test(e.city || '') ? '/' + e.city.slice(3).toLowerCase() : (e.city ? '/' + slug(e.city) : ''))) + (q.length ? '?' + q.join('&') : '');

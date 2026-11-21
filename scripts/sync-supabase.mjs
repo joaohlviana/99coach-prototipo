@@ -37,7 +37,7 @@ try {
       rows.push([nota, t.slug, t.name, t.initials || '', photo, t.specialty || '', (t.trainer_sports || []).map((s) => s.sport_slug), city,
         f + ((t.formats || []).includes('online') ? 'o' : ''), (t.published_at || '').slice(0, 10), t.origin || '', /^@?[A-Za-z0-9._]{1,30}$/.test(t.external_handle || '') ? t.external_handle : '',
         // fora do Brasil: país (ISO) e local por extenso; no Brasil ficam vazios
-        t.country && t.country !== 'BR' ? t.country : '', t.country && t.country !== 'BR' ? (t.locality || '') : '']);
+        t.country && t.country !== 'BR' ? t.country : '', t.country && t.country !== 'BR' ? String(t.locality || '').replace(/^(currently in|based in|living in)\s+/i, '') : '']);
     });
     process.stdout.write(`\r${rows.length}${total ? ' de ' + total : ''} perfis`);
     if (p.rows.length < PAGE) break;

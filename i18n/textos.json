@@ -7054,5 +7054,13 @@
  "Não conseguimos carregar os treinadores": {
   "en": "We couldn't load the coaches",
   "es": "No pudimos cargar los entrenadores"
+ },
+ "Lugares": {
+  "en": "Places",
+  "es": "Lugares"
+ },
+ "Cidade": {
+  "en": "City",
+  "es": "Ciudad"
  }
 }
