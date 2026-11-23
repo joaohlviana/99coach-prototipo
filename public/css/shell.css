@@ -329,8 +329,15 @@ html.area-loading #pg-bar{opacity:1;scale:.6 1;transition:scale 2s}
 .ir-forca__n{font:400 34px/1 var(--display)}
 .ir-forca__bar{height:10px;border-radius:99px;background:var(--paper-2);overflow:hidden;margin:10px 0 8px}
 .ir-forca__bar span{display:block;height:100%;border-radius:99px;background:var(--brand,#e11d48)}
-.ir-conq{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.ir-conq li{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:99px;background:rgba(16,185,129,.12);color:#047857;font-size:13px;font-weight:600}
+.ir-conq{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.ir-medalha{--m1:#f6d7b0;--m2:#b86b2b;--m3:#7a4313;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;border:1px solid var(--line,#e8e6e1);background:var(--paper,#fff);min-width:0}
+.ir-medalha--prata{--m1:#eef1f5;--m2:#9aa5b4;--m3:#55606e}
+.ir-medalha--ouro{--m1:#fdeeb3;--m2:#d9a514;--m3:#8a6200}
+.ir-medalha__ic{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--m3);background:radial-gradient(circle at 32% 28%,#fff 0,var(--m1) 38%,var(--m2) 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.65),0 0 0 2px var(--m2),0 2px 6px rgba(0,0,0,.12)}
+.ir-medalha__ic .ic{width:20px;height:20px}
+.ir-medalha__t{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.ir-medalha__t b{font:400 26px/1 var(--display)}
+.ir-medalha__t span{font-size:12px;color:var(--text-2,#55555c)}
 .ir-eixo{display:flex;justify-content:space-between;font-size:12px;color:var(--text-3);margin-top:4px}
 .ir-h3{font-size:14px;font-weight:600;margin:20px 0 10px}
 .ir-rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}

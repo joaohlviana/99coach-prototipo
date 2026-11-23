@@ -103,14 +103,16 @@
       var forca = PESOS.reduce(function (t, x) { return t + (x[2] ? x[1] : 0); }, 0), prox = PESOS.filter(function (x) { return !x[2]; })[0];
       // conquistas: marcos de visitas, contatos e aparições desde o começo da contagem; a próxima de cada tipo mostra o progresso
       var mc = ui.marcos && !ui.marcos.falhou ? ui.marcos : null;
-      var MARCOS = [['visitas', [1, 10, 50, 100, 500, 1000, 5000], function (v) { return v === 1 ? 'Primeira visita' : nf(v) + ' visitas'; }, 'visitas'],
-        ['contatos', [1, 5, 25, 100, 500], function (v) { return v === 1 ? 'Primeiro contato' : nf(v) + ' contatos'; }, 'contatos'],
-        ['aparicoes', [100, 1000, 10000, 100000], function (v) { return nf(v) + ' aparições nas listas'; }, 'aparições']];
+      var MARCOS = [['visitas', [1, 10, 50, 100, 500, 1000, 5000], function (v) { return v === 1 ? 'Primeira visita' : nf(v) + ' visitas'; }, 'i-eye', function (v) { return v === 1 ? 'visita ao perfil' : 'visitas ao perfil'; }],
+        ['contatos', [1, 5, 25, 100, 500], function (v) { return v === 1 ? 'Primeiro contato' : nf(v) + ' contatos'; }, 'i-message', function (v) { return v === 1 ? 'clique em contato' : 'cliques em contato'; }],
+        ['aparicoes', [100, 1000, 10000, 100000], function (v) { return nf(v) + ' aparições nas listas'; }, 'i-list', function () { return 'aparições nas listas'; }]];
+      // medalha: bronze nos dois primeiros marcos de cada tipo, prata nos dois seguintes, ouro daí em diante
+      var NIVEL = ['bronze', 'bronze', 'prata', 'prata', 'ouro', 'ouro', 'ouro'];
       var feitas = [], metas = [];
       if (mc) MARCOS.forEach(function (m) { var tem = Number(mc[m[0]] || 0), ok = m[1].filter(function (v) { return tem >= v; }), nx = m[1].filter(function (v) { return tem < v; })[0];
-        if (ok.length) feitas.push({ t: m[2](ok[ok.length - 1]) });
+        if (ok.length) { var v0 = ok[ok.length - 1], nv = NIVEL[ok.length - 1] || 'ouro'; feitas.push({ t: m[2](v0), n: nf(v0), l: m[4](v0), ic: 'ic ' + m[3], cls: 'ir-medalha ir-medalha--' + nv, alt: m[2](v0) + ' · medalha de ' + nv }); }
         if (nx) metas.push({ t: m[2](nx), x: nf(tem) + ' de ' + nf(nx), w: 'width:' + Math.max(2, Math.round(tem / nx * 100)) + '%' }); });
-      if (au && rg.na_cidade >= 10 && rg.posicao <= 10) feitas.push({ t: rg.posicao === 1 ? '1º da cidade nas suas modalidades' : 'Entre os 10 primeiros da cidade' });
+      if (au && rg.na_cidade >= 10 && rg.posicao <= 10) feitas.push({ t: rg.posicao === 1 ? '1º da cidade nas suas modalidades' : 'Entre os 10 primeiros da cidade', n: rg.posicao + 'º', l: 'na cidade, nas suas modalidades', ic: 'ic i-crown', cls: 'ir-medalha ir-medalha--' + (rg.posicao === 1 ? 'ouro' : rg.posicao <= 3 ? 'prata' : 'bronze'), alt: (rg.posicao === 1 ? '1º da cidade nas suas modalidades' : 'Entre os 10 primeiros da cidade') });
       var baixar = function () { try { var linhas = [['data', 'hora', 'origem', 'buscava', 'aparelho', 'clicou em contato']].concat(((au && au.recentes) || []).map(function (v) { var dt = new Date(v.em); return [dt.toLocaleDateString('pt-BR'), ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2), v.origem, v.de || '', v.dev || '', v.contato ? 'sim' : 'não']; }));
         var csv = '\ufeff' + linhas.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n'), a0 = document.createElement('a'); a0.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a0.download = 'visitas-ao-perfil.csv'; document.body.appendChild(a0); a0.click(); a0.remove(); } catch (_) {} };
       var recentes = ((au && au.recentes) || []).slice(0, ui.auMais ? 60 : 12).map(function (v) { return { t: v.origem + (v.de ? ' · ' + v.de : '') + (v.dev ? ' · ' + v.dev : ''), q: quando(v.em), contato: !!v.contato }; });

@@ -38022,5 +38022,29 @@
  " contatos": {
   "en": " contacts",
   "es": " contactos"
+ },
+ "visitas ao perfil": {
+  "en": "profile visits",
+  "es": "visitas al perfil"
+ },
+ "visita ao perfil": {
+  "en": "profile visit",
+  "es": "visita al perfil"
+ },
+ "cliques em contato": {
+  "en": "contact clicks",
+  "es": "clics en contacto"
+ },
+ "clique em contato": {
+  "en": "contact click",
+  "es": "clic en contacto"
+ },
+ "aparições nas listas": {
+  "en": "listing appearances",
+  "es": "apariciones en las listas"
+ },
+ "na cidade, nas suas modalidades": {
+  "en": "in the city, for your sports",
+  "es": "en la ciudad, en tus deportes"
  }
 }
