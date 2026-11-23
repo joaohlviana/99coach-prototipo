@@ -14,6 +14,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     if (window.TRACK) window.TRACK('showcase.viewed', { place: 'home' }, 'home');
+    try { sessionStorage.setItem('c99.de', 'Página inicial'); } catch (_) {}
     const B = (id) => Component.img(id), set = (p) => { if (p && p.favs && window.FAV && !document.documentElement.classList.contains('demo')) window.FAV.replace(p.favs); this.setState(p); };
     if (window.FAV && !document.documentElement.classList.contains('demo')) this.state.favs = window.FAV.map();
     const S = this.state;

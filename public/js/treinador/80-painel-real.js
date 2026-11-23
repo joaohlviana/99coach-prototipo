@@ -17,7 +17,7 @@
     TM08: ['Continuidade em 28 dias', 'Acompanhamentos que começaram no período e seguiam ativos 28 dias depois.'],
     TM11: ['Receita no período', 'Pagamentos confirmados no período menos reembolsos.']
   };
-  var NOSRC = { TM01: 'Visitas ao perfil', TM02: 'Visitas que viraram pedido', TM06: 'Execução do plano', TM09: 'Plano concluído', TM10: 'Evolução de medidas', TM12: 'Uso de assistência' };
+  var NOSRC = { TM06: 'Execução do plano', TM09: 'Plano concluído', TM10: 'Evolução de medidas', TM12: 'Uso de assistência' };
 
   REG.screen({
     page: 'treinador', key: 'insightsreal', id: 'H08R', title: 'Insights', nav: 'insights', wide: true, back: 'TMENU',
@@ -61,10 +61,55 @@
           });
         });
       }
+      // audiência do perfil e procura na região (my_audience): visitas sem robôs, de onde vieram e o que se busca na cidade
+      var ak = 'au' + per;
+      if (!ui[ak] && !ui['busy' + ak]) {
+        var b1 = {}; b1['busy' + ak] = true; ctx.setUi(b1);
+        C().rpc('my_audience', { p_days: per }).then(function (r) { var o = {}; o['busy' + ak] = false; o[ak] = r.ok && one(r) ? one(r) : { falhou: true }; ctx.setUi(o); });
+      }
+      var au = ui[ak] && !ui[ak].falhou && !ui[ak].sem_perfil ? ui[ak] : null, rg = (au && au.regiao) || {};
+      var nf = function (v) { return Number(v || 0).toLocaleString('pt-BR'); };
+      var delta = function (cur, prev) { if (!prev) return ''; var dlt = cur - prev; return (dlt >= 0 ? '+' : '−') + nf(Math.abs(dlt)) + ' sobre o período anterior'; };
+      var ranked = function (list, meu) { var mx = Math.max.apply(null, (list || []).map(function (x) { return x.n; }).concat([1])); return (list || []).map(function (x) { return { k: x.k, n: nf(x.n) + (meu && x.t != null ? (x.n === 1 ? ' busca · ' : ' buscas · ') + U.plural(x.t, 'treinador', 'treinadores') : ''), w: 'width:' + Math.max(3, Math.round(x.n / mx * 100)) + '%', cls: 'ir-rank__k' + (meu && x.meu ? ' is-meu' : '') }; }); };
+      var dias = (au && au.por_dia) || [], dmx = Math.max.apply(null, dias.map(function (x) { return x.v; }).concat([1]));
+      var dbr = function (iso) { var p = String(iso).slice(0, 10).split('-'); return p[2] + '/' + p[1]; };
+      var quando = function (iso) { var dt = new Date(iso), hoje = new Date(), on = new Date(hoje.getTime() - 86400000), hm = ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2); return (dt.toDateString() === hoje.toDateString() ? 'Hoje' : dt.toDateString() === on.toDateString() ? 'Ontem' : day(iso)) + ' ' + hm; };
+      var auKpis = au ? [
+        { n: nf(au.visitas), l: 'Visitas ao perfil', s: delta(au.visitas, au.visitas_antes) },
+        { n: nf(au.visitantes), l: au.visitantes === 1 ? 'Visitante' : 'Visitantes', s: '' },
+        { n: nf(au.aparicoes), l: 'Vezes que apareceu nas listas', s: au.aparicoes ? U.plural(au.cliques, 'clique no cartão', 'cliques no cartão') + (au.aparicoes >= 30 ? ' (' + pct(au.cliques / au.aparicoes) + ')' : '') : delta(au.aparicoes, au.aparicoes_antes) },
+        au.posicao_media != null ? { n: String(au.posicao_media).replace('.', ',') + 'º', l: 'Posição média nas listas', s: '' } : null,
+        { n: nf(au.contatos), l: 'Cliques em contato', s: (au.contatos_canal || []).length ? au.contatos_canal.map(function (c) { return nf(c.n) + ' ' + (c.k === 'instagram' ? 'no Instagram' : (c.n === 1 ? 'pedido' : 'pedidos')); }).join(' · ') : delta(au.contatos, au.contatos_antes) }
+      ].filter(Boolean).map(function (k) { k.hasS = !!k.s; return k; }) : [];
+      // quando as visitas acontecem: por dia da semana e por hora (horário de Brasília)
+      var DOW = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'], DOWL = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+      var barras = function (list, rot, tip) { var mx = Math.max.apply(null, (list || []).map(function (x) { return x.n; }).concat([1])); return (list || []).map(function (x) { return { st: 'height:' + Math.max(2, Math.round(x.n / mx * 100)) + '%', cls: x.n ? '' : 'is-zero', tip: tip(x) + ' · ' + U.plural(x.n, 'visita', 'visitas'), r: rot(x) }; }); };
+      var sem = barras(au && au.por_semana, function (x) { return DOW[x.k]; }, function (x) { return DOWL[x.k]; }), hor = barras(au && au.por_hora, function (x) { return x.k % 6 === 0 ? x.k + 'h' : ''; }, function (x) { return x.k + 'h'; });
+      var pico = (function () { if (!au || au.visitas < 10) return ''; var a1 = (au.por_semana || []).slice().sort(function (x, y) { return y.n - x.n; })[0], h1 = (au.por_hora || []).slice().sort(function (x, y) { return y.n - x.n; })[0]; return a1 && h1 && a1.n ? 'Mais visitas: ' + DOWL[a1.k] + ', por volta das ' + h1.k + 'h.' : ''; })();
+      // o que falta no perfil para aparecer mais (os mesmos itens que contam na ordem das listas)
+      var pf = (au && au.perfil) || {}, editar = function () { GO('@onboarding', { flow: 'treinador' }); };
+      var falta = au ? [
+        !pf.foto ? { t: 'Foto', x: 'Perfil com foto aparece antes nas listas e nas sugestões da busca.', a: 'Adicionar foto', go: editar } : null,
+        !pf.texto ? { t: 'Apresentação', x: 'Conte em algumas linhas como é o seu trabalho e para quem.', a: 'Escrever', go: editar } : null,
+        !pf.local ? { t: 'Cidade', x: 'Sem cidade o perfil não entra nas buscas presenciais.', a: 'Informar cidade', go: editar } : null,
+        !pf.cref ? { t: 'CREF', x: 'Registro conferido pela equipe conta na ordem das listas.', a: 'Informar CREF', go: editar } : (pf.cref === 'informado' ? { t: 'CREF sem conferência', x: 'Peça a conferência: registro conferido conta na ordem das listas.', a: 'Pedir conferência', go: function () { GO('ACC10'); } } : null),
+        !pf.avaliacoes ? { t: 'Avaliações', x: 'Alunos com acompanhamento pelo 99coach podem avaliar você.', a: '', go: null } : null
+      ].filter(Boolean).map(function (f) { f.hasA = !!f.a; return f; }) : [];
+      // muita procura para pouca oferta: modalidades buscadas na cidade que ele não atende, com poucos treinadores
+      var oport = ((rg.top_cidade || []).filter(function (x) { return !x.meu && x.n >= 5 && x.t != null && x.n / Math.max(1, x.t) >= 2; }).sort(function (x, y) { return y.n / Math.max(1, y.t) - x.n / Math.max(1, x.t); }).slice(0, 3)).map(function (x) { return { t: x.k, x: U.plural(x.n, 'busca', 'buscas') + ' para ' + U.plural(x.t, 'treinador', 'treinadores') + ' na cidade' }; });
+      var baixar = function () { try { var linhas = [['data', 'hora', 'origem', 'buscava', 'aparelho', 'clicou em contato']].concat(((au && au.recentes) || []).map(function (v) { var dt = new Date(v.em); return [dt.toLocaleDateString('pt-BR'), ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2), v.origem, v.de || '', v.dev || '', v.contato ? 'sim' : 'não']; }));
+        var csv = '\ufeff' + linhas.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n'), a0 = document.createElement('a'); a0.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a0.download = 'visitas-ao-perfil.csv'; document.body.appendChild(a0); a0.click(); a0.remove(); } catch (_) {} };
+      var recentes = ((au && au.recentes) || []).slice(0, ui.auMais ? 60 : 12).map(function (v) { return { t: v.origem + (v.de ? ' · ' + v.de : '') + (v.dev ? ' · ' + v.dev : ''), q: quando(v.em), contato: !!v.contato }; });
+      var topReg = (rg.top_cidade || []).length >= 3 ? [rg.top_cidade, rg.cidade] : ((rg.top_estado || []).length >= 3 ? [rg.top_estado, 'no estado (' + rg.uf + ')'] : [rg.top_brasil || [], 'no Brasil']);
+      var rgKpis = au ? [
+        rg.cidade ? { n: nf(rg.buscas_cidade), l: 'Buscas em ' + rg.cidade.split(', ')[0], s: rg.buscas_estado ? nf(rg.buscas_estado) + ' no estado' : '' } : null,
+        rg.cidade ? { n: nf(rg.minhas_cidade), l: 'Buscas pelas suas modalidades na cidade', s: rg.minhas_estado ? nf(rg.minhas_estado) + ' no estado' : '' } : null,
+        rg.cidade && rg.na_cidade ? { n: nf(rg.na_cidade), l: 'Treinadores das suas modalidades na cidade', s: 'você aparece em ' + rg.posicao + 'º entre eles' } : null
+      ].filter(Boolean).map(function (k) { k.hasS = !!k.s; return k; }) : [];
       var fn = ui[fk] && !ui[fk].none ? ui[fk] : null, top = fn ? Math.max(fn.views || 0, fn.reqs, fn.links, 1) : 1;
       var bar = function (n) { return 'width:' + Math.max(2, Math.round((n || 0) / top * 100)) + '%'; };
       var funnel = fn ? [
-        { n: fn.views == null ? 'Sem base' : String(fn.views), l: 'Aberturas do perfil', w: bar(fn.views), x: fn.views == null ? 'não medido' : 'aberturas da página pública' },
+        { n: au ? String(au.visitas) : (fn.views == null ? 'Sem base' : String(fn.views)), l: 'Visitas ao perfil', w: bar(au ? au.visitas : fn.views), x: 'aberturas da página pública' },
         { n: String(fn.reqs), l: 'Pedidos recebidos', w: bar(fn.reqs), x: 'pedidos de acompanhamento' },
         { n: String(fn.acc), l: 'Pedidos aceitos', w: bar(fn.acc), x: 'aceitos por você' },
         { n: String(fn.links), l: 'Acompanhamentos iniciados', w: bar(fn.links), x: 'inclui os que vieram por convite' }
@@ -78,7 +123,21 @@
         nosrc: nosrc.join(' · '), hasNosrc: nosrc.length > 0,
         capOk: !!capOk, capTxt: capOk ? (cap.used + cap.held) + ' de ' + cap.limit + ' vagas em uso' : '', capSub: capOk ? 'Plano ' + (cap.plan === 'pro' ? 'Pro' : 'Essencial') + ': ' + U.plural(cap.used, 'aluno ativo ou pausado', 'alunos ativos ou pausados') + (cap.held ? ', ' + U.plural(cap.held, 'vaga reservada por pedido aceito', 'vagas reservadas por pedidos aceitos') : '') + '. ' + (cap.free ? U.plural(cap.free, 'vaga livre', 'vagas livres') + '.' : 'Sem vagas livres: novos pedidos não podem ser aceitos.') : '',
         capFull: !!capOk && !cap.free,
-        reload: function () { var s = {}; s[key] = null; s.cap = null; ctx.setUi(s); }
+        auOk: !!au, auKpis: auKpis, auVazio: !!au && !au.visitas && !au.aparicoes,
+        auDias: dias.map(function (x) { return { st: 'height:' + Math.max(2, Math.round(x.v / dmx * 100)) + '%', cls: x.v ? '' : 'is-zero', tip: dbr(x.d) + ' · ' + U.plural(x.v, 'visita', 'visitas') }; }),
+        hasAuDias: !!au && au.visitas > 0 && dias.length > 1, auDiaIni: dias.length ? dbr(dias[0].d) : '', auDiaFim: dias.length ? dbr(dias[dias.length - 1].d) : '',
+        auDiasAlt: au ? U.plural(au.visitas, 'visita', 'visitas') + ' entre ' + (dias.length ? dbr(dias[0].d) + ' e ' + dbr(dias[dias.length - 1].d) : '') : '',
+        auOrigem: ranked(au && au.origem), hasAuOrigem: !!au && (au.origem || []).length > 0,
+        auDe: ranked(au && au.veio_de), hasAuDe: !!au && (au.veio_de || []).length > 0,
+        auAparelho: ranked(au && au.aparelho), hasAuAparelho: !!au && (au.aparelho || []).length > 1,
+        auRecentes: recentes, hasAuRecentes: recentes.length > 0, auTemMais: !ui.auMais && ((au && au.recentes) || []).length > 12, auMais: function () { ctx.setUi({ auMais: true }); },
+        auSem: sem, auHor: hor, hasAuQuando: !!au && au.visitas > 0, auPico: pico, hasAuPico: !!pico,
+        falta: falta, hasFalta: falta.length > 0, oport: oport, hasOport: oport.length > 0,
+        rgFmt: ranked(rg.formatos), hasRgFmt: (rg.formatos || []).length > 1, auBaixar: baixar, hasAuBaixar: ((au && au.recentes) || []).length > 0,
+        auDesde: au && au.medindo_desde && new Date(au.medindo_desde) > new Date(au.desde) ? 'Contagem sem robôs desde ' + day(au.medindo_desde) + '.' : '', hasAuDesde: !!(au && au.medindo_desde && new Date(au.medindo_desde) > new Date(au.desde)),
+        rgOk: !!au && (rgKpis.length > 0 || topReg[0].length > 0), rgTitulo: rg.cidade ? 'Procura em ' + rg.cidade : 'Procura no site', rgKpis: rgKpis, hasRgKpis: rgKpis.length > 0,
+        rgTop: ranked(topReg[0], true), hasRgTop: topReg[0].length > 0, rgTopTitulo: 'Modalidades mais buscadas ' + (topReg[1] === rg.cidade ? 'na cidade' : topReg[1]),
+        reload: function () { var s = {}; s[key] = null; s[ak] = null; s.cap = null; ctx.setUi(s); }
       };
     }
   });

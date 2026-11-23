@@ -37778,5 +37778,205 @@
  "Português": {
   "en": "Portuguese",
   "es": "Portugués"
+ },
+ "Visitantes": {
+  "en": "Visitors",
+  "es": "Visitantes"
+ },
+ "Vezes que apareceu nas listas": {
+  "en": "Times shown in listings",
+  "es": "Veces que apareció en las listas"
+ },
+ "Cliques em contato": {
+  "en": "Contact clicks",
+  "es": "Clics en contacto"
+ },
+ "Nenhuma visita neste período.": {
+  "en": "No visits in this period.",
+  "es": "Ninguna visita en este período."
+ },
+ "De onde vieram": {
+  "en": "Where they came from",
+  "es": "De dónde vinieron"
+ },
+ "O que estavam buscando no 99coach": {
+  "en": "What they were searching for on 99coach",
+  "es": "Qué buscaban en 99coach"
+ },
+ "Últimas visitas": {
+  "en": "Latest visits",
+  "es": "Últimas visitas"
+ },
+ "clicou em contato": {
+  "en": "clicked contact",
+  "es": "hizo clic en contacto"
+ },
+ "Ver mais": {
+  "en": "See more",
+  "es": "Ver más"
+ },
+ "Buscas pelas suas modalidades na cidade": {
+  "en": "Searches for your sports in the city",
+  "es": "Búsquedas de tus deportes en la ciudad"
+ },
+ "Treinadores das suas modalidades na cidade": {
+  "en": "Coaches of your sports in the city",
+  "es": "Entrenadores de tus deportes en la ciudad"
+ },
+ "Modalidades mais buscadas na cidade": {
+  "en": "Most searched sports in the city",
+  "es": "Deportes más buscados en la ciudad"
+ },
+ "Modalidades mais buscadas no Brasil": {
+  "en": "Most searched sports in Brazil",
+  "es": "Deportes más buscados en Brasil"
+ },
+ "Procura no site": {
+  "en": "Demand on the site",
+  "es": "Demanda en el sitio"
+ },
+ "celular": {
+  "en": "phone",
+  "es": "móvil"
+ },
+ "computador": {
+  "en": "computer",
+  "es": "computadora"
+ },
+ "link direto": {
+  "en": "direct link",
+  "es": "enlace directo"
+ },
+ "Visitas ao perfil, procura na região e indicadores": {
+  "en": "Profile visits, local demand and indicators",
+  "es": "Visitas al perfil, demanda local e indicadores"
+ },
+ " sobre o período anterior": {
+  "en": " vs the previous period",
+  "es": " sobre el período anterior"
+ },
+ "Buscas em ": {
+  "en": "Searches in ",
+  "es": "Búsquedas en "
+ },
+ " no estado": {
+  "en": " in the state",
+  "es": " en el estado"
+ },
+ "Procura em ": {
+  "en": "Demand in ",
+  "es": "Demanda en "
+ },
+ "você aparece em ": {
+  "en": "you rank ",
+  "es": "apareces en el "
+ },
+ "º entre eles": {
+  "en": "th among them",
+  "es": "º entre ellos"
+ },
+ "Contagem sem robôs desde ": {
+  "en": "Counting without bots since ",
+  "es": "Conteo sin robots desde "
+ },
+ "Modalidades mais buscadas no estado (": {
+  "en": "Most searched sports in the state (",
+  "es": "Deportes más buscados en el estado ("
+ },
+ "Dias e horários": {
+  "en": "Days and times",
+  "es": "Días y horarios"
+ },
+ "Muita procura, pouca oferta": {
+  "en": "High demand, few coaches",
+  "es": "Mucha demanda, poca oferta"
+ },
+ "Formato procurado": {
+  "en": "Format searched",
+  "es": "Formato buscado"
+ },
+ "Para aparecer mais": {
+  "en": "To show up more",
+  "es": "Para aparecer más"
+ },
+ "Baixar planilha": {
+  "en": "Download spreadsheet",
+  "es": "Descargar hoja"
+ },
+ "Posição média nas listas": {
+  "en": "Average position in listings",
+  "es": "Posición media en las listas"
+ },
+ "Perfil com foto aparece antes nas listas e nas sugestões da busca.": {
+  "en": "Profiles with a photo show up earlier in listings and search suggestions.",
+  "es": "Los perfiles con foto aparecen antes en las listas y en las sugerencias de búsqueda."
+ },
+ "Adicionar foto": {
+  "en": "Add photo",
+  "es": "Añadir foto"
+ },
+ "Apresentação": {
+  "en": "About",
+  "es": "Presentación"
+ },
+ "Conte em algumas linhas como é o seu trabalho e para quem.": {
+  "en": "Tell in a few lines how you work and who it is for.",
+  "es": "Cuenta en unas líneas cómo trabajas y para quién."
+ },
+ "Escrever": {
+  "en": "Write",
+  "es": "Escribir"
+ },
+ "Sem cidade o perfil não entra nas buscas presenciais.": {
+  "en": "Without a city the profile is left out of in-person searches.",
+  "es": "Sin ciudad el perfil no entra en las búsquedas presenciales."
+ },
+ "Informar cidade": {
+  "en": "Add city",
+  "es": "Indicar ciudad"
+ },
+ "Registro conferido pela equipe conta na ordem das listas.": {
+  "en": "A registration checked by our team counts in the listing order.",
+  "es": "El registro verificado por el equipo cuenta en el orden de las listas."
+ },
+ "Informar CREF": {
+  "en": "Add CREF",
+  "es": "Indicar CREF"
+ },
+ "CREF sem conferência": {
+  "en": "CREF not checked yet",
+  "es": "CREF sin verificar"
+ },
+ "Peça a conferência: registro conferido conta na ordem das listas.": {
+  "en": "Ask for the check: a checked registration counts in the listing order.",
+  "es": "Pide la verificación: el registro verificado cuenta en el orden de las listas."
+ },
+ "Pedir conferência": {
+  "en": "Ask for the check",
+  "es": "Pedir verificación"
+ },
+ "Alunos com acompanhamento pelo 99coach podem avaliar você.": {
+  "en": "Clients coached through 99coach can review you.",
+  "es": "Los alumnos con seguimiento por 99coach pueden evaluarte."
+ },
+ "qualquer formato": {
+  "en": "any format",
+  "es": "cualquier formato"
+ },
+ "Mais visitas: ": {
+  "en": "Most visits: ",
+  "es": "Más visitas: "
+ },
+ ", por volta das ": {
+  "en": ", around ",
+  "es": ", sobre las "
+ },
+ " na cidade": {
+  "en": " in the city",
+  "es": " en la ciudad"
+ },
+ " no Instagram": {
+  "en": " on Instagram",
+  "es": " en Instagram"
  }
 }

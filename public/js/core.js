@@ -199,7 +199,7 @@
     // só enquanto a conta não tem o dado daquela tela; depois a tela mostra o que a pessoa criou
     var noPeople = function () { return !(DB.alunos || []).length && !(DB.t1_convites || []).length && !(DB.t1_pedidos || []).length; };
     var empty = { alunos: noPeople, hoje: noPeople,
-      recebimentos: function () { return !(DB.t6_envios || []).length && !((DB.t6_extrato || {}).extra || []).length; }, insights: function () { return true; } };
+      recebimentos: function () { return !(DB.t6_envios || []).length && !((DB.t6_extrato || {}).extra || []).length; }, insights: function () { return false; } }; // Insights mostra a própria audiência (ou zero), sem o aviso de primeiro uso
     // aluno: enquanto a conta não tem vínculo confirmado no servidor, as telas do dia a dia abrem vazias
     if (scr.page === 'aluno') return scr.key === 'contratacoes' && !(DB.contratacoes || []).length ? 'vazio' : '';
     if (scr.page === 'treinador' && !(empty[scr.key] || function () { return false; })()) return '';

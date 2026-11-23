@@ -356,7 +356,6 @@
   var LOCALTXT = {
     mensagens: ['As conversas ficam na tela de cada aluno', 'Abra o aluno em Alunos para conversar: é lá que as mensagens são enviadas e recebidas de verdade.'],
     recebimentos: ['Recebimentos ainda não estão ligados', 'Nenhuma venda é processada pela 99coach por enquanto, então não há valores a mostrar. Nada aqui é cobrado.'],
-    insights: ['Sem base ainda', 'Os números aparecem quando houver visitas, pedidos e alunos reais. Enquanto isso não mostramos zero nem percentual.'],
     ft01: ['Recebimentos ainda não estão ligados', 'Este cadastro é só uma prévia: nenhum dado bancário é pedido nem guardado.'],
     ft09: ['Recebimentos ainda não estão ligados', 'Esta tela é só uma prévia: nenhum dado bancário é pedido nem guardado.'],
     ft11: ['Assinatura ainda não está à venda', 'Pro por R$ 99/mês ou R$ 990/ano é o preço decidido, mas nada é cobrado por enquanto. Sua conta segue no Essencial, grátis.']

@@ -131,9 +131,23 @@
   // como a visita chegou: busca (Google e afins), direto (link aberto sem página anterior), site (clique aqui dentro) ou outro
   var CHEGADA = (function () { try { var r = document.referrer; if (!r) return 'direto'; var h = new URL(r).hostname; if (h === location.hostname) return 'site'; return /(^|\.)(google|bing|duckduckgo|yahoo|yandex|ecosia|brave)\./.test(h) ? 'busca' : 'outro'; } catch (_) { return 'direto'; } })();
   var ENTROU_EM = ''; try { ENTROU_EM = decodeURIComponent(location.pathname); } catch (_) {}
+  // robô, pré-visualização de link e navegador controlado por programa não contam: sem isso um rastreador que passa
+  // uma vez em cada perfil vira dezenas de milhares de "visitas". Em localhost o filtro de automação não vale (testes).
+  var ROBO = (function () { try { var ua = navigator.userAgent || ''; return /bot|crawl|spider|slurp|lighthouse|pagespeed|preview|facebookexternalhit|whatsapp|telegram|gptbot|claude|perplexity|bytespider|ahrefs|semrush|python|curl|wget|axios|node-fetch|phantom|prerender/i.test(ua) || ((!!navigator.webdriver || /headless/i.test(ua)) && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)); } catch (_) { return false; } })();
+  // número sorteado por aba: junta as ações de uma mesma visita sem dizer quem é a pessoa
+  var SID = (function () { try { var v = sessionStorage.getItem('c99.sid'); if (!v) { v = Math.random().toString(36).slice(2, 12) + Date.now().toString(36).slice(-4); sessionStorage.setItem('c99.sid', v); } return v; } catch (_) { return ''; } })();
+  var DEV = (function () { try { return window.matchMedia('(max-width: 820px)').matches ? 'celular' : 'computador'; } catch (_) { return ''; } })();
+  // de onde veio, pelo nome conhecido (Google, Instagram…); site fora da lista aparece pelo endereço, sem o caminho
+  var REF = (function () { try { var r = document.referrer; if (!r) return ''; var h = new URL(r).hostname.replace(/^www\./, ''); if (h === location.hostname.replace(/^www\./, '')) return '';
+    var N = [[/(^|\.)google\./, 'Google'], [/(^|\.)bing\./, 'Bing'], [/duckduckgo/, 'DuckDuckGo'], [/yahoo/, 'Yahoo'], [/instagram/, 'Instagram'], [/facebook|fb\.com/, 'Facebook'], [/whatsapp|wa\.me/, 'WhatsApp'], [/(^|\.)t\.co$|twitter|(^|\.)x\.com$/, 'X'], [/youtube|youtu\.be/, 'YouTube'], [/linkedin|lnkd\.in/, 'LinkedIn'], [/tiktok/, 'TikTok'], [/chatgpt|openai/, 'ChatGPT'], [/t\.me|telegram/, 'Telegram']];
+    for (var i = 0; i < N.length; i++) if (N[i][0].test(h)) return N[i][1]; return h.slice(0, 60); } catch (_) { return ''; } })();
   window.TRACK = function (name, props, onceKey) {
     try {
+      if (ROBO) return;
+      props = Object.assign({}, props || {}, { h: 1 }); if (SID) props.sid = SID;
+      if (/^(trainer\.profile_viewed|contact\.intent_started|catalog\.search_performed)/.test(name) && DEV) props.dev = DEV;
       if (/^trainer\.profile_viewed/.test(name) && props && props.trainer_slug && !props.entry) props.entry = ENTROU_EM.indexOf('/' + props.trainer_slug) >= 0 ? CHEGADA : 'site';
+      if (/^trainer\.profile_viewed/.test(name)) { if (props.entry !== 'site' && REF) props.ref = REF; if (props.entry === 'site') { try { var de = sessionStorage.getItem('c99.de'); if (de) props.de = de; } catch (_) {} } }
       if (document.documentElement.classList.contains('demo')) return;
       if (onceKey) { var k = 'c99.ev.' + onceKey; if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); }
       try { if (window.__PH && window.posthog && window.posthog.capture) window.posthog.capture(name.replace(/\.v\d+$/, ''), props || {}); } catch (_) {}
