@@ -15,14 +15,10 @@
   try {
     var PHK = window.__PH;
     if (PHK && !demo && !window.posthog) {
-      var ph = window.posthog = []; ph._i = []; ph.__SV = 1;
-      ph.init = function (k, c, n) {
-        var alvo = n ? (ph[n] = []) : ph;
-        'capture identify reset register people.set'.split(' ').forEach(function (m) { var p = m.split('.'), o = alvo; if (p.length === 2) { o = alvo[p[0]] = alvo[p[0]] || []; m = p[1]; } o[m] = function () { o.push([m].concat([].slice.call(arguments))); }; });
-        var sc = document.createElement('script'); sc.async = true; sc.crossOrigin = 'anonymous'; sc.src = c.api_host.replace('.i.posthog.com', '-assets.i.posthog.com') + '/static/array.js'; document.head.appendChild(sc);
-        ph._i.push([k, c, n]);
-      };
-      ph.init(PHK, { api_host: 'https://us.i.posthog.com', persistence: 'memory', person_profiles: 'identified_only', capture_pageview: 'history_change', disable_session_recording: true, disable_surveys: true,
+      // trecho oficial do PostHog (posthog.com/docs/libraries/js), sem alterações
+      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],Object.defineProperty(u,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e}}),Object.defineProperty(u.people,"toString",{configurable:!0,enumerable:!0,writable:!0,value:function(){return u.toString(1)+".people (stub)"}}),o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+      // defaults: o conjunto de padrões recomendado pelo PostHog nessa data (inclui a visita de página a cada troca de tela)
+      window.posthog.init(PHK, { api_host: 'https://us.i.posthog.com', defaults: '2026-08-30', persistence: 'memory', person_profiles: 'identified_only', disable_session_recording: true, disable_surveys: true,
         loaded: function (p) { try { var s = JSON.parse(window.localStorage.getItem('c99.sessao') || 'null'); if (s && s.user && s.user.id) p.identify(s.user.id); } catch (_) { } } });
     }
   } catch (_) { }

@@ -123,7 +123,8 @@ begin
     'top_esportes', (select coalesce(jsonb_agg(jsonb_build_object('k', k, 'n', c) order by c desc, k), '[]'::jsonb) from (select p->>'sport' k, count(*) c from bus where coalesce(p->>'sport', '') not in ('', 'Todos os esportes') group by 1 order by 2 desc limit 15) o),
     'top_cidades', (select coalesce(jsonb_agg(jsonb_build_object('k', k, 'n', c) order by c desc, k), '[]'::jsonb) from (select p->>'city' k, count(*) c from bus where coalesce(p->>'city', '') not in ('', 'MUNDO') group by 1 order by 2 desc limit 15) o),
     'top_perfis', (select coalesce(jsonb_agg(jsonb_build_object('slug', o.slug, 'nome', t.name, 'origem', t.origin, 'visitas', o.c, 'contatos', o.k) order by o.c desc, o.slug), '[]'::jsonb)
-                    from (select vis.p->>'trainer_slug' slug, count(*) c, (select count(*) from cur where cur.n = 'contact.intent_started.v1' and cur.p->>'trainer_slug' = vis.p->>'trainer_slug') k from vis group by 1 order by 2 desc limit 20) o
+                    from (select v.slug, v.c, (select count(*) from cur where cur.n = 'contact.intent_started.v1' and cur.p->>'trainer_slug' = v.slug) k
+                            from (select vis.p->>'trainer_slug' slug, count(*) c from vis group by 1 order by 2 desc limit 20) v) o
                     left join public.trainers t on t.slug = o.slug),
     'funil', jsonb_build_object(
       'visitas', (select count(*) from vis), 'contatos', (select count(*) from cur where n = 'contact.intent_started.v1'),
