@@ -65,6 +65,7 @@
       var ak = 'au' + per;
       if (!ui[ak] && !ui['busy' + ak]) {
         var b1 = {}; b1['busy' + ak] = true; ctx.setUi(b1);
+        if (!ui.marcos) C().rpc('my_milestones', {}).then(function (r) { ctx.setUi({ marcos: r.ok && one(r) ? one(r) : { falhou: true } }); });
         C().rpc('my_audience', { p_days: per }).then(function (r) { var o = {}; o['busy' + ak] = false; o[ak] = r.ok && one(r) ? one(r) : { falhou: true }; ctx.setUi(o); });
       }
       var au = ui[ak] && !ui[ak].falhou && !ui[ak].sem_perfil ? ui[ak] : null, rg = (au && au.regiao) || {};
@@ -97,6 +98,19 @@
       ].filter(Boolean).map(function (f) { f.hasA = !!f.a; return f; }) : [];
       // muita procura para pouca oferta: modalidades buscadas na cidade que ele não atende, com poucos treinadores
       var oport = ((rg.top_cidade || []).filter(function (x) { return !x.meu && x.n >= 5 && x.t != null && x.n / Math.max(1, x.t) >= 2; }).sort(function (x, y) { return y.n / Math.max(1, y.t) - x.n / Math.max(1, x.t); }).slice(0, 3)).map(function (x) { return { t: x.k, x: U.plural(x.n, 'busca', 'buscas') + ' para ' + U.plural(x.t, 'treinador', 'treinadores') + ' na cidade' }; });
+      // força do perfil: os mesmos itens que contam na ordem das listas, somando 100
+      var PESOS = [['foto', 25, !!pf.foto], ['apresentação', 20, !!pf.texto], ['cidade', 15, !!pf.local], ['modalidades', 10, Number(pf.modalidades || 0) > 0], ['CREF informado', 10, !!pf.cref], ['CREF conferido', 10, pf.cref === 'verificado'], ['avaliações', 10, Number(pf.avaliacoes || 0) > 0]];
+      var forca = PESOS.reduce(function (t, x) { return t + (x[2] ? x[1] : 0); }, 0), prox = PESOS.filter(function (x) { return !x[2]; })[0];
+      // conquistas: marcos de visitas, contatos e aparições desde o começo da contagem; a próxima de cada tipo mostra o progresso
+      var mc = ui.marcos && !ui.marcos.falhou ? ui.marcos : null;
+      var MARCOS = [['visitas', [1, 10, 50, 100, 500, 1000, 5000], function (v) { return v === 1 ? 'Primeira visita' : nf(v) + ' visitas'; }, 'visitas'],
+        ['contatos', [1, 5, 25, 100, 500], function (v) { return v === 1 ? 'Primeiro contato' : nf(v) + ' contatos'; }, 'contatos'],
+        ['aparicoes', [100, 1000, 10000, 100000], function (v) { return nf(v) + ' aparições nas listas'; }, 'aparições']];
+      var feitas = [], metas = [];
+      if (mc) MARCOS.forEach(function (m) { var tem = Number(mc[m[0]] || 0), ok = m[1].filter(function (v) { return tem >= v; }), nx = m[1].filter(function (v) { return tem < v; })[0];
+        if (ok.length) feitas.push({ t: m[2](ok[ok.length - 1]) });
+        if (nx) metas.push({ t: m[2](nx), x: nf(tem) + ' de ' + nf(nx), w: 'width:' + Math.max(2, Math.round(tem / nx * 100)) + '%' }); });
+      if (au && rg.na_cidade >= 10 && rg.posicao <= 10) feitas.push({ t: rg.posicao === 1 ? '1º da cidade nas suas modalidades' : 'Entre os 10 primeiros da cidade' });
       var baixar = function () { try { var linhas = [['data', 'hora', 'origem', 'buscava', 'aparelho', 'clicou em contato']].concat(((au && au.recentes) || []).map(function (v) { var dt = new Date(v.em); return [dt.toLocaleDateString('pt-BR'), ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2), v.origem, v.de || '', v.dev || '', v.contato ? 'sim' : 'não']; }));
         var csv = '\ufeff' + linhas.map(function (l) { return l.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n'), a0 = document.createElement('a'); a0.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a0.download = 'visitas-ao-perfil.csv'; document.body.appendChild(a0); a0.click(); a0.remove(); } catch (_) {} };
       var recentes = ((au && au.recentes) || []).slice(0, ui.auMais ? 60 : 12).map(function (v) { return { t: v.origem + (v.de ? ' · ' + v.de : '') + (v.dev ? ' · ' + v.dev : ''), q: quando(v.em), contato: !!v.contato }; });
@@ -131,6 +145,8 @@
         auDe: ranked(au && au.veio_de), hasAuDe: !!au && (au.veio_de || []).length > 0,
         auAparelho: ranked(au && au.aparelho), hasAuAparelho: !!au && (au.aparelho || []).length > 1,
         auRecentes: recentes, hasAuRecentes: recentes.length > 0, auTemMais: !ui.auMais && ((au && au.recentes) || []).length > 12, auMais: function () { ctx.setUi({ auMais: true }); },
+        forcaOk: !!au, forca: forca + '%', forcaW: 'width:' + forca + '%', forcaCheia: forca === 100, forcaProx: prox ? 'Próximo passo: ' + prox[0] + ' (+' + prox[1] + ')' : 'Perfil completo', forcaAlt: 'Força do perfil: ' + forca + ' de 100',
+        feitas: feitas, hasFeitas: feitas.length > 0, metas: metas, hasMetas: metas.length > 0, conquistasOk: !!au && !!mc,
         auSem: sem, auHor: hor, hasAuQuando: !!au && au.visitas > 0, auPico: pico, hasAuPico: !!pico,
         falta: falta, hasFalta: falta.length > 0, oport: oport, hasOport: oport.length > 0,
         rgFmt: ranked(rg.formatos), hasRgFmt: (rg.formatos || []).length > 1, auBaixar: baixar, hasAuBaixar: ((au && au.recentes) || []).length > 0,

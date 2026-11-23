@@ -35,6 +35,7 @@ const novo = async (papel, token) => {
     const path = u.pathname.replace('/rest/v1/', ''); if (/^rpc\//.test(path)) srv.calls.push(path.slice(4));
     if (path === 'funnel_events' && rq.method() === 'POST') { srv.ev.push(body); return j(201, []); }
     if (path === 'rpc/my_audience') { srv.dias.push(body.p_days); return j(200, AUD(body.p_days)); }
+    if (path === 'rpc/my_milestones') return j(200, { visitas: 64, contatos: 5, aparicoes: 480, desde: iso(3) });
     if (path === 'rpc/admin_metrics') { srv.mdias.push(body.p_days); return j(200, MET(body.p_days)); }
     if (path === 'rpc/is_admin') return j(200, true);
     if (path === 'rpc/admin_overview') return j(200, { contas: 12, em: hoje.toISOString() });
@@ -59,6 +60,9 @@ await t.p.evaluate(() => NAV.go('treinador', { s: 'insights' }, null)); await t.
 let x = await t.txt();
 ok('treinador: pede a audiência ao servidor (28 dias)', srv.dias[0] === 28, srv.dias);
 ok('indicadores: visitas, visitantes, aparições e contatos', /42 Visitas ao perfil/.test(x) && /31 Visitantes/.test(x) && /480 Vezes que apareceu nas listas 22 cliques no cartão \(4,6%\)/.test(x) && /6,4º Posição média nas listas/.test(x) && /5 Cliques em contato 3 no Instagram · 2 pedidos/.test(x), x.slice(0, 600));
+ok('força do perfil: soma dos itens e o próximo passo com o valor', /Força do perfil 55% Próximo passo: foto \(\+25\)/.test(x) && await t.p.evaluate(() => document.querySelector('.ir-forca__bar span').style.width === '55%' && /55 de 100/.test(document.querySelector('.ir-forca__bar').getAttribute('aria-label'))), (x.match(/Força do perfil.{0,80}/) || [])[0]);
+ok('conquistas: o maior marco de cada tipo e a posição na cidade', /Conquistas 50 visitas 5 contatos 100 aparições nas listas Entre os 10 primeiros da cidade/.test(x), (x.match(/Conquistas.{0,140}/) || [])[0]);
+ok('próximas: a meta seguinte de cada tipo com o progresso', /Próximas 100 visitas 64 de 100 25 contatos 5 de 25 1\.000 aparições nas listas 480 de 1\.000/.test(x) && await t.p.evaluate(() => document.querySelector('[aria-labelledby="ir-fc"] .ir-rank__bar span').style.width === '64%'), (x.match(/Próximas.{0,140}/) || [])[0]);
 ok('queda aparece como queda', /42 Visitas ao perfil −8 sobre o período anterior/.test(x), (x.match(/42 Visitas.{0,60}/) || [])[0]);
 ok('dias e horários: 7 dias da semana, 24 horas e o pico', await t.p.evaluate(() => { const g = [...document.querySelectorAll('.ir-dias--rot')]; return g.length === 2 && g[0].children.length === 7 && g[1].children.length === 24 && /^quinta · 14 visitas$/.test(g[0].children[4].title); }) && /Mais visitas: quinta, por volta das 19h\./.test(x), (x.match(/Dias e horários.{0,160}/) || [])[0]);
 ok('visitas por dia: uma barra por dia, com o dia e a quantidade', await t.p.evaluate(() => { const s = [...document.querySelectorAll('.ir-dias:not(.ir-dias--rot) span')]; return s.length === 29 && /^\d\d\/\d\d · \d+ visitas?$/.test(s[1].title) && s[0].classList.contains('is-zero'); }));
