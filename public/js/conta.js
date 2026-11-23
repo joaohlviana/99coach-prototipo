@@ -24,6 +24,7 @@
       if (window.__resetLocalData) window.__resetLocalData();
     }
     try { LS.setItem('c99.dono', s.user.id); } catch (_) {}
+    try { if (window.__PH && window.posthog && window.posthog.identify) window.posthog.identify(s.user.id); } catch (_) {}
   }
   var slugAsked = false;
   function keep(s) { ownerCheck(s); sess = s; try { if (s) LS.setItem('c99.sessao', JSON.stringify(s)); else LS.removeItem('c99.sessao'); } catch (_) {} if (s) setTimeout(syncLang, 1500); }
@@ -135,6 +136,7 @@
       if (/^trainer\.profile_viewed/.test(name) && props && props.trainer_slug && !props.entry) props.entry = ENTROU_EM.indexOf('/' + props.trainer_slug) >= 0 ? CHEGADA : 'site';
       if (document.documentElement.classList.contains('demo')) return;
       if (onceKey) { var k = 'c99.ev.' + onceKey; if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); }
+      try { if (window.__PH && window.posthog && window.posthog.capture) window.posthog.capture(name.replace(/\.v\d+$/, ''), props || {}); } catch (_) {}
       fetch(URL0 + '/rest/v1/funnel_events', { method: 'POST', keepalive: true, headers: { apikey: KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
         body: JSON.stringify({ event_name: /\.v\d+$/.test(name) ? name : name + '.v1', channel: 'web', locale: ({ en: 'en', es: 'es' })[window.__LANG] || 'pt-BR', properties: props || {} }) }).catch(function () {});
     } catch (_) {}
@@ -541,7 +543,7 @@
       return CONTA.me().then(function (r) { var roles = r.ok && r.data && r.data[0] && r.data[0].roles || null; if (roles) { try { LS.setItem('c99.papeis', JSON.stringify(roles)); } catch (_) {} } return roles || CONTA.roles(); });
     },
     me: function () { return sess ? call('GET', '/rest/v1/profiles?id=eq.' + encodeURIComponent(sess.user.id) + '&select=*', null, true) : Promise.resolve({ ok: false }); },
-    signOut: function () { var p = sess ? call('POST', '/auth/v1/logout', null, true) : Promise.resolve(); keep(null); try { LS.removeItem('c99.papeis'); } catch (_) {} return p; }
+    signOut: function () { try { if (window.__PH && window.posthog && window.posthog.reset) window.posthog.reset(); } catch (_) {} var p = sess ? call('POST', '/auth/v1/logout', null, true) : Promise.resolve(); keep(null); try { LS.removeItem('c99.papeis'); } catch (_) {} return p; }
   };
   window.CONTA = CONTA;
 })();

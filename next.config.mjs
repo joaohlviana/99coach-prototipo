@@ -27,10 +27,10 @@ const config = {
     ];
   },
   async headers() {
-    // cabeçalhos de segurança em todas as páginas: o site não abre dentro de outro site, só fala com o próprio servidor e com o banco,
+    // cabeçalhos de segurança em todas as páginas: o site não abre dentro de outro site, só fala com o próprio servidor, com o banco e com a medição de uso (PostHog),
     // e não vaza o endereço de origem para terceiros
-    const csp = ["default-src 'self'", "script-src 'self' 'unsafe-inline'", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob: https:", "font-src 'self' data:",
-      "connect-src 'self' https://rycaxboqkkiopjdecgld.supabase.co", "frame-src https://www.youtube-nocookie.com", "media-src 'self' blob: https://rycaxboqkkiopjdecgld.supabase.co", "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'", "object-src 'none'"].join('; ');
+    const csp = ["default-src 'self'", "script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com", "style-src 'self' 'unsafe-inline'", "img-src 'self' data: blob: https:", "font-src 'self' data:",
+      "connect-src 'self' https://rycaxboqkkiopjdecgld.supabase.co https://us.i.posthog.com https://us-assets.i.posthog.com", "frame-src https://www.youtube-nocookie.com", "media-src 'self' blob: https://rycaxboqkkiopjdecgld.supabase.co", "frame-ancestors 'none'", "base-uri 'self'", "form-action 'self'", "object-src 'none'"].join('; ');
     const seguranca = [
       { key: 'Content-Security-Policy', value: csp },
       { key: 'X-Frame-Options', value: 'DENY' },

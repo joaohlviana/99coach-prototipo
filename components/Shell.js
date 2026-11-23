@@ -57,10 +57,14 @@ export function EsperaApp({ espera }) {
 }
 // o app interativo monta no #app (o React não mexe no que estiver dentro). Em inglês e espanhol, o mesmo app,
 // com window.__LANG: o carregador baixa o dicionário do idioma e traduz as telas (public/next-loader.js).
+const PH_KEY = ((k) => (/^phc_[A-Za-z0-9_-]+$/.test(k) ? k : ''))(process.env.NEXT_PUBLIC_POSTHOG_KEY || (process.env.VERCEL_ENV === 'production' ? 'phc_WM7SiORNhlyqhMFlX1ad45QBIQfs2N1nfdea6AuDvAI' : ''));
 export function MontaApp({ route, espera, lang }) {
   // total de treinadores e países: o app mostra no topo da página inicial o mesmo número que o servidor escreveu
   const tot = totais();
-  const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';window.__TOTAIS=' + JSON.stringify(tot) + ';' + (lang ? 'window.__LANG=' + JSON.stringify(lang) + ';' : '');
+  const boot = 'window.__ROUTE=' + JSON.stringify(route || null).replace(/</g, '\\u003c') + ';window.__TOTAIS=' + JSON.stringify(tot) + ';' + (lang ? 'window.__LANG=' + JSON.stringify(lang) + ';' : '')
+    // chave pública do projeto no PostHog: só o site oficial mede (prévia, teste e computador de quem desenvolve ficam de fora);
+    // NEXT_PUBLIC_POSTHOG_KEY troca a chave ou liga a medição em outro ambiente
+    + (PH_KEY ? 'window.__PH=' + JSON.stringify(PH_KEY) + ';' : '');
   // a cópia estática do topo foi gerada com o catálogo de quando foi tirada: troca pelo número de agora
   if (espera) espera = espera.replace(/[\d.]+ treinadores · \d+ modalidades · \d+ pa[ií]s(es)?(?=<)/g, fraseTotais(tot)).replace(/[\d.]+ treinadores · \d+ pa[ií]s(es)?(?=<)/g, fraseTotaisCurta(tot));
   return (

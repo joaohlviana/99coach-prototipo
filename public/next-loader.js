@@ -9,6 +9,23 @@
     var q = /[?&]demo=([01])/.exec(location.search);
     demo = q ? q[1] === '1' : (location.hash === '#demo' || window.localStorage.getItem('c99.demo') === '1');
   } catch (_) {}
+  // Medição de uso no PostHog: só com a chave do projeto e fora da demonstração. Nada fica gravado no aparelho
+  // (sem cookie nem armazenamento); quem está com a conta aberta é reconhecido pelo id da conta, sem nome nem e-mail.
+  // Campos de formulário não são lidos e não há gravação de tela.
+  try {
+    var PHK = window.__PH;
+    if (PHK && !demo && !window.posthog) {
+      var ph = window.posthog = []; ph._i = []; ph.__SV = 1;
+      ph.init = function (k, c, n) {
+        var alvo = n ? (ph[n] = []) : ph;
+        'capture identify reset register people.set'.split(' ').forEach(function (m) { var p = m.split('.'), o = alvo; if (p.length === 2) { o = alvo[p[0]] = alvo[p[0]] || []; m = p[1]; } o[m] = function () { o.push([m].concat([].slice.call(arguments))); }; });
+        var sc = document.createElement('script'); sc.async = true; sc.crossOrigin = 'anonymous'; sc.src = c.api_host.replace('.i.posthog.com', '-assets.i.posthog.com') + '/static/array.js'; document.head.appendChild(sc);
+        ph._i.push([k, c, n]);
+      };
+      ph.init(PHK, { api_host: 'https://us.i.posthog.com', persistence: 'memory', person_profiles: 'identified_only', capture_pageview: 'history_change', disable_session_recording: true, disable_surveys: true,
+        loaded: function (p) { try { var s = JSON.parse(window.localStorage.getItem('c99.sessao') || 'null'); if (s && s.user && s.user.id) p.identify(s.user.id); } catch (_) { } } });
+    }
+  } catch (_) { }
   function add(src) { return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.body.appendChild(s); }); }
   // âncoras internas (#lista, #custa…): com <base href="/"> elas sairiam da página; aqui só rolam até o destino
   document.addEventListener('click', function (e) {
